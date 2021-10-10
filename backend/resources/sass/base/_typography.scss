@@ -1,0 +1,100 @@
+
+.shadow-lg{  box-shadow: 0 0 8px #000 !important;  }
+
+.w-30{   width: 30% !important; }
+
+.w-md-25{   @include media-breakpoint-down(md){ width: 25% !important; }  }
+.w-md-50{   @include media-breakpoint-down(md){ width: 50% !important; }  }
+.w-md-75{   @include media-breakpoint-down(md){ width: 75% !important; }  }
+
+.rounded-right-20{
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.rounded-top-15{
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+}
+
+.rounded-15{
+    border-radius: 15px !important;
+}
+
+.rounded-20{
+    border-radius: 20px !important;
+}
+
+.rounded-top-20{
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+}
+
+.mt-80-px{  margin-top: 80px !important;  }
+.mt-50-px{  margin-top: 50px !important;  }
+.mt-40-px{  margin-top: 40px !important;  }
+.mt-25-px{  margin-top: 25px !important;  }
+
+.mb-80-px{  margin-bottom: 80px !important;  }
+.mb-50-px{  margin-bottom: 50px !important;  }
+.mb-40-px{  margin-bottom: 40px !important;  }
+.mb-25-px{  margin-bottom: 25px !important;  }
+
+.pb-80-px{  padding-bottom: 80px !important;  }
+.pb-50-px{  padding-bottom: 50px !important;  }
+.pb-40-px{  padding-bottom: 40px !important;  }
+.pb-25-px{  padding-bottom: 25px !important;  }
+
+.h-sm-15-px{ @include media-breakpoint-down(sm){ height: 15px !important; } }
+.h-sm-20-px{ @include media-breakpoint-down(sm){ height: 20px !important; } }
+.h-sm-25-px{ @include media-breakpoint-down(sm){ height: 25px !important; } }
+.h-sm-30-px{ @include media-breakpoint-down(sm){ height: 30px !important; } }
+.h-sm-35-px{ @include media-breakpoint-down(sm){ height: 35px !important; } }
+.h-sm-40-px{ @include media-breakpoint-down(sm){ height: 40px !important; } }
+.h-sm-45-px{ @include media-breakpoint-down(sm){ height: 45px !important; } }
+.h-sm-50-px{ @include media-breakpoint-down(sm){ height: 50px !important; } }
+
+.h-xs-15-px{ @include media-breakpoint-down(xs){ height: 15px !important; } }
+.h-xs-20-px{ @include media-breakpoint-down(xs){ height: 20px !important; } }
+.h-xs-25-px{ @include media-breakpoint-down(xs){ height: 25px !important; } }
+.h-xs-30-px{ @include media-breakpoint-down(xs){ height: 30px !important; } }
+.h-xs-35-px{ @include media-breakpoint-down(xs){ height: 35px !important; } }
+.h-xs-40-px{ @include media-breakpoint-down(xs){ height: 40px !important; } }
+.h-xs-45-px{ @include media-breakpoint-down(xs){ height: 45px !important; } }
+.h-xs-50-px{ @include media-breakpoint-down(xs){ height: 50px !important; } }
+
+.w-sm-15-px{ @include media-breakpoint-down(sm){ width: 15px !important; } }
+.w-sm-20-px{ @include media-breakpoint-down(sm){ width: 20px !important; } }
+.w-sm-25-px{ @include media-breakpoint-down(sm){ width: 25px !important; } }
+.w-sm-30-px{ @include media-breakpoint-down(sm){ width: 30px !important; } }
+.w-sm-35-px{ @include media-breakpoint-down(sm){ width: 35px !important; } }
+.w-sm-40-px{ @include media-breakpoint-down(sm){ width: 40px !important; } }
+.w-sm-45-px{ @include media-breakpoint-down(sm){ width: 45px !important; } }
+.w-sm-50-px{ @include media-breakpoint-down(sm){ width: 50px !important; } }
+
+.w-xs-15-px{ @include media-breakpoint-down(xs){ width: 15px !important; } }
+.w-xs-20-px{ @include media-breakpoint-down(xs){ width: 20px !important; } }
+.w-xs-25-px{ @include media-breakpoint-down(xs){ width: 25px !important; } }
+.w-xs-30-px{ @include media-breakpoint-down(xs){ width: 30px !important; } }
+.w-xs-35-px{ @include media-breakpoint-down(xs){ width: 35px !important; } }
+.w-xs-40-px{ @include media-breakpoint-down(xs){ width: 40px !important; } }
+.w-xs-45-px{ @include media-breakpoint-down(xs){ width: 45px !important; } }
+.w-xs-50-px{ @include media-breakpoint-down(xs){ width: 50px !important; } }
+
+.w-15-px{  width: 15px; }
+.w-20-px{  width: 20px; }
+.w-25-px{  width: 25px; }
+.w-30-px{  width: 30px; }
+.w-35-px{  width: 35px; }
+.w-40-px{  width: 40px; }
+.w-45-px{  width: 45px; }
+.w-50-px{  width: 50px; }
+
+.h-15-px{  height: 15px; }
+.h-20-px{  height: 20px; }
+.h-25-px{  height: 25px; }
+.h-30-px{  height: 30px; }
+.h-35-px{  height: 35px; }
+.h-40-px{  height: 40px; }
+.h-45-px{  height: 45px; }
+.h-50-px{  height: 50px; }

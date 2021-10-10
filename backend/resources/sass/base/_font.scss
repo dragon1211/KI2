@@ -1,0 +1,53 @@
+
+
+.ft-12{ font-size: 12px; }
+.ft-13{ font-size: 13px; }
+.ft-14{ font-size: 14px; }
+.ft-15{ font-size: 15px; }
+.ft-16{ font-size: 16px; }
+.ft-17{ font-size: 17px; }
+.ft-18{ font-size: 18px; }
+.ft-19{ font-size: 19px; }
+.ft-20{ font-size: 20px; }
+.ft-25{ font-size: 25px; }
+.ft-30{ font-size: 30px; }
+.ft-35{ font-size: 35px; }
+.ft-40{ font-size: 40px; }
+
+
+.ft-md-12{  @include media-breakpoint-down(md){  font-size: 12px !important;  }  }
+.ft-md-13{  @include media-breakpoint-down(md){  font-size: 13px !important;  }  }
+.ft-md-14{  @include media-breakpoint-down(md){  font-size: 14px !important;  }  }
+.ft-md-15{  @include media-breakpoint-down(md){  font-size: 15px !important;  }  }
+.ft-md-16{  @include media-breakpoint-down(md){  font-size: 16px !important;  }  }
+.ft-md-17{  @include media-breakpoint-down(md){  font-size: 17px !important;  }  }
+.ft-md-18{  @include media-breakpoint-down(md){  font-size: 18px !important;  }  }
+.ft-md-19{  @include media-breakpoint-down(md){  font-size: 19px !important;  }  }
+.ft-md-20{  @include media-breakpoint-down(md){  font-size: 20px !important;  }  }
+
+.ft-sm-12{  @include media-breakpoint-down(sm){  font-size: 12px !important;  }  }
+.ft-sm-13{  @include media-breakpoint-down(sm){  font-size: 13px !important;  }  }
+.ft-sm-14{  @include media-breakpoint-down(sm){  font-size: 14px !important;  }  }
+.ft-sm-15{  @include media-breakpoint-down(sm){  font-size: 15px !important;  }  }
+.ft-sm-16{  @include media-breakpoint-down(sm){  font-size: 16px !important;  }  }
+.ft-sm-17{  @include media-breakpoint-down(sm){  font-size: 17px !important;  }  }
+.ft-sm-18{  @include media-breakpoint-down(sm){  font-size: 18px !important;  }  }
+.ft-sm-19{  @include media-breakpoint-down(sm){  font-size: 19px !important;  }  }
+.ft-sm-20{  @include media-breakpoint-down(sm){  font-size: 20px !important;  }  }
+
+.ft-xs-12{  @include media-breakpoint-down(xs){  font-size: 12px !important;  }  }
+.ft-xs-13{  @include media-breakpoint-down(xs){  font-size: 13px !important;  }  }
+.ft-xs-14{  @include media-breakpoint-down(xs){  font-size: 14px !important;  }  }
+.ft-xs-15{  @include media-breakpoint-down(xs){  font-size: 15px !important;  }  }
+.ft-xs-16{  @include media-breakpoint-down(xs){  font-size: 16px !important;  }  }
+.ft-xs-17{  @include media-breakpoint-down(xs){  font-size: 17px !important;  }  }
+.ft-xs-18{  @include media-breakpoint-down(xs){  font-size: 18px !important;  }  }
+.ft-xs-19{  @include media-breakpoint-down(xs){  font-size: 19px !important;  }  }
+.ft-xs-20{  @include media-breakpoint-down(xs){  font-size: 20px !important;  }  }
+
+
+.text-black{ color:black !important;}
+
+
+
+

@@ -1,0 +1,61 @@
+/*
+    モーダルエラー
+*/
+.alert {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    padding: 27px 16px;
+    text-align: center;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 0;
+    z-index: 10;
+    // duration | timing-function | delay | iteration-count | direction | fill-mode | play-state | name
+    animation: 1s ease-out 3s 1 normal forwards running fadeOut;
+
+}
+.alert-fail {
+    @extend .alert;
+    background: #D17676;
+}
+.alert-success {
+    @extend .alert;
+    background: #76D1C4;
+}
+
+/*
+    テキストエラー
+*/
+.l-alert__text--error {
+    display: block;
+    margin-top: 8px;
+    width: 100%;
+    padding: 8px 15px;
+    color: #ff4747;
+    background: #ffeaea;
+}
+
+.l-alert__text--success {
+    display: block;
+    margin-top: 8px;
+    width: 100%;
+    padding: 12px 15px;
+    color: black;
+    background: #F5F7F8;
+}
+
+
+
+@keyframes fadeOut {
+    0% {
+        transform: translateY(0%);
+    }
+    100% {
+        opacity: 0;
+        display: none;
+        transform: translateY(-100%);
+    }
+}

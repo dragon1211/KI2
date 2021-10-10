@@ -1,0 +1,53 @@
+// Fonts
+@charset "UTF-8";
+
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+
+$breakpoint-up: (
+    'pc': 'screen and (min-width: 1068px)',
+    'sp': 'screen and (min-width: 431px)',
+    'sp02': 'screen and (min-width: 375px)',
+) !default;
+
+$breakpoint-down: (
+    'sp': 'screen and (max-width: 1067px)',
+    'sp02': 'screen and (max-width: 430px)',
+    'min': 'screen and (max-width: 374px)',
+) !default;
+
+@mixin mq_up($breakpoint: md) {
+    @media #{map-get($breakpoint-up, $breakpoint)} {
+        @content;
+    }
+}
+
+@mixin mq_down($breakpoint: md) {
+    @media #{map-get($breakpoint-down, $breakpoint)} {
+        @content;
+    }
+}
+
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+
+
+
+
+
+@import './base/layout';
+@import './base/loader';
+@import './base/color';
+@import './base/font';
+@import './base/typography';
+@import './base/cursor';
+@import './base/transform';
+@import './base/alert';
+@import './base/input';
+
+@import './layouts/main';
