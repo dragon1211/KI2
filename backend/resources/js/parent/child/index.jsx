@@ -10,10 +10,11 @@ const Child = () => {
   const [children, setChildren ] = useState(null);
   const [loading, setLoading] = useState(true);
   const history = useHistory();
+  const fatherId = document.getElementById('father_id').value;
   const state = history.location.state
 
   useEffect(() => {
-    axios.get('/api/children/listOfFather', {params: { father_id: 1 }}).then((response) => {
+    axios.get('/api/children/listOfFather', {params: { father_id: fatherId }}).then((response) => {
       if(response.data.status_code==200){
         console.log(response.data.params);
         setChildren(response.data.params);

@@ -18,7 +18,7 @@ const Meeting = () => {
   const [completeOfFather, setCompleteOfFather ] = useState(null);
   const [inCompleteOfFather, setInCompleteOfFather ] = useState(null);
   useEffect(() => {
-    axios.get('/api/meetings/listOfCompleteOfFather', {params: { father_id: 1 }}).then((response) => {
+    axios.get('/api/admin/fathers/meetings/listOfCompleteOfFather', {params: { father_id: 1 }}).then((response) => {
       if(response.data.status_code==200){
         console.log(response.data.params);
       } else if(response.data.status_code==400){
@@ -29,7 +29,7 @@ const Meeting = () => {
   }, []);
 
   useEffect(() => {
-    axios.get('/api/meetings/listOfIncompleteOfFather', {params: { father_id: 1 }}).then((response) => {
+    axios.get('/api/admin/fathers/meetings/listOfIncompleteOfFather', {params: { father_id: 1 }}).then((response) => {
       if(response.data.status_code==200){
         console.log(response.data.params);
         setInCompleteOfFather(response.data.params);
@@ -46,7 +46,6 @@ const Meeting = () => {
           <div className="l-content__ttl__left">
             <h2>ミーティング一覧</h2>
           </div>
-          <Notification/>
         </div>
 
         <div className="l-content-wrap">

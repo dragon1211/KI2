@@ -58,7 +58,6 @@ const Child = () => {
         <div className="l-content__ttl__left">
           <h2>子一覧</h2>
         </div>
-        <Notification />
       </div>
       <div className="l-content-wrap">
         <section className="search-container">

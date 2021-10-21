@@ -4,6 +4,11 @@ import { Link } from 'react-router-dom'
 export default function Side() {
     const [selected, setSelected] = useState('');
 
+    const handleLogout = () => {
+        axios.get('/admin/logout')
+        .then(() => location.href = '/admin/login')
+    }
+
     return (
         <div className="l-side">
             <div className="l-side-logo">
@@ -45,12 +50,17 @@ export default function Side() {
                         </Link>
                     </li>
                     
-                   
-                    <li className="mypage-nav-list__item -logout">
-                        <a href="" className="mypage-nav-list__link">
+                    <li className={`mypage-nav-list__item  ${(selected == 'logout') && "nav-active"}`}
+                        onClick={e => {
+                            e.preventDefault();
+                            setSelected('logout');
+                        }}>
+
+                        <a className="mypage-nav-list__link" onClick={handleLogout}>
                             <i className="icon log-out"></i><span>ログアウト</span>
                         </a>
                     </li>
+                   
                 </ul>
             </nav>
         </div>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import Side from '../component/side';
+import Side from './side';
 
 import Meeting from '../parent/meeting';
 import MeetingDetail from '../parent/meeting/detail';

@@ -72,7 +72,6 @@ const ParentRegister = () => {
                     <div className="l-content__ttl__left">
                         <h2>親追加</h2>
                     </div>
-                    <Notification/>
                 </div>
 
                 <div className="l-content-wrap">

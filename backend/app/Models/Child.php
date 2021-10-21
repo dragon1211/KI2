@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Child extends Model
+class Child extends Authenticatable
 {
     use HasFactory;
     protected $fillable = ['father_id', 'title', 'text', 'memo', 'pdf'];
+    protected $hidden = ['password'];
 }

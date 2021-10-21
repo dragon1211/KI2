@@ -29,7 +29,7 @@ class ContactsController extends Controller {
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
-            return ['status_code' => 400, 'error_messages' => 'お問い合わせの送信に失敗しました。'];
+            return ['status_code' => 400, 'error_messages' => ['お問い合わせの送信に失敗しました。']];
         }
 
         // 成功

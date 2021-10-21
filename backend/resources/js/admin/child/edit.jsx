@@ -108,7 +108,6 @@ const ChildEdit = () => {
                 <div className="l-content__ttl__left">
                     <h2>プロフィール編集</h2>
                 </div>
-                <Notification/>
             </div>
 
             <div className="l-content-wrap">

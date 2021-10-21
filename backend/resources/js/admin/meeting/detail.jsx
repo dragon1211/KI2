@@ -16,7 +16,7 @@ const MeetingDetail = (props) => {
   const [meeting, setMeeting] = useState(null);
   useEffect(() => {
 
-    axios.get(`/api/meetings/detail/${props.match.params?.meeting_id}`, {params: { father_id: 1 }}).then((response) => {
+    axios.get(`/api/admin/fathers/meetings/detail/${props.match.params?.meeting_id}`, {params: { father_id: 1 }}).then((response) => {
       if(response.data.status_code==200){
         console.log(response.data.params[0]);
         setMeeting(response.data.params[0]);
@@ -72,7 +72,6 @@ const MeetingDetail = (props) => {
             <div className="l-content__ttl__left">
               <h2>ミーティング詳細</h2>
             </div>
-            <Notification />
           </div>
   
           <div className="l-content-wrap">

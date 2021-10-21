@@ -16,20 +16,33 @@ import SignUpError from './register/error';
 export default class ChildAuth extends Component {
     render() {
         return (
-            <BrowserRouter>
-                <Switch>
-                    <Route exact path='/register-temporary/c-account' component={SignUpTemporary} />
-                    <Route exact path='/register/c-account' component={SignUp} />
-                    <Route exact path='/register/c-account/complete' component={SignUpComplete} />
-                    <Route exact path='/register/c-account/error/' component={SignUpError} />
+        <main class="l-single-main">
+            <div class="l-centeringbox">
+                <div class="l-centeringbox-wrap">
+                    <div class="l-single-container">
+                        <div class="l-single-inner">
 
-                    <Route exact path="/forgot-password/c-account" component = {ForgotPassword} />
-                    <Route exact path="/forgot-password/c-account/reset" component = {ForgotPasswordReset} />
-                    <Route exact path="/forgot-password/c-account/complete" component = {ForgotPasswordComplete} />
-                    
-                    <Route exact path="/login/c-account" component = {Login} />
-                </Switch>
-            </BrowserRouter>
+                            <BrowserRouter>
+                                <Switch>
+                                    <Route exact path='/register-temporary/c-account' component={SignUpTemporary} />
+                                    <Route exact path='/register/c-account' component={SignUp} />
+                                    <Route exact path='/register/c-account/complete' component={SignUpComplete} />
+                                    <Route exact path='/register/c-account/error/' component={SignUpError} />
+
+                                    <Route exact path="/forgot-password/c-account" component = {ForgotPassword} />
+                                    <Route exact path="/forgot-password/c-account/reset" component = {ForgotPasswordReset} />
+                                    <Route exact path="/forgot-password/c-account/complete" component = {ForgotPasswordComplete} />
+                                    
+                                    <Route exact path="/login/c-account" component = {Login} />
+                                </Switch>
+                            </BrowserRouter>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+           
         );
     }
 }

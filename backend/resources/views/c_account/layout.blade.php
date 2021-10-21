@@ -17,13 +17,6 @@
     
     <body>
         @yield('content')
-        <!-- <main class="l-container meeting-consent">
-            <div class="l-content">
-                @yield('content')
-            </div>
-
-            @include('c_account.side')
-        </main> -->
     </body>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

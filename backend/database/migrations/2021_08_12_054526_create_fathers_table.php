@@ -16,9 +16,8 @@ class CreateFathersTable extends Migration
         Schema::create('fathers', function (Blueprint $table) {
             $table->id();
             $table->string('email', 255)->unique();
-            $table->dateTime('email_verified_at');
             $table->string('password', 72);
-            $table->string('company', 100)->nullable();
+            $table->string('company', 100);
             $table->string('image', 100)->nullable();
             $table->string('profile', 1000)->nullable();
             $table->string('tel', 11)->unique();

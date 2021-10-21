@@ -10,6 +10,7 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const [keyword, setKeyword] = useState('');
   const [finish, setFinish] = useState(false);
+  const fatherId = document.getElementById('father_id').value;
   const [completeOfFather, setCompleteOfFather ] = useState(null);
   const [inCompleteOfFather, setInCompleteOfFather ] = useState(null);
 
@@ -24,46 +25,71 @@ const Search = () => {
   //   });
   // }, []);
 
-  // useEffect(() => {
-  //   axios.get('/api/meetings/searchOfIncompleteOfFather', {params: { father_id: 1, keyword: '' }}).then((response) => {
-  //     if(response.data.status_code==200){
-  //       console.log(response.data.params);
-  //       setInCompleteOfFather(response.data.params);
-  //     } else if(response.data.status_code==400){
-  //       //TODO
-  //     }
-  //     setLoading(false);
-  //   });
-  // }, []);
-
   async function search() {
     setLoading(true);
     finish 
-      ? axios.get('/api/meetings/searchOfCompleteOfFather', {params: { father_id: 1, keyword: keyword }}).then((response) => {
-          if(response.data.status_code==200){
-            console.log(response.data.params);
-            setCompleteOfFather(response.data.params);
-          } else if(response.data.status_code==400){
-            //TODO
-          }
-          setLoading(false);
+      ? axios.get('/api/meetings/searchOfCompleteOfFather', {params: { father_id: fatherId, keyword: keyword }})
+          .then((response) => {
+            if(response.data.status_code==200){
+              console.log(response.data.params);
+              setCompleteOfFather(response.data.params);
+            } else if(response.data.status_code==400){
+              //TODO
+            }
+            setLoading(false);
         })
-      : axios.get('/api/meetings/searchOfIncompleteOfFather', {params: { father_id: 1, keyword: keyword }}).then((response) => {
-          if(response.data.status_code==200){
-            console.log(response.data.params);
-            setInCompleteOfFather(response.data.params);
-          } else if(response.data.status_code==400){
-            //TODO
-          }
-          setLoading(false);
+      : axios.get('/api/meetings/searchOfIncompleteOfFather', {params: { father_id: fatherId, keyword: keyword }})
+          .then((response) => {
+            if(response.data.status_code==200){
+              console.log(response.data.params);
+              setInCompleteOfFather(response.data.params);
+            } else if(response.data.status_code==400){
+              //TODO
+            }
+            setLoading(false);
+        });
+  };
+
+  async function handleFavorite(meetingId, currentFavorite, stateName) {
+    const formdata = new FormData();
+    formdata.append('meeting_id', meetingId);
+    formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
+    axios.post('/api/meetings/registerFavorite', formdata).then((response) => {})
+
+    if(stateName == "inCompleteOfFather") {
+      const newList = inCompleteOfFather.map((item) => {
+        if (item.id === meetingId) {
+          const updatedItem = {
+            ...item,
+            is_favorite: currentFavorite == 1 ? 0 : 1,
+          };
+  
+          return updatedItem;
+        }
+        return item;
       });
+      setInCompleteOfFather(newList);
+    } else {
+      const newList = completeOfFather.map((item) => {
+        if (item.id === meetingId) {
+          const updatedItem = {
+            ...item,
+            is_favorite: currentFavorite == 1 ? 0 : 1,
+          };
+  
+          return updatedItem;
+        }
+        return item;
+      });
+      setCompleteOfFather(newList);
+    }  
   };
 
 	return (
     <div className="l-content">
       <div className="l-content__ttl">
         <div className="l-content__ttl__left">
-          <h2>検索</h2>
+          <h2>ミーティング検索</h2>
         </div>
         <Notification/>
       </div>
@@ -104,8 +130,8 @@ const Search = () => {
             </div>
             
             <div className="meeting-content">
-                <div className={ `meeting-content-wrap ${!finish ? "is-active" : ""}` }  id="item01">
-                  {  !loading ? inCompleteOfFather?.map((item, index) => {
+                <div className={ `meeting-content-wrap ${!finish ? "is-active" : ""}` } id="item01">
+                  { !loading ? inCompleteOfFather?.map((item, index) => {
                   return (
                     <div className="meeting-item">
                       <a 
@@ -126,15 +152,15 @@ const Search = () => {
                           <div className="meeting-member-wrap">
                             <div data-url="login.html" className="meeting-member-link">
                               <ul className="meeting-member-count">
-                                <li className="numerator">3</li>
-                                <li className="denominator">4</li>
+                                <li className="numerator">{item?.meeting_approvals.length}</li>
+                                <li className="denominator">{item?.total}</li>
                               </ul>
       
                               <ul className="meeting-member-list" role="list">
-                                { item?.meeting_image.map((v, inx) => {
+                                { item?.meeting_approvals.map((v, inx) => {
                                   return (<li className="meeting-member__item" role="listitem">
                                     <div className="avatar">
-                                      <img alt="name" className="avatar-img" src={v.image} />
+                                      <img alt="name" className="avatar-img" src={v?.child.image} />
                                     </div>
                                   </li>);
                                   }) }
@@ -143,7 +169,12 @@ const Search = () => {
                           </div>
                         </div>
                       </a>
-                      <button type="button" aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" className="icon a-icon like-icon icon-star a-icon-size_medium"></button>
+                      <button type="button" aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" 
+                        onClick={e => {
+                          e.preventDefault();
+                          handleFavorite(item.id, item.is_favorite, 'inCompleteOfFather');
+                        }} 
+                        className={`icon a-icon like-icon ${item.is_favorite == 1 ? "icon-starFill" : "icon-star"} a-icon-size_medium`}></button>
                     </div>
                   );
                   })  : <CircularProgress /> }
@@ -171,15 +202,15 @@ const Search = () => {
                           <div className="meeting-member-wrap">
                             <div data-url="login.html" className="meeting-member-link">
                               <ul className="meeting-member-count">
-                                <li className="numerator">3</li>
-                                <li className="denominator">4</li>
+                                <li className="numerator">{item?.meeting_approvals.length}</li>
+                                <li className="denominator">{item?.total}</li>
                               </ul>
       
                               <ul className="meeting-member-list" role="list">
-                                { item?.meeting_image.map((v, inx2) => {
+                                { item?.meeting_approvals.map((v, inx2) => {
                                 return (<li className="meeting-member__item" role="listitem">
                                   <div className="avatar">
-                                    <img alt="name" className="avatar-img" src={v.image} />
+                                    <img alt="name" className="avatar-img" src={v?.child.image} />
                                   </div>
                                 </li>);
                                  }) }
@@ -188,7 +219,12 @@ const Search = () => {
                           </div>
                         </div>
                       </a>
-                      <button type="button" aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" className="icon a-icon like-icon icon-star a-icon-size_medium"></button>
+                      <button type="button" aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" 
+                         onClick={e => {
+                          e.preventDefault();
+                          handleFavorite(item.id, item.is_favorite, 'completeOfFather');
+                        }} 
+                        className={`icon a-icon like-icon ${item.is_favorite == 1 ? "icon-starFill" : "icon-star"} a-icon-size_medium`}></button>
                     </div>
                   );
                   }) }

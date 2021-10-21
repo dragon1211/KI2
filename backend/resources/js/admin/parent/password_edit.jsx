@@ -66,7 +66,6 @@ const ParentPasswordEdit = () => {
                     <div className="l-content__ttl__left">
                         <h2>パスワード編集</h2>
                     </div>
-                    <Notification/>
                 </div>
 
                 <div className="l-content-wrap">

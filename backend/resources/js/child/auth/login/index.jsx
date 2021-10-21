@@ -56,7 +56,7 @@ const Login = () => {
 	return (
         <form onSubmit={handleSubmit} noValidate>
            
-            <p className="text-center font-weight-bold ft-20 pb-40-px">ログイン</p>
+           <h1 className="text-center font-weight-bold ft-25 pb-40-px">ログイン</h1>
             {
                 err_msg.status.length != 0 && 
                 <div className="mt-40-px">

@@ -43,12 +43,12 @@ export default function Side() {
                         </Link>
                     </li>
                     
-                    <li className={`mypage-nav-list__item ${ (selected == 'profile' || (selected == '' && document.getElementById('c_router').value == 'profile')) && "nav-active"}`}
+                    <li className={`mypage-nav-list__item -profile ${ (selected == 'profile' || (selected == '' && document.getElementById('c_router').value == 'profile')) && "nav-active"}`}
                         onClick={e => {
                             e.preventDefault();
                             setSelected('profile');
                         }}>
-                        <Link className='mypage-nav-list__link user-icon' to='/c-account/profile'>
+                        <Link className='user-icon mypage-nav-list__link' to='/c-account/profile'>
                             <figure>
                                 <div className="prof-wrap">
                                     <img src="/assets/img/avatar/avatar-sample01@2x.png" alt=""/>

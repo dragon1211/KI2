@@ -10,10 +10,11 @@ const ChildDetail = (props) => {
   const [show, setShow] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [messageAlert, setMessageAlert] = useState(null);
+  const fatherId = document.getElementById('father_id').value;
   const history = useHistory();
 
   useEffect(() => {
-    axios.get(`/api/children/detail/${props.match.params?.id}`, {params: { father_id: 1 }}).then((response) => {
+    axios.get(`/api/children/detail/${props.match.params?.id}`, {params: { father_id: fatherId }}).then((response) => {
       if(response.data.status_code==200){
         console.log(response.data.params[0]);
         setChild(response.data.params[0]);

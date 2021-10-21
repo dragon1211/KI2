@@ -18,7 +18,6 @@ class CreateChildrenTable extends Migration
             $table->string('identity', 20);
             $table->string('email', 72)->unique();
             $table->string('tel', 11)->unique();
-            $table->dateTime('tel_verified_at');
             $table->string('password', 255);
             $table->string('last_name', 100);
             $table->string('first_name', 100);

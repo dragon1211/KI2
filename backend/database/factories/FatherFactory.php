@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Father;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FatherFactory extends Factory
@@ -29,8 +30,7 @@ class FatherFactory extends Factory
 
         return [
             'email' => $this->faker->email,
-            'email_verified_at' => $this->faker->dateTime,
-            'password' => $this->faker->password,
+            'password' => Hash::make('password'),
             'company' => $this->faker->company,
             'image' => $this->faker->imageUrl,
             'profile' => $this->faker->realText(49),

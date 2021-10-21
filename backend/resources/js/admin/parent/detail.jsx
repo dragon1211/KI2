@@ -65,7 +65,6 @@ const ParentDetail = () => {
                 <div className="l-content__ttl__left">
                     <h2>親詳細</h2>
                 </div>
-                <Notification/>
             </div>
 
             <div className="l-content-wrap">

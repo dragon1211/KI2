@@ -12,9 +12,10 @@ const ChildEdit = (props) => {
   const [textColor, setTextColor] = useState(null);
   const [messageAlert, setMessageAlert] = useState(null);
   const [hireDate, setHireDate] = useState(null);
+  const fatherId = document.getElementById('father_id').value;
 
   useEffect(() => {
-    axios.get(`/api/children/detail/${props.match.params?.id}`, {params: { father_id: 1 }}).then((response) => {
+    axios.get(`/api/children/detail/${props.match.params?.id}`, {params: { father_id: fatherId }}).then((response) => {
       if(response.data.status_code==200){
         if(response.data.params[0]?.father_relation?.hire_at) {
           let hire_at = moment(response.data.params[0]?.father_relation?.hire_at).toDate();
@@ -30,7 +31,7 @@ const ChildEdit = (props) => {
   async function handleClick() {
     try {
       const formdata = new FormData();
-      formdata.append('father_id', 1);
+      formdata.append('father_id', fatherId);
       formdata.append('child_id', props.match.params?.id);
       formdata.append('hire_at', hireDate);
       axios.post(`/api/father-relations/updateHireDate/${props.match.params?.id}`, formdata)

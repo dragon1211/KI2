@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Child;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ChildFactory extends Factory
@@ -31,8 +32,7 @@ class ChildFactory extends Factory
             'identity' => $this->faker->text(20),
             'email' => $this->faker->email,
             'tel' => $tel[rand(0, 2)],
-            'tel_verified_at' => $this->faker->dateTime,
-            'password' => $this->faker->password,
+            'password' => Hash::make('password'),
             'last_name' => $this->faker->lastName,
             'first_name' => $this->faker->firstName,
             'image' => $this->faker->imageUrl,

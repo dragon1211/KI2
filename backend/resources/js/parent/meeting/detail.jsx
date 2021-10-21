@@ -1,25 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import axios from 'axios';
+import ModalSettingNotify from '../../component/modal_setting_notify';
+import { ToastContainer, toast } from 'react-toastify';
+import ModalMemo from '../../component/modal_memo';
 import ModalConfirm from '../../component/modal_confirm';
 import ModalAlert from '../../component/modal_alert';
+import ModalPdf from '../../component/modal_pdf';
+import Notification from '../../component/notification';
 import { useHistory } from 'react-router-dom'
 
 const MeetingDetail = (props) => {
   const history = useHistory();
   const [show, setShow] = useState(false);
+  const [showArea, setShowArea] = useState(false);
+  const [showMemo, setShowMemo] = useState(false);
+  const [showNotify, setShowNotify] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [showPdf, setShowPdf] = useState(false);
   const [messageAlert, setMessageAlert] = useState(null);
   const [typeAlert, setTypeAlert] = useState(null);
   const [meeting, setMeeting] = useState(null);
+  const [picture, setPicture] = useState(null);
+  const state = history.location.state
+
   useEffect(() => {
     console.log(props.match.params?.id)
     axios.get(`/api/meetings/detail/${props.match.params?.id}`, {params: { father_id: 1 }}).then((response) => {
       if(response.data.status_code==200){
         console.log(response.data.params[0]);
         setMeeting(response.data.params[0]);
+        setPicture(response.data.params[0]?.meeting_image[0]?.image);
       } else if(response.data.status_code==400){
         //TODO
+      }
+
+      if(state?.message) {
+        toast.success(state?.message, {
+          position: "top-center",
+          autoClose: 5000,
+          className:"bg-success",
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: false,
+          progress: undefined,
+          style:{ color: '#ffffff', opacity: 0.95}
+        });
       }
     
     });
@@ -56,31 +83,76 @@ const MeetingDetail = (props) => {
       console.log('error', error);
     }
   };
+  
+  async function showModalMemo() {
+    setShowMemo(true);
+  };
+
+  async function showModalArea() {
+    setShowArea(true);
+  };
+
+  async function showModalNotify() {
+    setShowNotify(true);
+  };
+
+  async function handleCloseNotify() {
+    setShowNotify(false);
+  };
+  
+  async function handleClosePdf() {
+    setShowPdf(false);
+  };
+
+  async function handleCloseMemo() {
+    setShowMemo(false);
+  };
+
+  async function handleAcceptNotify() {
+    try {
+      axios.post(`/api/children/listOfMeetingNotifyUnapprovel/${props.match.params?.id}`)
+        .then(response => {
+          if(response.data.status_code == 200){
+              axios.delete(`/api/smss/register/${props.match.params?.id}`)
+                .then(response => {
+                });
+          }
+        });
+      setShowNotify(false);
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
 
   async function handleCloseAlert() {
     setShowAlert(false);
+  };
+
+  async function handleFavorite(meetingId, currentFavorite) {
+    const formdata = new FormData();
+    formdata.append('meeting_id', meetingId);
+    formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
+    axios.post('/api/meetings/registerFavorite', formdata).then((response) => {})
+
+    const updatedItem = {
+      ...meeting,
+      is_favorite: currentFavorite == 1 ? 0 : 1,
+    };
+    setMeeting(updatedItem);
   };
 
   if (!meeting) return null;
 
 	return (
       <div className="l-content">
+        <ToastContainer />
         <div className="l-content-w560">
           <div className="l-content__ttl">
             <div className="l-content__ttl__left">
               <h2>ミーティング詳細</h2>
             </div>
-            <div className="p-notification">
-              <div className="p-notification-icon">
-                <div className="p-notification-icon-wrap">
-                  <div className="count">1</div>
-                  <div className="p-notification-icon-bg"></div>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22.742 19.855" className="icon svg-icon svg-fill svg-y50" ><g fill="none" stroke="#080808" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" data-name="Icon feather-alert-triangle" transform="translate(0.777 0.75)"><path d="M11.188,5.322,2.6,19.659A2.028,2.028,0,0,0,4.334,22.7H21.51a2.028,2.028,0,0,0,1.734-3.042L14.656,5.322a2.028,2.028,0,0,0-3.468,0Z" data-name="パス 3" transform="translate(-2.328 -4.346)"/><path d="M18,13.5v6.91" data-name="パス 4" transform="translate(-7.406 -8.547)"/><path d="M18,25.5h0" data-name="パス 5" transform="translate(-7.406 -11.2)"/></g></svg>
-                </div>
-              </div>
-            </div>
+            <Notification />
           </div>
-  
           <div className="l-content-wrap">
             <div className="p-article">
               <div className="p-article-wrap">
@@ -88,52 +160,24 @@ const MeetingDetail = (props) => {
                   <div className="p-article__content">       
                     <div className="meeting-member">
                       <div className="meeting-member-wrap">
-                        <div data-url="login.html" className="meeting-member-link">
+                        <div onClick={showModalArea} data-url="login.html" className="meeting-member-link">
                           <ul className="meeting-member-count">
-                            <li className="numerator">3</li>
-                            <li className="denominator">4</li>
+                            <li className="numerator">{meeting?.meeting_approvals.length}</li>
+                            <li className="denominator">{meeting?.meeting_approvals.length}</li>
                           </ul>
   
                           <ul className="meeting-member-list" role="list">
-                            <li className="meeting-member__item" role="listitem">
-                              <div className="avatar">
-                                <img alt="name" className="avatar-img" src="../../../assets/img/avatar/avatar-sample01@2x.png" />
-                              </div>
-                            </li>
-                            <li className="meeting-member__item" role="listitem">
-                              <div className="avatar">
-                                <img alt="name" className="avatar-img" src="../../../assets/img/avatar/avatar-sample02@2x.png" />
-                              </div>
-                            </li>
-                            <li className="meeting-member__item" role="listitem">
-                              <div className="avatar">
-                                <img alt="name" className="avatar-img" src="../../../assets/img/avatar/avatar-sample03@2x.png" />
-                              </div>
-                            </li>
-                            <li className="meeting-member__item" role="listitem">
-                              <div className="avatar">
-                                <img alt="name" className="avatar-img" src="../../../assets/img/avatar/avatar-sample01@2x.png" />
-                              </div>
-                            </li>
-                            <li className="meeting-member__item" role="listitem">
-                              <div className="avatar">
-                                <img alt="name" className="avatar-img" src="../../../assets/img/avatar/avatar-sample02@2x.png" />
-                              </div>
-                            </li>
-                            <li className="meeting-member__item" role="listitem">
-                              <div className="avatar">
-                                <img alt="name" className="avatar-img" src="../../../assets/img/avatar/avatar-sample03@2x.png" />
-                              </div>
-                            </li>
-                            <li className="meeting-member__item" role="listitem">
-                              <div className="avatar">
-                                <img alt="name" className="avatar-img" src="../../../assets/img/avatar/avatar-sample01@2x.png" />
-                              </div>
-                            </li>
+                            { meeting?.meeting_approvals.map((v, inx) => {
+                                return (<li className="meeting-member__item" role="listitem">
+                                  <div className="avatar">
+                                    <img alt="name" className="avatar-img" src={v?.child.image} />
+                                  </div>
+                                </li>);
+                            }) }
                           </ul>
 
                           <div className="meeting-member__read">
-                            <p>3人既読</p>
+                            <p>{meeting?.meeting_approvals.length}人既読</p>
                           </div>
                         </div>
                       </div>
@@ -160,10 +204,18 @@ const MeetingDetail = (props) => {
                         <a onClick={showModal} className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">削除</a>
                       </li>
                       <li className="p-article-btn__item">
-                        <a href="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">複製</a>
+                        <a
+                          onClick={e => {
+                            e.preventDefault();
+                            history.push({
+                              pathname: '/p-account/meeting/new',
+                              state: {}
+                            });
+                          }} 
+                          className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">複製</a>
                       </li>
                       <li className="p-article-btn__item">
-                        <a href="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">再通知</a>
+                        <a onClick={showModalNotify} className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">再通知</a>
                       </li>
                     </ul>
                    
@@ -171,32 +223,33 @@ const MeetingDetail = (props) => {
   
                       <div className="p-file-list">
                         <div className="p-file-for">
-                          <figure><img src="../../../assets/img/dummy/post-dummy01.jpg" alt="" /></figure>
+                          <figure><img src={picture} alt="" /></figure>
                         </div>
                         <div className="p-file-nav">
-                          <figure><img src="../../../assets/img/dummy/post-dummy01.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy02.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy03.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy04.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy05.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy01.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy02.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy03.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy04.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy05.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy03.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy04.jpg" alt="" /></figure>
-                          <figure><img src="../../../assets/img/dummy/post-dummy05.jpg" alt="" /></figure>
+                          { meeting?.meeting_image.map((v, inx) => {
+                            return ( <figure onClick={e => { setPicture(v.image);}} ><img src={v.image} alt="" /></figure> );
+                          }) }
                         </div>
                       </div>
-  
+
                       <div className="p-article__pdf">
                         <div className="p-article__pdf__btn">
-                          <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52">
+                          <a 
+                              onClick={e => {
+                                e.preventDefault();
+                                setShowPdf(true); 
+                              }} 
+                              className="btn-default btn-yellow btn-pdf btn-r8 btn-h52">
                             <span>PDFを確認する</span>
                           </a>
                         </div>
-                        <button type="button" aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" className="icon a-icon like-icon icon-star icon-star-wrap a-icon-size_medium"></button>
+                        <button type="button" onClick={showModalMemo}  aria-label="メモ" data-tooltip="メモ" aria-pressed="false" style={{marginRight:10}} className="icon a-icon like-icon icon-starFill-wrap a-icon-size_medium"></button>
+                        <button type="button" 
+                          onClick={e => {
+                            e.preventDefault();
+                            handleFavorite(meeting.id, meeting.is_favorite);
+                          }} 
+                          aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" className={`icon a-icon like-icon  ${meeting.is_favorite == 1 ? "icon-starFill icon-starFill-wrap" : "icon-star icon-star-wrap"} a-icon-size_medium`}></button>
                       </div>
                    
                       <p className="p-article__txt">{ meeting.text }</p>
@@ -207,17 +260,41 @@ const MeetingDetail = (props) => {
             </div>
           </div>
         </div>
+        <ModalSettingNotify 
+          show={showArea}
+          meetingId={meeting.id}
+          // message={"本当に削除しても\nよろしいでしょうか？"}
+          // handleClose={handleClose} 
+          // handleAccept={handleAccept} 
+        />
+        <ModalMemo 
+          show={showMemo}
+          title={"メモ"}
+          content={meeting?.memo}
+          handleClose={handleCloseMemo} 
+        />
         <ModalConfirm 
           show={show} 
           message={"本当に削除しても\nよろしいでしょうか？"}
           handleClose={handleClose} 
           handleAccept={handleAccept} 
         />
+        <ModalConfirm 
+          show={showNotify} 
+          message={"本当に再通知しても\nよろしいでしょうか？"}
+          handleClose={handleCloseNotify} 
+          handleAccept={handleAcceptNotify} 
+        />
         <ModalAlert 
           show={showAlert}
           message={messageAlert}
           type={typeAlert}
           handleClose={handleCloseAlert} 
+        />
+        <ModalPdf 
+          show={showPdf}
+          pdfPath={meeting.pdf ?? '/pdf/test.pdf'}
+          handleClose={handleClosePdf} 
         />
       </div>  
 	)
