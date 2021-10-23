@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 import IconButton from "@material-ui/core/IconButton";
 import axios from 'axios';
 
-import Notification from '../../component/notification';
 
 const ParentDetail = () => {
 

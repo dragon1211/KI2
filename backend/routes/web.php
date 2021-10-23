@@ -67,6 +67,7 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::group(['middleware' => 'auth:admins'], function () {
         Route::get('/meeting',                         function () { return view('admin.index'); });
+        Route::get('/meeting/detail/{meeting_id}',     function () { return view('admin.index'); });
         Route::get('/meeting/edit/{meeting_id}',       function () { return view('admin.index'); });
 
         Route::get('/parent',                          function () { return view('admin.index'); });

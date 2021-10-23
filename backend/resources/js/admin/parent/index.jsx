@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { CircularProgress  } from '@material-ui/core';
-import Notification from '../../component/notification';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';

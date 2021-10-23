@@ -12126,7 +12126,7 @@ a {
 }
 
 .control-label {
-  font-size: 12px !important;
+  font-size: 14px !important;
 }
 
 .icon-search {
@@ -12159,4 +12159,25 @@ a {
 .btn-disabled {
   background-color: #eaeff2;
   color: #6f7372;
+}
+
+.text-icon {
+  position: relative;
+}
+.text-icon:after {
+  background-size: 33px 30px;
+  width: 33px;
+  height: 32px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.icon-text:after {
+  background: url(/assets/img/icon/file-text.svg) no-repeat;
+  background-size: 35px 32px;
+}
+
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper {
+  border-radius: 15px !important;
 }

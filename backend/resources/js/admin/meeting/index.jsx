@@ -2,121 +2,180 @@ import React, { useEffect, useState } from 'react';
 import { CircularProgress  } from '@material-ui/core';
 import moment from 'moment';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom';
 
-import Notification from '../../component/notification';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import { areIntervalsOverlapping } from 'date-fns';
 
+import Alert from '../../component/alert';
 
 
 const Meeting = () => {
   
-  
   const history = useHistory();
   const [keyword, setKeyword] = useState('')
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
   const [finish, setFinish] = useState(false);
-  const [completeOfFather, setCompleteOfFather ] = useState(null);
-  const [inCompleteOfFather, setInCompleteOfFather ] = useState(null);
+  const [meeting_list, setMeetingList ] = useState(null);
+  const [_422errors, set422errors] = useState({keyword:''});
+  const [_400error, set400error] = useState('');
+
   useEffect(() => {
-    axios.get('/api/admin/fathers/meetings/listOfCompleteOfFather', {params: { father_id: 1 }}).then((response) => {
+    setLoaded(false);
+    axios.get('/api/admin/meetings/list').then((response) => {
+
+      setLoaded(true);
       if(response.data.status_code==200){
-        console.log(response.data.params);
+
+        //------------Calculate Numerator & Denominator--------------
+          var list = response.data.params;
+          var arr = [];
+          for(var i in list){
+              var total=0, num=0;
+              for(var j in list[i].approval)
+              {
+                if(list[i].approval[j].approval_at) num ++;
+                total ++;
+              }
+              arr.push({...list[i], denominator:total, numerator:num})
+          }
+          //------------------------------------------------------------
+
+          setMeetingList(arr);
+
       } else if(response.data.status_code==400){
         //TODO
       }
-      setCompleteOfFather(response.data.params);
     });
   }, []);
 
-  useEffect(() => {
-    axios.get('/api/admin/fathers/meetings/listOfIncompleteOfFather', {params: { father_id: 1 }}).then((response) => {
+  
+  const handleSearch = (e) => {
+    e.preventDefault();
+    initErrors();
+    if(keyword == '')
+    {
+      document.getElementById('keyword').focus();
+      return;
+    }
+
+    setLoaded(false);
+    setMeetingList(null);
+
+    const formdata = new FormData();
+    formdata.append('keyword', keyword);
+
+    axios.post('/api/admin/meetings/search',formdata)
+    .then((response) => {
+
+      setLoaded(true);
       if(response.data.status_code==200){
-        console.log(response.data.params);
-        setInCompleteOfFather(response.data.params);
-        setLoading(false);
+
+        //------------Calculate Numerator & Denominator--------------
+          var list = response.data.params;
+          var arr = [];
+          for(var i in list){
+              var total=0, num=0;
+              for(var j in list[i].approval)
+              {
+                if(list[i].approval[j].approval_at) num ++;
+                total ++;
+              }
+              arr.push({...list[i], denominator:total, numerator:num})
+          }
+          //------------------------------------------------------------
+
+          setMeetingList(arr);
+
       } else if(response.data.status_code==400){
         //TODO
       }
     });
-  }, []);
+  }
+
+  const initErrors = () => {
+    set422errors({keyword:''});
+  }
+
 
 	return (
-    <div className="l-content">
-        <div className="l-content__ttl">
-          <div className="l-content__ttl__left">
+  <div className="l-content">
+    <div className="l-content__ttl">
+        <div className="l-content__ttl__left">
             <h2>ミーティング一覧</h2>
-          </div>
-        </div>
-
-        <div className="l-content-wrap">
-          <div className="meeting-tab-container">
-            <div className="meeting-tab-wrap">
-              <div className="meeting-head">
-                  <form action="" className="meeting-form">
-                      <label className="control-label" htmlFor="keyword">キーワード</label>
-                      <input type="search" name="keyword" className="input-default input-keyword input-w380" id="keyword"  value={keyword} onChange={e=> setKeyword(e.target.value)}/>
-                      <i className="icon icon-search"></i>
-                  </form>
-              </div>
-              
-              <div className="meeting-content">
-                <div className={ `meeting-content-wrap ${!finish ? "is-active" : ""}` }  id="item01">
-                  { !loading ? inCompleteOfFather?.map((item, index) => {
-                  return (
-                    <div className="meeting-item" key={index}>
-                      <a 
-                        className="meeting-link"
-                        onClick={e => {
-                          e.preventDefault();
-                          history.push({
-                            pathname: `/admin/meeting/detail/${item.id}`,
-                            state: {}
-                          });
-                        }} >
-                        <h3 className="meeting-ttl">{ item.title }</h3>
-                        <p className="meeting-txt">{ item.text }</p>
-                        <time dateTime="2021-07-30" className="meeting-time">
-                          <span className="meeting-date">{ moment(item.updated_at).format('YYYY/MM/DD') || '' }</span>
-                        </time>
-                        <div className="meeting-member">
-                          <div className="meeting-member-wrap">
-                            <div data-url="login.html" className="meeting-member-link">
-                              <ul className="meeting-member-count">
-                                <li className="numerator">3</li>
-                                <li className="denominator">4</li>
-                              </ul>
-      
-                              <ul className="meeting-member-list" role="list">
-                                <li className="meeting-member__item" role="listitem">
-                                  <div className="avatar">
-                                    <img alt="name" className="avatar-img" src="../assets/img/avatar/avatar-sample01@2x.png" />
-                                  </div>
-                                </li>
-                                <li className="meeting-member__item" role="listitem">
-                                  <div className="avatar">
-                                    <img alt="name" className="avatar-img" src="../assets/img/avatar/avatar-sample02@2x.png" />
-                                  </div>
-                                </li>
-                                <li className="meeting-member__item" role="listitem">
-                                  <div className="avatar">
-                                    <img alt="name" className="avatar-img" src="../assets/img/avatar/avatar-sample03@2x.png" />
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                      </a>
-                    </div>
-                  );
-                  })  : <div style={{position: "relative", left: "calc( 50% - 20px)", top:'30px'}}><CircularProgress /></div>}
-                </div>
-
-              </div>
-            </div>
-          </div>
         </div>
     </div>
+
+    <div className="l-content-wrap">
+        <div className="search-container">
+            <div className="meeting-head mt-4"  onSubmit={handleSearch}>
+                <form className="position-relative">
+                    <label className="control-label" htmlFor="keyword">キーワード</label>
+                    <input type="search" name="keyword" 
+                        className="input-default input-keyword input-w380 input-h60"
+                        id="keyword"  value={keyword} 
+                        onChange={e=> setKeyword(e.target.value)}
+                    />
+                    <IconButton size="large" style={{position:'absolute', bottom:'3px', right:'5px'}} type="submit">
+                      <SearchIcon fontSize="large" style={{color:'#d0d0d0'}}/>
+                    </IconButton>
+                </form>
+            </div>
+            <div className="search-wrap">
+              <div className="search-content position-relative" style={{minHeight:'100px'}}>
+                {
+                  !loaded &&
+                        <CircularProgress color="secondary" style={{top:'20px', left:'calc(50% - 22px)', color:'green', position:'absolute'}}/>
+                }
+                { 
+                  loaded && 
+                  (
+                    meeting_list && meeting_list.length > 0 ?
+                      meeting_list.map((item, ki) => 
+                        <div className="meeting-item" key={ki}>
+                            <Link to = {`/admin/meeting/detail/${item.id}`} className="meeting-link">
+
+                                <h3 className="meeting-ttl">{ item.title }</h3>
+                                <p className="meeting-txt">{ item.text }</p>
+                                <time dateTime="2021-07-30" className="meeting-time">
+                                    <span className="meeting-date">{ moment(item.updated_at).format('YYYY/MM/DD') || '' }</span>
+                                </time>
+                                <div className="meeting-member">
+                                    <div className="meeting-member-wrap">
+                                        <div data-url="login.html" className="meeting-member-link">
+                                            <ul className="meeting-member-count">
+                                                <li className="numerator">{item.numerator}</li>
+                                                <li className="denominator">{item.denominator}</li>
+                                            </ul>
+                                            <ul className="meeting-member-list" role="list">
+                                            {
+                                                item.approval?.map((x, kj)=>
+                                                <li className="meeting-member__item" role="listitem" key={kj}>
+                                                    <div className="avatar">
+                                                        <img alt="name" className="avatar-img" src={x.child.image} alt={x.child.image} />
+                                                    </div>
+                                                </li>
+                                                )
+                                            }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Link>
+                        </div>
+                      )
+                    : <p className="text-center py-5">データが存在していません。</p>
+                  )
+                }
+              </div>
+            </div>
+            {
+              _400error && <Alert type="fail">{_400error}</Alert>
+            }
+        </div>
+    </div>
+  </div>
 	)
 }
 

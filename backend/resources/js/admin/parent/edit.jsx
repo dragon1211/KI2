@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { LoadingButton } from '@material-ui/lab';
 
-import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 
 

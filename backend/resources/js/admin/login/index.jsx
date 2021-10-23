@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Button } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
 
 import axios from 'axios';
 
-import { CircularProgress  } from '@material-ui/core';
-
+import Alert from '../../component/alert';
 
 const AdminLogin = () => {
 
@@ -14,12 +12,13 @@ const AdminLogin = () => {
     const [password, setPassword] = useState('');
     
     const [submit, setSubmit] = useState(false);
-    const [_422errors, set422Errors] = useState({ email:'', password:'' })
-    const [_400error, set400Error] = useState('');
+    const [_422errors, set422Errors] = useState({ email:null, password:null })
+    const [_400error, set400Error] = useState(null);
+    const [_success, setSuccess] = useState(null);
 
     const init_error = () => {
-        set422Errors({ email:'', password:'' });
-        set400Error('');
+        set422Errors({ email:null, password:null });
+        set400Error(null);
     }
 
 
@@ -35,6 +34,7 @@ const AdminLogin = () => {
         axios.post('/api/admin/login', formdata)
         .then(response => {
             if(response.data.status_code == 200){
+                setSuccess('ログインに成功しました。');
                 window.location.href = '/admin/meeting';
             }
             else if(response.data.status_code == 422){
@@ -58,10 +58,6 @@ const AdminLogin = () => {
                         
                         <form onSubmit={handleSubmit} noValidate>
                             <h1 className="text-center font-weight-bold ft-25 pb-40-px">管理者ログイン</h1>
-                            {
-                                _400error && 
-                                    <span className="l-alert__text--error ft-16 ft-md-14">{_400error}</span>
-                            }
                             <div className="edit-set">
                                 <label htmlFor="email" className="control-label ft-md-12">メールアドレス</label>
                                 <input type="email" name="email" id="email" className={`input-default ${  _422errors.email && "is-invalid c-input__target" } `}  value={email} onChange={e=>setEmail(e.target.value)} autoFocus/>
@@ -87,19 +83,30 @@ const AdminLogin = () => {
                             <LoadingButton type="submit" 
                                 loading={submit} 
                                 fullWidth 
-                                className="rounded-20 p-4 mt-5" 
+                                className="rounded-15 p-4 mt-5" 
                                 style={{backgroundColor:'#F0DE00'}}
                             > 
                                 <h4 className="mb-0 font-weight-bold" style={{fontSize:'18px'}}>
                                     ログイン
                                 </h4> 
                             </LoadingButton>
-
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+        {
+          _400error && <Alert type="fail" hide={()=>set400Error(null)}>{_400error}</Alert>
+        } 
+        {
+          _success && 
+            <Alert type="success" 
+              hide={()=>  
+                    history.push({
+                      pathname: "/admin/meeting",
+                      state: {}
+                    })}>{_success}</Alert>
+        }
     </main>
         
 	)

@@ -4,7 +4,6 @@ import { LoadingButton } from '@material-ui/lab';
 
 import axios from 'axios';
 
-import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 
 

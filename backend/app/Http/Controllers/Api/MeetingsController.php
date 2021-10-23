@@ -528,7 +528,7 @@ class MeetingsController extends Controller {
 
     public function delete ($meeting_id) {
         try {
-            Meetings::where('meeting_id', $meeting_id)->delete();
+            Meeting::where('id', (int)$meeting_id)->delete();
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
             return ['status_code' => 400];

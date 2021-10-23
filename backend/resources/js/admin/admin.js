@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import Meeting from './meeting';
 import MeetingDetail from './meeting/detail';
+import MeetingEdit from './meeting/edit';
 
 import Child from './child';
 import ChildDetail from './child/detail';
@@ -26,7 +27,7 @@ export default class AdminApp extends Component {
                 <Switch>
                     <Route exact path='/admin/meeting' component={Meeting} />    
                     <Route exact path='/admin/meeting/detail/:meeting_id' component={MeetingDetail} />    
-                    {/* <Route exact path='/admin/meeting/edit/:meeting_id' component={} />     */}
+                    <Route exact path='/admin/meeting/edit/:meeting_id' component={MeetingEdit} />    
                     
                     <Route exact path='/admin/child' component={Child} />    
                     <Route exact path='/admin/child/detail/:child_id' component={ChildDetail} />    
