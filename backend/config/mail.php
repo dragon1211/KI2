@@ -87,6 +87,18 @@ return [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
+    'owner' => [
+        'address' => env('MAIL_OWNER_ADDRESS', 'hello@example.com'),
+        'name' => env('MAIL_OWNER_NAME', 'Example'),
+    ],
+    'cc' => [
+        'address' => env('MAIL_CC_ADDRESS', 'hello@example.com'),
+        'name' => env('MAIL_CC_NAME', 'Example'),
+    ],
+    'bcc' => [
+        'address' => env('MAIL_BCC_ADDRESS', 'hello@example.com'),
+        'name' => env('MAIL_BCC_NAME', 'Example'),
+    ],
 
     /*
     |--------------------------------------------------------------------------

@@ -3,11 +3,9 @@ import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
 
 import { LoadingButton } from '@material-ui/lab';
-
 import { CircularProgress  } from '@material-ui/core';
 import IconButton from "@material-ui/core/IconButton";
-
-import Alert from '../../component/alert';
+import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -16,6 +14,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
+
+import Alert from '../../component/alert';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -28,15 +28,16 @@ const ChildDetail = (props) => {
 
     const history = useHistory();
 
-    const [image, setImage] = useState('/assets/img/avatar/avatar-sample03@2x.png'); 
+    const [image, setImage] = useState(''); 
     const [open, setOpen] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [submit, setSubmit] = useState(false);
     const [child, setChild] = useState(null);
 
     const [_400error, set400Error] = useState('');
-    const [_422errors, set422Errors] = useState({image:''});
-    const [_success, setSuccess] = useState('');
+    const [_422errors, set422Errors] = useState({ image: '' });
+    const [_success_delete, setSuccessDelete] = useState('');
+    const [_success_update_image, setSuccessUpdateImage] = useState('');
 
     useEffect(
         () => {
@@ -45,10 +46,9 @@ const ChildDetail = (props) => {
             axios.get(`/api/admin/children/detail/${props.match.params?.child_id}`)
             .then(response => {
                 setLoaded(true);
-                if(response.data.status_code==200)
-                {
-                    setChild(response.data.params[0]);
-                    console.log(response.data.params[0]);
+                if(response.data.status_code==200){
+                    setChild(response.data.params);
+                    setImage(response.data.params.image);
                 }
             })
             .catch(err=>console.log(err))
@@ -65,15 +65,13 @@ const ChildDetail = (props) => {
         reader.readAsDataURL(_file);
 
         reader.onloadend = () => {
-            const formdata = new FormData();
-            formdata.append('image', reader.result);
-
-            axios.post(`/api/admin/children/updateImage/${props.match.params?.child_id}`)
+            
+            axios.put(`/api/admin/children/updateImage/${props.match.params?.child_id}`, {image: reader.result})
             .then(response => {
                 switch(response.data.status_code){
                     case 200: {
                         setImage(reader.result);
-                        setSuccess(response.data.success_messages);
+                        setSuccessUpdateImage(response.data.success_messages);
                         break;
                     }
                     case 400: set400Error(response.data.error_messages); break;
@@ -93,7 +91,7 @@ const ChildDetail = (props) => {
         setOpen(false);
     };
     
-    async function handleAccept() {
+    async function handleDelete() {
         try {
             setSubmit(true);
             axios.delete(`/api/admin/children/delete/${props.match.params?.child_id}`)
@@ -101,7 +99,7 @@ const ChildDetail = (props) => {
                 closeModal();
                 setSubmit(false);
                 if(response.data.status_code == 200){
-                    setSuccess('削除に成功しました！');
+                    setSuccessDelete('削除に成功しました！');
                 } else {
                     set400Error("削除に失敗しました。");
                 }
@@ -138,11 +136,12 @@ const ChildDetail = (props) => {
                                     <input type="file" id="avatar" name="avatar" className="d-none" accept=".png, .jpg, .jpeg" onChange={(e) => handleImageChange(e)}/>
                                     <div className="avatar-wrapper">
                                         <label htmlFor="avatar" className='avatar-label'>
-                                            <IconButton color="primary" aria-label="upload picture" component="span" className="bg-color-2 shadow-sm w-40-px h-40-px">
-                                                <img src="/assets/img/icon/camera.svg" width="20" height="20"/>
+                                            <IconButton color="primary" aria-label="upload picture" component="span" className="bg-yellow shadow-sm w-50-px h-50-px">
+                                                <PhotoCameraOutlinedIcon style={{width:'25px', height:'25px', color:'black'}}/>
+                                                {/* <img src="/assets/img/icon/camera.svg" width="20" height="20"/> */}
                                             </IconButton>
                                         </label> 
-                                        <img src={image} alt="" width ="100%" height="100%" style={{borderRadius:'50%'}}/>  
+                                        <img src={image} className="avatar-img" alt="avatar-img"/>  
                                     </div>
                                     {
                                         _422errors.image &&
@@ -157,10 +156,7 @@ const ChildDetail = (props) => {
                                         <p className="profile-info__icon">
                                             <img src="/assets/img/icon/person-pin.svg" alt="Person"/>
                                         </p>
-                                        <p className="txt">
-                                            {/* {child.username} */}
-                                            (child detail.jsx 修正)。
-                                        </p>
+                                        <p className="txt">{child.identity}</p>
                                     </div>
                                     <div className="profile-info__item">
                                         <a href={`mailto:${child.email}`}>
@@ -230,30 +226,33 @@ const ChildDetail = (props) => {
                 </DialogContentText>
             </DialogContent>
             <DialogActions style={{justifyContent:'space-evenly', padding:'0 20px 20px 20px'}}>
-                <Button 
-                  onClick={closeModal} 
-                  size="large" 
-                  style={{fontSize:'20px'}}>いいえ</Button>
-                
-                <LoadingButton 
-                  variant="text"
-                  onClick={handleAccept}
-                  loading={submit} 
-                  size="large" 
-                  style={{fontSize:'20px'}}>はい</LoadingButton>
+                <Button onClick={closeModal} size="small">
+                    <span className="ft-20 text-black">いいえ</span>
+                </Button>
+                <LoadingButton variant="text"
+                    onClick={handleDelete}
+                    loading={submit}
+                    size="small">
+                    <span className={`ft-20 ${!submit && 'text-black'}`}>はい</span>
+                </LoadingButton>
             </DialogActions>
         </Dialog>
         {
             _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
         } 
         {
-            _success && 
+            _success_delete && 
             <Alert type="success" 
-            hide={()=>  
-                history.push({
-                pathname: "/admin/child",
-                state: {}
-            })}>{_success}</Alert>
+                hide={()=>  
+                    history.push({
+                    pathname: "/admin/child",
+                    state: {}
+                })}>{_success_delete}</Alert>
+        }
+        {   _success_update_image && 
+            <Alert type="success" hide={()=>setSuccessUpdateImage('')}>
+                {_success_update_image}
+            </Alert> 
         }
     </div>    
     )

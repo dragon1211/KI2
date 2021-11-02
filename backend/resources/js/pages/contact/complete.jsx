@@ -30,10 +30,10 @@ const ContactComplete = () => {
 
             <div className="d-flex justify-content-between">
                 <div className="w-50 pr-1">
-                    <Button fullWidth className="p-4 rounded-20 ft-16 ft-md-13 font-weight-bold text-black bg-color-2" onClick={()=>{window.location.href="/login/p-account/"}}>親ログイン画面へ</Button>
+                    <Button fullWidth className="p-4 rounded-20 ft-16 ft-md-13 font-weight-bold text-black bg-yellow" onClick={()=>{window.location.href="/login/p-account/"}}>親ログイン画面へ</Button>
                 </div>
                 <div className="w-50 pl-1">
-                    <Button fullWidth className="p-4 rounded-20 ft-16 ft-md-13 font-weight-bold text-black bg-color-2"  onClick={()=>{window.location.href="/login/c-account/"}}>子ログイン画面へ</Button>
+                    <Button fullWidth className="p-4 rounded-20 ft-16 ft-md-13 font-weight-bold text-black bg-yellow"  onClick={()=>{window.location.href="/login/c-account/"}}>子ログイン画面へ</Button>
                 </div>
             </div>
             {

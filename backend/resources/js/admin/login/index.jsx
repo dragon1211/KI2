@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { LoadingButton } from '@material-ui/lab';
-
 import axios from 'axios';
 
 import Alert from '../../component/alert';
@@ -34,8 +33,8 @@ const AdminLogin = () => {
         axios.post('/api/admin/login', formdata)
         .then(response => {
             if(response.data.status_code == 200){
-                setSuccess('ログインに成功しました。');
-                window.location.href = '/admin/meeting';
+                localStorage.setItem("from_login", true);
+                window.location.href = "/admin/meeting";
             }
             else if(response.data.status_code == 422){
                 set422Errors(response.data.error_messages);
@@ -60,7 +59,7 @@ const AdminLogin = () => {
                             <h1 className="text-center font-weight-bold ft-25 pb-40-px">管理者ログイン</h1>
                             <div className="edit-set">
                                 <label htmlFor="email" className="control-label ft-md-12">メールアドレス</label>
-                                <input type="email" name="email" id="email" className={`input-default ${  _422errors.email && "is-invalid c-input__target" } `}  value={email} onChange={e=>setEmail(e.target.value)} autoFocus/>
+                                <input type="email" name="email" id="email" className={`input-default input-h60 ${  _422errors.email && "is-invalid c-input__target" } `}  value={email} onChange={e=>setEmail(e.target.value)} autoFocus/>
                                 {
                                     _422errors.email &&
                                         <span className="l-alert__text--error ft-16 ft-md-14">
@@ -71,7 +70,7 @@ const AdminLogin = () => {
 
                             <div className="edit-set">
                                 <label htmlFor="password"   className="control-label ft-14 ft-md-12"> パスワード </label>
-                                <input type="password" name="password" id="password" className={`input-default ${ _422errors.password && "is-invalid  c-input__target" }`}  value={password} onChange={e=>setPassword(e.target.value)} />
+                                <input type="password" name="password" id="password" className={`input-default input-h60 ${ _422errors.password && "is-invalid  c-input__target" }`}  value={password} onChange={e=>setPassword(e.target.value)} />
                                 {  
                                     _422errors.password && 
                                         <span className="l-alert__text--error ft-16 ft-md-14">
@@ -79,17 +78,18 @@ const AdminLogin = () => {
                                         </span> 
                                 }
                             </div>
+                            
+                            <div className="mt-5">
+                                <LoadingButton type="submit" 
+                                    loading={submit} 
+                                    fullWidth 
+                                    className="btn-edit btn-default btn-h60 bg-yellow rounded-15"> 
+                                    <span className={`ft-18 font-weight-bold ${!submit && 'text-black'}`}>
+                                        ログイン
+                                    </span> 
+                                </LoadingButton>
+                            </div>
 
-                            <LoadingButton type="submit" 
-                                loading={submit} 
-                                fullWidth 
-                                className="rounded-15 p-4 mt-5" 
-                                style={{backgroundColor:'#F0DE00'}}
-                            > 
-                                <h4 className="mb-0 font-weight-bold" style={{fontSize:'18px'}}>
-                                    ログイン
-                                </h4> 
-                            </LoadingButton>
                         </form>
                     </div>
                 </div>
@@ -98,15 +98,6 @@ const AdminLogin = () => {
         {
           _400error && <Alert type="fail" hide={()=>set400Error(null)}>{_400error}</Alert>
         } 
-        {
-          _success && 
-            <Alert type="success" 
-              hide={()=>  
-                    history.push({
-                      pathname: "/admin/meeting",
-                      state: {}
-                    })}>{_success}</Alert>
-        }
     </main>
         
 	)

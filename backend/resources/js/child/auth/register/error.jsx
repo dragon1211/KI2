@@ -18,7 +18,7 @@ const SignUpError = () => {
                 お手数ですが再度招待ユーザーに連絡し、再登録 の手続きをお願いいたします。
             </span>
             <div className="mt-4">
-                <Button type="submit" fullWidth className="p-4 rounded-20 ft-16 ft-md-13 font-weight-bold text-black bg-color-2"
+                <Button type="submit" fullWidth className="p-4 rounded-20 ft-16 ft-md-13 font-weight-bold text-black bg-yellow"
                      onClick={gotoLogin}>ログイン画面へ
                 </Button>
             </div>

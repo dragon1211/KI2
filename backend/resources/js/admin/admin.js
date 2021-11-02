@@ -32,7 +32,7 @@ export default class AdminApp extends Component {
                     <Route exact path='/admin/child' component={Child} />    
                     <Route exact path='/admin/child/detail/:child_id' component={ChildDetail} />    
                     <Route exact path='/admin/child/edit/:child_id' component={ChildEdit} />    
-                    <Route exact path='/admin/child/edit/password/:father_id' component={ChildPasswordEdit} />    
+                    <Route exact path='/admin/child/edit/password/:child_id' component={ChildPasswordEdit} />    
                     
                     <Route exact path='/admin/parent' component={Parent} />    
                     <Route exact path='/admin/parent/detail/:father_id' component={ParentDetail} />    

@@ -74,7 +74,7 @@ const ProfileDetail = () => {
                                 <input type="file" id="avatar" name="avatar" className="d-none" accept=".png, .jpg, .jpeg" onChange={(e) => handleImageChange(e)}/>
                                 <div className="avatar-wrapper">
                                     <label htmlFor="avatar" className='avatar-label'>
-                                        <IconButton color="primary" aria-label="upload picture" component="span" className="bg-color-2 shadow-sm">
+                                        <IconButton color="primary" aria-label="upload picture" component="span" className="bg-yellow shadow-sm">
                                             <img src="/assets/img/icon/camera.svg" width="16" height="16"/>
                                         </IconButton>
                                     </label>

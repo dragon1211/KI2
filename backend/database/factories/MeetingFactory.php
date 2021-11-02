@@ -25,7 +25,7 @@ class MeetingFactory extends Factory
             'father_id' => 1,
             'title' => $this->faker->name,
             'text' => $this->faker->realText(49),
-            'pdf' => $this->faker->url,
+            'pdf' => "https://crowdworks.jp/attachments/36836755.pdf",
             'memo' => $this->faker->realText(49),
             'is_favorite' => $this->faker->numberBetween($min=0, $max=1),
             'created_at' => $this->faker->dateTime,

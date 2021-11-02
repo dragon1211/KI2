@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { CircularProgress  } from '@material-ui/core';
-import moment from 'moment';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
 
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import { areIntervalsOverlapping } from 'date-fns';
-
-import Alert from '../../component/alert';
 
 
 const Child = () => {
 
-  const history = useHistory();
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
-  const [finish, setFinish] = useState(false);
   const [children_list, setChildrenList ] = useState(null);
   const [_422errors, set422errors] = useState({keyword:''});
   const [_400error, set400error] = useState('');
@@ -26,7 +20,6 @@ const Child = () => {
     axios.get('/api/admin/children/list')
     .then((response) => {
       if(response.data.status_code==200){
-        console.log(response.data.params);
         setChildrenList(response.data.params);
       } else if(response.data.status_code==400){
         //TODO
@@ -49,10 +42,7 @@ const Child = () => {
     setLoaded(false);
     setChildrenList(null);
 
-    const formdata = new FormData();
-    formdata.append('keyword', keyword);
-
-    axios.post('/api/admin/children/search',formdata)
+    axios.get('/api/admin/children/search', {params:{keyword: keyword}})
     .then((response) => {
 
       setLoaded(true);
@@ -79,16 +69,16 @@ const Child = () => {
       <div className="l-content-wrap">
         <section className="search-container">
 
-          <div className="meeting-head mt-4"  onSubmit={handleSearch}>
-              <form className="position-relative">
+          <div className="meeting-head mt-4">
+              <form className="position-relative"  onSubmit={handleSearch}>
                   <label className="control-label" htmlFor="keyword">キーワード</label>
                   <input type="search" name="keyword" 
                       className="input-default input-keyword input-w380 input-h60"
                       id="keyword"  value={keyword} 
                       onChange={e=> setKeyword(e.target.value)}
                   />
-                  <IconButton size="large" style={{position:'absolute', bottom:'3px', right:'5px'}} type="submit">
-                    <SearchIcon fontSize="large" style={{color:'#d0d0d0'}}/>
+                  <IconButton size="large" style={{position:'absolute', bottom:'5px', right:'5px', padding:'5px'}} type="submit">
+                    <SearchIcon fontSize="large" style={{color:'#d0d0d0', width:'40px', height:'40px'}}/>
                   </IconButton>
               </form>
           </div>

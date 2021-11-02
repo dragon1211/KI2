@@ -2,8 +2,8 @@
 
 .avatar-wrapper{
     position: relative;
-    width: 170px;
-    height: 170px;
+    width: 220px;
+    height: 220px;
     margin: auto;
     border-radius: 50% 50%;
     border: 1px solid gainsboro;
@@ -32,69 +32,69 @@ a{
 
 @include media-breakpoint-down(xs){
 
-  .l-content__ttl h2{
-    font-size: 20px !important;
-  }
-  
-  .meeting-tab{
-    height: 45px !important;
-    font-size: 15px;
-  }
+      .l-content__ttl h2{
+        font-size: 20px !important;
+      }
+      
+      .meeting-tab{
+        height: 45px !important;
+        font-size: 15px;
+      }
 
-  .meeting-ttl{
-    font-size: 15px !important;
-  }
-  
-  .meeting-txt{
-    font-size: 14px !important;
-  }
-  
-  .user-date span{
-    font-size: 14px !important;
-  }
+      .meeting-ttl{
+        font-size: 15px !important;
+      }
+      
+      .meeting-txt{
+        font-size: 14px !important;
+      }
+      
+      .user-date span{
+        font-size: 14px !important;
+      }
 
-  .count{
-      width: 18px !important;
-      height: 18px !important;
-  }
+      .count{
+          width: 18px !important;
+          height: 18px !important;
+      }
 
-  .meeting-label{
-    font-size: 15px !important;
-  }
+      .meeting-label{
+        font-size: 15px !important;
+      }
 
-  .user-name{
-    font-size: 13px !important;
-  }
+      .user-name{
+        font-size: 13px !important;
+      }
 
-  .user-advice-btn span{
-    font-size: 14px !important;
-  }
+      .user-advice-btn span{
+        font-size: 14px !important;
+      }
 
-  .meeting-date{
-    font-size: 13px !important;
-  }
+      .meeting-date{
+        font-size: 13px !important;
+      }
 
-  .p-article__pdf__btn span{
-    font-size: 14px !important;
-  }
+      .p-article__pdf__btn span{
+        font-size: 14px !important;
+      }
 
-  .p-article__txt{
-    font-size: 13.5px !important;
-  }
+      .p-article__txt{
+        font-size: 13.5px !important;
+      }
 
-  .p-consent-btn span{
-    font-size: 15px !important;
-  }
+      .p-consent-btn span{
+        font-size: 15px !important;
+      }
 
-  .search-item .user-avatar{
-    min-width: 50px !important;
-    width: 50px !important;
-    height: 50px !important;
-  }
+      .search-item .user-avatar{
+        min-width: 50px !important;
+        width: 50px !important;
+        height: 50px !important;
+      }
 
-  .profile-info__item{
-    padding: 10px 20px 10px 15px !important;
-  }
+      .profile-info__item{
+        padding: 10px 20px 10px 15px !important;
+      }
 
 }
 
@@ -159,4 +159,21 @@ a{
 
 .css-1t1j96h-MuiPaper-root-MuiDialog-paper{
   border-radius: 15px !important;
+}
+
+.meeting-item{
+  &:last-child{
+    border-bottom: none;
+  }
+}
+
+.p-file-image figure.image-upload:after{
+  display: none !important;
+}
+
+.avatar-img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }

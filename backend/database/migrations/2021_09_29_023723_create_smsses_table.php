@@ -17,7 +17,7 @@ class CreateSmssesTable extends Migration
             $table->id();
             $table->unsignedTinyInteger('send_id');
             $table->unsignedBigInteger('receive_id');
-            $table->foreign('receive_id')->references('id')->on('children');
+            $table->foreign('receive_id')->references('id')->on('children')->onDelete('cascade');
             $table->unsignedTinyInteger('is_sent')->default(0);
             $table->timestamps();
         });

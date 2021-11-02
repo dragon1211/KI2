@@ -16,7 +16,7 @@ class CreateMeetingsTable extends Migration
         Schema::create('meetings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('father_id');
-            $table->foreign('father_id')->references('id')->on('fathers');
+            $table->foreign('father_id')->references('id')->on('fathers')->onDelete('cascade');
             $table->string('title', 255);
             $table->string('text', 2000);
             $table->string('pdf', 255)->nullable();

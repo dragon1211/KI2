@@ -98,7 +98,7 @@ const ForgotPasswordReset = ({child_id}) => {
           
                 
             <div className="mt-5">
-                <LoadingButton type="submit" fullWidth className="p-4 rounded-20 ft-15 ft-md-13 font-weight-bold text-black bg-color-2">
+                <LoadingButton type="submit" fullWidth className="p-4 rounded-20 ft-15 ft-md-13 font-weight-bold text-black bg-yellow">
                     パスワードを更新する
                 </LoadingButton>
             </div>

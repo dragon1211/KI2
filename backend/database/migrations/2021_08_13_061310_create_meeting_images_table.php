@@ -16,7 +16,7 @@ class CreateMeetingImagesTable extends Migration
         Schema::create('meeting_images', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('meeting_id');
-            $table->foreign('meeting_id')->references('id')->on('meetings');
+            $table->foreign('meeting_id')->references('id')->on('meetings')->onDelete('cascade');
             $table->string('image');
             $table->timestamps();
         });

@@ -13,7 +13,7 @@ const ChildEdit = (props) => {
 
     const [first_name, setFirstName] = useState('');
     const [last_name, setLastName] = useState('');  
-    const [identify, setIdentify] = useState(props.match.params.child_id);  
+    const [identity, setIdentity] = useState('');  
     const [email, setEmail] = useState('');
     const [tel, setTelephone] = useState('');
     const [company, setCompany] = useState('');
@@ -21,7 +21,7 @@ const ChildEdit = (props) => {
     const [_422errors, set422Errors] = useState({
         first_name:'',
         last_name:'',
-        identify:'',
+        identity:'',
         email:'',
         tel:'',
         company:''
@@ -41,14 +41,14 @@ const ChildEdit = (props) => {
                 setLoaded(true);
                 if(response.data.status_code==200)
                 {
-                    var child = response.data.params[0];
+                    var child = response.data.params;
                     if(child){
-                        setFirstName(child?.first_name);
-                        setLastName(child?.last_name);
-                        // setIdentify(child?.identify);
-                        setEmail(child?.email);
-                        setTelephone(child?.tel);
-                        setCompany(child?.company);
+                        setFirstName(child.first_name);
+                        setLastName(child.last_name);
+                        setIdentity(child.identity);
+                        setEmail(child.email);
+                        setTelephone(child.tel);
+                        setCompany(child.company);
                     }
                 }
             })
@@ -64,7 +64,7 @@ const ChildEdit = (props) => {
         set422Errors({
             first_name:'',
             last_name:'',
-            identify:'',
+            identity:'',
             email:'',
             tel:'',
             company:''
@@ -75,7 +75,7 @@ const ChildEdit = (props) => {
         var request = {
             first_name: first_name,
             last_name: last_name,
-            identify: identify,
+            identity: identity,
             email: email,
             tel: tel,
             company: company
@@ -115,12 +115,12 @@ const ChildEdit = (props) => {
                             <form onSubmit={handleSubmit} noValidate>
 
                                 <div className="edit-set">
-                                    <label htmlFor="identify" className="control-label ft-12"> ID </label>
-                                    <input type="text" name="identify" id="identify"  className={`input-default input-nameSei input-h60 ${ _422errors.identify && "is-invalid c-input__target" }`} value={identify} onChange={e=>setIdentify(e.target.value)}/>
+                                    <label htmlFor="identity" className="control-label ft-12"> ID </label>
+                                    <input type="text" name="identity" id="identity"  className={`input-default input-nameSei input-h60 ${ _422errors.identity && "is-invalid c-input__target" }`} value={identity} onChange={e=>setIdentity(e.target.value)}/>
                                     {
-                                        _422errors.identify &&
+                                        _422errors.identity &&
                                             <span className="l-alert__text--error ft-16 ft-md-14">
-                                                { _422errors.identify }
+                                                { _422errors.identity }
                                             </span>
                                     }
                                 </div>
@@ -183,8 +183,8 @@ const ChildEdit = (props) => {
                                 <div className="mt-5">
                                     <LoadingButton type="submit" fullWidth 
                                         loading={submit}
-                                        className="p-3 rounded-15 font-weight-bold bg-color-2 input-h60">
-                                        <span className="ft-16">プロフィールを更新</span>
+                                        className="btn-edit btn-default btn-h60 bg-yellow rounded-15">
+                                        <span className={`ft-18 font-weight-bold ${!submit && 'text-black'}`}>プロフィールを更新</span>
                                     </LoadingButton>
                                 </div>
                                 {

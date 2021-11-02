@@ -16,9 +16,9 @@ class CreateMeetingApprovalsTable extends Migration
         Schema::create('meeting_approvals', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('child_id');
-            $table->foreign('child_id')->references('id')->on('children');
+            $table->foreign('child_id')->references('id')->on('children')->onDelete('cascade');
             $table->unsignedBigInteger('meeting_id');
-            $table->foreign('meeting_id')->references('id')->on('meetings');
+            $table->foreign('meeting_id')->references('id')->on('meetings')->onDelete('cascade');
             $table->dateTime('approval_at')->nullable();
             $table->timestamps();
         });

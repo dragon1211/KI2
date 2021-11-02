@@ -3,23 +3,29 @@ import { CircularProgress  } from '@material-ui/core';
 import moment from 'moment';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
-
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import { areIntervalsOverlapping } from 'date-fns';
+
 
 import Alert from '../../component/alert';
 
 
 const Meeting = () => {
   
-  const history = useHistory();
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
-  const [finish, setFinish] = useState(false);
   const [meeting_list, setMeetingList ] = useState(null);
   const [_422errors, set422errors] = useState({keyword:''});
-  const [_400error, set400error] = useState('');
+  const [_success, setSuccess] = useState('');
+
+
+  useEffect(()=>{
+      if(localStorage.getItem("from_login")){
+        setSuccess("ログインに成功しました!");
+        localStorage.removeItem("from_login");
+      }
+  },[]);
+
 
   useEffect(() => {
     setLoaded(false);
@@ -63,10 +69,7 @@ const Meeting = () => {
     setLoaded(false);
     setMeetingList(null);
 
-    const formdata = new FormData();
-    formdata.append('keyword', keyword);
-
-    axios.post('/api/admin/meetings/search',formdata)
+    axios.get('/api/admin/meetings/search',{params:{keyword: keyword}})
     .then((response) => {
 
       setLoaded(true);
@@ -109,16 +112,16 @@ const Meeting = () => {
 
     <div className="l-content-wrap">
         <div className="search-container">
-            <div className="meeting-head mt-4"  onSubmit={handleSearch}>
-                <form className="position-relative">
+            <div className="meeting-head mt-4">
+                <form className="position-relative"  onSubmit={handleSearch}>
                     <label className="control-label" htmlFor="keyword">キーワード</label>
                     <input type="search" name="keyword" 
                         className="input-default input-keyword input-w380 input-h60"
                         id="keyword"  value={keyword} 
                         onChange={e=> setKeyword(e.target.value)}
                     />
-                    <IconButton size="large" style={{position:'absolute', bottom:'3px', right:'5px'}} type="submit">
-                      <SearchIcon fontSize="large" style={{color:'#d0d0d0'}}/>
+                    <IconButton size="large" style={{position:'absolute', bottom:'5px', right:'5px', padding:'5px'}} type="submit">
+                      <SearchIcon fontSize="large" style={{color:'#d0d0d0', width:'40px', height:'40px'}}/>
                     </IconButton>
                 </form>
             </div>
@@ -171,7 +174,7 @@ const Meeting = () => {
               </div>
             </div>
             {
-              _400error && <Alert type="fail">{_400error}</Alert>
+              _success && <Alert type="success">{_success}</Alert>
             }
         </div>
     </div>

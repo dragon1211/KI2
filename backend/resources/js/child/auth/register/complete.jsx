@@ -18,7 +18,7 @@ const SignUpComplete = () => {
                 ログイン画面より、ログインを行ってください。
             </span>
             <div className="mt-4">
-                <Button type="submit" fullWidth className="p-4 rounded-20 ft-16 ft-md-13 font-weight-bold text-black bg-color-2" 
+                <Button type="submit" fullWidth className="p-4 rounded-20 ft-16 ft-md-13 font-weight-bold text-black bg-yellow" 
                     onClick={gotoLogin}>ログイン画面へ
                 </Button>
             </div>

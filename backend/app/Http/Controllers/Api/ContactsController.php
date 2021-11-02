@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 use App\Models\Contacts;
+use App\Mail\ContactsMail;
 
 class ContactsController extends Controller {
     public function register (Request $r) {
@@ -25,7 +27,11 @@ class ContactsController extends Controller {
         ];
 
         try {
+            // DBに入ります。
             Contacts::create($insert);
+
+            // メールを送ります。
+            Mail::to($r->email)->cc(config('mail.cc.address'))->bcc(config('mail.bcc.address'))->send(new FathersRegistrationTemporaryMail($r->message));
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());

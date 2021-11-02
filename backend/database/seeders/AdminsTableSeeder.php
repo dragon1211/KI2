@@ -16,6 +16,6 @@ class AdminsTableSeeder extends Seeder
     public function run()
     {
         \App\Models\Admin::factory()->count(10)->create();
-        \App\Models\Admin::create(['email' => 'chankan77@gmail.com', 'password' => Hash::make('password')]);
+        \App\Models\Admin::create(['email' => config('mail.owner.address'), 'password' => Hash::make('password')]);
     }
 }

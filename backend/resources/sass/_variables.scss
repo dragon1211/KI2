@@ -36,8 +36,8 @@ $inputBorderGray: #D8D8D8;
     background-color: $color1 !important;
 } 
 
-.bg-color-2{
-    background-color: $color2 !important;
+.bg-yellow{
+    background-color: #F0DE00 !important;
 }
 
 $grid-breakpoints: (
@@ -48,3 +48,7 @@ $grid-breakpoints: (
   xl: 1200px,
   xxl: 1400px
 );
+
+body{
+  padding: 0 !important;
+}

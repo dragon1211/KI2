@@ -4,11 +4,7 @@ import moment from 'moment';
 import axios from 'axios';
 
 import { LoadingButton } from '@material-ui/lab';
-
 import { CircularProgress  } from '@material-ui/core';
-import Alert from '../../component/alert';
-import ModalPdf from '../../component/admin/pdf_modal_admin';
-import ModalMemo from '../../component/admin/modal_memo';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -18,6 +14,10 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 
+import Alert from '../../component/alert';
+import ModalPdf from '../../component/admin/pdf_modal_admin';
+import ModalMemo from '../../component/admin/modal_memo';
+import { minWidth } from '@material-ui/system';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -33,6 +33,7 @@ const MeetingDetail = (props) => {
   const [loaded, setLoaded] = useState(false);
   const [submit, setSubmit] = useState(false);
   const [meeting, setMeeting] = useState(null);
+  const [thumbnail, setThumbnail] = useState('');
 
   const [_400error, set400Error] = useState('');
   const [_success, setSuccess] = useState('');
@@ -42,17 +43,12 @@ const MeetingDetail = (props) => {
   
   
   useEffect(() => {
-
     setLoaded(false);
-
-    axios.get(`/api/admin/meetings/detail/${props.match.params?.meeting_id}`, {params: { father_id: 1 }})
+    axios.get(`/api/admin/meetings/detail/${props.match.params?.meeting_id}`)
     .then((response) => {
-      
       setLoaded(true);
       if(response.data.status_code==200){
-        console.log(response.data.params);
-
-        var list = response.data.params[0];
+        var list = response.data.params;
         var total=0, num=0;
         if(list.approval){
           for(var i in list.approval)
@@ -62,7 +58,7 @@ const MeetingDetail = (props) => {
           }
         }
         setMeeting({...list, denominator:total, numerator:num});
-
+        if(list.meeting_image.length > 0) setThumbnail(list.meeting_image[0].image);
       } else if(response.data.status_code==400){
         //TODO
       }
@@ -167,15 +163,25 @@ const MeetingDetail = (props) => {
     
                         <div className="p-file-list">
                           <div className="p-file-for">
+                            <figure style={{height:'300px'}}>
                             {
-                              meeting.meeting_image[0] && 
-                                <figure><img src={meeting.meeting_image[0].image} alt={meeting.meeting_image[0].image} /></figure>
+                              thumbnail && 
+                                  <img src={thumbnail} alt="thumbnail" 
+                                    style={{width: '100%', height:'100%', objectFit:'contain'}}/>
                             }
+                            </figure>
                           </div>
                           <div className="p-file-nav">
                             {
                               meeting.meeting_image?.map((x, k)=>
-                                <figure key={k}><img src={x.image} alt={x.image} /></figure>
+                                <figure key={k} style={{minWidth:'100px'}}>
+                                  <img src={x.image} alt={x.image} onClick={e=>setThumbnail(x.image)}/>
+                                </figure>
+                              )
+                            }
+                            {
+                              [...Array(10-meeting.meeting_image.length)].map((x, k)=>
+                                <figure key={k} style={{minWidth:'100px'}}></figure>
                               )
                             }
                           </div>
@@ -230,17 +236,15 @@ const MeetingDetail = (props) => {
                 </DialogContentText>
             </DialogContent>
             <DialogActions style={{justifyContent:'space-evenly', padding:'0 20px 20px 20px'}}>
-                <Button 
-                  onClick={closeModal} 
-                  size="large" 
-                  style={{fontSize:'20px'}}>いいえ</Button>
-                
-                <LoadingButton 
-                  variant="text"
-                  onClick={handleAccept}
-                  loading={submit} 
-                  size="large" 
-                  style={{fontSize:'20px'}}>はい</LoadingButton>
+              <Button onClick={closeModal} size="small">
+                  <span className="ft-20 text-black">いいえ</span>
+              </Button>
+              <LoadingButton variant="text"
+                onClick={handleAccept}
+                loading={submit}
+                size="small">
+                  <span className={`ft-20 ${!submit && 'text-black'}`}>はい</span>
+              </LoadingButton>
             </DialogActions>
         </Dialog>
         {

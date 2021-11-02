@@ -57,6 +57,8 @@ return [
         'array' => 'The :attribute must have :value items or more.',
     ],
     'image' => 'The :attribute must be an image.',
+    'image_size' => 'プロフィール画像は最大1M以内です。',
+    'image_meme' => 'ファイル形式はjpg/png/gifのみです。',
     'in' => 'The selected :attribute is invalid.',
     'in_array' => 'The :attribute field does not exist in :other.',
     'integer' => 'The :attribute must be an integer.',

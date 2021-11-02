@@ -184,7 +184,7 @@ const ProfileEdit = () => {
                                 </div>
                                 
                                 <div className="mt-5">
-                                    <LoadingButton type="submit" fullWidth className="p-4 rounded-20 ft-15 font-weight-bold text-black bg-color-2">
+                                    <LoadingButton type="submit" fullWidth className="p-4 rounded-20 ft-15 font-weight-bold text-black bg-yellow">
                                         <span>プロフィールを更新</span>
                                     </LoadingButton>
                                 </div>

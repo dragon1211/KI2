@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'admin'], function () {
     // AdminController
-    Route::post('/login', '\App\Http\Controllers\Api\AdminController@login')->name('adminlogin');
+    Route::post('/login', '\App\Http\Controllers\Api\AdminController@login')->name('adminslogin');
 
     Route::group(['middleware' => 'auth:admins'], function () {
         // AdminController
@@ -25,19 +25,19 @@ Route::group(['prefix' => 'admin'], function () {
         // FathersController
         Route::group(['prefix' => 'fathers'], function () {
             Route::get('/list', '\App\Http\Controllers\Api\FathersController@list');
-            Route::put('/search', '\App\Http\Controllers\Api\FathersController@search');
+            Route::get('/search', '\App\Http\Controllers\Api\FathersController@search');
             Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage');
             Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile');
             Route::put('/updatePassword/{father_id}', '\App\Http\Controllers\Api\FathersController@updatePassword');
-            Route::post('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail');
-            Route::delete('/delete', '\App\Http\Controllers\Api\FathersController@withdrawal');
+            Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail');
+            Route::delete('/delete/{father_id}', '\App\Http\Controllers\Api\FathersController@withdrawal');
             Route::post('/registerTemporary', '\App\Http\Controllers\Api\FathersController@registerTemporary');
         });
 
         // ChildrenController
         Route::group(['prefix' => 'children'], function () {
             Route::get('/list', '\App\Http\Controllers\Api\ChildrenController@list');
-            Route::post('/search', '\App\Http\Controllers\Api\ChildrenController@search');
+            Route::get('/search', '\App\Http\Controllers\Api\ChildrenController@search');
             Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile');
             Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage');
             Route::put('/updatePassword/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updatePassword');
@@ -48,11 +48,13 @@ Route::group(['prefix' => 'admin'], function () {
         // MeetingsController
         Route::group(['prefix' => 'meetings'], function () {
             Route::get('/list', '\App\Http\Controllers\Api\MeetingsController@list');
-            Route::post('/search', '\App\Http\Controllers\Api\MeetingsController@search');
+            Route::get('/search', '\App\Http\Controllers\Api\MeetingsController@search');
             Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail');
             Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update');
             Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete');
+        });
 
+        Route::group(['prefix' => 'meeting'], function () {
             // MeetingImagesController
             Route::group(['prefix' => 'images'], function () {
                 Route::post('/register', '\App\Http\Controllers\Api\MeetingImagesController@register');
@@ -65,105 +67,107 @@ Route::group(['prefix' => 'admin'], function () {
                 Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingApprovalsController@delete');
             });
         });
-
     });
+});
 
-    // ContactsController
-    //// 不明
-    Route::post('/contacts/register', '\App\Http\Controllers\Api\ContactsController@register');
+// ContactsController
+Route::post('/contacts/register', '\App\Http\Controllers\Api\ContactsController@register');
 
-    Route::group(['prefix' => 'fathers'], function () {
-        // FathersController
-        Route::post('/registerMain', '\App\Http\Controllers\Api\FathersController@registerMain')->name('fatherregistermain');
-        Route::post('/requestPassword', '\App\Http\Controllers\Api\FathersController@requestPassword')->name('fatherrequestpassword');
-        // Route::post('/login', '\App\Http\Controllers\Api\FathersController@login')->name('fatherlogin');
+Route::group(['prefix' => 'fathers'], function () {
+    // FathersController
+    Route::post('/registerMain', '\App\Http\Controllers\Api\FathersController@registerMain')->name('fathersregistermain');
+    Route::post('/requestPassword', '\App\Http\Controllers\Api\FathersController@requestPassword')->name('fathersrequestpassword');
+    Route::post('/login', '\App\Http\Controllers\Api\FathersController@login')->name('fatherslogin');
 
-        Route::group(['middleware' => 'auth:fathers'], function () {
-            Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage');
-            Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile');
-            Route::put('/updatePassword/{father_id}', '\App\Http\Controllers\Api\FathersController@updatePassword');
-            Route::delete('/withdrawal', '\App\Http\Controllers\Api\FathersController@withdrawal');
+    Route::group(['middleware' => 'auth:fathers'], function () {
+        Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage');
+        Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile');
+        Route::put('/updatePassword/{father_id}', '\App\Http\Controllers\Api\FathersController@updatePassword');
+        Route::delete('/withdrawal', '\App\Http\Controllers\Api\FathersController@withdrawal');
 
-            // ChildrenController
-            Route::group(['prefix' => 'children'], function () {
-                Route::get('/listOfFather', '\App\Http\Controllers\Api\ChildrenController@listOfFather');
-                Route::get('/listOfMeeting', '\App\Http\Controllers\Api\ChildrenController@listOfMeeting');
-                Route::post('/listOfMeetingNotifyUnapprovel', '\App\Http\Controllers\Api\ChildrenController@listOfMeetingNotifyUnapprovel');
-                Route::post('/listOfMeetingNotifyApprovel', '\App\Http\Controllers\Api\ChildrenController@listOfMeetingNotifyApprovel');
-                Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail');
+        // ChildrenController
+        Route::group(['prefix' => 'children'], function () {
+            Route::get('/listOfFather', '\App\Http\Controllers\Api\ChildrenController@listOfFather');
+            Route::get('/listOfMeeting', '\App\Http\Controllers\Api\ChildrenController@listOfMeeting');
+            Route::post('/listOfMeetingNotifyUnapprovel', '\App\Http\Controllers\Api\ChildrenController@listOfMeetingNotifyUnapprovel');
+            Route::post('/listOfMeetingNotifyApprovel', '\App\Http\Controllers\Api\ChildrenController@listOfMeetingNotifyApprovel');
+            Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail');
+        });
+
+        // MeetingsController
+        Route::group(['prefix' => 'meetings'], function () {
+            Route::post('/register', '\App\Http\Controllers\Api\MeetingsController@register');
+            Route::post('/registerFavorite', '\App\Http\Controllers\Api\MeetingsController@registerFavorite');
+            Route::get('/listOfCompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@listOfCompleteOfFather');
+            Route::get('/listOfIncompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@listOfIncompleteOfFather');
+            Route::get('/listOfFavoriteOfFather', '\App\Http\Controllers\Api\MeetingsController@listOfFavoriteOfFather');
+            Route::get('/listOfNonFavoriteOfFather', '\App\Http\Controllers\Api\MeetingsController@listOfNonFavoriteOfFather');
+            Route::get('/searchOfCompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@searchOfCompleteOfFather');
+            Route::get('/searchOfIncompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@searchOfIncompleteOfFather');
+            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail');
+            Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update');
+            Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete');
+        });
+
+        Route::group(['prefix' => 'meeting'], function () {
+            // MeetingImagesController
+            Route::group(['prefix' => 'images'], function () {
+                Route::post('/register', '\App\Http\Controllers\Api\MeetingImagesController@register');
+                Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingImagesController@delete');
             });
 
-            // MeetingsController
-            Route::group(['prefix' => 'meetings'], function () {
-                Route::post('/register', '\App\Http\Controllers\Api\MeetingsController@register');
-                Route::post('/registerFavorite', '\App\Http\Controllers\Api\MeetingsController@registerFavorite');
-                Route::get('/listOfCompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@listOfCompleteOfFather');
-                Route::get('/listOfIncompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@listOfIncompleteOfFather');
-                Route::get('/listOfFavoriteOfFather', '\App\Http\Controllers\Api\MeetingsController@listOfFavoriteOfFather');
-                Route::get('/listOfNonFavoriteOfFather', '\App\Http\Controllers\Api\MeetingsController@listOfNonFavoriteOfFather');
-                Route::get('/searchOfCompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@searchOfCompleteOfFather');
-                Route::get('/searchOfIncompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@searchOfIncompleteOfFather');
-                Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail');
-                Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update');
-                Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete');
-
-                // MeetingImagesController
-                Route::group(['prefix' => 'images'], function () {
-                    Route::post('/register', '\App\Http\Controllers\Api\MeetingImagesController@register');
-                    Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingImagesController@delete');
-                });
-
-                // MeetingApprovalsController
-                Route::group(['prefix' => 'approvals'], function () {
-                    // Route::post('/register/{meeting_id}', '\App\Http\Controllers\Api\MeetingApprovalsController@register');
-                    // Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingApprovalsController@delete');
-                    Route::post('/listChildrenOfMeeting', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfMeeting');
-                    Route::get('/listChildrenOfApprovel', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfApprovel');
-                    Route::get('/listChildrenOfUnapprovel', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfUnapprovel');
-                });
-            });
-
-            // FatherRelationsController
-            Route::group(['prefix' => 'relations'], function () {
-                Route::post('/register', '\App\Http\Controllers\Api\FatherRelationsController@register');
-                Route::put('/updateHireDate/{child_id}', '\App\Http\Controllers\Api\FatherRelationsController@updateHireDate');
-                Route::delete('/deleteRelationChild/{child_id}', '\App\Http\Controllers\Api\FatherRelationsController@deleteRelationChild');
+            // MeetingApprovalsController
+            Route::group(['prefix' => 'approvals'], function () {
+                Route::post('/register/{meeting_id}', '\App\Http\Controllers\Api\MeetingApprovalsController@register');
+                Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingApprovalsController@delete');
+                Route::post('/listChildrenOfMeeting', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfMeeting');
+                Route::get('/listChildrenOfApprovel', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfApprovel');
+                Route::get('/listChildrenOfUnapprovel', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfUnapprovel');
             });
         });
+
+        // FatherRelationsController
+        Route::group(['prefix' => 'relations'], function () {
+            Route::post('/register', '\App\Http\Controllers\Api\FatherRelationsController@register');
+            Route::put('/updateHireDate/{child_id}', '\App\Http\Controllers\Api\FatherRelationsController@updateHireDate');
+            Route::delete('/deleteRelationChild/{child_id}', '\App\Http\Controllers\Api\FatherRelationsController@deleteRelationChild');
+        });
     });
+});
 
-    // ChildrenController
-    Route::group(['prefix' => 'children'], function () {
-        Route::post('/registerTemporary', '\App\Http\Controllers\Api\ChildrenController@registerTemporary')->name('childrenregistertemporary');
-        Route::post('/registerMain', '\App\Http\Controllers\Api\ChildrenController@registerMain')->name('childrenregistermain');
-        // Route::post('/requestPassword', '\App\Http\Controllers\Api\ChildrenController@requestPassword')->name('childrenrequestpassword');
-        // Route::post('/login', '\App\Http\Controllers\Api\ChildrenController@login')->name('childrenlogin');
+// ChildrenController
+Route::group(['prefix' => 'children'], function () {
+    Route::post('/registerTemporary', '\App\Http\Controllers\Api\ChildrenController@registerTemporary')->name('childrenregistertemporary');
+    Route::post('/registerMain', '\App\Http\Controllers\Api\ChildrenController@registerMain')->name('childrenregistermain');
+    Route::post('/requestPassword', '\App\Http\Controllers\Api\ChildrenController@requestPassword')->name('childrenrequestpassword');
+    Route::post('/login', '\App\Http\Controllers\Api\ChildrenController@login')->name('childrenlogin');
 
-        Route::group(['middleware' => 'auth:children'], function () {
-            Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail');
-            Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage');
-            Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile');
-            Route::put('/updatePassword/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updatePassword');
-            Route::delete('/withdrawal', '\App\Http\Controllers\Api\ChildrenController@withdrawal');
+    Route::group(['middleware' => 'auth:children'], function () {
+        Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail');
+        Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage');
+        Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile');
+        Route::put('/updatePassword/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updatePassword');
+        Route::delete('/withdrawal', '\App\Http\Controllers\Api\ChildrenController@withdrawal');
 
-            // FathersController
-            Route::group(['prefix' => 'fathers'], function () {
-                Route::get('/listOfChild', '\App\Http\Controllers\Api\FathersController@listOfChild');
-                Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail');
-            });
+        // FathersController
+        Route::group(['prefix' => 'fathers'], function () {
+            Route::get('/listOfChild', '\App\Http\Controllers\Api\FathersController@listOfChild');
+            Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail');
+        });
 
-            // MeetingsController
-            Route::group(['prefix' => 'meetings'], function () {
-                Route::get('/listOfApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@listOfApprovalOfChild');
-                Route::get('/listOfNonApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@listOfNonApprovalOfChild');
-                Route::get('/searchOfApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@searchOfApprovalOfChild');
-                Route::get('/searchOfNonApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@searchOfNonApprovalOfChild');
-                Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail');
+        // MeetingsController
+        Route::group(['prefix' => 'meetings'], function () {
+            Route::get('/listOfApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@listOfApprovalOfChild');
+            Route::get('/listOfNonApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@listOfNonApprovalOfChild');
+            Route::get('/searchOfApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@searchOfApprovalOfChild');
+            Route::get('/searchOfNonApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@searchOfNonApprovalOfChild');
+            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail');
+        });
 
-                // MeetingApprovalsController
-                Route::group(['prefix' => 'approvals'], function () {
-                    Route::post('/registerApproval', '\App\Http\Controllers\Api\MeetingApprovalsController@registerApproval');
-                });
+        Route::group(['prefix' => 'meeting'], function () {
+            // MeetingApprovalsController
+            Route::group(['prefix' => 'approvals'], function () {
+                Route::post('/registerApproval', '\App\Http\Controllers\Api\MeetingApprovalsController@registerApproval');
             });
         });
     });

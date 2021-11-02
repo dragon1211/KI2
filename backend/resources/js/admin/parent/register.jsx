@@ -13,53 +13,29 @@ const ParentRegister = () => {
 
     const [email, setEmail] = useState('');
 
-    const [_422errors, set422Errors] = useState({email:''})
-    const [_400error, set400Error] = useState({status:'', msg:''})
+    const [_422errors, set422Errors] = useState({ email: '' });
+    const [_400error, set400Error] = useState('');
+    const [_success, setSuccess] = useState('');
 
-    const [submitStatus, setSubmitStatus] = useState('')
+    const [submit, setSubmit] = useState(false);
 
-    
-    const validateForm = () => {
-        let errors = {};
-        let formIsValid = true;
-        
-        if (email.length == 0) { formIsValid = false; errors["email"] = 'Required'; }
-        else {
-          //regular expression for email validation
-            var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
-            if (!pattern.test(email)) {
-                formIsValid = false;
-                errors["email"] = 'Required';
-            }
-            else {
-                errors['email'] = '';
-            }
-        }
-
-        set422Errors(errors);
-        return formIsValid;
-    }
-
-    
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        set400Error({status:'', msg:''});
-        
-        if(!validateForm()) return;
 
+        setSubmit(true);
         const formdata = new FormData();
-        // formdata.append('email', email);
-        // axios.post('/', formdata)
-        // .then(response => {
-        //     if(response.data.status_code==200){
-        //         setSubmitStatus('success);
-        //     }
-        //     else if(response.data.status_code==400){
-        //         setSubmitStatus('failed);
-        //     }
-        // })
-        // .catch(err=>console.log(err))
+        formdata.append('email', email);
+        axios.post('/api/admin/fathers/registerTemporary', formdata)
+        .then(response => {
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: setSuccess(response.data.success_messages); break;
+                case 422: set422Errors(response.data.error_messages); break;
+                case 400: set400Error(response.data.error_messages); break;
+            }
+        })
+        .catch(err=>console.log(err))
     }
 
 
@@ -81,25 +57,27 @@ const ParentRegister = () => {
                                                             
                                     <div className="edit-set">
                                         <label htmlFor="email"   className="control-label ft-12"> メールアドレス </label>
-                                        <input type="email" name="email" id="email"  className = {`input-default input-nameSei ${ _422errors['email'].length != 0 && "is-invalid c-input__target" }`}  value={email} onChange={e=>setEmail(e.target.value)}/>
+                                        <input type="email" name="email" id="email"  className = {`input-default input-nameSei input-h60 ${ _422errors.email && "is-invalid c-input__target" }`}  value={email} onChange={e=>setEmail(e.target.value)}/>
                                         {
-                                            _422errors['email'].length != 0 && 
+                                            _422errors.email && 
                                                 <span className="l-alert__text--error ft-16 ft-md-14">
-                                                    {_422errors['email']}
+                                                    { _422errors.email }
                                                 </span>
                                         }
                                     </div>
                                     
                                     <div className="mt-5">
-                                        <LoadingButton type="submit" fullWidth className="p-3 rounded-15 font-weight-bold text-black bg-color-2">
-                                            <span className="ft-16">親追加</span>
+                                        <LoadingButton type="submit" fullWidth 
+                                            className="btn-edit btn-default btn-h60 bg-yellow rounded-15"
+                                            loading={submit}>
+                                            <span className={`ft-20 font-weight-bold ${!submit && 'text-black'}`}>親追加</span>
                                         </LoadingButton>
                                     </div>
                                     {
-                                        submitStatus == 'success' && <Alert type="success">Submit Success!</Alert>
-                                    }
+                                        _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
+                                    } 
                                     {
-                                        submitStatus == 'fail' && <Alert type="fail">Submit Failed!</Alert>
+                                        _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert>
                                     }
                                 </form>
             

@@ -16,9 +16,9 @@ class CreateFatherRelationsTable extends Migration
         Schema::create('father_relations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('father_id');
-            $table->foreign('father_id')->references('id')->on('fathers');
+            $table->foreign('father_id')->references('id')->on('fathers')->onDelete('cascade');
             $table->unsignedBigInteger('child_id');
-            $table->foreign('child_id')->references('id')->on('children');
+            $table->foreign('child_id')->references('id')->on('children')->onDelete('cascade');
             $table->dateTime('hire_at')->useCurrent();
             $table->timestamps();
         });

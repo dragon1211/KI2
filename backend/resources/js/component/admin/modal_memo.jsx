@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PDFViewer from "./pdf_page_admin";
-import { makeStyles } from '@material-ui/styles';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';

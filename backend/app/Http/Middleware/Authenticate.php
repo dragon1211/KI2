@@ -20,11 +20,8 @@ class Authenticate extends Middleware
     }
 
     public function handle ($request, Closure $next, ...$guard) {
-        if (!session()->has('admin_email') && $request->path() != 'admin/login') {
-            return redirect('/admin/login');
-        }
-        else if (session()->has('admin_email') && $request->path() == 'admin/login') {
-            return redirect('/admin/meeting');
+        if (!$request->session()->has($guard)) {
+            return redirect(route($guard[0].'login'));
         }
 
         return $next($request);

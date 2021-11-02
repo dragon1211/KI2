@@ -22,6 +22,8 @@
         "@material-ui/utils": "^5.0.0-beta.0",
         "@mui/icons-material": "^5.0.4",
         "@mui/material": "^5.0.4",
+        "@react-pdf-viewer/core": "^2.10.1",
+        "@react-pdf-viewer/default-layout": "^2.10.1",
         "@testing-library/jest-dom": "^5.14.1",
         "apexcharts": "^3.27.3",
         "change-case": "^4.1.2",
