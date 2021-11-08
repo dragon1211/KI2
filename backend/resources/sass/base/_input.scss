@@ -68,7 +68,7 @@
     .color-box {
         position: absolute;
         top: 9px;
-        left: calc(50% - 110px);
+        left: calc(50% - 125px);
         height: 27px;
         width: 27px;
         border-radius: 7px;
@@ -90,7 +90,7 @@
             transform: rotate(45deg);
         }
         @include media-breakpoint-down(md){
-            left: calc(50% - 97px);
+            left: calc(50% - 115px);
         }
     }
 }

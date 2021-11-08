@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'admin'], function () {
     // AdminController
-    Route::post('/login', '\App\Http\Controllers\Api\AdminController@login')->name('adminslogin');
+    Route::post('/login', '\App\Http\Controllers\Api\AdminController@login');
 
     Route::group(['middleware' => 'auth:admins'], function () {
         // AdminController
@@ -49,7 +49,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::group(['prefix' => 'meetings'], function () {
             Route::get('/list', '\App\Http\Controllers\Api\MeetingsController@list');
             Route::get('/search', '\App\Http\Controllers\Api\MeetingsController@search');
-            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail');
+            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail')->name('mda');
             Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update');
             Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete');
         });
@@ -64,7 +64,7 @@ Route::group(['prefix' => 'admin'], function () {
             // MeetingApprovalsController
             Route::group(['prefix' => 'approvals'], function () {
                 Route::post('/register', '\App\Http\Controllers\Api\MeetingApprovalsController@register');
-                Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingApprovalsController@delete');
+                Route::delete('/delete', '\App\Http\Controllers\Api\MeetingApprovalsController@delete');
             });
         });
     });
@@ -75,9 +75,9 @@ Route::post('/contacts/register', '\App\Http\Controllers\Api\ContactsController@
 
 Route::group(['prefix' => 'fathers'], function () {
     // FathersController
-    Route::post('/registerMain', '\App\Http\Controllers\Api\FathersController@registerMain')->name('fathersregistermain');
-    Route::post('/requestPassword', '\App\Http\Controllers\Api\FathersController@requestPassword')->name('fathersrequestpassword');
-    Route::post('/login', '\App\Http\Controllers\Api\FathersController@login')->name('fatherslogin');
+    Route::post('/registerMain', '\App\Http\Controllers\Api\FathersController@registerMain');
+    Route::post('/requestPassword', '\App\Http\Controllers\Api\FathersController@requestPassword');
+    Route::post('/login', '\App\Http\Controllers\Api\FathersController@login');
 
     Route::group(['middleware' => 'auth:fathers'], function () {
         Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage');
@@ -104,7 +104,7 @@ Route::group(['prefix' => 'fathers'], function () {
             Route::get('/listOfNonFavoriteOfFather', '\App\Http\Controllers\Api\MeetingsController@listOfNonFavoriteOfFather');
             Route::get('/searchOfCompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@searchOfCompleteOfFather');
             Route::get('/searchOfIncompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@searchOfIncompleteOfFather');
-            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail');
+            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail')->name('mdp');
             Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update');
             Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete');
         });
@@ -137,10 +137,10 @@ Route::group(['prefix' => 'fathers'], function () {
 
 // ChildrenController
 Route::group(['prefix' => 'children'], function () {
-    Route::post('/registerTemporary', '\App\Http\Controllers\Api\ChildrenController@registerTemporary')->name('childrenregistertemporary');
-    Route::post('/registerMain', '\App\Http\Controllers\Api\ChildrenController@registerMain')->name('childrenregistermain');
-    Route::post('/requestPassword', '\App\Http\Controllers\Api\ChildrenController@requestPassword')->name('childrenrequestpassword');
-    Route::post('/login', '\App\Http\Controllers\Api\ChildrenController@login')->name('childrenlogin');
+    Route::post('/registerTemporary', '\App\Http\Controllers\Api\ChildrenController@registerTemporary');
+    Route::post('/registerMain', '\App\Http\Controllers\Api\ChildrenController@registerMain');
+    Route::post('/requestPassword', '\App\Http\Controllers\Api\ChildrenController@requestPassword');
+    Route::post('/login', '\App\Http\Controllers\Api\ChildrenController@login');
 
     Route::group(['middleware' => 'auth:children'], function () {
         Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail');
@@ -161,7 +161,7 @@ Route::group(['prefix' => 'children'], function () {
             Route::get('/listOfNonApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@listOfNonApprovalOfChild');
             Route::get('/searchOfApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@searchOfApprovalOfChild');
             Route::get('/searchOfNonApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@searchOfNonApprovalOfChild');
-            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail');
+            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail')->name('mdc');
         });
 
         Route::group(['prefix' => 'meeting'], function () {

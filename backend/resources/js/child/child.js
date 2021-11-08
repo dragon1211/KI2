@@ -8,12 +8,9 @@ import Parent from './parent';
 import ParentDetail from './parent/detail';
 
 import Profile from './profile';
-import ProfileDetail from './profile/detail';
 import ProfileEdit from './profile/edit';
 import ProfilePasswordEdit from './profile/password_edit';
 import ProfileWithdrawal from './profile/withdrawal';
-
-// import WithdrawalComplete from './withdrawal/complete';
 
 import Search from './search';
 
@@ -33,11 +30,9 @@ export default class ChildApp extends Component {
                     <Route exact path="/c-account/parent/detail/:father_id" component = {ParentDetail} />
 
                     <Route exact path="/c-account/profile" component = {Profile} />
-                    <Route exact path="/c-account/profile/detail/:child_id" component = {ProfileDetail} />
                     <Route exact path="/c-account/profile/edit/:child_id" component = {ProfileEdit} />
                     <Route exact path="/c-account/profile/password-edit/:child_id" component = {ProfilePasswordEdit} />
                     <Route exact path="/c-account/profile/withdrawal" component = {ProfileWithdrawal} />
-                    {/* <Route exact path="/withdrawal/complete" component = {WithdrawalComplete} /> */}
                 </Switch>
                 <Side />
             </BrowserRouter>

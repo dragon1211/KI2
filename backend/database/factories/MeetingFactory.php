@@ -22,7 +22,7 @@ class MeetingFactory extends Factory
     public function definition()
     {
         return [
-            'father_id' => 1,
+            'father_id' => rand(1, 10),
             'title' => $this->faker->name,
             'text' => $this->faker->realText(49),
             'pdf' => "https://crowdworks.jp/attachments/36836755.pdf",

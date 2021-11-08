@@ -8,11 +8,19 @@ services:
   web:
     image: nginx:1.20-alpine
     ports:
-      - 10080:80
+      - 80:80
     volumes:
       - ./backend:/work
       - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt
     working_dir: /work
+
+  certbot:
+    image: certbot/certbot:v1.7.0
+    volumes:
+      - ./backend:/work
+      - /etc/letsencrypt:/etc/letsencrypt
+    command: ["--version"]
 
   db:
     build: ./infra/mysql

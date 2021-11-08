@@ -22,8 +22,8 @@ class FatherRelationFactory extends Factory
     public function definition()
     {
         return [
-            'father_id' => 1,
-            'child_id' => 1,
+            'father_id' => rand(1, 10),
+            'child_id' => rand(1, 10),
             'created_at' => $this->faker->dateTime,
             'updated_at' => $this->faker->dateTime,
         ];

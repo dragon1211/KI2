@@ -149,8 +149,6 @@ const ParentEdit = (props) => {
                                     }
                                 </div>
 
-                                
-                                
                                 <div className="mt-5">
                                     <LoadingButton type="submit" fullWidth 
                                         className="btn-edit btn-default btn-h60 bg-yellow rounded-15"

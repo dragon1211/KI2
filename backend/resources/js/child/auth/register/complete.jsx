@@ -1,25 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
 import { Button } from '@material-ui/core';
-import Alert from '../../../component/alert';
+import { useHistory } from 'react-router';
 
+const ChildSignUpComplete = () => {
 
-const SignUpComplete = () => {
+    const history = useHistory();
 
     const gotoLogin = () => {
-        window.location.href = "/login/c-account/";
+        history.push({pathname: '/c-account/login',  state: {}});
     }
 
 	return (
         <div>
-            <p className="text-center font-weight-bold ft-20">本登録完了</p>
-            <span className="mt-80-px ft-16 ft-md-13 l-alert__text--success">
+            <p className="text-center font-weight-bold ft-25">本登録完了</p>
+            <span className="mt-80-px ft-18 ft-md-15 l-alert__text--success">
                 本登録が完了しました。<br/>
                 ログイン画面より、ログインを行ってください。
             </span>
-            <div className="mt-4">
-                <Button type="submit" fullWidth className="p-4 rounded-20 ft-16 ft-md-13 font-weight-bold text-black bg-yellow" 
-                    onClick={gotoLogin}>ログイン画面へ
+            <div className="mt-5">
+                <Button type="submit" fullWidth 
+                    className="btn-edit btn-default btn-h60 bg-yellow rounded-20 py-5"
+                    onClick={gotoLogin}>
+                    <span className="ft-16 font-weight-bold text-black">ログイン画面へ</span>
                 </Button>
             </div>
         </div>
@@ -28,4 +30,4 @@ const SignUpComplete = () => {
 
 
 
-export default SignUpComplete;
+export default ChildSignUpComplete;

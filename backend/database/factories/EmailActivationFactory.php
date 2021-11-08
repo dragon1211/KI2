@@ -23,7 +23,7 @@ class EmailActivationFactory extends Factory
     {   
         return [
             'type' => $this->faker->numberBetween($min=0, $max=1),
-            'father_id' => 1,
+            'father_id' => rand(1, 10),
             'email' => $this->faker->email,
             'token' => $this->faker->creditCardNumber,
             'ttl' => $this->faker->dateTime,

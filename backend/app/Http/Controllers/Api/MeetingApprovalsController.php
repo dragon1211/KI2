@@ -12,22 +12,17 @@ use App\Models\MeetingApprovals;
 use App\Models\FatherRelation;
 
 class MeetingApprovalsController extends Controller {
-    public function register (Request $r, $meeting_id) {
-        if (!isset($meeting_id) || !isset($r->children) || count($r->children) == 0) {
+    public function register (Request $r) {
+        if (!isset($r->meeting_id) || !isset($r->children) || count(json_decode($r->children)) == 0) {
             return ['status_code' => 400];
         }
 
-        // 承知登録に失敗
-        if (null === (MeetingApprovals::where('id', (int)$r->meeting_id)->where('child_id', (int)$r->child_id)->first())) {
-            return ['status_code' => 400];
-        }
-
-        $create = ['meeting_id' => $meeting_id];
+        $create = ['meeting_id' => $r->meeting_id];
 
         try {
-            foreach ($r->children as $child) {
+            foreach (json_decode($r->children) as $child) {
                 $create['child_id'] = $child;
-                MeetingApprovals::where('meeting_id', (int)$meeting_id)->create($create);
+                MeetingApprovals::create($create);
             }
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
@@ -38,13 +33,15 @@ class MeetingApprovalsController extends Controller {
         return ['status_code' => 200];
     }
 
-    public function delete ($meeting_id) {
-        if (!isset($meeting_id)) {
+    public function delete (Request $r) {
+        if (!isset($r->meeting_id) || !isset($r->children) || count($r->children) == 0) {
             return ['status_code' => 400];
         }
 
         try {
-            MeetingApprovals::where('meeting_id', (int)$meeting_id)->delete();
+            foreach ($r->children as $k => $v) {
+                MeetingApprovals::where('child_id', (int)$v)->where('meeting_id', (int)$r->meeting_id)->delete();
+            }
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
             return ['status_code' => 400];
@@ -58,7 +55,18 @@ class MeetingApprovalsController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['承認に失敗しました。']];
         }
 
-        if (null === (MeetingApprovals::where('id', (int)$r->meeting_id)->where('child_id', (int)$r->child_id)->first())) {
+        if (null === (MeetingApprovals::where('meeting_id', (int)$r->meeting_id)->where('child_id', (int)$r->child_id)->first())) {
+            return ['status_code' => 400, 'error_messages' => ['承認に失敗しました。']];
+        }
+
+        // $update = ['approval_at' => null];
+        $update = ['approval_at' => date('Y-m-d H:i:s')];
+
+        try {
+            MeetingApprovals::where('meeting_id', (int)$r->meeting_id)->where('child_id', (int)$r->child_id)->update($update);
+        } catch (\Throwable $e) {
+            // 失敗
+            Log::critical($e->getMessage());
             return ['status_code' => 400, 'error_messages' => ['承認に失敗しました。']];
         }
 

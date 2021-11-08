@@ -1,39 +1,37 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-
-import ForgotPassword from './forgot_password';
-import ForgotPasswordComplete from './forgot_password/complete';
-import ForgotPasswordReset from './forgot_password/reset';
-
-import Login from './login';
-import SignUpTemporary from './register/temporary';
-import SignUp from './register';
-import SignUpComplete from './register/complete';
-import SignUpError from './register/error';
-            
-
+import ChildForgotPassword from './forgot_password';
+import ChildForgotPasswordComplete from './forgot_password/complete';
+import ChildForgotPasswordReset from './forgot_password/reset';
+import ChildLogin from './login';
+import ChildSignUpTemporary from './register/temporary';
+import ChildSignUp from './register';
+import ChildSignUpComplete from './register/complete';
+import ChildSignUpError from './register/error';
+import ChildWithdrawal from './withdrawal_complete';
 export default class ChildAuth extends Component {
     render() {
         return (
-        <main class="l-single-main">
-            <div class="l-centeringbox">
-                <div class="l-centeringbox-wrap">
-                    <div class="l-single-container">
-                        <div class="l-single-inner">
+        <main className="l-single-main">
+            <div className="l-centeringbox">
+                <div className="l-centeringbox-wrap">
+                    <div className="l-single-container">
+                        <div className="l-single-inner">
 
                             <BrowserRouter>
                                 <Switch>
-                                    <Route exact path='/register-temporary/c-account' component={SignUpTemporary} />
-                                    <Route exact path='/register/c-account' component={SignUp} />
-                                    <Route exact path='/register/c-account/complete' component={SignUpComplete} />
-                                    <Route exact path='/register/c-account/error/' component={SignUpError} />
+                                    <Route exact path='/c-account/register-temporary' component={ChildSignUpTemporary} />
+                                    <Route exact path='/c-account/register/:token' component={ChildSignUp} />
+                                    <Route exact path='/c-account/register/complete' component={ChildSignUpComplete} />
+                                    <Route exact path='/c-account/register/error/' component={ChildSignUpError} />
 
-                                    <Route exact path="/forgot-password/c-account" component = {ForgotPassword} />
-                                    <Route exact path="/forgot-password/c-account/reset" component = {ForgotPasswordReset} />
-                                    <Route exact path="/forgot-password/c-account/complete" component = {ForgotPasswordComplete} />
+                                    <Route exact path="/c-account/forgot-password" component = {ChildForgotPassword} />
+                                    <Route exact path="/c-account/forgot-password/reset/:token" component = {ChildForgotPasswordReset} />
+                                    <Route exact path="/c-account/forgot-password/complete" component = {ChildForgotPasswordComplete} />
                                     
-                                    <Route exact path="/login/c-account" component = {Login} />
+                                    <Route exact path="/c-account/login" component = {ChildLogin} />
+                                    <Route exact path="/c-account/withdrawal/complete" component = {ChildWithdrawal} />
                                 </Switch>
                             </BrowserRouter>
 

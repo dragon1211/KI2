@@ -43,7 +43,7 @@ class FathersController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['メールアドレスが未登録です。入力した情報を確認してください。']];
         }
 
-        $token = bin2hex(random_bytes(16));
+        $token = bin2hex(random_bytes(8));
         $create = [
             'type' => 1,
             'father_id' => $result->id,
@@ -92,7 +92,7 @@ class FathersController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['入力したメールアドレスは既に登録済みです。同じメールアドレスは使用できません。']];
         }
         else {
-            $token = bin2hex(random_bytes(16));
+            $token = bin2hex(random_bytes(8));
             $create = ['email' => $r->email, 'token' => $token, 'ttl' => date('Y-m-d H:i:s', time()+28800)];
 
             try {
@@ -366,6 +366,7 @@ class FathersController extends Controller {
     public function withdrawal (Request $r) {
         try {
             Father::where('id', (int)$r->father_id)->delete();
+            Session::forget($this->getGuard());
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());

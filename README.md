@@ -5,22 +5,32 @@
 
 # 開発環境構築手順
 #### １．Docker立ち上げ
+```
 docker-compose up -d
+```
 
 #### ２．appに入る
+```
 docker-compose exec app bash
+```
 
 #### ３．各種インストール
+```
 npm install
 composer install
+```
 
 #### ４．npm実行
+```
 cp .env.example .env
 php artisan key:generate
 npm run watch　(　npm run dev　)
+```
 
 #### ５．DB接続
+```
 php artisan migrate:fresh --seed
+```
 
 
 

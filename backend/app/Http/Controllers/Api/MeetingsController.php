@@ -13,6 +13,7 @@ use App\Models\MeetingImage;
 use App\Models\MeetingApprovals;
 use App\Models\Child;
 use App\Models\Father;
+use App\Models\FatherRelation;
 
 class MeetingsController extends Controller {
     public function register (Request $r) {
@@ -90,7 +91,7 @@ class MeetingsController extends Controller {
 
             foreach ($result[$i]['approval'] as $j => $k) {
                 if (null === ($result[$i]['approval'][$j]['child'] = Child::select($child_select)->where('id', $k->child_id)->first())) {
-                    return ['status_code' => 400];
+                    $result[$i]['approval'][$j]['child'] = new \stdClass();
                 }
             }
         }
@@ -142,20 +143,21 @@ class MeetingsController extends Controller {
         }
 
         foreach ($approval as $a) {
-            if (null === ($list = Meeting::select($meeting_select)->where('id', (int)$a->meeting_id)->get())) {
-                return ['status_code' => 400];
-            }
-
-            foreach ($list as $i => $l) {
-                $result[] = $l;
-                if (null === ($result[$i]['meeting_images'] = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$l->id)->get())) {
-                    return ['status_code' => 400];
-                }
-                if (null === ($result[$i]['fathers'] = Father::select($father_select)->where('id', (int)$l->father_id)->get())) {
-                    return ['status_code' => 400];
-                }
-                if (null === ($result[$i]['meeting_approvals'] = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
-                    return ['status_code' => 400];
+            if (null !== ($list = Meeting::select($meeting_select)->where('id', (int)$a->meeting_id)->get())) {
+                foreach ($list as $i => $l) {
+                    if (null === ($fr = FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)$r->child_id)->first())) {
+                        continue;
+                    }
+                    if (null === ($l->father = Father::select($father_select)->where('id', (int)$l->father_id)->first())) {
+                        $l->father = new \stdClass();
+                    }
+                    if (null === ($l->meeting_images = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$l->id)->get())) {
+                        $l->meeting_images = [];
+                    }
+                    if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->first())) {
+                        $l->approval = new \stdClass();
+                    }
+                    $result[] = $l;
                 }
             }
         }
@@ -180,20 +182,21 @@ class MeetingsController extends Controller {
         }
 
         foreach ($approval as $a) {
-            if (null === ($list = Meeting::select($meeting_select)->where('id', (int)$a->meeting_id)->get())) {
-                return ['status_code' => 400];
-            }
-
-            foreach ($list as $i => $l) {
-                $result[] = $l;
-                if (null === ($result[$i]['meeting_images'] = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$l->id)->get())) {
-                    return ['status_code' => 400];
-                }
-                if (null === ($result[$i]['fathers'] = Father::select($father_select)->where('id', (int)$l->father_id)->get())) {
-                    return ['status_code' => 400];
-                }
-                if (null === ($result[$i]['meeting_approvals'] = MeetingApprovals::select($meeting_approvals_select)->whereNull('approval_at')->where('meeting_id', (int)$l->id)->orderBy('approval_at', 'asc')->get())) {
-                    return ['status_code' => 400];
+            if (null !== ($list = Meeting::select($meeting_select)->where('id', (int)$a->meeting_id)->get())) {
+                foreach ($list as $i => $l) {
+                    if (null === ($fr = FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)$r->child_id)->first())) {
+                        continue;
+                    }
+                    if (null === ($l->father = Father::select($father_select)->where('id', (int)$l->father_id)->first())) {
+                        $l->father = new \stdClass();
+                    }
+                    if (null === ($l->meeting_images = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$l->id)->get())) {
+                        $l->meeting_images = [];
+                    }
+                    if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->whereNull('approval_at')->where('meeting_id', (int)$l->id)->first())) {
+                        $l->approval = new \stdClass();
+                    }
+                    $result[] = $l;
                 }
             }
         }
@@ -217,17 +220,17 @@ class MeetingsController extends Controller {
         }
         foreach ($list as $i => $l) {
             $result[] = $l;
-            if (null === ($result[$i]['approvals'] = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
+            if (null === ($result[$i]['approval'] = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
                 return ['status_code' => 400];
             }
-            if (count($result[$i]['approvals']) == 0) {
+            if (count($result[$i]['approval']) == 0) {
                 unset($result[$i]);
                 continue;
             }
 
-            foreach ($result[$i]['approvals'] as $ii => $ra) {
-                if (null === ($result[$i]['approvals'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approvals'][$ii]['child_id'])->first())) {
-                    return ['status_code' => 400];
+            foreach ($result[$i]['approval'] as $ii => $ra) {
+                if (null === ($result[$i]['approval'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approval'][$ii]['child_id'])->first())) {
+                    $result[$i]['approval'][$ii]['child'] = new \stdClass();
                 }
             }
         }
@@ -252,17 +255,17 @@ class MeetingsController extends Controller {
 
         foreach ($list as $i => $l) {
             $result[] = $l;
-            if (null === ($result[$i]['approvals'] = MeetingApprovals::select($meeting_approvals_select)->whereNull('approval_at')->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
+            if (null === ($result[$i]['approval'] = MeetingApprovals::select($meeting_approvals_select)->whereNull('approval_at')->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
                 return ['status_code' => 400];
             }
-            if (count($result[$i]['approvals']) > 1) {
+            if (count($result[$i]['approval']) > 1) {
                 unset($result[$i]);
                 continue;
             }
 
-            foreach ($result[$i]['approvals'] as $ii => $ra) {
-                if (null === ($result[$i]['approvals'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approvals'][$ii]['child_id'])->first())) {
-                    return ['status_code' => 400];
+            foreach ($result[$i]['approval'] as $ii => $ra) {
+                if (null === ($result[$i]['approval'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approval'][$ii]['child_id'])->first())) {
+                    $result[$i]['approval'][$ii]['child'] = new \stdClass();
                 }
             }
         }
@@ -270,7 +273,7 @@ class MeetingsController extends Controller {
         return ['status_code' => 200, 'params' => $result];
     }
 
-    public function listOfFavoriteofFather (Request $r) {
+    public function listOfFavoriteOfFather (Request $r) {
         if (!isset($r->father_id)) {
             return ['status_code' => 400];
         }
@@ -282,26 +285,27 @@ class MeetingsController extends Controller {
 
         // 取得に成功
         if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('is_favorite', 1)->get())) {
-            return ['status_code' => 400];
+            $list = [];
         }
 
         foreach ($list as $i => $l) {
-            $result[] = $l;
-            if (null === ($result[$i]['approvals'] = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
-                return ['status_code' => 400];
+            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
+                $l->approval = [];
             }
 
-            foreach ($result[$i]['approvals'] as $ii => $ra) {
-                if (null === ($result[$i]['approvals'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approvals'][$ii]['child_id'])->first())) {
-                    return ['status_code' => 400];
+            foreach ($l->approval as $ii => $ra) {
+                if (null === ($l->approval[$ii]['child'] = Child::select($child_select)->where('id', (int)$l->approval[$ii]['child_id'])->first())) {
+                    $l->approval[$ii]['child'] = [];
                 }
             }
+
+            $result[] = $l;
         }
 
         return ['status_code' => 200, 'params' => $result];
     }
 
-    public function listOfNonFavoriteofFather (Request $r) {
+    public function listOfNonFavoriteOfFather (Request $r) {
         if (!isset($r->father_id)) {
             return ['status_code' => 400];
         }
@@ -313,20 +317,21 @@ class MeetingsController extends Controller {
 
         // 取得に成功
         if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('is_favorite', 0)->get())) {
-            return ['status_code' => 400];
+            $list = [];
         }
 
         foreach ($list as $i => $l) {
-            $result[] = $l;
-            if (null === ($result[$i]['approvals'] = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
-                return ['status_code' => 400];
+            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
+                $l->approval = [];
             }
 
-            foreach ($result[$i]['approvals'] as $ii => $ra) {
-                if (null === ($result[$i]['approvals'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approvals'][$ii]['child_id'])->first())) {
-                    return ['status_code' => 400];
+            foreach ($l->approval as $ii => $ra) {
+                if (null === ($l->approval[$ii]['child'] = Child::select($child_select)->where('id', (int)$l->approval[$ii]['child_id'])->first())) {
+                    $l->approval[$ii]['child'] = [];
                 }
             }
+
+            $result[] = $l;
         }
 
         return ['status_code' => 200, 'params' => $result];
@@ -340,21 +345,27 @@ class MeetingsController extends Controller {
         $result = [];
         $meeting_select = ['id', 'father_id', 'title', 'text', 'memo', 'updated_at'];
         $father_select = ['image', 'company'];
-        $meeting_approvals_select = ['approval_at as date'];
+        $meeting_approvals_select = ['approval_at'];
 
         // 取得に成功
         if (null === ($list = Meeting::select($meeting_select)->where('title', 'LIKE', '%'.$r->keyword.'%')->orWhere('text', 'LIKE', '%'.$r->keyword.'%')->get())) {
-            return ['status_code' => 400];
+            $list = [];
         }
 
         foreach ($list as $i => $l) {
+            if (null === (FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)$r->child_id)->first())) {
+                continue;
+            }
+            if (null === ($ma = MeetingApprovals::select('id')->where('child_id', (int)$r->child_id)->where('meeting_id', (int)$l->id)->whereNotNull('approval_at')->first())) {
+                continue;
+            }
+            if (null === ($l->father = Father::select($father_select)->where('id', (int)$l->father_id)->first())) {
+                $l->father = new \stdClass();
+            }
+            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('child_id', (int)$r->child_id)->whereNotNull('approval_at')->first())) {
+                $l->approval = new \stdClass();
+            }
             $result[] = $l;
-            if (null === ($result[$i]['father'] = Father::select($father_select)->where('id', (int)$l->father_id)->first())) {
-                return ['status_code' => 400];
-            }
-            if (null === ($result[$i]['approval'] = MeetingApprovals::select($meeting_approvals_select)->where('child_id', (int)$r->child_id)->whereNotNull('approval_at')->get())) {
-                return ['status_code' => 400];
-            }
         }
 
         return ['status_code' => 200, 'params' => $result];
@@ -368,21 +379,27 @@ class MeetingsController extends Controller {
         $result = [];
         $meeting_select = ['id', 'father_id', 'title', 'text', 'memo', 'updated_at'];
         $father_select = ['image', 'company'];
-        $meeting_approvals_select = ['approval_at as date'];
+        $meeting_approvals_select = ['approval_at'];
 
         // 取得に成功
         if (null === ($list = Meeting::select($meeting_select)->where('title', 'LIKE', '%'.$r->keyword.'%')->orWhere('text', 'LIKE', '%'.$r->keyword.'%')->get())) {
-            return ['status_code' => 400];
+            $list = [];
         }
 
         foreach ($list as $i => $l) {
+            if (null === (FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)$r->child_id)->first())) {
+                continue;
+            }
+            if (null === ($ma = MeetingApprovals::select('id')->where('child_id', (int)$r->child_id)->where('meeting_id', (int)$l->id)->whereNull('approval_at')->first())) {
+                continue;
+            }
+            if (null === ($l->father = Father::select($father_select)->where('id', (int)$l->father_id)->first())) {
+                $l->father = new \stdClass();
+            }
+            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('child_id', (int)$r->child_id)->whereNull('approval_at')->first())) {
+                $l->approval = new \stdClass();
+            }
             $result[] = $l;
-            if (null === ($result[$i]['father'] = Father::select($father_select)->where('id', (int)$l->father_id)->first())) {
-                return ['status_code' => 400];
-            }
-            if (null === ($result[$i]['approval'] = MeetingApprovals::select($meeting_approvals_select)->where('child_id', (int)$r->child_id)->whereNull('approval_at')->get())) {
-                return ['status_code' => 400];
-            }
         }
 
         return ['status_code' => 200, 'params' => $result];
@@ -401,23 +418,24 @@ class MeetingsController extends Controller {
 
         // 取得に成功
         if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('title', 'LIKE', '%'.$r->keyword.'%')->orWhere('text', 'LIKE', '%'.$r->keyword.'%')->get())) {
-            return ['status_code' => 400];
+            $list = [];
         }
 
         foreach ($list as $i => $l) {
-            $result[] = $l;
-            if (null == ($result[$i]['meeting_image'] = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$l->id)->get())) {
-                return ['status_code' => 400];
+            if (null === ($l->meeting_image = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$l->id)->get())) {
+                $l->meeting_image = [];
             }
-            if (null == ($result[$i]['meeting_approvals'] = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->whereNull('approval_at')->get())) {
-                return ['status_code' => 400];
+            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->whereNull('approval_at')->first())) {
+                $l->approval = new \stdClass();
             }
 
-            foreach ($result[$i]['meeting_approvals'] as $ii => $ra) {
-                if (null == ($result[$i]['meeting_approvals'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['meeting_approvals'][$ii]['child_id'])->first())) {
-                    return ['status_code' => 400];
+            foreach ($l->approval as $ii => $ra) {
+                if (null == ($result[$i]['approval'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approval'][$ii]['child_id'])->first())) {
+                    $result[$i]['approval'][$ii]['child'] = [];
                 }
             }
+
+            $result[] = $l;
         }
 
         return ['status_code' => 200, 'params' => $result];
@@ -436,23 +454,24 @@ class MeetingsController extends Controller {
 
         // 取得に成功
         if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('title', 'LIKE', '%'.$r->keyword.'%')->orWhere('text', 'LIKE', '%'.$r->keyword.'%')->get())) {
-            return ['status_code' => 400];
+            $list = [];
         }
 
         foreach ($list as $i => $l) {
-            $result[] = $l;
-            if (null === ($result[$i]['meeting_image'] = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$l->id)->get())) {
-                return ['status_code' => 400];
+            if (null === ($l->meeting_image = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$l->id)->get())) {
+                $l->meeting_image = [];
             }
-            if (null === ($result[$i]['meeting_approvals'] = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->whereNotNull('approval_at')->get())) {
-                return ['status_code' => 400];
+            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->whereNotNull('approval_at')->first())) {
+                $l->approval = new \stdClass();
             }
 
-            foreach ($result[$i]['meeting_approvals'] as $ii => $ra) {
-                if (null === ($result[$i]['meeting_approvals'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['meeting_approvals'][$ii]['child_id'])->first())) {
-                    return ['status_code' => 400];
+            foreach ($l->approval as $ii => $ra) {
+                if (null == ($result[$i]['approval'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approval'][$ii]['child_id'])->first())) {
+                    $result[$i]['approval'][$ii]['child'] = [];
                 }
             }
+
+            $result[] = $l;
         }
 
         return ['status_code' => 200, 'params' => $result];
@@ -467,7 +486,9 @@ class MeetingsController extends Controller {
         $meeting_select = ['id', 'father_id', 'title', 'text', 'memo', 'pdf', 'updated_at', 'is_favorite'];
         $meeting_images_select = ['id', 'image'];
         $meeting_approvals_select = ['approval_at', 'child_id'];
-        $child_select = ['image', 'last_name', 'first_name'];
+        $father_select = ['image', 'company', 'tel'];
+        $child_select = ['id', 'image', 'last_name', 'first_name', 'tel'];
+        $all_child_select = ['id as child_id', 'last_name', 'first_name'];
 
         // 取得に成功
         if (null === ($result = Meeting::select($meeting_select)->where('id', (int)$meeting_id)->first())) {
@@ -475,15 +496,31 @@ class MeetingsController extends Controller {
         }
 
         if (null === ($result->meeting_image = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$result->id)->get())) {
-            return ['status_code' => 400];
+            $result->meeting_image = [];
         }
-        if (null === ($result->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$result->id)->whereNotNull('approval_at')->get())) {
-            return ['status_code' => 400];
+        if (null === ($result->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$result->id)->first())) {
+            $result->approval = new \stdClass();
         }
 
-        foreach ($result->approval as $i => $a) {
-            if (null === ($result->approval[$i]['child'] = Child::select($child_select)->where('id', (int)$a->child_id)->first())) {
-                $result->approval[$i]['child'] = [];
+        if (request()->route()->action['as'] == 'mdc') {
+            if (null === ($result->father = Father::select($father_select)->where('id', (int)$result->father_id)->first())) {
+                $result->father = new \stdClass();
+            }
+        }
+
+        if (request()->route()->action['as'] != 'mdc') {
+            $result->children = [];
+    
+            if (null !== ($rel = FatherRelation::select('child_id')->where('father_id', (int)$result->father_id)->first())) {
+                if (null === ($result->children = Child::select($all_child_select)->where('id', $rel->child_id)->get()->toArray())) {
+                    $result->children = [];
+                }
+            }
+
+            foreach ($result->approval as $i => $a) {
+                if (null === ($result->approval[$i]['child'] = Child::select($child_select)->where('id', (int)$a->child_id)->first())) {
+                    $result->approval[$i]['child'] = new \stdClass();
+                }
             }
         }
 

@@ -29,7 +29,7 @@ class TelActivationFactory extends Factory
 
         return [
             'type' => rand(0, 1),
-            'child_id' => 1,
+            'child_id' => rand(1, 10),
             'tel' => $tel[rand(0, 2)],
             'token' => $this->faker->creditCardNumber,
             'ttl' => $this->faker->dateTime,

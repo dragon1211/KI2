@@ -22,8 +22,8 @@ class MeetingApprovalsFactory extends Factory
     public function definition()
     {
         return [
-            'child_id' => 1,
-            'meeting_id' => 1,
+            'child_id' => rand(1, 10),
+            'meeting_id' => rand(1, 10),
             'approval_at' => $this->faker->dateTime,
             'created_at' => $this->faker->dateTime,
             'updated_at' => $this->faker->dateTime,

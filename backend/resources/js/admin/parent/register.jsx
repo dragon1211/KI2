@@ -22,7 +22,7 @@ const ParentRegister = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
+        set422Errors({ email: '' })
         setSubmit(true);
         const formdata = new FormData();
         formdata.append('email', email);

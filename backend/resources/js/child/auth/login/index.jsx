@@ -1,96 +1,75 @@
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
-import { Button } from '@material-ui/core';
+import { Link, useHistory } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import axios from 'axios';
+import Alert from '../../../component/alert';
 
 
+const ChildLogin = () => {
 
-const Login = () => {
-    const [phone, setPhone] = useState('');
+    const [submit, setSubmit] = useState(false);
+
+    const [tel, setTel] = useState('');
     const [password, setPassword] = useState('');
 
-    const [errors, setErrors] = useState({phone:'', password:''})
-    const [err_msg, setErrMsg] = useState({status:'', msg:''})
+    const [_422errors, set422Errors] = useState({tel: '', password: ''});
+    const [_400error, set400Error] = useState(null);
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setSubmit(true);
+        set422Errors({tel:'', password:''});
 
-        setErrMsg({status:'', msg:''});
-
-        if(!validateForm()) return;
         const formdata = new FormData();
-        formdata.append('tel', phone);
+        formdata.append('tel', tel);
         formdata.append('password', password);
-        // axios.post('/api/children/login/', formdata)
-        // .then(response => {
-        //     if(response.data.status_code==200){
-        //         window.location.href = '/c-account/meating';
-        //     }
-        //     elseif(response.data.status_code == 400)
-        //     {
-        //         setErrMsg({status:'error', msg:"ログインに失敗しました。<br>10回連続で失敗すると、一定期間ログインできなくなります。"})
-        //     }
-        //     elseif(response.data.status_code == 422)
-        //     {
-
-        //     }
-        // })
-        // .catch(err=>console.log(err))
-    }
-
-    const validateForm = () => {
-        let errors = {};
-        let formIsValid = true;
-        
-        if(phone.length == 0){ formIsValid = false;  errors['phone'] = 'Required'; }
-        else errors['phone'] = '';
-
-        if(password.length == 0){ formIsValid = false;  errors['password'] = 'Required'; }
-        else errors['password'] = '';
-
-        setErrors(errors);
-        return formIsValid;
+        axios.post('/api/children/login/', formdata)
+        .then(response => {
+            setSubmit(false)
+            switch(response.data.status_code){
+                case 200:{
+                    localStorage.setItem("from_login", true);
+                    window.location.href = '/c-account/meeting';
+                    break;
+                }
+                case 422: set422Errors(response.data.error_messages); break;
+                case 400: set400Error(response.data.error_message[0]); break;
+            }
+        })
+        .catch(err=>console.log(err))
     }
 
 	return (
         <form onSubmit={handleSubmit} noValidate>
            
-           <h1 className="text-center font-weight-bold ft-25 pb-40-px">ログイン</h1>
-            {
-                err_msg.status.length != 0 && 
-                <div className="mt-40-px">
-                    <span className={`l-alert__text--${err_msg.status} ft-16 ft-md-14`}>
-                        {err_msg.msg}
-                    </span>
-                </div>
-            }
-            
+           <p className="text-center font-weight-bold ft-25 pb-60-px">ログイン</p>
+
             <div className="edit-set">
-                <label htmlFor="phone"   className="control-label ft-14 ft-md-12"> 電話番号 </label>
-                <input type="text" name="phone" id="phone" className={`input-default ${ errors['phone'] && "is-invalid  c-input__target" }`}  value={phone} onChange={e=>setPhone(e.target.value)} autoFocus/>
+                <label htmlFor="tel"   className="control-label ft-14 ft-md-12"> 電話番号 </label>
+                <input type="text" name="tel" id="tel" className={`input-default input-h60 ${ _422errors.tel && "is-invalid  c-input__target" }`}  value={tel} onChange={e=>setTel(e.target.value)} autoFocus/>
                 {   
-                    errors['phone'].length != 0 && 
+                    _422errors.tel && 
                         <span className="l-alert__text--error ft-16 ft-md-14">
-                            {errors['phone']}
+                            { _422errors.tel }
                         </span> 
                 }
             </div>
 
             <div className="edit-set">
                 <label htmlFor="password"   className="control-label ft-14 ft-md-12"> パスワード </label>
-                <input type="password" name="password" id="password" className={`input-default ${ errors['password'] && "is-invalid  c-input__target" }`}  value={password} onChange={e=>setPassword(e.target.value)} autoFocus/>
+                <input type="password" name="password" id="password" className={`input-default input-h60 ${ _422errors.password && "is-invalid  c-input__target" }`}  value={password} onChange={e=>setPassword(e.target.value)}/>
                 {  
-                    errors['password'].length != 0 && 
+                    _422errors.password && 
                         <span className="l-alert__text--error ft-16 ft-md-14">
-                            {errors['password']}
+                            { _422errors.password }
                         </span> 
                 }
             </div>
 
-            <div className="edit-set">
+            <div className="edit-set mt-5">
                 <div className="c-input__checkbox text-center">
-                    <label htmlFor="remember_me" className="m-0 ft-15 ft-md-13">
+                    <label htmlFor="remember_me" className="m-0 ft-18 ft-md-16">
                         <span>ログイン情報を保持する</span>
                         <input  id="remember_me"  name="remember"  type="checkbox"  value="remember"/>
                         <div className="color-box"></div>
@@ -98,22 +77,30 @@ const Login = () => {
                 </div>
             </div>
 
-                
-            <div className="mt-4">
-                <LoadingButton type="submit" fullWidth className="p-4 rounded-20 ft-15 ft-md-13 font-weight-bold text-black bg-yellow">
-                    ログイン
+            <div className="mt-5">
+                <LoadingButton type="submit" 
+                    loading={submit} 
+                    fullWidth 
+                    className="btn-edit btn-default btn-h75 bg-yellow rounded-20"> 
+                    <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>
+                        ログイン
+                    </span> 
                 </LoadingButton>
             </div>
 
-            <div className="mt-4 text-center">
-                <a href="/forgot-password/c-account" className="ft-15 ft-md-13 text-black text-decoration-none scale-1">
+            <div className="mt-5 text-center">
+                <Link to="/c-account/forgot-password" 
+                    className="ft-16 text-black text-decoration-none">
                     パスワード紛失の方はコチラ
-                </a>
+                </Link>
             </div>
+            {
+                _400error && <Alert type="fail" hide={()=>set400Error(null)}>{_400error}</Alert>
+            } 
         </form>
 	)
 }
 
 
 
-export default Login;
+export default ChildLogin;

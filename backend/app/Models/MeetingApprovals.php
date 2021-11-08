@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class MeetingApprovals extends Model
 {
     use HasFactory;
+    protected $fillable = ['child_id', 'meeting_id', 'approval_at'];
 }
