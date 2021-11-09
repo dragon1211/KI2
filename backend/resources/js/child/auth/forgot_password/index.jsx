@@ -29,9 +29,7 @@ const ChildForgotPassword = () => {
                 case 401: set400Error(response.data.error_messages); break;
                 case 402: set400Error(response.data.error_messages); break;
             }
-        })
-        .catch(err=>console.log(err))
-        
+        })        
     }
 
 

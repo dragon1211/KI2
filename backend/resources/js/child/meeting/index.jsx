@@ -5,57 +5,91 @@ import moment from 'moment';
 import { CircularProgress  } from '@material-ui/core';
 
 import Notification from '../../component/notification';
+import Alert from '../../component/alert';
+import InfiniteScroll from "react-infinite-scroll-component";
 
+const INFINITE = 5;
+const SCROLL_DELAY_TIME = 1500;
 
 const Meeting = () => {
 
-    const history = useHistory();
     const [tab_status, setTabStatus] = useState(false);
     const [loaded, setLoaded] = useState(false);
+    const [loaded1, setLoaded1] = useState(false);
+    const [loaded2, setLoaded2] = useState(false);
     const [meeting_list_non_approval, setMettingListNonApproval] = useState([]);
     const [meeting_list_approval, setMettingListApproval] = useState([]);
+    const [fetch_meeting_list_non_approval, setFetchMettingListNonApproval] = useState([]);
+    const [fetch_meeting_list_approval, setFetchMettingListApproval] = useState([]);
+    const [_success, setSuccess] = useState('');
+
+
+    useEffect(()=>{
+        if(localStorage.getItem("from_login")){
+          setSuccess("ログインに成功しました!");
+          localStorage.removeItem("from_login");
+        }
+    },[]);
+
+    useEffect(()=>{
+        setLoaded(loaded1 && loaded2);
+    },[loaded1, loaded2])
 
 
     useEffect(
         () => {
             setLoaded(false);
             let child_id = document.getElementById('child_id').value;
+
             axios.get('/api/children/meetings/listOfNonApprovalOfChild', {params:{child_id: child_id}})
             .then(response => {
-                console.log(response.data.params)
-                if(response.data.status_code==200)
-                {
+                setLoaded1(true);
+                if(response.data.status_code==200){
+                    console.log(response.data.params)
                     setMettingListNonApproval(response.data.params);
+                    var len = response.data.params.length;
+                    if(len > INFINITE)
+                        setFetchMettingListNonApproval(response.data.params.slice(0, INFINITE));
+                    else setFetchMettingListNonApproval(response.data.params.slice(0, len));
                 }
             })
-            .catch(err=>console.log(err))
-        },[]
-    );
 
-    useEffect(
-        () => {
-            let child_id = document.getElementById('child_id').value;
             axios.get('/api/children/meetings/listOfApprovalOfChild', {params:{child_id: child_id}})
             .then(response => {
-                setLoaded(true);
-                console.log(response.data.params)
-                if(response.data.status_code==200)
-                {
+                setLoaded2(true);
+                if(response.data.status_code==200){
+                    console.log(response.data.params)
                     setMettingListApproval(response.data.params);
+                    var len = response.data.params.length;
+                    if(len > INFINITE)
+                        setFetchMettingListApproval(response.data.params.slice(0, INFINITE));
+                    else setFetchMettingListApproval(response.data.params.slice(0, len));
                 }
             })
-            .catch(err=>console.log(err))
         },[]
     );
 
+    const fetchMoreListNonApproval = () => {
+        setTimeout(() => {
+            var x = fetch_meeting_list_non_approval.length;
+            var y = meeting_list_non_approval.length;
+            var c = 0;
+            if(x+INFINITE < y) c = INFINITE;
+            else c = y - x;
+            setFetchMettingListNonApproval(meeting_list_non_approval.slice(0, x+c));
+        }, SCROLL_DELAY_TIME);
+    };
 
-    const clickTab01 = () => {
-        setTabStatus(false);
-    }
-
-    const clickTab02 = () => {
-        setTabStatus(true);
-    }
+    const fetchMoreListApproval = () => {
+        setTimeout(() => {
+            var x = fetch_meeting_list_approval.length;
+            var y = meeting_list_approval.length;
+            var c = 0;
+            if(x+INFINITE < y) c = INFINITE;
+            else c = y - x;
+            setFetchMettingListApproval(meeting_list_approval.slice(0, x+c));
+        }, SCROLL_DELAY_TIME);
+    };
 
     
 	return (
@@ -75,20 +109,38 @@ const Meeting = () => {
                             <input className="tab-switch" id="tab-02" type="radio" name="tab_btn"/>
                 
                             <div className="meeting-tab">
-                                <label className={`tab-label ${!tab_status && 'is-active'} `} htmlFor="tab-01" onClick={clickTab01}><span>未承知</span></label>
-                                <label className={`tab-label ${tab_status && 'is-active'} `} htmlFor="tab-02"  onClick={clickTab02}><span>承知済み</span></label>
+                                <label className={`tab-label ${!tab_status && 'is-active'} `} htmlFor="tab-01"  onClick={()=>setTabStatus(false)}><span>未承知</span></label>
+                                <label className={`tab-label ${ tab_status && 'is-active'} `} htmlFor="tab-02"  onClick={()=>setTabStatus(true)}><span>承知済み</span></label>
                             </div> 
                         </div>
+                    </div>
+                    {
+                        !loaded &&
+                            <CircularProgress color="secondary" className="css-loader"/>
+                    }
+                    {
+                        loaded &&
+                        <div className="meeting-content">
                         {
-                            !loaded &&
-                                <CircularProgress color="secondary" style={{top:'calc(40% - 22px)', left:'calc(50% - 22px)', color:'green', position:'absolute'}}/>
-                        }
-                        {
-                            loaded &&
-                            <div className="meeting-content">
-                                <div className={`meeting-content-wrap ${!tab_status && 'is-active'}`} id="item01">
-                                    {
-                                        meeting_list_non_approval?.map((item, id) => 
+                            !tab_status &&
+                            <div className="meeting-content-wrap is-active" id="item01">
+                                <InfiniteScroll
+                                    dataLength={fetch_meeting_list_non_approval.length}
+                                    next={fetchMoreListNonApproval}
+                                    hasMore={fetch_meeting_list_non_approval.length != meeting_list_non_approval.length}
+                                    loader={
+                                        <div id="dots3">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                    }
+                                    style={{overflow:'none', position:'relative'}}
+                                >
+                                {
+                                    fetch_meeting_list_non_approval.length > 0 ?
+                                    fetch_meeting_list_non_approval?.map((item, id) => 
                                         <div className="meeting-item" key={id}>
                                             <div className="user-wrap user-sm">
                                                 <Link to={{
@@ -96,9 +148,9 @@ const Meeting = () => {
                                                     state: { tab_status: true}
                                                 }}>
                                                     <div className="user-avatar">
-                                                        <img alt="name" className="father-img" src={item.fathers && item.fathers[0].image}/>
+                                                        <img alt="name" className="father-img" src={item.father.image}/>
                                                     </div>
-                                                    <p className="user-name">{`${item.fathers && item.fathers[0]?.last_name} ${item.fathers && item.fathers[0]?.first_name}`}</p>
+                                                    <p className="user-name">{item.father.company}</p>
                                                 </Link>
                                             </div>
                                             <Link to={`/c-account/meeting/detail/${item.id}`} className="meeting-link">
@@ -114,19 +166,39 @@ const Meeting = () => {
                                                 </time>
                                             </div>
                                         </div>
-                                        )
-                                    } 
-                                </div>
-                                <div className={`meeting-content-wrap ${tab_status && 'is-active'}`} id="item02">
-                                    {
-                                        meeting_list_approval?.map((item, id) =>                                          
+                                    )
+                                    : <p className="text-center py-5 ft-xs-17">データはありません。</p>
+                                }
+                                </InfiniteScroll>                                    
+                            </div>
+                        }
+                        {
+                            tab_status &&
+                            <div className="meeting-content-wrap is-active" id="item02">
+                                <InfiniteScroll
+                                    dataLength={fetch_meeting_list_approval.length}
+                                    next={fetchMoreListApproval}
+                                    hasMore={fetch_meeting_list_approval.length != meeting_list_approval.length}
+                                    loader={
+                                        <div id="dots3">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                    }
+                                    style={{overflow:'none', position:'relative'}}
+                                >
+                                {
+                                    fetch_meeting_list_approval.length > 0 ?
+                                    fetch_meeting_list_approval?.map((item, id) =>                                          
                                             <div className="meeting-item" key={id}>
                                                 <div className="user-wrap user-sm">
                                                     <Link to = {`/c-account/parent/detail/${item.father_id}`}>
                                                         <div className="user-avatar">
-                                                            <img alt="name" className="father-img" src={item.fathers && item.fathers[0].image}/>
+                                                            <img alt="name" className="father-img" src={item.father.image}/>
                                                         </div>
-                                                        <p className="user-name">{`${item.fathers && item.fathers[0]?.last_name} ${item.fathers && item.fathers[0]?.first_name}`}</p>
+                                                        <p className="user-name">{item.father.company}</p>
                                                     </Link>
                                                 </div>
                                                 <Link to={`/c-account/meeting/detail/${item.id}`} className="meeting-link">
@@ -144,24 +216,25 @@ const Meeting = () => {
                                                     <time dateTime="2021-07-30" className="user-awareness-time">
                                                         <span className="user-awareness">承知日：
                                                             <span className="date">
-                                                                { item.meeting_approvals &&  moment(item.meeting_approvals[0].approval_at).format('YYYY/MM/DD') }
+                                                                { moment(item.approval.approval_at).format('YYYY/MM/DD') }
                                                             </span>
                                                         </span>
                                                     </time>
                                                 </div>
                                             </div>
                                         )
-                                    } 
-                                </div>
+                                    : <p className="text-center py-5 ft-xs-17">データはありません。</p>
+                                } 
+                                </InfiniteScroll>
                             </div>
                         }
-                    </div>
-                    {
-                        loaded && ((meeting_list_non_approval.length == 0 && !tab_status) || (meeting_list_approval.length == 0 && tab_status)) &&
-                            <p className="text-center mt-5 ft-18">データが存在しません。</p>
+                        </div>
                     }
                 </section>
             </div>
+            {
+              _success && <Alert type="success">{_success}</Alert>
+            }
         </div>
         
     )

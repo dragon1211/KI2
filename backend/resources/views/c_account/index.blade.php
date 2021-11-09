@@ -14,5 +14,6 @@
 @section('content')
 <div id="c-app"></div>
 <input type="hidden" id="c_router" value="{{$router}}" />
-<input type="hidden" id="child_id" value="1" />
+<input type="hidden" id="child_id" value="{{ request()->session()->get('children')['id'] }}" />
+<input type="hidden" id="child_image" value="{{ request()->session()->get('children')['image'] }}" />
 @endsection

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
-
 import axios from 'axios';
 
 import Notification from '../../component/notification';
@@ -9,57 +8,42 @@ import Alert from '../../component/alert';
 
 
 const ProfilePasswordEdit = () => {
-
-    const history = useHistory();
-
-    const [pwd, setPwd] = useState('');
-    const [confirm_pwd, setConfirmPwd] = useState('');
-
-    const [errors, setErrors] = useState({pwd:'', confirm_pwd:''})
-    const [err_msg, setErrMsg] = useState({status:'', msg:''})
-
-    const [submitStatus, setSubmitStatus] = useState('')
-
     
-    const validateForm = () => {
-        let errors = {};
-        let formIsValid = true;
-        
-        if(pwd.length == 0){ formIsValid = false;  errors['pwd'] = 'Required'; }
-        else errors['pwd'] = '';
+    const history = useHistory(); 
+    const [password, setPassword] = useState('');
+    const [password_confirmation, setConfirmPassword] = useState('');
 
-        if(confirm_pwd.length == 0){ formIsValid = false;  errors['confirm_pwd'] = 'Required'; }
-        else errors['confirm_pwd'] = '';
-
-        setErrors(errors);
-        return formIsValid;
-    }
+    const [_422errors, set422Errors] = useState({
+        password:'',
+        password_confirmation:''
+    });
+    const [_400error, set400Error] = useState('');
+    const [_success, setSuccess] = useState('');
+    const [submit, setSubmit] = useState(false);
 
     
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setErrMsg({status:'', msg:''});
-        
-        if(!validateForm()) return;
-
-        const formdata = new FormData();
-        formdata.append('first_name', first_name);
-        formdata.append('last_name', last_name);
-        formdata.append('email', email);
-        formdata.append('password', password);
-        formdata.append('company', company);
-        formdata.append('image', image);
-        // axios.post('/api/children/profile/edit/password/{child_id}', formdata)
-        // .then(response => {
-        //     if(response.data.status_code==200){
-        //         setSubmitStatus('success);
-        //     }
-        //     else if(response.data.status_code==400){
-        //         setSubmitStatus('failed);
-        //     }
-        // })
-        // .catch(err=>console.log(err))
+        set422Errors({
+            password:'',
+            password_confirmation:''
+        });
+        setSubmit(true);
+        const post = {
+            password: password,
+            password_confirmation: password_confirmation
+        }
+        axios.put(`/api/children/updatePassword/${document.getElementById('child_id').value}`, post)
+        .then(response => {
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: setSuccess(response.data.success_messages); break;
+                case 400: set400Error(response.data.error_messages); break;
+                case 422: set422Errors(response.data.error_messages); break;
+            }
+        })
+        .catch(err=>console.log(err))
     }
 
 
@@ -81,43 +65,52 @@ const ProfilePasswordEdit = () => {
                                 <form onSubmit={handleSubmit} noValidate>
                                                             
                                     <div className="edit-set">
-                                        <label htmlFor="pwd"   className="control-label ft-14 ft-md-12"> 
+                                        <label htmlFor="password"   className="control-label ft-14 ft-md-12"> 
                                             新しいパスワード 
                                         </label>
-                                        <input type="password" name="pwd" id="pwd" className={`input-default input-h60 input-w480 ${ errors['pwd'].length != 0 && "is-invalid  c-input__target" }`}
-                                            value={pwd} onChange={e=>setPwd(e.target.value)} autoFocus/>
+                                        <input type="password" name="password" id="password" className={`input-default input-h60 ${ _422errors.password && "is-invalid  c-input__target" }`}
+                                            value={password} onChange={e=>setPassword(e.target.value)} autoFocus/>
                                         {   
-                                            errors['pwd'].length != 0 && 
+                                            _422errors.password && 
                                                 <span className="l-alert__text--error ft-16 ft-md-14">
-                                                    {errors['pwd']}
+                                                    { _422errors.password }
                                                 </span> 
                                         }
                                     </div>
 
                                     <div className="edit-set">
-                                        <label htmlFor="confirm_pwd"   className="control-label ft-14 ft-md-12"> 
+                                        <label htmlFor="password_confirmation"   className="control-label ft-14 ft-md-12"> 
                                             確認用新しいパスワード
                                         </label>
-                                        <input type="password" name="confirm_pwd" id="confirm_pwd" className={`input-default input-h60 input-w480 ${ errors['confirm_pwd'].length != 0 && "is-invalid  c-input__target" }`}  
-                                            value={confirm_pwd} onChange={e=>setConfirmPwd(e.target.value)}/>
+                                        <input type="password" name="password_confirmation" id="password_confirmation" className={`input-default input-h60 ${ _422errors.password_confirmation && "is-invalid  c-input__target" }`}  
+                                            value={password_confirmation} onChange={e=>setConfirmPassword(e.target.value)}/>
                                         {   
-                                            errors['confirm_pwd'].length != 0 && 
+                                            _422errors.password_confirmation && 
                                                 <span className="l-alert__text--error ft-16 ft-md-14">
-                                                    {errors['confirm_pwd']}
+                                                    { _422errors.password_confirmation }
                                                 </span> 
                                         }
                                     </div>
                                     
                                     <div className="mt-5">
-                                        <LoadingButton type="submit" fullWidth className="p-4 rounded-20 ft-15 ft-xs-13 font-weight-bold text-black bg-yellow">
-                                            <span>パスワードを更新</span>
+                                        <LoadingButton type="submit" fullWidth 
+                                            loading = {submit}
+                                            className="btn-edit btn-default btn-h75 bg-yellow rounded-20">
+                                            <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>パスワードを更新</span>
                                         </LoadingButton>
                                     </div>
                                     {
-                                        submitStatus == 'success' && <Alert type="success">Submit Success!</Alert>
-                                    }
+                                        _400error && 
+                                            <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
+                                    } 
                                     {
-                                        submitStatus == 'fail' && <Alert type="fail">Submit Failed!</Alert>
+                                        _success && 
+                                        <Alert type="success" 
+                                        hide={()=>  
+                                            history.push({
+                                            pathname: `/c-account/profile/`,
+                                            state: {}
+                                        })}>{_success}</Alert>
                                     }
                                 </form>
             

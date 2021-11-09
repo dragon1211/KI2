@@ -13,7 +13,7 @@ const ChildSignUpComplete = () => {
 	return (
         <div>
             <p className="text-center font-weight-bold ft-25">本登録完了</p>
-            <span className="mt-80-px ft-18 ft-md-15 l-alert__text--success">
+            <span className="mt-80-px ft-18 ft-md-16 l-alert__text--success">
                 本登録が完了しました。<br/>
                 ログイン画面より、ログインを行ってください。
             </span>

@@ -22,6 +22,7 @@ Route::group(['prefix' => 'p-account'],                 function () {
     Route::get('/',                                     function () { return view('p_account.index'); });
     Route::get('/login',                                '\App\Http\Controllers\Api\FathersController@checkLogin')->name('fatherslogin');
     Route::get('/logout',                               '\App\Http\Controllers\Api\FathersController@logout');
+    Route::get('/withdrawal/complete',                  function () { return view('p_account.index'); });
 
     Route::group(['middleware' => 'auth:fathers'],      function () {
         Route::group(['prefix' => 'meeting'],           function () {
@@ -44,10 +45,7 @@ Route::group(['prefix' => 'p-account'],                 function () {
                 Route::get('/password/{father_id}',     function () { return view('p_account.index'); });
                 Route::get('/{father_id}',              function () { return view('p_account.index'); });
             });
-            Route::group(['prefix' => 'withdrawal'],    function () {
-                Route::get('/',                         function () { return view('p_account.index'); });
-                Route::get('/complete',                 function () { return view('p_account.index'); });
-            });
+            Route::get('/withdrawal',                   function () { return view('p_account.index'); });
         });
     });
 });
@@ -63,11 +61,12 @@ Route::group(['prefix' => 'c-account'],                 function () {
     Route::get('/register-temporary',                   function () { return view('c_account.auth'); });
     Route::get('/login',                                '\App\Http\Controllers\Api\ChildrenController@checkLogin')->name('childrenlogin');
     Route::get('/logout',                               '\App\Http\Controllers\Api\ChildrenController@logout');
+    Route::get('/withdrawal/complete',                  function () { return view('c_account.auth'); });
 
     Route::group(['prefix' => 'register'],              function () {
-        Route::get('/',                                 function () { return view('c_account.auth'); });
-        Route::get('/complete',                         function () { return view('c_account.auth'); });
-        Route::get('/error',                            function () { return view('c_account.auth'); });
+        Route::get('/{token}',                          function () { return view('c_account.auth'); });
+        Route::get('/{token}/complete',                 function () { return view('c_account.auth'); });
+        Route::get('/{token}/error',                    function () { return view('c_account.auth'); });
     });
     Route::group(['prefix' => 'forgot-password'],       function () {
         Route::get('/',                                 function () { return view('c_account.auth'); });
@@ -75,7 +74,7 @@ Route::group(['prefix' => 'c-account'],                 function () {
         Route::get('/complete',                         function () { return view('c_account.auth'); });
     });
 
-    Route::group(['middleware' => 'auth:children'],     function () {
+    Route::group(['middleware' => ['auth:children'/*, 'notice.nonapproval'*/]],     function () {
         Route::group(['prefix' => 'meeting'],           function () {
             Route::get('/',                             function () { return view('c_account.index'); });
             Route::get('/detail/{id}',                  function () { return view('c_account.index'); });
@@ -93,7 +92,6 @@ Route::group(['prefix' => 'c-account'],                 function () {
             Route::get('/password-edit/{child_id}',     function () { return view('c_account.index'); });
             Route::get('/withdrawal',                   function () { return view('c_account.index'); });
         });
-        Route::get('/withdrawal/complete',              function () { return view('c_account.withdrawal.complete'); });
     });
 });
 

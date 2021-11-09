@@ -15,31 +15,29 @@ const ChildForgotPasswordReset = (props) => {
 
     const [_422errors, set422Errors] = useState({password:'', password_confirmation:''})
     const [_400error, set400Error] = useState('')
-    const [_success, setSuccess] = useState('')
+
 
     const handleSubmit = (e) => {
-
         e.preventDefault();
         set422Errors({password:'', password_confirmation:''});
         setSubmit(true);
-
         let req = {
             password: password,
             password_confirmation: password,
             token: props.match.params?.token
         }
-        console.log(props.match.params?.token)
-
         axios.put('/api/children/updatePassword', req)
         .then(response => {
             setSubmit(false);
             switch(response.data.status_code){
-                case 200: setSuccess(response.data.success_messages); break;
+                case 200: {
+                    history.push({pathname: '/c-account/forgot-password/complete',  state: {}}); 
+                    break;
+                }
                 case 422: set422Errors(response.data.error_messages); break;
                 case 400: set400Error(response.data.error_messages); break;
             }
         })
-        .catch(err=>console.log(err))
     }
 
 
@@ -87,13 +85,6 @@ const ChildForgotPasswordReset = (props) => {
             {
                 _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
             } 
-            {
-                _success && 
-                <Alert type="success" hide={()=>
-                    history.push({pathname: '/c-account/forgot-password/complete',  state: {}})
-                }> {_success}</Alert>
-            }
-
         </form>
 	)
 }

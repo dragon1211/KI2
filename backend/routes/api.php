@@ -49,7 +49,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::group(['prefix' => 'meetings'], function () {
             Route::get('/list', '\App\Http\Controllers\Api\MeetingsController@list');
             Route::get('/search', '\App\Http\Controllers\Api\MeetingsController@search');
-            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail');
+            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail')->name('mda');
             Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update');
             Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete');
         });
@@ -104,7 +104,7 @@ Route::group(['prefix' => 'fathers'], function () {
             Route::get('/listOfNonFavoriteOfFather', '\App\Http\Controllers\Api\MeetingsController@listOfNonFavoriteOfFather');
             Route::get('/searchOfCompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@searchOfCompleteOfFather');
             Route::get('/searchOfIncompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@searchOfIncompleteOfFather');
-            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail');
+            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail')->name('mdp');
             Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update');
             Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete');
         });
@@ -161,7 +161,7 @@ Route::group(['prefix' => 'children'], function () {
             Route::get('/listOfNonApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@listOfNonApprovalOfChild');
             Route::get('/searchOfApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@searchOfApprovalOfChild');
             Route::get('/searchOfNonApprovalOfChild', '\App\Http\Controllers\Api\MeetingsController@searchOfNonApprovalOfChild');
-            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail');
+            Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail')->name('mdc');
         });
 
         Route::group(['prefix' => 'meeting'], function () {

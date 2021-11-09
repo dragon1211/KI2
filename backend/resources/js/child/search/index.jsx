@@ -1,96 +1,96 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
+import moment from 'moment';
+import { CircularProgress  } from '@material-ui/core';
 
 import Notification from '../../component/notification';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import InfiniteScroll from "react-infinite-scroll-component";
 
-const meeting_list = [
-    {
-        id:1,
-        first_name: '田中',
-        last_name:'達也',
-        image:'/assets/img/avatar/avatar-sample03@2x.png',
-        title:'ミーティングタイトルミーティングタイトルミーテ',
-        text:'ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティングミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング',
-        meeting_approval:{
-            approve_at:'2021/7/21',
-            updated_at:'2021/7/21'
-        }
-    },
-    {
-        id:2,
-        first_name: '田中',
-        last_name:'達也',
-        image:'/assets/img/avatar/avatar-sample03@2x.png',
-        title:'ミーティングタイトルミーティングタイトルミーテ',
-        text:'ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティングミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング',
-        meeting_approval:{
-            approve_at:'2021/7/21',
-            updated_at:'2021/7/21'
-        }
-    },
-    {
-        id:3,
-        first_name: '田中',
-        last_name:'達也',
-        image:'/assets/img/avatar/avatar-sample03@2x.png',
-        title:'ミーティングタイトルミーティングタイトルミーテ',
-        text:'ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティングミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング',
-        meeting_approval:{
-            approve_at:'2021/7/21',
-            updated_at:'2021/7/21'
-        }
-    },
-    {
-        id:4,
-        first_name: '田中',
-        last_name:'達也',
-        image:'/assets/img/avatar/avatar-sample03@2x.png',
-        title:'ミーティングタイトルミーティングタイトルミーテ',
-        text:'ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティングミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング詳細ミーティング',
-        meeting_approval:{
-            approve_at:'2021/7/21',
-            updated_at:'2021/7/21'
-        }
-    }
-]
+
+const INFINITE = 5;
+const SCROLL_DELAY_TIME = 1500;
 
 const Search = () => {
-
-    const history = useHistory();
-
     const [keyword, setKeyword] = useState('');
     const [tab_status, setTabStatus] = useState(false);
-    // const [meeting_list, setMettingList] = useState([]);
+    const [meeting_list_non_approval, setMettingListNonApproval] = useState([]);
+    const [meeting_list_approval, setMettingListApproval] = useState([]);
 
-    const clickTab01 = () => {
-        setTabStatus(false);
+    const [fetch_meeting_list_non_approval, setFetchMettingListNonApproval] = useState([]);
+    const [fetch_meeting_list_approval, setFetchMettingListApproval] = useState([]);
+
+    const [loaded1, setLoaded1] = useState(true);
+    const [loaded2, setLoaded2] = useState(true);
+    const [loaded, setLoaded] = useState(true);
+    const [initPage, setInitPage] = useState(true);
+
+    const child_id = document.getElementById('child_id').value;
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if(keyword == ''){
+            document.getElementById('keyword').focus();
+            return;
+        }
+        setLoaded1(false);
+        setLoaded2(false);
+        setInitPage(false);
+
+        axios.get('/api/children/meetings/searchOfNonApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
+        .then((response) => {
+            setLoaded1(true);
+            if(response.data.status_code==200){
+                console.log(response.data)
+                setMettingListNonApproval(response.data.params);
+                var len = response.data.params.length;
+                if(len > INFINITE)
+                    setFetchMettingListNonApproval(response.data.params.slice(0, INFINITE));
+                else setFetchMettingListNonApproval(response.data.params.slice(0, len));
+            } 
+        });
+        axios.get('/api/children/meetings/searchOfApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
+        .then((response) => {
+            setLoaded2(true);
+            if(response.data.status_code==200){
+                console.log(response.data)
+                setMettingListApproval(response.data.params);
+                var len = response.data.params.length;
+                if(len > INFINITE)
+                    setFetchMettingListApproval(response.data.params.slice(0, INFINITE));
+                else setFetchMettingListApproval(response.data.params.slice(0, len));
+            } 
+        });
     }
 
-    const clickTab02 = () => {
-        setTabStatus(true);
-    }
+    useEffect(()=>{
+        setLoaded(loaded1 && loaded2);
+    },[loaded1, loaded2])
 
-    useEffect(
-        () => {
-            const formdata = new FormData();
-            let child_id = 1;
 
-            // axios.get('/api/meetings/list')
-            // .then(response => {
-            //     if(response.data.status_code==200){
-            //         // window.location.href = '/register/c-account/complete';
-            //     }
-            //     else if(response.data.status_code==400){
-            //         // window.location.href = '/register/c-account/error';
-            //     }
-            //     else if(response.data.status_code==500){
-            //         // window.location.href = '/unknown-error';
-            //     }
-            // })
-            // .catch(err=>console.log(err))
-        },[]
-    );
+    const fetchMoreListNonApproval = () => {
+        setTimeout(() => {
+            var x = fetch_meeting_list_non_approval.length;
+            var y = meeting_list_non_approval.length;
+            var c = 0;
+            if(x+INFINITE < y) c = INFINITE;
+            else c = y - x;
+            setFetchMettingListNonApproval(meeting_list_non_approval.slice(0, x+c));
+        }, SCROLL_DELAY_TIME);
+    };
+
+    const fetchMoreListApproval = () => {
+        setTimeout(() => {
+            var x = fetch_meeting_list_approval.length;
+            var y = meeting_list_approval.length;
+            var c = 0;
+            if(x+INFINITE < y) c = INFINITE;
+            else c = y - x;
+            setFetchMettingListApproval(meeting_list_approval.slice(0, x+c));
+        }, SCROLL_DELAY_TIME);
+    };
     
 	return (
         <div className="l-content">
@@ -105,69 +105,139 @@ const Search = () => {
                 <section className="meeting-tab-container meeting-search">
                     <div className="meeting-tab-wrap">
                         <div className="meeting-head">
-                            <form action="" className="meeting-form">
+                            <form className="meeting-form" onSubmit={handleSearch}>
                                 <label className="control-label" htmlFor="keyword">キーワード</label>
                                 <input type="search" name="keyword" className="input-default input-keyword input-w380" id="keyword"  value={keyword} onChange={e=> setKeyword(e.target.value)}/>
-                                <i className="icon icon-search"></i>
+                                <IconButton size="large" style={{position:'absolute', bottom:'3px', right:'5px', padding:'5px'}} type="submit">
+                                    <SearchIcon fontSize="large" style={{color:'#d0d0d0', width:'40px', height:'40px'}}/>
+                                </IconButton>
                             </form>
                             
                             <input className="tab-switch" id="tab-01" type="radio" name="tab_btn"/>
                             <input className="tab-switch" id="tab-02" type="radio" name="tab_btn"/>
                 
                             <div className="meeting-tab">
-                                <label className={`tab-label ${!tab_status && 'is-active'} `} htmlFor="tab-01" onClick={clickTab01}><span>未承知</span></label>
-                                <label className={`tab-label ${tab_status && 'is-active'} `} htmlFor="tab-02"  onClick={clickTab02}><span>承知済み</span></label>
-                            </div>
-                        </div>
-                        
-                        <div className="meeting-content">
-                            <div className="meeting-content-wrap is-active" id="item01">
-                                {
-                                    meeting_list.map((item, id) => 
-
-                                    <div className="meeting-item" key={id}>
-                                        <div className="user-wrap user-sm">
-                                            <a  onClick={e => {
-                                                    e.preventDefault();
-                                                    history.push({
-                                                    pathname: `/c-account/parent/detail/${item.id}`,
-                                                    state: {}
-                                                    });
-                                                }}
-                                            >
-                                                <div className="user-avatar">
-                                                    <img alt="name" className="avatar-img" src={item.image}/>
-                                                </div>
-                                                <p className="user-name">{item.first_name}  {item.last_name}</p>
-                                            </a>
-                                        </div>
-                                        <a className="meeting-link"
-                                            onClick={e => {
-                                                e.preventDefault();
-                                                history.push({
-                                                pathname: `/c-account/meeting/detail/${item.id}`,
-                                                state: {}
-                                                });
-                                            }}
-                                        >
-                                            <h3 className="meeting-ttl">{item.title}</h3>
-                                            <p className="meeting-txt">{item.text}</p>
-                                        </a>  
-                                        <div className="user-date">
-                                            <time dateTime="2021-07-30" className="user-updated-time">
-                                                <span className="user-updated">最終更新日：<span className="date">{item.meeting_approval.updated_at}</span></span>
-                                            </time>
-                                            <time dateTime="2021-07-30" className="user-awareness-time">
-                                                <span className="user-awareness">承知日：<span className="date">{item.meeting_approval.approve_at}</span></span>
-                                            </time>
-                                        </div>
-                                    </div>
-                                
-                                    )
-                                } 
+                                <label className={`tab-label ${!tab_status && 'is-active'} `} htmlFor="tab-01" onClick={()=>setTabStatus(false)}><span>未承知</span></label>
+                                <label className={`tab-label ${tab_status && 'is-active'} `} htmlFor="tab-02"  onClick={()=>setTabStatus(true)}><span>承知済み</span></label>
                             </div>
                         </div>
                     </div>
+                    {
+                        !loaded &&
+                            <CircularProgress color="secondary" className="css-loader"/>
+                    }
+                    {
+                        loaded && !initPage &&
+                        <div className="meeting-content">
+                        {
+                            !tab_status &&
+                            <div className="meeting-content-wrap is-active" id="item01">
+                                <InfiniteScroll
+                                    dataLength={fetch_meeting_list_non_approval.length}
+                                    next={fetchMoreListNonApproval}
+                                    hasMore={fetch_meeting_list_non_approval.length != meeting_list_non_approval.length}
+                                    loader={
+                                        <div id="dots3">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                    }
+                                    style={{overflow:'none', position:'relative'}}
+                                >
+                                {
+                                    fetch_meeting_list_non_approval.length > 0 ?
+                                    fetch_meeting_list_non_approval?.map((item, id) => 
+                                        <div className="meeting-item" key={id}>
+                                            <div className="user-wrap user-sm">
+                                                <Link to={{
+                                                    pathname: `/c-account/parent/detail/${item.father_id}`,
+                                                    state: { tab_status: true}
+                                                }}>
+                                                    <div className="user-avatar">
+                                                        <img alt="name" className="father-img" src={item.father.image}/>
+                                                    </div>
+                                                    <p className="user-name">{item.father.company}</p>
+                                                </Link>
+                                            </div>
+                                            <Link to={`/c-account/meeting/detail/${item.id}`} className="meeting-link">
+                                                <h3 className="meeting-ttl">{item.title}</h3>
+                                                <p className="meeting-txt">{item.text}</p>
+                                            </Link>  
+                                            <div className="user-date">
+                                                <time dateTime="2021-07-30" className="user-updated-time">
+                                                    <span className="user-updated">最終更新日：<span className="date">{moment(item.updated_at).format('YYYY/MM/DD')}</span></span>
+                                                </time>
+                                                <time dateTime="2021-07-30" className="user-awareness-time">
+                                                    <span className="user-awareness">承知日：<span className="date"></span></span>
+                                                </time>
+                                            </div>
+                                        </div>
+                                    )
+                                    : <p className="text-center py-5 ft-xs-17">検索されたデータはありません。</p>
+                                }
+                                </InfiniteScroll>                                    
+                            </div>
+                        }
+                        {
+                            tab_status &&
+                            <div className="meeting-content-wrap is-active" id="item02">
+                                <InfiniteScroll
+                                    dataLength={fetch_meeting_list_approval.length}
+                                    next={fetchMoreListApproval}
+                                    hasMore={fetch_meeting_list_approval.length != meeting_list_approval.length}
+                                    loader={
+                                        <div id="dots3">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                    }
+                                    style={{overflow:'none', position:'relative'}}
+                                >
+                                {
+                                    fetch_meeting_list_approval.length > 0 ?
+                                    fetch_meeting_list_approval?.map((item, id) =>                                          
+                                            <div className="meeting-item" key={id}>
+                                                <div className="user-wrap user-sm">
+                                                    <Link to = {`/c-account/parent/detail/${item.father_id}`}>
+                                                        <div className="user-avatar">
+                                                            <img alt="name" className="father-img" src={item.father.image}/>
+                                                        </div>
+                                                        <p className="user-name">{item.father.company}</p>
+                                                    </Link>
+                                                </div>
+                                                <Link to={`/c-account/meeting/detail/${item.id}`} className="meeting-link">
+                                                    <h3 className="meeting-ttl">{item.title}</h3>
+                                                    <p className="meeting-txt">{item.text}</p>
+                                                </Link>  
+                                                <div className="user-date">
+                                                    <time dateTime="2021-07-30" className="user-updated-time">
+                                                        <span className="user-updated">最終更新日：
+                                                            <span className="date">
+                                                                {moment(item.updated_at).format('YYYY/MM/DD')}
+                                                            </span>
+                                                        </span>
+                                                    </time>
+                                                    <time dateTime="2021-07-30" className="user-awareness-time">
+                                                        <span className="user-awareness">承知日：
+                                                            <span className="date">
+                                                                { moment(item.approval.approval_at).format('YYYY/MM/DD') }
+                                                            </span>
+                                                        </span>
+                                                    </time>
+                                                </div>
+                                            </div>
+                                        )
+                                    : <p className="text-center py-5 ft-xs-17">検索されたデータはありません。</p>
+                                } 
+                                </InfiniteScroll>
+                            </div>
+                        }
+                        </div>
+                    }
                 </section>
             </div>
         </div>

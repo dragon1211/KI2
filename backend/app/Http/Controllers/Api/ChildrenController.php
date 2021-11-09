@@ -55,7 +55,13 @@ class ChildrenController extends Controller {
             TelActivation::create($create);
 
             // SMSを送ります。
-            \Notification::route('nexmo', '81'.substr($r->tel, 1))->notify(new SmsNotification($token));
+            $message = 'KIKI承知システムの招待URLが届きました。
+
+▼招待URLはコチラ
+https://kikikan.jp/c-account/register/'.$token.'
+
+KIKI承知システムを使って「聞いてない！」「言ってない！」などの問題を解決しよう。';
+            \Notification::route('nexmo', '81'.substr($r->tel, 1))->notify(new SmsNotification($message));
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
@@ -67,23 +73,53 @@ class ChildrenController extends Controller {
     }
 
     public function registerMain (Request $r) {
+        // ファイルサイズは10MiB以内
+        Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
+            try {
+                if (is_null($value)) return true;
+                return strlen(base64_decode($value)) < 1048576;
+            } catch (\Throwable $e) {
+                Log::critical($e->getMessage());
+                return false;
+            }
+        });
+    
+        // ミームタイプ
+        Validator::extend('image_meme', function ($attribute, $value, $params, $validator) {
+            try {
+                if (is_null($value)) return true;
+                return (
+                    mime_content_type($value) == 'image/jpeg' || // jpg
+                    mime_content_type($value) == 'image/png'  || // png
+                    mime_content_type($value) == 'image/gif'     // gif
+                );
+            } catch (\Throwable $e) {
+                Log::critical($e->getMessage());
+                return false;
+            }
+        });
+
         $validate = Validator::make($r->all(), [
-            'token' => 'required',
             'identity' => 'required|max:20|alpha_num',
             'email' => 'required|unique:children|max:255|email',
-            'password' => 'required|min:8|max:72|confirmed',
+            'password' => 'required|min:8|max:72',
             'last_name' => 'required|max:100',
             'first_name' => 'required|max:100',
-            'image' => 'max:1024|mimes:jpg,png,gif',
+            'image' => 'image_size|image_meme',
             'company' => 'max:100',
         ]);
+
         if ($validate->fails()) {
             // バリデーションエラー
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
         // 有効期限が切れている場合
-        if ($get = TelActivation::where('token', $r->token)->first() && strtotime($get->ttl) > time()) {
+        if (null === ($get = TelActivation::where('token', $r->token)->first())) {
+            return ['status_code' => 400, 'error_messages' => ['仮登録の有効期限が切れました。改めて親にお問い合わせいただき、再登録の手続きを行ってください。']];
+        }
+
+        if (time() > strtotime($get->ttl)) {
             return ['status_code' => 400, 'error_messages' => ['仮登録の有効期限が切れました。改めて親にお問い合わせいただき、再登録の手続きを行ってください。']];
         }
 
@@ -100,7 +136,8 @@ class ChildrenController extends Controller {
         ];
 
         try {
-            Child::create($insert);
+            $child = Child::create($insert);
+            TelActivation::where('token', $r->token)->update(['child_id' => $child->id]);
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
@@ -140,7 +177,11 @@ class ChildrenController extends Controller {
             TelActivation::create($create);
 
             // SMSを送ります。
-            \Notification::route('nexmo', '81'.substr($r->tel, 1))->notify(new SmsNotification($token));
+            $message = 'パスワード再発行用URLです。
+有効期限は8時間以内です。
+
+https://kikikan.jp/c-account/forgot-password/reset/'.$token;
+            \Notification::route('nexmo', '81'.substr($r->tel, 1))->notify(new SmsNotification($message));
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
@@ -405,10 +446,11 @@ class ChildrenController extends Controller {
         return ['status_code' => 200, 'success_messages' => ['パスワードの更新に成功しました。']];
     }
 
-    public function withdrawal ($child_id) {
+    public function withdrawal (Request $r) {
         // 削除成功
         try {
-            Child::where('id', (int)$child_id)->delete();
+            Child::where('id', (int)$r->child_id)->delete();
+            Session::forget($this->getGuard());
          } catch (\Throwable $e) {
             Log::critical($e->getMessage());
             return ['status_code' => 400];
