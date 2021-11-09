@@ -62,19 +62,15 @@ Route::group(['prefix' => 'c-account'],                 function () {
     Route::get('/login',                                '\App\Http\Controllers\Api\ChildrenController@checkLogin')->name('childrenlogin');
     Route::get('/logout',                               '\App\Http\Controllers\Api\ChildrenController@logout');
     Route::get('/withdrawal/complete',                  function () { return view('c_account.auth'); });
+    Route::get('/register/{token}',                     function () { return view('c_account.auth'); });
 
-    Route::group(['prefix' => 'register'],              function () {
-        Route::get('/{token}',                          function () { return view('c_account.auth'); });
-        Route::get('/complete',                         function () { return view('c_account.auth'); });
-        Route::get('/error',                            function () { return view('c_account.auth'); });
-    });
     Route::group(['prefix' => 'forgot-password'],       function () {
         Route::get('/',                                 function () { return view('c_account.auth'); });
         Route::get('/reset/{token}',                    function () { return view('c_account.auth'); });
         Route::get('/complete',                         function () { return view('c_account.auth'); });
     });
 
-    Route::group(['middleware' => 'auth:children'],     function () {
+    Route::group(['middleware' => ['auth:children', 'notice.nonapproval']],     function () {
         Route::group(['prefix' => 'meeting'],           function () {
             Route::get('/',                             function () { return view('c_account.index'); });
             Route::get('/detail/{id}',                  function () { return view('c_account.index'); });

@@ -76,6 +76,7 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
         // ファイルサイズは10MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
             try {
+                if (is_null($value)) return true;
                 return strlen(base64_decode($value)) < 1048576;
             } catch (\Throwable $e) {
                 Log::critical($e->getMessage());
@@ -86,6 +87,7 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
         // ミームタイプ
         Validator::extend('image_meme', function ($attribute, $value, $params, $validator) {
             try {
+                if (is_null($value)) return true;
                 return (
                     mime_content_type($value) == 'image/jpeg' || // jpg
                     mime_content_type($value) == 'image/png'  || // png
@@ -113,7 +115,11 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
         }
 
         // 有効期限が切れている場合
-        if ($get = TelActivation::where('token', $r->token)->first() && strtotime($get->ttl) > time()) {
+        if (null === ($get = TelActivation::where('token', $r->token)->first())) {
+            return ['status_code' => 400, 'error_messages' => ['仮登録の有効期限が切れました。改めて親にお問い合わせいただき、再登録の手続きを行ってください。']];
+        }
+
+        if (time() > strtotime($get->ttl)) {
             return ['status_code' => 400, 'error_messages' => ['仮登録の有効期限が切れました。改めて親にお問い合わせいただき、再登録の手続きを行ってください。']];
         }
 
@@ -130,7 +136,8 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
         ];
 
         try {
-            Child::create($insert);
+            $child = Child::create($insert);
+            TelActivation::where('token', $r->token)->update(['child_id' => $child->id]);
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());

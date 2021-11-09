@@ -6,7 +6,7 @@ import axios from 'axios';
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
-const ChildSignUp = () => {
+const ChildSignUp = (props) => {
 
     const history = useHistory();
     const [submit, setSubmit] = useState(false);
@@ -50,6 +50,7 @@ const ChildSignUp = () => {
         formdata.append('password', password);
         formdata.append('company', company);
         formdata.append('image', image);
+        formdata.append('token', props.match.params.token);
         axios.post('/api/children/registerMain', formdata)
         .then(response => {
             setSubmit(false);
@@ -59,7 +60,6 @@ const ChildSignUp = () => {
                 case 400: history.push({pathname: '/c-account/register/error',  state: {}}); break;
             };
         })
-        .catch(err=>console.log(err))
     }
 
 
