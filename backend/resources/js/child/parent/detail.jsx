@@ -1,25 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { CircularProgress  } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 
 import Notification from '../../component/notification';
 
 const ParentDetail = (props) => {
 
-    const [loaded, setLoaded] = useState(false);
-    const [parent, setParent] = useState({image:'', email:'', profile:'', tel:'', company:''});
+    const history = useHistory();
+    
+    const parent = {
+        tel:'08012927104',
+        email:'chankan07@gmail.com',
+        text:'あああああああああああああああああああああああああああああああああああああああああああああ',
+        company:'株式会社ZOTMAN'
+    }
 
     useEffect(
         () => {
-            setLoaded(false);
-            axios.get('/api/children/fathers/detail/'+props.match.params.father_id)
-            .then(response => {
-                setLoaded(true);
-                if(response.data.status_code==200){
-                    setParent(response.data.params);
-                }
-            })
-            .catch(err=>console.log(err))
+            const formdata = new FormData();
+            let child_id = 1;
+
+            // axios.get('/api/meetings/listOfNonApprovalOfChild', {child_id: child_id})
+            // .then(response => {
+            //     if(response.data.status_code==200){
+            //         // window.location.href = '/register/c-account/complete';
+            //     }
+            //     else if(response.data.status_code==400){
+            //         // window.location.href = '/register/c-account/error';
+            //     }
+            //     else if(response.data.status_code==500){
+            //         // window.location.href = '/unknown-error';
+            //     }
+            // })
+            // .catch(err=>console.log(err))
         },[]
     );
     
@@ -36,40 +49,34 @@ const ParentDetail = (props) => {
             <div className="l-content-wrap">
                 <section className="profile-container">
                     <div className="profile-wrap">
-                        {
-                            !loaded &&
-                                <CircularProgress color="secondary" className="css-loader"/>
-                        }
-                        {
-                            loaded && 
-                                <div className="profile-content">
-                                    <div className="profile-thumb">
-                                        <img src={parent.image} className="profile-image" alt="parent-image" />                    
-                                    </div>
-                                    <p className="profile-name ft-xs-16">{parent.company}</p>
-                                    <div className="profile-info ft-xs-17">
-                                        <div className="profile-info__item">
-                                            <a href={`mailto:${parent.email}`}>
-                                                <p className="profile-info__icon">
-                                                    <img src="/assets/img/icon/mail.svg" alt="メール"/>
-                                                </p>
-                                                <p className="txt">{parent.email}</p>
-                                            </a>
-                                        </div>
-                                        <div className="profile-info__item">
-                                            <a href={`tel:${parent.tel}`}>
-                                                <p className="profile-info__icon">
-                                                    <img src="/assets/img/icon/phone.svg" alt="電話" />
-                                                </p>
-                                                <p className="txt">{parent.tel}</p>
-                                            </a>
-                                        </div>
-                                        <div className="profile-info__item txt-long">
-                                            <p className="txt">{parent.profile}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                        }
+                        <div className="profile-content">
+                        <div className="profile-thumb">
+                            <img src="/assets/img/avatar/avatar-sample04.jpg" className="profile-image" alt="" />                    
+                        </div>
+                        <p className="profile-name ft-xs-13">{parent.company}</p>
+                        <div className="profile-info ft-xs-13">
+                            <div className="profile-info__item">
+                                <a href={`mailto:${parent.email}`}>
+                                    <p className="profile-info__icon">
+                                        <img src="/assets/img/icon/mail.svg" alt="メール"/>
+                                    </p>
+                                    <p className="txt">{parent.email}</p>
+                                </a>
+                            </div>
+                            <div className="profile-info__item">
+                                <a href={`tel:${parent.tel}`}>
+                                    <p className="profile-info__icon">
+                                        <img src="/assets/img/icon/phone.svg" alt="電話" />
+                                    </p>
+                                    <p className="txt">{parent.tel}</p>
+                                </a>
+                            </div>
+                            <div className="profile-info__item txt-long">
+                                <p className="txt">{parent.text}</p>
+                            </div>
+                        </div>
+        
+                        </div>
                     </div>
                 </section>
             </div>

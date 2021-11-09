@@ -23,13 +23,16 @@ export default function ModalMemo({ show, content, handleClose }){
         onClose={handleClose}
         >
                 <DialogTitle style={{padding:'20px 10px',textAlign:'center', borderBottom:'1px solid #e0e0e0'}}>
-                    <span className="ft-20 ft-xs-18 text-center font-weight-bold">メモ</span>
+                    <span className="ft-20 ft-xs-18 text-center">メモ</span>
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description" style={{minHeight:'200px'}} className="pt-4">
-                        <span className="ft-20 ft-xs-16 text-black">{content}</span>
+                        <span className="ft-20 ft-xs-16">{content}</span>
                     </DialogContentText>
                 </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}><span className="text-black ft-18 ft-xs-16">閉じる</span></Button>
+                </DialogActions>
             </Dialog>
 	)
 }

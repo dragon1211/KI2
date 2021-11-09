@@ -52,9 +52,9 @@ const ChildSignUpTemporary = () => {
 
             <div className="mt-5">
                 <LoadingButton type="submit" fullWidth 
-                    className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
+                    className="btn-edit btn-default btn-h60 bg-yellow rounded-15 py-5"
                     loading={submit}>
-                    <span className={`ft-18 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>仮登録送信</span>
+                    <span className={`ft-18 font-weight-bold ${!submit && 'text-black'}`}>仮登録送信</span>
                 </LoadingButton>
             </div>
             {

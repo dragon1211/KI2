@@ -12,15 +12,13 @@ const ChildLogin = () => {
     const [tel, setTel] = useState('');
     const [password, setPassword] = useState('');
 
-    const [_422errors, set422Errors] = useState({tel: '', password: ''});
-    const [_400error, set400Error] = useState(null);
+    const [_422errors, set422Errors] = useState({tel:'', password:''});
+    const [_400error, set400Error] = useState('');
 
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setSubmit(true);
-        set422Errors({tel:'', password:''});
-
         const formdata = new FormData();
         formdata.append('tel', tel);
         formdata.append('password', password);
@@ -31,14 +29,14 @@ const ChildLogin = () => {
                 case 200:{
                     localStorage.setItem("from_login", true);
                     window.location.href = '/c-account/meeting';
-                    break;
                 }
-                case 422: set422Errors(response.data.error_messages); break;
-                case 400: set400Error(response.data.error_message[0]); break;
+                case 422: set422Errors(response.data.error_messages);
+                case 400: set400Error(response.data.error_messages);
             }
         })
         .catch(err=>console.log(err))
     }
+
 
 	return (
         <form onSubmit={handleSubmit} noValidate>
@@ -58,7 +56,7 @@ const ChildLogin = () => {
 
             <div className="edit-set">
                 <label htmlFor="password"   className="control-label ft-14 ft-md-12"> パスワード </label>
-                <input type="password" name="password" id="password" className={`input-default input-h60 ${ _422errors.password && "is-invalid  c-input__target" }`}  value={password} onChange={e=>setPassword(e.target.value)}/>
+                <input type="password" name="password" id="password" className={`input-default input-h60 ${ _422errors.password && "is-invalid  c-input__target" }`}  value={password} onChange={e=>setPassword(e.target.value)} autoFocus/>
                 {  
                     _422errors.password && 
                         <span className="l-alert__text--error ft-16 ft-md-14">
@@ -81,7 +79,7 @@ const ChildLogin = () => {
                 <LoadingButton type="submit" 
                     loading={submit} 
                     fullWidth 
-                    className="btn-edit btn-default btn-h75 bg-yellow rounded-20"> 
+                    className="btn-edit btn-default btn-h60 bg-yellow rounded-20 py-5"> 
                     <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>
                         ログイン
                     </span> 
@@ -95,7 +93,7 @@ const ChildLogin = () => {
                 </Link>
             </div>
             {
-                _400error && <Alert type="fail" hide={()=>set400Error(null)}>{_400error}</Alert>
+                _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
             } 
         </form>
 	)

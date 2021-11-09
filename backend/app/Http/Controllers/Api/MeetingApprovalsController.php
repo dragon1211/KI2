@@ -22,7 +22,7 @@ class MeetingApprovalsController extends Controller {
         try {
             foreach (json_decode($r->children) as $child) {
                 $create['child_id'] = $child;
-                MeetingApprovals::create($create);
+                MeetingApprovals::where('meeting_id', (int)$r->meeting_id)->create($create);
             }
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
@@ -55,15 +55,18 @@ class MeetingApprovalsController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['承認に失敗しました。']];
         }
 
-        if (null === (MeetingApprovals::where('meeting_id', (int)$r->meeting_id)->where('child_id', (int)$r->child_id)->first())) {
+        if (null === (MeetingApprovals::where('id', (int)$r->meeting_id)->where('child_id', (int)$r->child_id)->first())) {
             return ['status_code' => 400, 'error_messages' => ['承認に失敗しました。']];
         }
 
-        // $update = ['approval_at' => null];
-        $update = ['approval_at' => date('Y-m-d H:i:s')];
+        $create = [
+            'child_id' => $r->child_id,
+            'meeting_id' => $r->meeting_id,
+            'approval_at' => date('Y-m-d H:i:s'),
+        ];
 
         try {
-            MeetingApprovals::where('meeting_id', (int)$r->meeting_id)->where('child_id', (int)$r->child_id)->update($update);
+            MeetingApprovals::create($create);
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());

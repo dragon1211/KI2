@@ -1,26 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
+
 import axios from 'axios';
-import { LoadingButton } from '@material-ui/lab';
 
 import Notification from '../../component/notification';
 
 const ProfileWithdrawal = () => {
 
-    const [submit, setSubmit] = useState(false);
-    const [_400error, set400Error] = useState('');
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        setSubmit(true);
-        let child_id = document.getElementById("child_id").value;
-        axios.delete('/api/children/withdrawal', {params:{child_id: child_id}})
-        .then(response => {
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: window.location.href = "/c-account/withdrawal/complete"; break;
-                case 400: set400Error("失敗しました。"); break;
-            }
-        })
+        // axios.delete('/api/children/delete/1')
+        // .then(response => {
+        //     if(response.data.status_code==200){
+                
+        //     }
+        //     else if(response.data.status_code==400){
+                
+        //     }
+        // })
+        // .catch(err=>console.log(err))
     }
     
 	return (
@@ -39,24 +37,15 @@ const ProfileWithdrawal = () => {
                         <div className="edit-content">
             
                             <form className="edit-form" onSubmit={handleSubmit} noValidate>
-                                <div className="edit-set-bg ft-xs-16">
+                                <div className="edit-set-bg ft-xs-14">
                                     <p>本当に退会してもよろしいでしょうか？</p>
                                 </div>
-                                <div>
-                                    <LoadingButton type="submit" fullWidth 
-                                        loading = {submit}
-                                        className="btn-edit btn-default btn-h75 bg-yellow rounded-20">
-                                        <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>退会する</span>
-                                    </LoadingButton>
-                                </div>
+                                
+                                <button type="submit" className="btn-edit btn-default btn-h70 btn-r20 btn-yellow ft-xs-15">退会する</button>
                             </form>
         
                         </div>
                     </div>
-                    {
-                        _400error && 
-                            <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-                    } 
                 </section>
             </div>
         </div>

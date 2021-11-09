@@ -10,16 +10,16 @@ use Illuminate\Notifications\Notification;
 class SmsNotification extends Notification
 {
     use Queueable;
-    private $message;
+    private $token;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($message)
+    public function __construct($token)
     {
-        $this->message = $message;
+        $this->token = $token;
     }
 
     /**
@@ -42,7 +42,7 @@ class SmsNotification extends Notification
     public function toNexmo($notifiable)
     {
         return (new NexmoMessage())
-            ->content($this->message)
+            ->content('認証トークンは '.$this->token.' です。')
             ->unicode();
     }
 

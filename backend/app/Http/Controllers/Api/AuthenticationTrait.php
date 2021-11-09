@@ -24,12 +24,8 @@ trait AuthenticationTrait {
         //     }
         // }
 
-        $chk = $this->getGuard() == 'children' ?
-            ['tel', $r->tel, 'numeric|digits_between:0,99999999999|starts_with:0'] :
-            ['email', $r->email, 'max:255|email'];
-
         $validate = Validator::make($r->all(), [
-            $chk[0] => 'required|'.$chk[2],
+            'email' => 'required|max:255|email',
             'password' => 'required|min:8|max:72',
         ]);
 
@@ -39,7 +35,7 @@ trait AuthenticationTrait {
         }
 
         // 存在しない場合
-        if (null === ($get = $this->getModel()->where($chk[0], $chk[1])->first())) {
+        if (null === ($get = $this->getModel()->where('email', $r->email)->first())) {
             return ['status_code' => 400, 'error_message' => ['ログインに失敗しました。10回連続で失敗すると、一定期間ログインできなくなります。']];
         }
 

@@ -11195,82 +11195,6 @@ input[type=date].hide-calender::-webkit-inner-spin-button, input[type=date].hide
   }
 }
 
-/**===== dots3 =====*/
-#dots3 {
-  display: block;
-  position: absolute;
-  bottom: -70px;
-  left: 50%;
-  height: 50px;
-  width: 50px;
-  margin: -25px 0 0 -25px;
-}
-
-#dots3 span {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: 50%;
-  -webkit-animation: dots3 1.5s infinite ease-out;
-  animation: dots3 1.5s infinite ease-out;
-}
-
-#dots3 span:nth-child(1) {
-  left: 0px;
-  -webkit-animation-delay: 0.2s;
-  animation-delay: 0.2s;
-}
-
-#dots3 span:nth-child(2) {
-  left: 15px;
-  -webkit-animation-delay: 0.4s;
-  animation-delay: 0.4s;
-}
-
-#dots3 span:nth-child(3) {
-  left: 30px;
-  -webkit-animation-delay: 0.6s;
-  animation-delay: 0.6s;
-}
-
-#dots3 span:nth-child(4) {
-  left: 45px;
-  -webkit-animation-delay: 0.8s;
-  animation-delay: 0.8s;
-}
-
-@keyframes dots3 {
-  0% {
-    background: #000000;
-    transform: scale(0.1);
-    transform: scale(0.1);
-  }
-  50% {
-    background: rgba(0, 0, 0, 0.25);
-    transform: scale(0.5);
-    transform: scale(0.5);
-  }
-  100% {
-    background: #000000;
-    transform: scale(1);
-    transform: scale(1);
-  }
-}
-@-webkit-keyframes dots3 {
-  0% {
-    background: #000000;
-    transform: scale(0.1);
-  }
-  50% {
-    background: rgba(0, 0, 0, 0.25);
-    transform: scale(0.5);
-  }
-  100% {
-    background: #000000;
-    transform: scale(1);
-  }
-}
 .bg-red-4 {
   background-color: rgba(255, 0, 0, 0.4);
 }
@@ -12122,8 +12046,8 @@ input:-internal-autofill-selected {
 
 .avatar-wrapper {
   position: relative;
-  width: 220px;
-  height: 220px;
+  width: 200px;
+  height: 200px;
   margin: auto;
   border-radius: 50% 50%;
   border: 1px solid gainsboro;
@@ -12149,20 +12073,20 @@ a {
 
 @media (max-width: 575.98px) {
   .l-content__ttl h2 {
-    font-size: 25px !important;
+    font-size: 20px !important;
   }
 
   .meeting-tab {
-    height: 55px !important;
-    font-size: 16px;
+    height: 45px !important;
+    font-size: 15px;
   }
 
   .meeting-ttl {
-    font-size: 17px !important;
+    font-size: 15px !important;
   }
 
   .meeting-txt {
-    font-size: 16px !important;
+    font-size: 14px !important;
   }
 
   .user-date span {
@@ -12175,31 +12099,37 @@ a {
   }
 
   .meeting-label {
-    font-size: 17px !important;
+    font-size: 15px !important;
   }
 
   .user-name {
-    font-size: 16px !important;
+    font-size: 13px !important;
   }
 
   .user-advice-btn span {
-    font-size: 15px !important;
+    font-size: 14px !important;
   }
 
   .meeting-date {
-    font-size: 15px !important;
+    font-size: 13px !important;
   }
 
   .p-article__pdf__btn span {
-    font-size: 16px !important;
+    font-size: 14px !important;
   }
 
   .p-article__txt {
-    font-size: 16px !important;
+    font-size: 13.5px !important;
   }
 
   .p-consent-btn span {
-    font-size: 16px !important;
+    font-size: 15px !important;
+  }
+
+  .search-item .user-avatar {
+    min-width: 50px !important;
+    width: 50px !important;
+    height: 50px !important;
   }
 
   .profile-info__item {
@@ -12220,6 +12150,11 @@ a {
   height: 50px !important;
   width: 54px !important;
   top: 12px !important;
+}
+
+.profile-thumb {
+  width: 170px !important;
+  height: 170px !important;
 }
 
 .profile-image {
@@ -12272,43 +12207,10 @@ a {
   display: none !important;
 }
 
-.avatar-img, .father-img {
+.avatar-img {
   width: 100%;
   height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
   border-radius: 50%;
-}
-
-.p-file-for figure {
-  height: 250px;
-}
-.p-file-for figure img {
-  width: 100%;
-  height: 100%;
-  -o-object-fit: contain;
-     object-fit: contain;
-}
-
-.mypage-nav-list__item.nav-active .prof-wrap {
-  border: 1px solid #F0DE00 !important;
-}
-@media screen and (min-width: 1068px) {
-  .mypage-nav-list__item .prof-wrap {
-    width: 24px !important;
-    height: 24px !important;
-  }
-}
-
-.css-loader {
-  top: calc(45vh - 22px);
-  color: green !important;
-  position: fixed;
-  left: calc(50vw - 22px);
-  z-index: 10;
-}
-@media screen and (min-width: 1068px) {
-  .css-loader {
-    left: calc(50vw + 120px - 22px);
-  }
 }

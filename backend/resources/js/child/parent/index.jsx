@@ -1,51 +1,88 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import { CircularProgress  } from '@material-ui/core';
 
 import Notification from '../../component/notification';
-import InfiniteScroll from "react-infinite-scroll-component";
 
-const INFINITE = 10;
-const SCROLL_DELAY_TIME = 1500;
+const parent_list = [
+    {
+        id:1,
+        company: '株式会社ZOTMAN',
+        image:'/assets/img/avatar/avatar-sample03@2x.png',
+    },
+    {
+        id:2,
+        company: '株式会社ZOTMAN',
+        image:'/assets/img/avatar/avatar-sample03@2x.png',
+    },
+    {
+        id:3,
+        company: '株式会社ZOTMAN',
+        image:'/assets/img/avatar/avatar-sample03@2x.png',
+    },
+    {
+        id:4,
+        company: '株式会社ZOTMAN',
+        image:'/assets/img/avatar/avatar-sample03@2x.png',
+    },
+    {
+        id:5,
+        company: '株式会社ZOTMAN',
+        image:'/assets/img/avatar/avatar-sample03@2x.png',
+    },
+    {
+        id:6,
+        company: '株式会社ZOTMAN',
+        image:'/assets/img/avatar/avatar-sample03@2x.png',
+    },
+    {
+        id:7,
+        company: '株式会社ZOTMAN',
+        image:'/assets/img/avatar/avatar-sample03@2x.png',
+    },
+    {
+        id:8,
+        company: '株式会社ZOTMAN',
+        image:'/assets/img/avatar/avatar-sample03@2x.png',
+    }
+]
+
 
 const Parent = () => {
     
     const history = useHistory();
-    const [parent_list, setParentList] = useState([]);
-    const [fetch_parent_list, setFetchParentList] = useState([]);
-    const [loaded, setLoaded] = useState(false);
+    const [tab_status, setTabStatus] = useState(false);
+    // const [meeting_list, setMettingList] = useState([]);
 
-    useEffect(() => {
-        setLoaded(false);
-        let child_id = document.getElementById('child_id').value;
-        axios.get('/api/children/fathers/listOfChild', {params: {child_id: child_id}})
-        .then(response => {
-            setLoaded(true);
-            if(response.data.status_code==200){
-                console.log(response.data.params);
-                setParentList(response.data.params);
-                var len = response.data.params.length;
-                if(len > INFINITE)
-                    setFetchParentList(response.data.params.slice(0, INFINITE));
-                else setFetchParentList(response.data.params.slice(0, len));
-            }
-        })
-        .catch(err=>console.log(err))
-    }, []);
+    const clickTab01 = () => {
+        setTabStatus(false);
+    }
 
+    const clickTab02 = () => {
+        setTabStatus(true);
+    }
 
-    const fetchMoreParentList = () => {
-        setTimeout(() => {
-            var x = fetch_parent_list.length;
-            var y = parent_list.length;
-            var c = 0;
-            if(x+INFINITE < y) c = INFINITE;
-            else c = y - x;
-            setFetchParentList(parent_list.slice(0, x+c));
-        }, SCROLL_DELAY_TIME);
-    };
+    useEffect(
+        () => {
+            const formdata = new FormData();
+            let child_id = 1;
 
+            // axios.get('/api/fathers/listOfChild/')
+            // .then(response => {
+            //     if(response.data.status_code==200){
+            //         // window.location.href = '/register/c-account/complete';
+            //         console.log(response.data)
+            //     }
+            //     else if(response.data.status_code==400){
+            //         // window.location.href = '/register/c-account/error';
+            //     }
+            //     else if(response.data.status_code==500){
+            //         // window.location.href = '/unknown-error';
+            //     }
+            // })
+            // .catch(err=>console.log(err))
+        },[]
+    );
     
 	return (
         <div className="l-content">
@@ -57,59 +94,35 @@ const Parent = () => {
             </div>
 
             <div className="l-content-wrap">
-            {
-                !loaded &&
-                    <CircularProgress color="secondary" className="css-loader"/>
-            }
-            {
-                loaded && 
                 <section className="search-container">
                     <div className="search-wrap">
                         <div className="search-content">
-                            <InfiniteScroll
-                                dataLength={fetch_parent_list.length}
-                                next={fetchMoreParentList}
-                                hasMore={fetch_parent_list.length != parent_list.length}
-                                loader={
-                                    <div id="dots3">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </div>
-                                }
-                                style={{overflow:'none', position:'relative'}}
-                            >
                             {
-                                fetch_parent_list.length>0 ?
-                                    fetch_parent_list.map((item, id)=>
-                                    <div className="search-item border-0" key={id}>
-                                        <a onClick={e => {
-                                                e.preventDefault();
-                                                history.push({
-                                                pathname: `/c-account/parent/detail/${item.id}`,
-                                                state: {}
-                                                });
-                                            }}
-                                        >
-                                            <div className="user-wrap">
-                                                <div className="user-avatar">
-                                                    <img alt="name" className="avatar-img" src={item.image}/>
-                                                </div>
-                                                <div className="user-info">
-                                                    <p className="user-name">{item.company}</p>
-                                                </div>
+                                parent_list.map((item, id)=>
+                                <div className="search-item border-0" key={id}>
+                                    <a onClick={e => {
+                                            e.preventDefault();
+                                            history.push({
+                                            pathname: `/c-account/parent/detail/${item.id}`,
+                                            state: {}
+                                            });
+                                        }}
+                                    >
+                                        <div className="user-wrap">
+                                            <div className="user-avatar">
+                                                <img alt="name" className="avatar-img" src={item.image}/>
                                             </div>
-                                        </a>
-                                    </div>
-                                    )
-                                :<p className="text-center py-5 ft-xs-17">親データはありません。</p>
+                                            <div className="user-info">
+                                                <p className="user-name">{item.company}</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                )
                             }
-                            </InfiniteScroll>
                         </div>
                     </div>
                 </section>
-            }
             </div>
         </div>
         

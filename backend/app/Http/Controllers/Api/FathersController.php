@@ -366,7 +366,6 @@ class FathersController extends Controller {
     public function withdrawal (Request $r) {
         try {
             Father::where('id', (int)$r->father_id)->delete();
-            Session::forget($this->getGuard());
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());

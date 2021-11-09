@@ -6,7 +6,7 @@ import axios from 'axios';
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
-const ChildSignUp = (props) => {
+const ChildSignUp = () => {
 
     const history = useHistory();
     const [submit, setSubmit] = useState(false);
@@ -50,7 +50,6 @@ const ChildSignUp = (props) => {
         formdata.append('password', password);
         formdata.append('company', company);
         formdata.append('image', image);
-        formdata.append('token', props.match.params.token);
         axios.post('/api/children/registerMain', formdata)
         .then(response => {
             setSubmit(false);
@@ -60,6 +59,7 @@ const ChildSignUp = (props) => {
                 case 400: history.push({pathname: '/c-account/register/error',  state: {}}); break;
             };
         })
+        .catch(err=>console.log(err))
     }
 
 
@@ -83,12 +83,14 @@ const ChildSignUp = (props) => {
                 <input type="file" id="avatar" name="avatar" className="d-none" accept=".png, .jpg, .jpeg" onChange={(e) => handleImageChange(e)}/>
                 <div className={`avatar-wrapper  ${ _422errors.image && "is-invalid c-input__target" }` }>
                     <label htmlFor="avatar" className='avatar-label'>
-                        <IconButton color="primary" aria-label="upload picture" component="span" className="bg-yellow shadow-sm w-50-px h-50-px">
-                            <PhotoCameraOutlinedIcon style={{width:'25px', height:'25px', color:'black'}}/>
+                        <IconButton color="primary" aria-label="upload picture" component="span" className="bg-yellow shadow-sm w-40-px h-40-px">
+                            <PhotoCameraOutlinedIcon style={{width:'20px', height:'20px', color:'black'}}/>
+                            {/* <img src="/assets/img/icon/camera.svg" width="20" height="20"/> */}
                         </IconButton>
                     </label>
                     {  
-                        image && <img src={image} className="avatar-img" alt="avatar-img"/>  
+                        image && 
+                            <img src={image} alt="" width ="100%" height="100%" style={{borderRadius:'50%'}}/>  
                     }
                 </div>
                 {   
@@ -167,7 +169,7 @@ const ChildSignUp = (props) => {
             
             <div className="mt-5">
                 <LoadingButton type="submit" fullWidth 
-                    className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
+                    className="btn-edit btn-default btn-h60 bg-yellow rounded-15 py-5"
                     loading={submit}>
                     <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>本登録</span>
                 </LoadingButton>
