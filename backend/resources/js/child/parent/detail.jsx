@@ -19,7 +19,6 @@ const ParentDetail = (props) => {
                     setParent(response.data.params);
                 }
             })
-            .catch(err=>console.log(err))
         },[]
     );
     

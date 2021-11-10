@@ -24,8 +24,19 @@ trait AuthenticationTrait {
         //     }
         // }
 
+        if ($this->getGuard() == 'children') {
+            Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
+                try {
+                    return strlen((string)$value) == 10 || strlen((string)$value) == 11;
+                } catch (\Throwable $e) {
+                    Log::critical($e->getMessage());
+                    return false;
+                }
+            });
+        }
+
         $chk = $this->getGuard() == 'children' ?
-            ['tel', $r->tel, 'numeric|digits_between:0,99999999999|starts_with:0'] :
+            ['tel', $r->tel, 'numeric|starts_with:0|tel_size'] :
             ['email', $r->email, 'max:255|email'];
 
         $validate = Validator::make($r->all(), [

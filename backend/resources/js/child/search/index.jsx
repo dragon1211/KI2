@@ -43,7 +43,6 @@ const Search = () => {
         .then((response) => {
             setLoaded1(true);
             if(response.data.status_code==200){
-                console.log(response.data)
                 setMettingListNonApproval(response.data.params);
                 var len = response.data.params.length;
                 if(len > INFINITE)
@@ -55,7 +54,6 @@ const Search = () => {
         .then((response) => {
             setLoaded2(true);
             if(response.data.status_code==200){
-                console.log(response.data)
                 setMettingListApproval(response.data.params);
                 var len = response.data.params.length;
                 if(len > INFINITE)

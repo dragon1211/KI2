@@ -29,7 +29,6 @@ const Profile = () => {
                 setImage(response.data.params.image);
             }
         })
-        .catch(err=>console.log(err))
     },[]);
 
     const handleLogout = () => {

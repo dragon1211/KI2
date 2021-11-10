@@ -23,7 +23,6 @@ const Parent = () => {
         .then(response => {
             setLoaded(true);
             if(response.data.status_code==200){
-                console.log(response.data.params);
                 setParentList(response.data.params);
                 var len = response.data.params.length;
                 if(len > INFINITE)

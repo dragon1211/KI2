@@ -45,7 +45,6 @@ const Meeting = () => {
             .then(response => {
                 setLoaded1(true);
                 if(response.data.status_code==200){
-                    console.log(response.data.params)
                     setMettingListNonApproval(response.data.params);
                     var len = response.data.params.length;
                     if(len > INFINITE)
@@ -58,7 +57,6 @@ const Meeting = () => {
             .then(response => {
                 setLoaded2(true);
                 if(response.data.status_code==200){
-                    console.log(response.data.params)
                     setMettingListApproval(response.data.params);
                     var len = response.data.params.length;
                     if(len > INFINITE)

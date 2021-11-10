@@ -48,7 +48,6 @@ const MeetingDetail = (props) => {
             if(response.data.status_code == 200)
             {
                 var meeting = response.data.params;
-                console.log(meeting);
                 setMeeting(meeting);
                 if(meeting.meeting_image.length > 0) setThumbnail(meeting.meeting_image[0].image);
                 if(meeting.approval.approval_at != null){

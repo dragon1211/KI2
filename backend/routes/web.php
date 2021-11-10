@@ -65,8 +65,8 @@ Route::group(['prefix' => 'c-account'],                 function () {
 
     Route::group(['prefix' => 'register'],              function () {
         Route::get('/{token}',                          function () { return view('c_account.auth'); });
-        Route::get('/{token}/complete',                 function () { return view('c_account.auth'); });
-        Route::get('/{token}/error',                    function () { return view('c_account.auth'); });
+        Route::get('/complete/{token}',                 function () { return view('c_account.auth'); });
+        Route::get('/error/{token}',                    function () { return view('c_account.auth'); });
     });
     Route::group(['prefix' => 'forgot-password'],       function () {
         Route::get('/',                                 function () { return view('c_account.auth'); });

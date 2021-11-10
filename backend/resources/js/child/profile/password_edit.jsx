@@ -43,7 +43,6 @@ const ProfilePasswordEdit = () => {
                 case 422: set422Errors(response.data.error_messages); break;
             }
         })
-        .catch(err=>console.log(err))
     }
 
 

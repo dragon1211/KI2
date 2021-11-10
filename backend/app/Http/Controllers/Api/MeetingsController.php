@@ -498,8 +498,16 @@ class MeetingsController extends Controller {
         if (null === ($result->meeting_image = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$result->id)->get())) {
             $result->meeting_image = [];
         }
-        if (null === ($result->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$result->id)->first())) {
-            $result->approval = new \stdClass();
+
+        if (request()->route()->action['as'] != 'mdc') {
+            if (null === ($result->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$result->id)->get())) {
+                $result->approval = [];
+            }
+        }
+        else {
+            if (null === ($result->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$result->id)->first())) {
+                $result->approval = new \stdClass();
+            }
         }
 
         if (request()->route()->action['as'] == 'mdc') {

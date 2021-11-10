@@ -50,7 +50,6 @@ const ProfileEdit = () => {
                 if(params.company)setCompany(params.company);
             }
         })
-        .catch(err=>console.log(err))
     },[]);
 
 

@@ -3,7 +3,7 @@ import { useHistory } from 'react-router';
 import { LoadingButton } from '@material-ui/lab';
 import axios from 'axios';
 
-
+import Alert from '../../../component/alert';
 
 const ChildForgotPasswordReset = (props) => {
 
@@ -23,7 +23,7 @@ const ChildForgotPasswordReset = (props) => {
         setSubmit(true);
         let req = {
             password: password,
-            password_confirmation: password,
+            password_confirmation: password_confirmation,
             token: props.match.params?.token
         }
         axios.put('/api/children/updatePassword', req)

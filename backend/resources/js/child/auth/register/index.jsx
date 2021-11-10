@@ -17,7 +17,7 @@ const ChildSignUp = (props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [company, setCompany] = useState('');
-    const [image, setImage] = useState(''); 
+    const [image, setImage] = useState(null); 
 
     const [_422errors, set422Errors] = useState({
         first_name:'',

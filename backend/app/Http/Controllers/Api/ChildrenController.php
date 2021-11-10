@@ -29,9 +29,20 @@ class ChildrenController extends Controller {
     }
 
     public function registerTemporary (Request $r) {
+        // 電話番号の文字数。
+        Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
+            try {
+                return strlen((string)$value) == 10 || strlen((string)$value) == 11;
+            } catch (\Throwable $e) {
+                Log::critical($e->getMessage());
+                return false;
+            }
+        });
+
         $validate = Validator::make($r->all(), [
-            'tel' => 'required|unique:children|numeric|digits_between:0,99999999999|starts_with:0'
+            'tel' => 'required|unique:children|numeric|starts_with:0|tel_size'
         ]);
+
         if ($validate->fails()) {
             // バリデーションエラー
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
@@ -77,7 +88,7 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
             try {
                 if (is_null($value)) return true;
-                return strlen(base64_decode($value)) < 1048576;
+                return strlen($value) < 1048576;
             } catch (\Throwable $e) {
                 Log::critical($e->getMessage());
                 return false;
@@ -124,6 +135,12 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
         }
 
         $password = Hash::make($r->password);
+
+        $ext = explode('/', mime_content_type($r->image))[1];
+        $filename = uniqid() . '.'.$ext;
+        $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
+        Storage::disk('public')->put($filename, $image);
+
         $insert = [
             'identity' => $r->identity,
             'email' => $r->email,
@@ -131,7 +148,7 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
             'password' => $password,
             'last_name' => $r->last_name,
             'first_name' => $r->first_name,
-            'image' => $r->image,
+            'image' => '/storage/'.$filename,
             'company' => $r->company,
         ];
 
@@ -149,8 +166,18 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
     }
 
     public function requestPassword (Request $r) {
+        // 電話番号の文字数。
+        Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
+            try {
+                return strlen((string)$value) == 10 || strlen((string)$value) == 11;
+            } catch (\Throwable $e) {
+                Log::critical($e->getMessage());
+                return false;
+            }
+        });
+
         $validate = Validator::make($r->all(), [
-            'tel' => 'required|numeric|digits_between:0,99999999999|starts_with:0',
+            'tel' => 'required|numeric|starts_with:0|tel_size'
         ]);
 
         if ($validate->fails()) {
@@ -173,7 +200,8 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
         ];
 
         try {
-            // DBに入ります。
+            // DBに入る又は変えります。
+            TelActivation::where('child_id', $result->id)->delete();
             TelActivation::create($create);
 
             // SMSを送ります。
@@ -319,7 +347,11 @@ https://kikikan.jp/c-account/forgot-password/reset/'.$token;
         return ['status_code' => 200, 'params' => $params];
     }
 
-    public function updateImage (Request $r, $child_id) {
+    public function updateImage (Request $r, $child_id=null) {
+        if (isset($r->child_id)) {
+            $child_id = $r->child_id;
+        }
+
         if (!isset($r->image) || !isset($child_id)) {
             return ['status_code' => 400, 'error_messages' => ['画像の更新に失敗しました。']];
         }
@@ -376,15 +408,29 @@ https://kikikan.jp/c-account/forgot-password/reset/'.$token;
         return ['status_code' => 200, 'success_messages' => ['画像の更新に成功しました。']];
     }
 
-    public function updateProfile (Request $r, $child_id) {
+    public function updateProfile (Request $r, $child_id=null) {
+        if (isset($r->child_id)) {
+            $child_id = $r->child_id;
+        }
+
         if (!isset($child_id)) {
             return ['status_code' => 400, 'error_messages' => ['子の更新に失敗しました。']];
         }
 
+        // 電話番号の文字数。
+        Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
+            try {
+                return strlen((string)$value) == 10 || strlen((string)$value) == 11;
+            } catch (\Throwable $e) {
+                Log::critical($e->getMessage());
+                return false;
+            }
+        });
+
         // バリデーションエラー
         $validate = Validator::make($r->all(), [
             'email' => 'required|max:255|email',
-            'tel' => 'required|numeric|digits_between:0,99999999999|starts_with:0',
+            'tel' => 'required|numeric|starts_with:0|tel_size',
             'last_name' => 'required|max:100',
             'first_name' => 'required|max:100',
             'identity' => 'required|max:20|alpha_num',
@@ -416,9 +462,21 @@ https://kikikan.jp/c-account/forgot-password/reset/'.$token;
         return ['status_code' => 200, 'success_messages' => ['子の更新に成功しました。']];
     }
 
-    public function updatePassword (Request $r, $child_id) {
-        if (!isset($child_id)) {
-            return ['status_code' => 400, 'error_messages' => ['画像の更新に失敗しました。']];
+    public function updatePassword (Request $r, $child_id=null) {
+        if (isset($r->child_id)) {
+            $child_id = $r->child_id;
+        }
+
+        if (is_null($child_id) && !isset($r->token)) {
+            return ['status_code' => 400, 'error_messages' => ['パスワードの更新に失敗しました。']];
+        }
+
+        if (isset($r->token)) {
+            if (null === ($ta = TelActivation::select('child_id')->where('token', $r->token)->first())) {
+                return ['status_code' => 400, 'error_messages' => ['パスワードの更新に失敗しました。']];
+            }
+
+            $child_id = $ta->child_id;
         }
 
         // バリデーションエラー

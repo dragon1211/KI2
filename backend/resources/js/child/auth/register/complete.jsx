@@ -19,7 +19,7 @@ const ChildSignUpComplete = () => {
             </span>
             <div className="mt-5">
                 <Button type="submit" fullWidth 
-                    className="btn-edit btn-default btn-h60 bg-yellow rounded-20 py-5"
+                    className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
                     onClick={gotoLogin}>
                     <span className="ft-16 font-weight-bold text-black">ログイン画面へ</span>
                 </Button>

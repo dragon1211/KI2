@@ -78,11 +78,11 @@ Route::group(['prefix' => 'fathers'], function () {
     Route::post('/registerMain', '\App\Http\Controllers\Api\FathersController@registerMain');
     Route::post('/requestPassword', '\App\Http\Controllers\Api\FathersController@requestPassword');
     Route::post('/login', '\App\Http\Controllers\Api\FathersController@login');
+    Route::put('/updatePassword/{father_id?}', '\App\Http\Controllers\Api\FathersController@updatePassword');
 
     Route::group(['middleware' => 'auth:fathers'], function () {
         Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage');
         Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile');
-        Route::put('/updatePassword/{father_id}', '\App\Http\Controllers\Api\FathersController@updatePassword');
         Route::delete('/withdrawal', '\App\Http\Controllers\Api\FathersController@withdrawal');
 
         // ChildrenController
@@ -141,12 +141,12 @@ Route::group(['prefix' => 'children'], function () {
     Route::post('/registerMain', '\App\Http\Controllers\Api\ChildrenController@registerMain');
     Route::post('/requestPassword', '\App\Http\Controllers\Api\ChildrenController@requestPassword');
     Route::post('/login', '\App\Http\Controllers\Api\ChildrenController@login');
+    Route::put('/updatePassword/{child_id?}', '\App\Http\Controllers\Api\ChildrenController@updatePassword');
 
     Route::group(['middleware' => 'auth:children'], function () {
         Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail');
         Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage');
         Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile');
-        Route::put('/updatePassword/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updatePassword');
         Route::delete('/withdrawal', '\App\Http\Controllers\Api\ChildrenController@withdrawal');
 
         // FathersController

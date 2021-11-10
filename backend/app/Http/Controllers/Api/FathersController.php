@@ -113,14 +113,25 @@ class FathersController extends Controller {
     }
 
     public function registerMain (Request $r) {
+        // 電話番号の文字数。
+        Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
+            try {
+                return strlen((string)$value) == 10 || strlen((string)$value) == 11;
+            } catch (\Throwable $e) {
+                Log::critical($e->getMessage());
+                return false;
+            }
+        });
+
         $validate = Validator::make($r->all(), [
             'token' => 'required',
             'password' => 'required|min:8|max:72|confirmed',
             'company' => 'max:100',
             'image' => 'max:1024|mimes:jpg,png,gif',
             'profile' => 'max:1000',
-            'tel' => 'required|unique:children|numeric|digits_between:0,99999999999|starts_with:0',
+            'tel' => 'required|unique:fathers|numeric|starts_with:0|tel_size',
         ]);
+
         if ($validate->fails()) {
             // バリデーションエラー
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
@@ -239,7 +250,11 @@ class FathersController extends Controller {
         return ['status_code' => 200, 'params' => $result];
     }
 
-    public function updateImage (Request $r, $father_id) {
+    public function updateImage (Request $r, $father_id=null) {
+        if (isset($r->father_id)) {
+            $father_id = $r->father_id;
+        }
+
         if (!isset($r->image) || !isset($father_id)) {
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
@@ -297,17 +312,31 @@ class FathersController extends Controller {
         return ['status_code' => 200, 'success_messages' => ['親の更新に成功しました。']];
     }
 
-    public function updateProfile (Request $r, $father_id) {
+    public function updateProfile (Request $r, $father_id=null) {
+        if (isset($r->father_id)) {
+            $father_id = $r->father_id;
+        }
+
         if (!isset($father_id)) {
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
+
+        // 電話番号の文字数。
+        Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
+            try {
+                return strlen((string)$value) == 10 || strlen((string)$value) == 11;
+            } catch (\Throwable $e) {
+                Log::critical($e->getMessage());
+                return false;
+            }
+        });
 
         // バリデーションエラー
         $validate = Validator::make($r->all(), [
             'email' => 'required|max:255|email',
             'company' => 'max:100',
             'profile' => 'max:1000',
-            'tel' => 'required|numeric|digits_between:0,99999999999|starts_with:0',
+            'tel' => 'required|numeric|starts_with:0|tel_size'
         ]);
 
         if ($validate->fails()) {
@@ -333,10 +362,21 @@ class FathersController extends Controller {
         return ['status_code' => 200, 'success_messages' => ['親の更新に成功しました。']];
     }
 
-    public function updatePassword (Request $r, $father_id) {
-        if (!isset($father_id)) {
-            return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
+    public function updatePassword (Request $r, $father_id=null) {
+        if (isset($r->father_id)) {
+            $father_id = $r->father_id;
         }
+
+        if (is_null($father_id) && !isset($r->token)) {
+            return ['status_code' => 400, 'error_messages' => ['パスワードの更新に失敗しました。']];
+        }
+
+        // if (isset($r->token)) {
+        //     if (null === ($father_id = EmailActivation::select('father_id')->where('token', $r->token)->first())) {
+        //         return ['status_code' => 400, 'error_messages' => ['パスワードの更新に失敗しました。']];
+        //     }
+        //     $father_id = (int)$father_id->father_id;
+        // }
 
         // バリデーションエラー
         $validate = Validator::make($r->all(), [

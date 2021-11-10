@@ -37,7 +37,6 @@ const ChildLogin = () => {
                 case 400: set400Error(response.data.error_message[0]); break;
             }
         })
-        .catch(err=>console.log(err))
     }
 
 	return (

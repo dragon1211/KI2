@@ -12299,6 +12299,12 @@ a {
     height: 24px !important;
   }
 }
+.mypage-nav-list__item .prof-wrap img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
 
 .css-loader {
   top: calc(45vh - 22px);

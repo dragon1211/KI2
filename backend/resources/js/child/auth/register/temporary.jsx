@@ -28,7 +28,6 @@ const ChildSignUpTemporary = () => {
                 case 400: set400Error(response.data.error_messages); break;
             };
         })
-        .catch(err=>console.log(err))
     }
 
 
