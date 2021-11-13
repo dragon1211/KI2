@@ -2,12 +2,19 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { LoadingButton } from '@material-ui/lab';
 
-import Notification from '../../component/notification';
+import Notification from '../notification';
 
 const ProfileWithdrawal = () => {
 
+    const count = localStorage.getItem('notice');
+    const [notice, setNotice] = useState(count);
     const [submit, setSubmit] = useState(false);
     const [_400error, set400Error] = useState('');
+
+    const handleNotice = (count) => {
+        setNotice(count);
+        localStorage.setItem("notice", count);
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -16,6 +23,7 @@ const ProfileWithdrawal = () => {
         axios.delete('/api/children/withdrawal', {params:{child_id: child_id}})
         .then(response => {
             setSubmit(false);
+            handleNotice(response.data.notice);
             switch(response.data.status_code){
                 case 200: window.location.href = "/c-account/withdrawal/complete"; break;
                 case 400: set400Error("失敗しました。"); break;
@@ -30,7 +38,7 @@ const ProfileWithdrawal = () => {
                 <div className="l-content__ttl__left">
                     <h2>退会確認</h2>
                 </div>
-                <Notification/>
+                <Notification notice={notice}/>
             </div>
 
             <div className="l-content-wrap">

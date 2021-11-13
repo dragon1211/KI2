@@ -11,7 +11,7 @@ trait AuthorizationTrait {
         $loginpage = $viewpath.'/'.($this->getGuard() == 'admins' ? 'login' : 'auth');
 
         if (Session::has($this->getGuard())) {
-            return redirect($viewpath.'/meeting');
+            return redirect(request()->route()->action['prefix'].'/meeting');
         }
 
         return view($loginpage);

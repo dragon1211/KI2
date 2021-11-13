@@ -6,10 +6,6 @@ const ParentSignUpError = () => {
 
     const history = useHistory();
 
-    const gotoLogin = () => {
-        history.push({pathname: '/c-account/login',  state: {}});
-    }
-
 	return (
         <div>
             <p className="text-center font-weight-bold ft-25">本登録エラー</p>

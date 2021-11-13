@@ -1,63 +1,59 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { LoadingButton } from '@material-ui/lab';
-import axios from 'axios';
-
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
+import axios from 'axios';
+
+import Alert from '../../../component/alert';
+
 
 const ParentSignUp = (props) => {
 
     const history = useHistory();
     const [submit, setSubmit] = useState(false);
 
-    const [first_name, setFirstName] = useState('');
-    const [last_name, setLastName] = useState('');  
-    const [identity, setIdentity] = useState('');  
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [image, setImage] = useState(null); 
     const [company, setCompany] = useState('');
-    const [image, setImage] = useState(''); 
+    const [password, setPassword] = useState('');
+    const [tel, setTel] = useState('');
+    const [profile, setProfile] = useState('');
 
     const [_422errors, set422Errors] = useState({
-        first_name:'',
-        last_name:'',
-        identity:'',
-        email:'',
-        password:'',
         image:'',
-        company:''
+        company:'',
+        password:'',
+        tel:'',
+        profile:'',
     });
+    const [_400error, set400Error] = useState('');
 
     const handleSubmit = (e) => {
 
         e.preventDefault();
         set422Errors({
-            first_name:'',
-            last_name:'',
-            identity:'',
-            email:'',
-            password:'',
             image:'',
-            company:''
+            company:'',
+            password:'',
+            tel:'',
+            profile:'',
         });
         setSubmit(true);
         const formdata = new FormData();
-        formdata.append('first_name', first_name);
-        formdata.append('last_name', last_name);
-        formdata.append('identity', identity);
-        formdata.append('email', email);
-        formdata.append('password', password);
-        formdata.append('company', company);
         formdata.append('image', image);
+        formdata.append('company', company);
+        formdata.append('password', password);
+        formdata.append('tel', tel);
+        formdata.append('profile', profile);
         formdata.append('token', props.match.params.token);
-        axios.post('/api/children/registerMain', formdata)
+        axios.post('/api/fathers/registerMain', formdata)
         .then(response => {
             setSubmit(false);
             switch(response.data.status_code){
-                case 200: history.push({pathname: '/c-account/register/complete/'+props.match.params.token,  state: {}}); break;
+                case 200: history.push({pathname: '/p-account/register/complete/'+props.match.params.token,  state: {}}); break;
                 case 422: set422Errors(response.data.error_messages); break;
-                case 400: history.push({pathname: '/c-account/register/error/'+props.match.params.token,  state: {}}); break;
+                case 400: set400Error(response.data.error_messages); break;
+                case 401: history.push({pathname: '/p-account/register/error/'+props.match.params.token,  state: {}}); break;
             };
         })
     }
@@ -98,47 +94,14 @@ const ParentSignUp = (props) => {
                         </span>  
                 }
             </div>
-            
-            <div className="edit-set">
-                <label htmlFor="first_name"  className="control-label"> 姓 </label>
-                <input type="text" name="first_name" id="first_name"  className={`input-default input-nameSei input-h60 input-w480 ${ _422errors.first_name && "is-invalid c-input__target" }`}  value={first_name} onChange={e=>setFirstName(e.target.value)}/>
-                {
-                    _422errors.first_name &&
-                        <span className="l-alert__text--error ft-16 ft-md-14">
-                            { _422errors.first_name }
-                        </span>
-                }
-            </div>
 
             <div className="edit-set">
-                <label htmlFor="last_name" className="control-label"> 名 </label>
-                <input type="text" name="last_name" id="last_name"  className={`input-default input-nameSei input-h60 input-w480 ${ _422errors.last_name && "is-invalid c-input__target" }`} value={last_name} onChange={e=>setLastName(e.target.value)}/>
+                <label htmlFor="company"   className="control-label"> 会社名 </label>
+                <input type="text" name="company" id="company"  className = {`input-default input-nameSei input-h60 input-w480 ${ _422errors.company && "is-invalid c-input__target" }`}  value={company} onChange={e=>setCompany(e.target.value)}/>
                 {
-                    _422errors.last_name &&
+                    _422errors.company &&
                         <span className="l-alert__text--error ft-16 ft-md-14">
-                            { _422errors.last_name }
-                        </span>
-                }
-            </div>
-
-            <div className="edit-set">
-                <label htmlFor="identity" className="control-label"> ID </label>
-                <input type="text" name="identity" id="identity"  className={`input-default input-nameSei input-h60 input-w480 ${ _422errors.identity && "is-invalid c-input__target" }`} value={identity} onChange={e=>setIdentity(e.target.value)}/>
-                {
-                    _422errors.identity &&
-                        <span className="l-alert__text--error ft-16 ft-md-14">
-                            { _422errors.identity }
-                        </span>
-                }
-            </div>
-
-            <div className="edit-set">
-                <label htmlFor="email"   className="control-label"> メールアドレス </label>
-                <input type="email" name="email" id="email"  className = {`input-default input-nameSei input-h60 input-w480 ${ _422errors.email && "is-invalid c-input__target" }`}  value={email} onChange={e=>setEmail(e.target.value)}/>
-                {
-                    _422errors.email && 
-                        <span className="l-alert__text--error ft-16 ft-md-14">
-                            { _422errors.email }
+                            { _422errors.company }
                         </span>
                 }
             </div>
@@ -153,15 +116,26 @@ const ParentSignUp = (props) => {
                         </span>
                 }
             </div>
+            
+            <div className="edit-set">
+                <label htmlFor="tel"  className="control-label"> 電話番号 </label>
+                <input type="text" name="tel" id="tel"  className={`input-default input-nameSei input-h60 input-w480 ${ _422errors.tel && "is-invalid c-input__target" }`}  value={tel} onChange={e=>setTel(e.target.value)}/>
+                {
+                    _422errors.tel &&
+                        <span className="l-alert__text--error ft-16 ft-md-14">
+                            { _422errors.tel }
+                        </span>
+                }
+            </div>
 
             <div className="edit-set">
-                <label htmlFor="company"   className="control-label"> 所屈している会社名を記載 </label>
-                <input type="text" name="company" id="company"  className = {`input-default input-nameSei input-h60 input-w480 ${ _422errors.company && "is-invalid c-input__target" }`}  value={company} onChange={e=>setCompany(e.target.value)}/>
+                <label className="control-label" htmlFor="profile"> プロフィール </label>
+                <textarea  id="profile"  value={ profile } onChange={e=>setProfile(e.target.value)}  rows="8" className={`textarea-default rounded-20 ${  _422errors.profile && 'is-invalid c-input__target'} `}/>
                 {
-                    _422errors.company &&
+                    _422errors.profile &&
                         <span className="l-alert__text--error ft-16 ft-md-14">
-                            { _422errors.company }
-                        </span>
+                            {_422errors.profile}
+                        </span> 
                 }
             </div>
             
@@ -172,6 +146,9 @@ const ParentSignUp = (props) => {
                     <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>本登録</span>
                 </LoadingButton>
             </div>
+            {
+                _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
+            } 
         </form>
 	)
 }

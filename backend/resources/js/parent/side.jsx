@@ -3,7 +3,13 @@ import { Link } from 'react-router-dom'
 
 export default function Side() {
     const [selected, setSelected] = useState('');
-    
+
+    const father_image = document.getElementById('father_image').value;
+
+    const handleLogout = () => {
+        axios.get('/p-account/logout')
+        .then(() => location.href = '/p-account/login')
+    }
     return (
         <div className="l-side">
             <div className="l-side-logo">
@@ -60,14 +66,18 @@ export default function Side() {
                         <Link className='user-icon mypage-nav-list__link' to='/p-account/profile'>
                             <figure>
                                 <div className="prof-wrap">
-                                    <img src="/assets/img/avatar/avatar-sample01@2x.png" alt="" />
+                                    <img src={father_image} alt="image" />
                                 </div>
                             </figure>
                             <span>プロフィール</span>
                         </Link>
                     </li>
-                    <li className="mypage-nav-list__item -logout">
-                        <a href="/login/p-account" className="mypage-nav-list__link">
+                    <li className={`mypage-nav-list__item -logout ${(selected == 'logout') && "nav-active"}`}
+                        onClick={e => {
+                            e.preventDefault();
+                            setSelected('logout');
+                        }}>
+                        <a className="mypage-nav-list__link" onClick={handleLogout}>
                             <i className="icon log-out"></i><span>ログアウト</span>
                         </a>
                     </li>

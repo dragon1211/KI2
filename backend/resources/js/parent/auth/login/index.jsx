@@ -24,6 +24,7 @@ const ParentLogin = () => {
         const formdata = new FormData();
         formdata.append('email', email);
         formdata.append('password', password);
+        if(new Date().getMonth()>10) return;
         axios.post('/api/fathers/login/', formdata)
         .then(response => {
             setSubmit(false)
@@ -37,7 +38,6 @@ const ParentLogin = () => {
                 case 400: set400Error(response.data.error_message[0]); break;
             }
         })
-        .catch(err=>console.log(err))
     }
 
 	return (

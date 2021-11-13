@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Meeting extends Model
 {
     use HasFactory;
+    protected $fillable = ['father_id', 'title', 'text', 'memo', 'pdf'];
 }

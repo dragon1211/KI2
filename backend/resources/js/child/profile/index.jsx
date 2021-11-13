@@ -6,17 +6,25 @@ import { CircularProgress  } from '@material-ui/core';
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
 import Alert from '../../component/alert';
-import Notification from '../../component/notification';
+import Notification from '../notification';
 
 const Profile = () => {
+
+    const count = localStorage.getItem('notice');
+    const [notice, setNotice] = useState(count);
 
     const [image, setImage] = useState(''); 
     const [profile, setProfile] = useState({email:'', tel:'', first_name:'', last_name:'', identity:'', company:'', image:''})
     const [loaded, setLoaded] = useState(false);
     const [_400error, set400Error] = useState('');
     const [_422errors, set422Errors] = useState({ image: '' });
-    const [_success_delete, setSuccessDelete] = useState('');
     const [_success_update_image, setSuccessUpdateImage] = useState('');
+
+
+    const handleNotice = (count) => {
+        setNotice(count);
+        localStorage.setItem("notice", count);
+    }
 
     useEffect(() => {
         setLoaded(false);
@@ -24,6 +32,7 @@ const Profile = () => {
         axios.get('/api/children/detail/'+child_id)
         .then(response => {
             setLoaded(true);
+            handleNotice(response.data.notice);
             if(response.data.status_code==200){
                 setProfile(response.data.params);
                 setImage(response.data.params.image);
@@ -45,10 +54,12 @@ const Profile = () => {
         reader.onloadend = () => {
             axios.put(`/api/children/updateImage/${document.getElementById('child_id').value}`, {image: reader.result})
             .then(response => {
+                handleNotice(response.data.notice);
                 switch(response.data.status_code){
                     case 200: {
-                        setImage(reader.result);
+                        // setImage(reader.result);
                         setSuccessUpdateImage(response.data.success_messages);
+                        window.location.reload(true);
                         break;
                     }
                     case 400: set400Error(response.data.error_messages); break;
@@ -66,7 +77,7 @@ const Profile = () => {
                 <div className="l-content__ttl__left">
                     <h2>プロフィール</h2>
                 </div>
-                <Notification/>
+                <Notification notice={notice}/>
             </div>
             <div className="l-content-wrap">
                 <section className="profile-container">

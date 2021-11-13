@@ -4,7 +4,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { CircularProgress  } from '@material-ui/core';
 
-import Notification from '../../component/notification';
+import Notification from '../notification';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -28,6 +28,13 @@ const Search = () => {
     const [initPage, setInitPage] = useState(true);
 
     const child_id = document.getElementById('child_id').value;
+    const count = localStorage.getItem('notice');
+    const [notice, setNotice] = useState(count);
+
+    const handleNotice = (count) => {
+        setNotice(count);
+        localStorage.setItem("notice", count);
+    }
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -40,8 +47,9 @@ const Search = () => {
         setInitPage(false);
 
         axios.get('/api/children/meetings/searchOfNonApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
-        .then((response) => {
+        .then(response => {
             setLoaded1(true);
+            handleNotice(response.data.notice);
             if(response.data.status_code==200){
                 setMettingListNonApproval(response.data.params);
                 var len = response.data.params.length;
@@ -53,6 +61,7 @@ const Search = () => {
         axios.get('/api/children/meetings/searchOfApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
         .then((response) => {
             setLoaded2(true);
+            handleNotice(response.data.notice);
             if(response.data.status_code==200){
                 setMettingListApproval(response.data.params);
                 var len = response.data.params.length;
@@ -96,7 +105,7 @@ const Search = () => {
                 <div className="l-content__ttl__left">
                     <h2>ミーティング検索</h2>
                 </div>
-                <Notification/>
+                <Notification notice={notice}/>
             </div>
 
             <div className="l-content-wrap">

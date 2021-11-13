@@ -2,12 +2,19 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { CircularProgress  } from '@material-ui/core';
 
-import Notification from '../../component/notification';
+import Notification from '../notification';
 
 const ParentDetail = (props) => {
 
+    const count = localStorage.getItem('notice');
+    const [notice, setNotice] = useState(count);
     const [loaded, setLoaded] = useState(false);
     const [parent, setParent] = useState({image:'', email:'', profile:'', tel:'', company:''});
+
+    const handleNotice = (count) => {
+        setNotice(count);
+        localStorage.setItem("notice", count);
+    }
 
     useEffect(
         () => {
@@ -15,6 +22,7 @@ const ParentDetail = (props) => {
             axios.get('/api/children/fathers/detail/'+props.match.params.father_id)
             .then(response => {
                 setLoaded(true);
+                handleNotice(response.data.notice);
                 if(response.data.status_code==200){
                     setParent(response.data.params);
                 }
@@ -29,7 +37,7 @@ const ParentDetail = (props) => {
                 <div className="l-content__ttl__left">
                     <h2>親詳細</h2>
                 </div>
-                <Notification/>
+                <Notification notice={notice}/>
             </div>
 
             <div className="l-content-wrap">

@@ -3,13 +3,16 @@ import { useHistory } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import axios from 'axios';
 
-import Notification from '../../component/notification';
+import Notification from '../notification';
 import Alert from '../../component/alert';
 
 
 const ProfilePasswordEdit = () => {
     
     const history = useHistory(); 
+    const count = localStorage.getItem('notice');
+    const [notice, setNotice] = useState(count);
+
     const [password, setPassword] = useState('');
     const [password_confirmation, setConfirmPassword] = useState('');
 
@@ -21,7 +24,10 @@ const ProfilePasswordEdit = () => {
     const [_success, setSuccess] = useState('');
     const [submit, setSubmit] = useState(false);
 
-    
+    const handleNotice = (count) => {
+        setNotice(count);
+        localStorage.setItem("notice", count);
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -37,6 +43,7 @@ const ProfilePasswordEdit = () => {
         axios.put(`/api/children/updatePassword/${document.getElementById('child_id').value}`, post)
         .then(response => {
             setSubmit(false);
+            handleNotice(response.data.notice);
             switch(response.data.status_code){
                 case 200: setSuccess(response.data.success_messages); break;
                 case 400: set400Error(response.data.error_messages); break;
@@ -54,7 +61,7 @@ const ProfilePasswordEdit = () => {
                     <div className="l-content__ttl__left">
                         <h2>パスワード編集</h2>
                     </div>
-                    <Notification/>
+                    <Notification notice={notice}/>
                 </div>
 
                 <div className="l-content-wrap">

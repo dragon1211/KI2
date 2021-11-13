@@ -69,7 +69,7 @@ class ChildrenController extends Controller {
             $message = 'KIKI承知システムの招待URLが届きました。
 
 ▼招待URLはコチラ
-https://kikikan.jp/c-account/register/'.$token.'
+'.url('/').'/c-account/register/'.$token.'
 
 KIKI承知システムを使って「聞いてない！」「言ってない！」などの問題を解決しよう。';
             \Notification::route('nexmo', '81'.substr($r->tel, 1))->notify(new SmsNotification($message));
@@ -208,7 +208,7 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
             $message = 'パスワード再発行用URLです。
 有効期限は8時間以内です。
 
-https://kikikan.jp/c-account/forgot-password/reset/'.$token;
+'.url('/').'/c-account/forgot-password/reset/'.$token;
             \Notification::route('nexmo', '81'.substr($r->tel, 1))->notify(new SmsNotification($message));
         } catch (\Throwable $e) {
             // 失敗
@@ -249,14 +249,14 @@ https://kikikan.jp/c-account/forgot-password/reset/'.$token;
         return ['status_code' => 200, 'params' => $result];
     }
 
-    public function listOfFather ($father_id) {
-        if (!isset($father_id)) {
+    public function listOfFather (Request $r) {
+        if (!isset($r->father_id)) {
             return ['status_code' => 400];
         }
         $result = [];
         $child_select = ['first_name', 'last_name', 'tel'];
 
-        if (null === ($list = FatherRelation::select('child_id')->where('father_id', (int)$father_id)->orderBy('created_at', 'desc')->get())) {
+        if (null === ($list = FatherRelation::select('child_id')->where('father_id', (int)$r->father_id)->orderBy('created_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -398,6 +398,12 @@ https://kikikan.jp/c-account/forgot-password/reset/'.$token;
             ];
 
             Child::where('id', (int)$child_id)->update($update);
+
+            $get = Child::where('id', (int)$child_id)->first();
+            $login_user_datum = $get->toArray();
+            unset($login_user_datum['password']);
+            // セッションに保存する
+            session()->put('children', $login_user_datum);
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());

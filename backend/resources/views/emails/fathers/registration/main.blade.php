@@ -5,7 +5,7 @@
 
 以下のリンクからログインしてくださいませ。
 
-@component('mail::button', ['url' => env('APP_URL').'/p-account/login'])
-{{ env('APP_URL') }}/p-account/login
+@component('mail::button', ['url' => url('/').'/p-account/login'])
+{{ url('/') }}/p-account/login
 @endcomponent
 @endcomponent

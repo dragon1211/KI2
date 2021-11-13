@@ -12,6 +12,22 @@ use App\Models\MeetingApprovals;
 use App\Models\FatherRelation;
 
 class MeetingApprovalsController extends Controller {
+    public function countNonApproval (Request $r) {
+        return MeetingApprovals::where('child_id', session()->get('children')['id'])->whereNull('approval_at')->count();
+    }
+
+    public function countIncomplete (Request $r) {
+        $count = 0;
+
+        if (null !== ($list = Meeting::select('id')->where('father_id', (int)session()->get('fathers')['id'])->get())) {
+            foreach ($list as $i => $l) {
+                $count += MeetingApprovals::where('meeting_id', (int)$l->id)->whereNull('approval_at')->count();
+            }
+        }
+
+        return $count;
+    }
+
     public function register (Request $r) {
         if (!isset($r->meeting_id) || !isset($r->children) || count(json_decode($r->children)) == 0) {
             return ['status_code' => 400];

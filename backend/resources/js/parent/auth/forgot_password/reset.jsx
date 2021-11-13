@@ -3,7 +3,7 @@ import { useHistory } from 'react-router';
 import { LoadingButton } from '@material-ui/lab';
 import axios from 'axios';
 
-
+import Alert from '../../../component/alert';
 
 const ParentForgotPasswordReset = (props) => {
 
@@ -23,15 +23,15 @@ const ParentForgotPasswordReset = (props) => {
         setSubmit(true);
         let req = {
             password: password,
-            password_confirmation: password,
+            password_confirmation: password_confirmation,
             token: props.match.params?.token
         }
-        axios.put('/api/children/updatePassword', req)
+        axios.put('/api/fathers/updatePassword', req)
         .then(response => {
             setSubmit(false);
             switch(response.data.status_code){
                 case 200: {
-                    history.push({pathname: '/c-account/forgot-password/complete',  state: {}}); 
+                    history.push({pathname: '/p-account/forgot-password/complete',  state: {}}); 
                     break;
                 }
                 case 422: set422Errors(response.data.error_messages); break;

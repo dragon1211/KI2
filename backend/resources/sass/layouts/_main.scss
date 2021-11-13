@@ -26,8 +26,6 @@ a{
 }
 
 
-
-
 @include media-breakpoint-down(xs){
 
       .l-content__ttl h2{
@@ -52,8 +50,8 @@ a{
       }
 
       .count{
-          width: 18px !important;
-          height: 18px !important;
+          min-width: 20px !important;
+          min-height: 20px !important;
       }
 
       .meeting-label{
@@ -201,5 +199,25 @@ a{
   z-index: 10;
   @media screen and (min-width:1068px){
     left: calc( 50vw + 240px / 2 - 22px);
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+@media screen and (min-width: 1068px){
+  .p-meetingAdd-btn {
+    width: 200px !important;
+  }
+
+  .btn-meeting .icon {
+      margin-left: 5px !important;
+      padding: 0 !important;
+  }
+}
+
+
+@include media-breakpoint-down(xs){
+  .numerator, .denominator{
+    font-size: 16px !important;
   }
 }

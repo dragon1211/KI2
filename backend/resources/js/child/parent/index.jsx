@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { CircularProgress  } from '@material-ui/core';
 
-import Notification from '../../component/notification';
+import Notification from '../notification';
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const INFINITE = 10;
@@ -12,9 +12,16 @@ const SCROLL_DELAY_TIME = 1500;
 const Parent = () => {
     
     const history = useHistory();
+    const count = localStorage.getItem('notice');
+    const [notice, setNotice] = useState(count);
     const [parent_list, setParentList] = useState([]);
     const [fetch_parent_list, setFetchParentList] = useState([]);
     const [loaded, setLoaded] = useState(false);
+
+    const handleNotice = (count) => {
+        setNotice(count);
+        localStorage.setItem("notice", count);
+    }
 
     useEffect(() => {
         setLoaded(false);
@@ -22,6 +29,7 @@ const Parent = () => {
         axios.get('/api/children/fathers/listOfChild', {params: {child_id: child_id}})
         .then(response => {
             setLoaded(true);
+            handleNotice(response.data.notice);
             if(response.data.status_code==200){
                 setParentList(response.data.params);
                 var len = response.data.params.length;
@@ -30,7 +38,6 @@ const Parent = () => {
                 else setFetchParentList(response.data.params.slice(0, len));
             }
         })
-        .catch(err=>console.log(err))
     }, []);
 
 
@@ -52,7 +59,7 @@ const Parent = () => {
                 <div className="l-content__ttl__left">
                     <h2>親一覧</h2>
                 </div>
-                <Notification/>
+                <Notification notice={notice}/>
             </div>
 
             <div className="l-content-wrap">

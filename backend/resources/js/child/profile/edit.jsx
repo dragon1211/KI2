@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { LoadingButton } from '@material-ui/lab';
 
-import Notification from '../../component/notification';
+import Notification from '../notification';
 import Alert from '../../component/alert';
 import { CircularProgress  } from '@material-ui/core';
 
@@ -11,6 +11,8 @@ import { CircularProgress  } from '@material-ui/core';
 const ProfileEdit = () => {
 
     const history = useHistory();
+    const count = localStorage.getItem('notice');
+    const [notice, setNotice] = useState(count);
 
     const [first_name, setFirstName] = useState('');
     const [last_name, setLastName] = useState('');  
@@ -33,6 +35,11 @@ const ProfileEdit = () => {
     const [submit, setSubmit] = useState(false);
     const [loaded, setLoaded] = useState(false);
 
+    const handleNotice = (count) => {
+        setNotice(count);
+        localStorage.setItem("notice", count);
+    }
+
     
     useEffect(() => {
         setLoaded(false);
@@ -40,6 +47,7 @@ const ProfileEdit = () => {
         axios.get('/api/children/detail/'+child_id)
         .then(response => {
             setLoaded(true);
+            handleNotice(response.data.notice);
             if(response.data.status_code==200){
                 let params = response.data.params;
                 setFirstName(params.first_name);
@@ -85,6 +93,7 @@ const ProfileEdit = () => {
         axios.put('/api/children/updateProfile/'+child_id, post)
         .then(response => {
             setSubmit(false);
+            handleNotice(response.data.notice);
             switch(response.data.status_code){
                 case 200: setSuccess(response.data.success_messages); break;
                 case 400: set400Error(response.data.error_messages); break;
@@ -102,7 +111,7 @@ const ProfileEdit = () => {
                 <div className="l-content__ttl__left">
                     <h2>プロフィール編集</h2>
                 </div>
-                <Notification/>
+                <Notification notice={notice}/>
             </div>
 
             <div className="l-content-wrap">

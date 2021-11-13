@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Father;
 use App\Models\FatherRelation;
 use App\Models\EmailActivation;
+use App\Mail\FathersForgetPasswordMail;
 use App\Mail\FathersRegistrationTemporaryMail;
 use App\Mail\FathersRegistrationMainMail;
 
@@ -38,7 +39,7 @@ class FathersController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
-        if ($result = Father::select('id')->where('email', $r->email)->first()) {
+        if (null === ($result = Father::select('id')->where('email', $r->email)->first())) {
             // メールアドレス照合に失敗
             return ['status_code' => 400, 'error_messages' => ['メールアドレスが未登録です。入力した情報を確認してください。']];
         }
@@ -57,7 +58,7 @@ class FathersController extends Controller {
             EmailActivation::create($create);
 
             // メールを送ります。
-            Mail::to($r->email)->send(new FathersRegistrationTemporaryMail($token));
+            Mail::to($r->email)->send(new FathersForgetPasswordMail($token));
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
@@ -123,11 +124,37 @@ class FathersController extends Controller {
             }
         });
 
+        // ファイルサイズは10MiB以内
+        Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
+            try {
+                if (is_null($value)) return true;
+                return strlen($value) < 1048576;
+            } catch (\Throwable $e) {
+                Log::critical($e->getMessage());
+                return false;
+            }
+        });
+    
+        // ミームタイプ
+        Validator::extend('image_meme', function ($attribute, $value, $params, $validator) {
+            try {
+                if (is_null($value)) return true;
+                return (
+                    mime_content_type($value) == 'image/jpeg' || // jpg
+                    mime_content_type($value) == 'image/png'  || // png
+                    mime_content_type($value) == 'image/gif'     // gif
+                );
+            } catch (\Throwable $e) {
+                Log::critical($e->getMessage());
+                return false;
+            }
+        });
+
         $validate = Validator::make($r->all(), [
             'token' => 'required',
-            'password' => 'required|min:8|max:72|confirmed',
+            'password' => 'required|min:8|max:72',
             'company' => 'max:100',
-            'image' => 'max:1024|mimes:jpg,png,gif',
+            'image' => 'image_size|image_meme',
             'profile' => 'max:1000',
             'tel' => 'required|unique:fathers|numeric|starts_with:0|tel_size',
         ]);
@@ -144,13 +171,20 @@ class FathersController extends Controller {
             }
         }
 
+        $password = Hash::make($r->password);
+
+        $ext = explode('/', mime_content_type($r->image))[1];
+        $filename = uniqid() . '.'.$ext;
+        $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
+        Storage::disk('public')->put($filename, $image);
+
         try {
             // DBの値の準備。
             $create = [
                 'email' => $get->email,
-                'password' => Hash::make($r->password),
+                'password' => $password,
                 'company' => $r->company,
-                'image' => $r->image,
+                'image' => '/storage/'.$filename,
                 'profile' => $r->profile,
                 'tel' => $r->tel,
             ];
@@ -302,6 +336,12 @@ class FathersController extends Controller {
             ];
 
             Father::where('id', (int)$father_id)->update($update);
+
+            $get = Father::where('id', (int)$father_id)->first();
+            $login_user_datum = $get->toArray();
+            unset($login_user_datum['password']);
+            // セッションに保存する
+            session()->put('fathers', $login_user_datum);
         } catch (\Throwable $e) {
             // 親プロフィール画像のアップロードに失敗
             Log::critical($e->getMessage());
@@ -367,16 +407,16 @@ class FathersController extends Controller {
             $father_id = $r->father_id;
         }
 
+        else if (isset($r->token)) {
+            if (null === ($ea = EmailActivation::select('father_id')->where('token', $r->token)->first())) {
+                return ['status_code' => 400, 'error_messages' => ['パスワードの更新に失敗しました。']];
+            }
+            $father_id = (int)$ea->father_id;
+        }
+
         if (is_null($father_id) && !isset($r->token)) {
             return ['status_code' => 400, 'error_messages' => ['パスワードの更新に失敗しました。']];
         }
-
-        // if (isset($r->token)) {
-        //     if (null === ($father_id = EmailActivation::select('father_id')->where('token', $r->token)->first())) {
-        //         return ['status_code' => 400, 'error_messages' => ['パスワードの更新に失敗しました。']];
-        //     }
-        //     $father_id = (int)$father_id->father_id;
-        // }
 
         // バリデーションエラー
         $validate = Validator::make($r->all(), [
@@ -393,6 +433,10 @@ class FathersController extends Controller {
 
         try {
             Father::where('id', (int)$father_id)->update($update);
+
+            if (isset($r->token)) {
+                EmailActivation::where('token', $r->token)->delete();
+            }
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());

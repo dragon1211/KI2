@@ -80,10 +80,11 @@ Route::group(['prefix' => 'fathers'], function () {
     Route::post('/login', '\App\Http\Controllers\Api\FathersController@login');
     Route::put('/updatePassword/{father_id?}', '\App\Http\Controllers\Api\FathersController@updatePassword');
 
-    Route::group(['middleware' => 'auth:fathers'], function () {
+    Route::group(['middleware' => ['auth:fathers', 'notice.incomplete']], function () {
         Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage');
         Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile');
         Route::delete('/withdrawal', '\App\Http\Controllers\Api\FathersController@withdrawal');
+        Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail');
 
         // ChildrenController
         Route::group(['prefix' => 'children'], function () {
@@ -123,6 +124,7 @@ Route::group(['prefix' => 'fathers'], function () {
                 Route::post('/listChildrenOfMeeting', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfMeeting');
                 Route::get('/listChildrenOfApprovel', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfApprovel');
                 Route::get('/listChildrenOfUnapprovel', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfUnapprovel');
+                Route::get('/countIncomplete', '\App\Http\Controllers\Api\MeetingApprovalsController@countIncomplete');
             });
         });
 
@@ -143,7 +145,7 @@ Route::group(['prefix' => 'children'], function () {
     Route::post('/login', '\App\Http\Controllers\Api\ChildrenController@login');
     Route::put('/updatePassword/{child_id?}', '\App\Http\Controllers\Api\ChildrenController@updatePassword');
 
-    Route::group(['middleware' => 'auth:children'], function () {
+    Route::group(['middleware' => ['auth:children', 'notice.nonapproval']], function () {
         Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail');
         Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage');
         Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile');
@@ -168,6 +170,7 @@ Route::group(['prefix' => 'children'], function () {
             // MeetingApprovalsController
             Route::group(['prefix' => 'approvals'], function () {
                 Route::post('/registerApproval', '\App\Http\Controllers\Api\MeetingApprovalsController@registerApproval');
+                Route::get('/countNonApproval', '\App\Http\Controllers\Api\MeetingApprovalsController@countNonApproval');
             });
         });
     });

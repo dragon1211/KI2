@@ -21,11 +21,21 @@ class MeetingsController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['ミーティングの登録に失敗しました。']];
         }
 
+        // ミームタイプ
+        Validator::extend('pdf_meme', function ($attribute, $value, $params, $validator) {
+            try {
+                return mime_content_type($value) == 'application/pdf';
+            } catch (\Throwable $e) {
+                Log::critical($e->getMessage());
+                return false;
+            }
+        });
+
         $validate = Validator::make($r->all(), [
             'title' => 'required|max:100',
             'text' => 'required|max:2000',
             'memo' => 'max:2000',
-            'pdf' => 'mimes:pdf'
+            'pdf' => 'pdf_meme'
         ]);
 
         if ($validate->fails()) {
@@ -36,12 +46,19 @@ class MeetingsController extends Controller {
             'father_id' => $r->father_id,
             'title' => $r->title,
             'text' => $r->text,
-            'memo' => $r->memo,
-            'pdf' => $r->pdf
+            'memo' => $r->memo
         ];
 
         try {
-            Child::create($insert);
+            if (isset($r->pdf)) {
+                $filename = uniqid() . '.pdf';
+                $pdf = base64_decode(substr($r->pdf, strpos($r->pdf, ',') + 1));
+
+                $insert['pdf'] = '/storage/'.$filename;
+                Storage::disk('public')->put($filename, $pdf);
+            }
+
+            Meeting::create($insert);
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
@@ -219,19 +236,14 @@ class MeetingsController extends Controller {
             return ['status_code' => 400];
         }
         foreach ($list as $i => $l) {
-            $result[] = $l;
-            if (null === ($result[$i]['approval'] = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
-                return ['status_code' => 400];
-            }
-            if (count($result[$i]['approval']) == 0) {
-                unset($result[$i]);
-                continue;
-            }
-
-            foreach ($result[$i]['approval'] as $ii => $ra) {
-                if (null === ($result[$i]['approval'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approval'][$ii]['child_id'])->first())) {
-                    $result[$i]['approval'][$ii]['child'] = new \stdClass();
+            if (null !== ($l->approval = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->get())) {
+                foreach ($l->approval as $ii => $ll) {
+                    if (null === ($ll->child = Child::select($child_select)->where('id', (int)$ll->child_id)->first())) {
+                        $ll->child = [];
+                    }
                 }
+
+                $result[] = $l;
             }
         }
 
@@ -254,19 +266,14 @@ class MeetingsController extends Controller {
         }
 
         foreach ($list as $i => $l) {
-            $result[] = $l;
-            if (null === ($result[$i]['approval'] = MeetingApprovals::select($meeting_approvals_select)->whereNull('approval_at')->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
-                return ['status_code' => 400];
-            }
-            if (count($result[$i]['approval']) > 1) {
-                unset($result[$i]);
-                continue;
-            }
-
-            foreach ($result[$i]['approval'] as $ii => $ra) {
-                if (null === ($result[$i]['approval'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approval'][$ii]['child_id'])->first())) {
-                    $result[$i]['approval'][$ii]['child'] = new \stdClass();
+            if (null !== ($l->approval = MeetingApprovals::select($meeting_approvals_select)->whereNull('approval_at')->where('meeting_id', (int)$l->id)->get())) {
+                foreach ($l->approval as $ii => $ll) {
+                    if (null === ($ll->child = Child::select($child_select)->where('id', (int)$ll->child_id)->first())) {
+                        $ll->child = [];
+                    }
                 }
+
+                $result[] = $l;
             }
         }
 
@@ -425,14 +432,14 @@ class MeetingsController extends Controller {
             if (null === ($l->meeting_image = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$l->id)->get())) {
                 $l->meeting_image = [];
             }
-            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->whereNull('approval_at')->first())) {
-                $l->approval = new \stdClass();
-            }
-
-            foreach ($l->approval as $ii => $ra) {
-                if (null == ($result[$i]['approval'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approval'][$ii]['child_id'])->first())) {
-                    $result[$i]['approval'][$ii]['child'] = [];
+            if (null !== ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->whereNull('approval_at')->first())) {
+                if (null === ($l->approval->child = Child::select($child_select)->where('id', (int)$l->approval->child_id)->first())) {
+                    $l->approval->child = new \stdClass();
                 }
+            }
+            else {
+                $l->approval = new \stdClass();
+                $l->approval->child = new \stdClass();
             }
 
             $result[] = $l;
@@ -461,14 +468,14 @@ class MeetingsController extends Controller {
             if (null === ($l->meeting_image = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$l->id)->get())) {
                 $l->meeting_image = [];
             }
-            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->whereNotNull('approval_at')->first())) {
-                $l->approval = new \stdClass();
-            }
-
-            foreach ($l->approval as $ii => $ra) {
-                if (null == ($result[$i]['approval'][$ii]['child'] = Child::select($child_select)->where('id', (int)$result[$i]['approval'][$ii]['child_id'])->first())) {
-                    $result[$i]['approval'][$ii]['child'] = [];
+            if (null !== ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->whereNotNull('approval_at')->first())) {
+                if (null === ($l->approval->child = Child::select($child_select)->where('id', (int)$l->approval->child_id)->first())) {
+                    $l->approval->child = new \stdClass();
                 }
+            }
+            else {
+                $l->approval = new \stdClass();
+                $l->approval->child = new \stdClass();
             }
 
             $result[] = $l;

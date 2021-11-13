@@ -4,7 +4,8 @@ import { useHistory, Link } from 'react-router-dom';
 import moment from 'moment';
 import { CircularProgress  } from '@material-ui/core';
 
-import Notification from '../../component/notification';
+import Notification from '../notification';
+
 import Alert from '../../component/alert';
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -13,6 +14,8 @@ const SCROLL_DELAY_TIME = 1500;
 
 const Meeting = () => {
 
+    const count = localStorage.getItem('notice');
+    const [notice, setNotice] = useState(count);
     const [tab_status, setTabStatus] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [loaded1, setLoaded1] = useState(false);
@@ -23,6 +26,10 @@ const Meeting = () => {
     const [fetch_meeting_list_approval, setFetchMettingListApproval] = useState([]);
     const [_success, setSuccess] = useState('');
 
+    const handleNotice = (count) => {
+        setNotice(count);
+        localStorage.setItem("notice", count);
+    }
 
     useEffect(()=>{
         if(localStorage.getItem("from_login")){
@@ -44,6 +51,7 @@ const Meeting = () => {
             axios.get('/api/children/meetings/listOfNonApprovalOfChild', {params:{child_id: child_id}})
             .then(response => {
                 setLoaded1(true);
+                handleNotice(response.data.notice);
                 if(response.data.status_code==200){
                     setMettingListNonApproval(response.data.params);
                     var len = response.data.params.length;
@@ -56,6 +64,7 @@ const Meeting = () => {
             axios.get('/api/children/meetings/listOfApprovalOfChild', {params:{child_id: child_id}})
             .then(response => {
                 setLoaded2(true);
+                handleNotice(response.data.notice);
                 if(response.data.status_code==200){
                     setMettingListApproval(response.data.params);
                     var len = response.data.params.length;
@@ -96,7 +105,7 @@ const Meeting = () => {
                 <div className="l-content__ttl__left">
                     <h2>ミーティング一覧</h2>
                 </div>
-                <Notification/>
+                <Notification notice={notice}/>
             </div>
 
             <div className="l-content-wrap">

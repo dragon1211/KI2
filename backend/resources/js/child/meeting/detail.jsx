@@ -4,7 +4,7 @@ import { useHistory, useLocation, Link } from 'react-router-dom';
 import { CircularProgress  } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
 
-import Notification from '../../component/notification';
+import Notification from '../notification';
 import moment from 'moment';
 
 import Button from '@mui/material/Button';
@@ -27,6 +27,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const MeetingDetail = (props) => {
 
     const history = useHistory();
+    const count = localStorage.getItem('notice');
+    const [notice, setNotice] = useState(count);
     const [loaded, setLoaded] = useState(false);
     const [meeting, setMeeting] = useState(null);
     const [thumbnail, setThumbnail] = useState('');
@@ -38,6 +40,11 @@ const MeetingDetail = (props) => {
     const [submit, setSubmit] = useState(false);
     const [_400error, set400Error] = useState('');
     const [_success, setSuccess] = useState('');
+
+    const handleNotice = (count) => {
+        setNotice(count);
+        localStorage.setItem("notice", count);
+    }
    
     useEffect(() => {
         setLoaded(false);
@@ -45,6 +52,7 @@ const MeetingDetail = (props) => {
         axios.get(`/api/children/meetings/detail/${props.match.params?.meeting_id}`, {params:{child_id: child_id}})
         .then(response => {
             setLoaded(true);
+            handleNotice(response.data.notice);
             if(response.data.status_code == 200)
             {
                 var meeting = response.data.params;
@@ -67,6 +75,7 @@ const MeetingDetail = (props) => {
         .then(response => {
             setSubmit(false);
             setShowConfirm(false);
+            handleNotice(response.data.notice);
             switch(response.data.status_code){
                 case 200: {
                     setSuccess(response.data.success_messages);
@@ -96,7 +105,7 @@ const MeetingDetail = (props) => {
                             </div>
                     }
                 </div>
-                <Notification/>
+                <Notification notice={notice}/>
             </div>
             {
                 !loaded &&
