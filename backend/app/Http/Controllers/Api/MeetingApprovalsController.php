@@ -119,7 +119,7 @@ class MeetingApprovalsController extends Controller {
         }
 
         $meeting_approvals_select = ['id', 'child_id', 'approval_at'];
-        $child_select = ['id', 'image', 'last_name', 'first_name'];
+        $child_select = ['id', 'image', 'last_name', 'first_name', 'tel'];
 
         if (null === ($params = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$r->meeting_id)->whereNotNull('approval_at')->get())) {
             // エラーの場合
@@ -127,7 +127,7 @@ class MeetingApprovalsController extends Controller {
         }
 
         foreach ($params as $p) {
-            if (null === ($p->child_id = Child::select($child_select)->where('id', (int)$p->child_id)->first())) {
+            if (null === ($p->child = Child::select($child_select)->where('id', (int)$p->child_id)->first())) {
                 return ['status_code' => 400];
             }
         }
@@ -141,7 +141,7 @@ class MeetingApprovalsController extends Controller {
         }
 
         $meeting_select = ['id', 'child_id', 'approval_at'];
-        $child_select = ['id', 'image', 'last_name', 'first_name'];
+        $child_select = ['id', 'image', 'last_name', 'first_name', 'tel'];
 
         if (null === ($params = MeetingApprovals::select($meeting_select)->where('meeting_id', (int)$r->meeting_id)->whereNull('approval_at')->get())) {
             // エラーの場合
@@ -149,7 +149,7 @@ class MeetingApprovalsController extends Controller {
         }
 
         foreach ($params as $p) {
-            if (null === ($p->child_id = Child::select($child_select)->where('id', (int)$p->child_id)->first())) {
+            if (null === ($p->child = Child::select($child_select)->where('id', (int)$p->child_id)->first())) {
                 return ['status_code' => 400];
             }
         }

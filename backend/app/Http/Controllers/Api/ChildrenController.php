@@ -254,7 +254,7 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
             return ['status_code' => 400];
         }
         $result = [];
-        $child_select = ['first_name', 'last_name', 'tel'];
+        $child_select = ['id', 'first_name', 'last_name', 'tel'];
 
         if (null === ($list = FatherRelation::select('child_id')->where('father_id', (int)$r->father_id)->orderBy('created_at', 'desc')->get())) {
             return ['status_code' => 400];

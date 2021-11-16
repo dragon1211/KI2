@@ -6,15 +6,10 @@ import Notification from '../notification';
 
 const ProfileWithdrawal = () => {
 
-    const count = localStorage.getItem('notice');
-    const [notice, setNotice] = useState(count);
+    const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const [submit, setSubmit] = useState(false);
     const [_400error, set400Error] = useState('');
 
-    const handleNotice = (count) => {
-        setNotice(count);
-        localStorage.setItem("notice", count);
-    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -23,7 +18,7 @@ const ProfileWithdrawal = () => {
         axios.delete('/api/children/withdrawal', {params:{child_id: child_id}})
         .then(response => {
             setSubmit(false);
-            handleNotice(response.data.notice);
+            setNotice(response.data.notice);
             switch(response.data.status_code){
                 case 200: window.location.href = "/c-account/withdrawal/complete"; break;
                 case 400: set400Error("失敗しました。"); break;

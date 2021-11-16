@@ -1,151 +1,144 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
-import { makeStyles } from '@material-ui/styles';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-const useStyles = makeStyles(theme => ({
-    show: {
-        display: 'block',
-    },
-    hide: {
-        display: 'none',
-    },
-}));
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import { CircularProgress  } from '@material-ui/core';
 
-export default function ModalSettingNotify({show, meetingId}){
-  const classes = useStyles();
-  const [unapprovel, setUnapprovel ] = useState(null);
-  const [approvel, setApprovel ] = useState(null);
-  const [isApprovel, setIsApprovel ] = useState(false);
+import Alert from '../component/alert';
+
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+
+
+export default function ModalSettingNotify({show, handleClose, meetingId}){
+
+  const [unapproval, setUnapproval ] = useState([]);
+  const [approval, setApproval ] = useState([]);
+  const [isApproval, setIsApproval ] = useState(false);
+  const [_success, setSuccess] = useState('');
+  const [_400error, set400Error] = useState('');
+  const [loaded1, setLoaded1] = useState(false);
+  const [loaded2, setLoaded2] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    axios.get(`/api/children/listOfMeetingNotifyApprovel/${meetingId}`, {params: { meeting_id: meetingId }}).then((response) => {
+    setLoaded1(false);
+    axios.get('/api/fathers/meeting/approvals/listChildrenOfApprovel', {params: { meeting_id: meetingId }})
+    .then((response) => {
+      setLoaded1(true);
       if(response.data.status_code==200){
         console.log(response.data.params);
-        setApprovel(response.data.params);
-      } else if(response.data.status_code==400){
-        //TODO
-      }
+        setApproval(response.data.params);
+      } 
     });
   }, []);
 
   useEffect(() => {
-    axios.get(`/api/children/listOfMeetingNotifyUnapprovel/${meetingId}`, {params: { meeting_id: meetingId }}).then((response) => {
+    setLoaded2(false);
+    axios.get('/api/fathers/meeting/approvals/listChildrenOfUnapprovel', {params: { meeting_id: meetingId }})
+    .then((response) => {
+      setLoaded2(true);
       if(response.data.status_code==200){
         console.log(response.data.params);
-        setUnapprovel(response.data.params);
-      } else if(response.data.status_code==400){
-        //TODO
+        setUnapproval(response.data.params);
       }
     });
   }, []);
+
+  useEffect(()=>{
+    setLoaded(loaded1 && loaded2);
+  },[loaded1, loaded2]);
+
+  const settingNotify = (tel) => {
+    const formdata = new FormData();
+    formdata.append('tel', JSON.stringify(new Array(tel)));
+    formdata.append('meeting_id', meetingId);
+    axios.post('/api/fathers/approvalNotification', formdata)
+    .then(response=>{
+      switch(response.data.status_code){
+        case 200: setSuccess('SMSの送信に成功しました!'); break;
+        case 400: set400Error('SMSの送信に失敗しました。'); break;
+      }
+    })
+  }
   
-  async function settingNotify(meetingId) {
-    // const formdata = new FormData();
-    // formdata.append('meeting_id', meetingId);
-    // axios.post('/api/meetings/registerFavorite', formdata).then((response) => {})
-    console.log(meetingId);
-    toast.success("SMSの送信に成功しました！", {
-      position: "top-center",
-      autoClose: 5000,
-      className:"bg-success",
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: false,
-      progress: undefined,
-      style:{ color: '#ffffff', opacity: 0.95}
-    });
-  };
 
 	return (
-    <div className={`modal-area modal-up65 ${show ? classes.show : classes.hide}`} >
-      <div className="modal-bg"></div>
-      <div className="modal-box">
-        <ToastContainer />
-        <div className="modal-wrap">
-          <div className="modal-tab-area">
-            <div onClick={e => {setIsApprovel(false); }} className={`modal-tab-label ${isApprovel ? "" : "is-active"}`}><span>未承知</span></div>
-            <div onClick={e => {setIsApprovel(true); }}  className={`modal-tab-label ${!isApprovel ? "" : "is-active"}`}><span>承知済み</span></div>
-          </div>
-
-          <div className="modal-content-area">
-              <div className={ `modal-content ${!isApprovel ? "is-active" : ""}` }  style={{border:"none"}} id="item01">
-                { unapprovel?.map((item, index) => {
-                  return (
-                    <div className="modal-content-item">
+    <Dialog
+    open={show}
+    TransitionComponent={Transition}
+    keepMounted
+    aria-describedby="alert-dialog-slide-description"
+    onClose={handleClose}
+    id="SettingNotifyModal"
+    >
+        <DialogTitle className="px-0 pt-3">
+            <div className="modal-tab-area ft-16">
+              <div onClick={e => {setIsApproval(false); }} className={`modal-tab-label ${isApproval ? "" : "is-active"}`}><span>未承知</span></div>
+              <div onClick={e => {setIsApproval(true); }}  className={`modal-tab-label ${!isApproval ? "" : "is-active"}`}><span>承知済み</span></div>
+           </div>
+        </DialogTitle>
+        <DialogContent className="position-relative">
+          {
+            !loaded && <CircularProgress style={{color:'green', position:'absolute', top: 'calc( 30% - 22px )', left:'calc( 50% - 22px )'}}/>
+          }
+          {
+            loaded &&
+            <>
+              <div className={ `modal-content border-0 ${!isApproval ? "is-active" : ""}` } id="item01">
+                { 
+                  unapproval.length > 0 ?
+                  unapproval.map((item, ki) =>
+                    <div className="modal-content-item" key={ki}>
                       <div className="user-wrap">
-                        <a href={`/c-account/profile/detail/${item.id}`} >
+                        <Link to={`/p-account/child/detail/${item.child.id}`} >
                           <div className="user-avatar">
-                            <img alt="name" className="avatar-img" src={item.image} />
+                            <img alt="name" className="avatar-img" src={item.child.image} />
                           </div>
-                          <p className="user-name">{item.last_name}　{item.first_name}</p>
-                        </a>
+                          <p className="user-name">{item.child.first_name}　{item.child.last_name}</p>
+                        </Link>
                       </div>
                       <div className="p-notification-btn">
-                        <a onClick={e => settingNotify(item.id)} className="btn-default btn-yellow btn-notification btn-r3 btn-h30 btn-w100p btn-fz14">
+                        <a onClick={e => settingNotify(item.child.tel)} className="btn-default btn-yellow btn-notification btn-r3 btn-h30 btn-w100p btn-fz14">
                           <span>通知</span>
                         </a>
                       </div>
                     </div>
-                  ) 
-                })}
-                    <div className="modal-content-item">
-                      <div className="user-wrap">
-                      <a href={`/c-account/profile/detail/1`} >
-                          <div className="user-avatar">
-                            <img alt="name" className="avatar-img" src="../../../assets/img/avatar/avatar-sample03@2x.png" />
-                          </div>
-                          <p className="user-name">Data test 1</p>
-                        </a>
-                      </div>
-                      <div className="p-notification-btn">
-                        <a onClick={e => settingNotify(1)}  className="btn-default btn-yellow btn-notification btn-r3 btn-h30 btn-w100p btn-fz14">
-                          <span>通知</span>
-                        </a>
-                      </div>
-                    </div>
+                  )
+                  : <p className="text-center py-2 ft-xs-15">データはありません。</p>
+                }
               </div>    
-              <div className={ `modal-content ${isApprovel ? "is-active" : ""}` }  style={{border:"none"}} id="item02">
-                { approvel?.map((item, index) => {
-                  return (
-                    <div className="modal-content-item">
+              <div className={ `modal-content border-0 ${isApproval ? "is-active" : ""}` } id="item02">
+                { 
+                  approval.length > 0 ?
+                  approval?.map((item, kj) => 
+                    <div className="modal-content-item" key={kj}>
                       <div className="user-wrap">
-                        <a href={`/c-account/profile/detail/${item.id}`} >
+                        <Link to={`/p-account/child/detail/${item.child.id}`} >
                           <div className="user-avatar">
-                            <img alt="name" className="avatar-img" src={item.image} />
+                            <img alt="name" className="avatar-img" src={item.child.image} />
                           </div>
-                          <p className="user-name">{item.last_name}　{item.first_name}</p>
-                        </a>
-                      </div>
-                      <div className="p-notification-btn">
-                        <a onClick={e => settingNotify(item.id)} className="btn-default btn-yellow btn-notification btn-r3 btn-h30 btn-w100p btn-fz14">
-                          <span>通知</span>
-                        </a>
+                          <p className="user-name">{item.child.first_name}　{item.child.last_name}</p>
+                        </Link>
                       </div>
                     </div>
-                  ) 
-                })}
-                    <div className="modal-content-item">
-                      <div className="user-wrap">
-                      <a href={`/c-account/profile/detail/2`} >
-                          <div className="user-avatar">
-                            <img alt="name" className="avatar-img" src="../../../assets/img/avatar/avatar-sample03@2x.png" />
-                          </div>
-                          <p className="user-name">Data test 2</p>
-                        </a>
-                      </div>
-                      <div className="p-notification-btn">
-                        <a onClick={e => settingNotify(2)} className="btn-default btn-yellow btn-notification btn-r3 btn-h30 btn-w100p btn-fz14">
-                          <span>通知</span>
-                        </a>
-                      </div>
-                    </div>
+                  )
+                  : <p className="text-center py-2 ft-xs-15">データはありません。</p>
+                }
               </div>
-            </div>
-        </div>
-      </div>
-    </div>
+              { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
+              { _success && <Alert type="success"  hide={()=>setSuccess('')}>{_success}</Alert>}
+            </>
+          }
+        </DialogContent>
+    </Dialog>
 	)
 }
 

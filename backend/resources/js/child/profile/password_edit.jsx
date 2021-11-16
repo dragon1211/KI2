@@ -10,8 +10,7 @@ import Alert from '../../component/alert';
 const ProfilePasswordEdit = () => {
     
     const history = useHistory(); 
-    const count = localStorage.getItem('notice');
-    const [notice, setNotice] = useState(count);
+    const [notice, setNotice] = useState(localStorage.getItem('notice'));
 
     const [password, setPassword] = useState('');
     const [password_confirmation, setConfirmPassword] = useState('');
@@ -24,10 +23,6 @@ const ProfilePasswordEdit = () => {
     const [_success, setSuccess] = useState('');
     const [submit, setSubmit] = useState(false);
 
-    const handleNotice = (count) => {
-        setNotice(count);
-        localStorage.setItem("notice", count);
-    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -43,7 +38,7 @@ const ProfilePasswordEdit = () => {
         axios.put(`/api/children/updatePassword/${document.getElementById('child_id').value}`, post)
         .then(response => {
             setSubmit(false);
-            handleNotice(response.data.notice);
+            setNotice(response.data.notice);
             switch(response.data.status_code){
                 case 200: setSuccess(response.data.success_messages); break;
                 case 400: set400Error(response.data.error_messages); break;

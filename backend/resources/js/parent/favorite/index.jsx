@@ -1,246 +1,322 @@
 import React, { useEffect, useState } from 'react';
-import { CircularProgress  } from '@material-ui/core';
-import Notification from '../../component/notification';
-import moment from 'moment';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom';
+import moment from 'moment';
+import { CircularProgress  } from '@material-ui/core';
+import IconButton from '@mui/material/IconButton';
 
-const Favorite = () => {
-  const history = useHistory();
-  const [loading, setLoading] = useState(true);
-  const [flg, setFlg] = useState(true);
-  const [favorites, setFavorites ] = useState(null);
-  const [others, setOthers ] = useState(null);
-  const fatherId = document.getElementById('father_id').value;
+import Notification from '../notification';
+import Alert from '../../component/alert';
+import InfiniteScroll from "react-infinite-scroll-component";
+import { isObject } from 'lodash';
 
-  useEffect(() => {
-    listOfFavoriteOfFather();
-  }, []);
+const INFINITE = 5;
+const SCROLL_DELAY_TIME = 1500;
 
-  useEffect(() => {
-    listOfNonFavoriteOfFather();
-  }, []);
+const Favorite = (props) => {
 
-  function listOfFavoriteOfFather() {
-    axios.get('/api/meetings/listOfFavoriteOfFather', {params: { father_id: fatherId }}).then((response) => {
-      if(response.data.status_code==200){
-        console.log(response.data.params);
-        setFavorites(response.data.params);
-      } else if(response.data.status_code==400){
-        //TODO
-      }
-      setLoading(false);
-    });
-  }
+    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const [tab_status, setTabStatus] = useState(false);
+    const [loaded, setLoaded] = useState(false);
+    const [loaded1, setLoaded1] = useState(false);
+    const [loaded2, setLoaded2] = useState(false);
+    const [meeting_list_non_favorite, setMeetingListOfNonFavorite] = useState([]);
+    const [meeting_list_favorite, setMeetingListOfFavorite] = useState([]);
+    const [fetch_meeting_list_non_favorite, setFetchMeetingListOfNonFavorite] = useState([]);
+    const [fetch_meeting_list_favorite, setFetchMeetingListOfFavorite] = useState([]);
+    const [_success, setSuccess] = useState(props.history.location.state);
 
-  function listOfNonFavoriteOfFather() {
-    axios.get('/api/meetings/listOfNonFavoriteOfFather', {params: { father_id: fatherId }}).then((response) => {
-      if(response.data.status_code==200){
-        console.log(response.data.params);
-        setOthers(response.data.params);
-      } else if(response.data.status_code==400){
-        //TODO
-      }
-    });
-  }
+   
+    useEffect(()=>{
+        setLoaded(loaded1 && loaded2);
+    },[loaded1, loaded2])
 
-  async function handleFavorite(meetingId, currentFavorite, stateName) {
-    const formdata = new FormData();
-    formdata.append('meeting_id', meetingId);
-    formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
-    axios.post('/api/meetings/registerFavorite', formdata).then((response) => {})
 
-    if(stateName == "favorites") {
-      const newList = favorites.map((item) => {
-        if (item.id === meetingId) {
-          const updatedItem = {
-            ...item,
-            is_favorite: currentFavorite == 1 ? 0 : 1,
-          };
+    useEffect(() => {
+        setLoaded(false);
+        let father_id = document.getElementById('father_id').value;
+        axios.get('/api/fathers/meetings/listOfNonFavoriteOfFather', {params:{father_id: father_id}})
+        .then(response => {
+            setLoaded1(true);
+            setNotice(response.data.notice);
+            console.log(response.data);
+            if(response.data.status_code==200){
+                var list = response.data.params;
+                var arr = [];
+                for(var i in list){
+                    var total=0, num=0;
+                    for(var j in list[i].approvals)
+                    {
+                      if(list[i].approvals[j].approval_at) num ++;
+                      total ++;
+                    }
+                    arr.push({...list[i], denominator:total, numerator:num})
+                }
+                setMeetingListOfNonFavorite(arr);
+                var len = arr.length;
+                if(len > INFINITE)
+                    setFetchMeetingListOfNonFavorite(arr.slice(0, INFINITE));
+                else setFetchMeetingListOfNonFavorite(arr.slice(0, len));
+            }
+        })
+        axios.get('/api/fathers/meetings/listOfFavoriteOfFather', {params:{father_id: father_id}})
+        .then(response => {
+          setLoaded2(true);
+          setNotice(response.data.notice);
+          console.log(response.data);
+          if(response.data.status_code==200){
+              var list = response.data.params;
+              var arr = [];
+              for(var i in list){
+                  var total=0, num=0;
+                  for(var j in list[i].approvals)
+                  {
+                    if(list[i].approvals[j].approval_at) num ++;
+                    total ++;
+                  }
+                  arr.push({...list[i], denominator:total, numerator:num})
+              }
+              setMeetingListOfFavorite(arr);
+              var len = arr.length;
+              if(len > INFINITE)
+                  setFetchMeetingListOfFavorite(arr.slice(0, INFINITE));
+              else setFetchMeetingListOfFavorite(arr.slice(0, len));
+            }
+        })
+    },[]);
 
-          return updatedItem;
+    const fetchMoreListOfNonFavorite = () => {
+        setTimeout(() => {
+            var x = fetch_meeting_list_non_favorite.length;
+            var y = meeting_list_non_favorite.length;
+            var c = 0;
+            if(x+INFINITE < y) c = INFINITE;
+            else c = y - x;
+            setFetchMeetingListOfNonFavorite(meeting_list_non_favorite.slice(0, x+c));
+        }, SCROLL_DELAY_TIME);
+    };
+
+    const fetchMoreListOfFavorite = () => {
+        setTimeout(() => {
+            var x = fetch_meeting_list_favorite.length;
+            var y = meeting_list_favorite.length;
+            var c = 0;
+            if(x+INFINITE < y) c = INFINITE;
+            else c = y - x;
+            setFetchMeetingListOfFavorite(meeting_list_favorite.slice(0, x+c));
+        }, SCROLL_DELAY_TIME);
+    };
+
+    async function handleFavorite(meetingId, currentFavorite, stateName) {
+      const formdata = new FormData();
+      formdata.append('meeting_id', meetingId);
+      formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
+      axios.post('/api/fathers/meetings/registerFavorite', formdata)
+      .then(response=>{
+        setNotice(response.data.notice);
+        if(response.data.status_code==200){
+            if(stateName == "nonFavoriteOfFather") {
+              const newList = meeting_list_non_favorite.map((item) => {
+                if (item.id === meetingId) {
+                  const updatedItem = {
+                    ...item,
+                    is_favorite: currentFavorite == 1 ? 0 : 1,
+                  };
+                  return updatedItem;
+                }
+                return item;
+              });
+              setMeetingListOfNonFavorite(newList);
+              setFetchMeetingListOfNonFavorite(newList.slice(0, fetch_meeting_list_non_favorite.length));
+            } else {
+              const newList = meeting_list_favorite.map((item) => {
+                if (item.id === meetingId) {
+                  const updatedItem = {
+                    ...item,
+                    is_favorite: currentFavorite == 1 ? 0 : 1,
+                  };
+                  return updatedItem;
+                }
+                return item;
+              });
+              setMeetingListOfFavorite(newList);
+              setFetchMeetingListOfFavorite(newList.slice(0, fetch_meeting_list_favorite.length));
+            }  
         }
-        return item;
-      });
-      setFavorites(newList);
-    } else {
-      const newList = others.map((item) => {
-        if (item.id === meetingId) {
-          const updatedItem = {
-            ...item,
-            is_favorite: currentFavorite == 1 ? 0 : 1,
-          };
+      })
+    };
+  
 
-          return updatedItem;
-        }
-        return item;
-      });
-      setOthers(newList);
-    }  
-  };
-
+    
 	return (
-    <div className="l-content">
-      <div className="l-content__ttl">
-        <div className="l-content__ttl__left">
-          <h2>お気に入り</h2>
-          <div className="p-meetingAdd-btn">
-            <a 
-              onClick={e => {
-                e.preventDefault();
-                history.push({
-                  pathname: '/p-account/meeting/new',
-                  state: {}
-                });
-              }} 
-              data-v-ade1d018="" 
-              className="btn-default btn-yellow btn-meeting btn-shadow btn-r8 btn-h48 btn-fz14">
-                <span>ミーティングを追加</span>
-                <svg version="1.1" viewBox="0 0 500 500" className="icon svg-icon svg-fill svg-up">
-                  <path fill="#000" stroke="none" pid="0" d="M250 437.6c-16.5 0-30-13.5-30-30V280.1H92.5c-16.5 0-30-13.5-30-30s13.5-30 30-30H220V92.6c0-16.5 13.5-30 30-30s30 13.5 30 30v127.5h127.5c16.5 0 30 13.5 30 30s-13.5 30-30 30H280v127.5c0 16.5-13.5 30-30 30z"></path>
-                </svg>
-            </a>
-          </div>
-        </div>
-        <Notification />
-      </div>
-
-      <div className="l-content-wrap">
-        <div className="meeting-tab-container">
-          <div className="meeting-tab-wrap">
-            <div className="meeting-head">
-              <input className="tab-switch" id="tab-01" type="radio" name="tab_btn" />
-              <input className="tab-switch" id="tab-02" type="radio" name="tab_btn" />
-  
-              <div className="meeting-tab">
-                <label 
-                  onClick={e => {
-                    e.preventDefault();
-                    setFlg(true);
-                    listOfFavoriteOfFather();
-                  }} 
-                  className={`tab-label ${flg ? "is-active" : ""}`} 
-                  htmlFor="tab-01"><span>お気に入り</span></label>
-                <label 
-                  onClick={e => {
-                    e.preventDefault();
-                    setFlg(false);
-                    listOfNonFavoriteOfFather();
-                  }} 
-                  className={`tab-label ${flg ? "" : "is-active"}`} 
-                  htmlFor="tab-02"><span>その他</span></label>
-              </div>
-            </div>
-            
-            <div className="meeting-content">
-              <div className={ `meeting-content-wrap ${flg ? "is-active" : ""}` }  id="item01">
-                { !loading ? favorites?.map((item, index) => {
-                return (
-                  <div className="meeting-item">
-                    <a 
-                      className="meeting-link"
-                      onClick={e => {
-                        e.preventDefault();
-                        history.push({
-                          pathname: `/p-account/meeting/detail/${item.id}`,
-                          state: {}
-                        });
-                      }} >
-                      <h3 className="meeting-ttl">{ item.title }</h3>
-                      <p className="meeting-txt">{ item.text }</p>
-                      <time dateTime="2021-07-30" className="meeting-time">
-                        <span className="meeting-date">{ moment(item.updated_at).format('YYYY/MM/DD HH:mm') || '' }</span>
-                      </time>
-                      <div className="meeting-member">
-                        <div className="meeting-member-wrap">
-                          <div data-url="login.html" className="meeting-member-link">
-                            <ul className="meeting-member-count">
-                              <li className="numerator">0</li>
-                              <li className="denominator">{item?.approvals.length}</li>
-                            </ul>
-                            <ul className="meeting-member-list" role="list">
-                              { item?.approvals.map((v, inx1) => {
-                                return (<li className="meeting-member__item" role="listitem">
-                                  <div className="avatar">
-                                    <img alt="name" className="avatar-img" src={v?.child.image} />
-                                  </div>
-                                </li>);
-                              }) }
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                      
-                    </a>
-                    <button 
-                      type="button" aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" 
-                      onClick={e => {
-                        e.preventDefault();
-                        handleFavorite(item.id, item.is_favorite, 'favorites');
-                      }} 
-                      className={`icon a-icon like-icon ${item.is_favorite == 1 ? "icon-starFill" : "icon-star"} a-icon-size_medium`}
-                    ></button>
-                  </div>  
-                );
-                }) : <div style={{position: "relative", left: "50%"}}><CircularProgress /></div>}
-              </div>
-  
-              <div className={ `meeting-content-wrap ${!flg ? "is-active" : ""}` }  id="item02">
-                { others?.length > 0 && others.map((item, index) => {
-                return (
-                <div className="meeting-item">
-                  <a 
-                    className="meeting-link"
-                    onClick={e => {
-                      e.preventDefault();
-                      history.push({
-                        pathname: `/p-account/meeting/detail/${item.id}`,
-                        state: {}
-                      });
-                    }} >
-                    <h3 className="meeting-ttl">{ item.title }</h3>
-                    <p className="meeting-txt">{ item.text }</p>
-                    <time dateTime="2021-07-30" className="meeting-time">
-                      <span className="meeting-date">{ moment(item.updated_at).format('YYYY/MM/DD HH:mm') || '' }</span>
-                    </time>
-                    <div className="meeting-member">
-                      <div className="meeting-member-wrap">
-                        <div data-url="login.html" className="meeting-member-link">
-                          <ul className="meeting-member-count">
-                              <li className="numerator">0</li>
-                              <li className="denominator">{item?.approvals.length}</li>
-                          </ul>
-                          <ul className="meeting-member-list" role="list">
-                            { item?.approvals.map((v, inx2) => {
-                              return (<li className="meeting-member__item" role="listitem">
-                                <div className="avatar">
-                                  <img alt="name" className="avatar-img" src={v?.child.image} />
-                                </div>
-                              </li>);
-                            }) }
-                          </ul>
-                        </div>
-                      </div>
+        <div className="l-content">
+            <div className="l-content__ttl">
+                <div className="l-content__ttl__left">
+                    <h2>お気に入り</h2>
+                    <div className="p-meetingAdd-btn">
+                        <Link to = '/p-account/meeting/new' data-v-ade1d018="kikikanri" 
+                          className="btn-default btn-yellow btn-meeting btn-shadow btn-r8 btn-h48 btn-fz14">
+                            <span>ミーティングを追加</span>
+                            <svg version="1.1" viewBox="0 0 500 500" className="icon svg-icon svg-fill svg-up">
+                              <path fill="#000" stroke="none" pid="0" d="M250 437.6c-16.5 0-30-13.5-30-30V280.1H92.5c-16.5 0-30-13.5-30-30s13.5-30 30-30H220V92.6c0-16.5 13.5-30 30-30s30 13.5 30 30v127.5h127.5c16.5 0 30 13.5 30 30s-13.5 30-30 30H280v127.5c0 16.5-13.5 30-30 30z"></path>
+                            </svg>
+                        </Link>
                     </div>
-                    
-                  </a>
-                  <button type="button" aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" 
-                    onClick={e => {
-                      e.preventDefault();
-                      handleFavorite(item.id, item.is_favorite, 'others');
-                    }} 
-                    className={`icon a-icon like-icon ${item.is_favorite == 1 ? "icon-starFill" : "icon-star"} a-icon-size_medium`}
-                  ></button>
                 </div>
-                );
-              }) }
-              </div>
+                <Notification notice={notice}/>
             </div>
-          </div>
+
+            <div className="l-content-wrap">
+                <section className="meeting-tab-container">
+                    <div className="meeting-tab-wrap">
+                        <div className="meeting-head">
+                            <input className="tab-switch" id="tab-01" type="radio" name="tab_btn"/>
+                            <input className="tab-switch" id="tab-02" type="radio" name="tab_btn"/>
+                
+                            <div className="meeting-tab">
+                                <label className={`tab-label ${!tab_status && 'is-active'} `} htmlFor="tab-01"  onClick={()=>setTabStatus(false)}><span>お気に入り</span></label>
+                                <label className={`tab-label ${ tab_status && 'is-active'} `} htmlFor="tab-02"  onClick={()=>setTabStatus(true)}><span>その他</span></label>
+                            </div> 
+                        </div>
+                    </div>
+                    {
+                        !loaded &&
+                            <CircularProgress color="secondary" className="css-loader"/>
+                    }
+                    {
+                        loaded &&
+                        <div className="meeting-content">
+                        {
+                            !tab_status &&
+                            <div className="meeting-content-wrap is-active" id="item01">
+                                <InfiniteScroll
+                                    dataLength={fetch_meeting_list_favorite.length}
+                                    next={fetchMoreListOfFavorite}
+                                    hasMore={fetch_meeting_list_favorite.length != meeting_list_favorite.length}
+                                    loader={
+                                        <div id="dots3">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                    }
+                                    style={{overflow:'none', position:'relative'}}
+                                >
+                                {
+                                    fetch_meeting_list_favorite.length > 0 ?
+                                    fetch_meeting_list_favorite?.map((item, id) =>                                          
+                                      <div className="meeting-item" key={id}>
+                                          <Link to={`/p-account/meeting/detail/${item.id}`} className="meeting-link">
+                                              <h3 className="meeting-ttl">{ item.title }</h3>
+                                              <p className="meeting-txt">{ item.text }</p>
+                                              <time dateTime="2021-07-30" className="meeting-time">
+                                                <span className="meeting-date">{ moment(item.updated_at).format('YYYY/MM/DD') }</span>
+                                              </time>
+                                              <div className="meeting-member">
+                                                <div className="meeting-member-wrap">
+                                                  <div data-url="login.html" className="meeting-member-link">
+                                                    <ul className="meeting-member-count">
+                                                        <li className="numerator">{item.numerator}</li>
+                                                        <li className="denominator">{item.denominator}</li>
+                                                    </ul>
+                                                    <ul className="meeting-member-list" role="list">
+                                                      { 
+                                                        item.approvals?.map((v, inx1) =>
+                                                          <li className="meeting-member__item" role="listitem" key={inx1}>
+                                                            <div className="avatar">
+                                                              <img alt="name" className="avatar-img" src={v?.child.image} />
+                                                            </div>
+                                                          </li>
+                                                        )
+                                                      }
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                          </Link>
+                                          <button aria-label="お気に入り" data-tooltip="お気に入り"  
+                                              onClick={e => handleFavorite(item.id, item.is_favorite, 'favoriteOfFather') } 
+                                              className={`icon a-icon like-icon ${item.is_favorite == 1 ? "icon-starFill" : "icon-star"} a-icon-size_medium`}>
+                                          </button>
+                                      </div>
+                                    )
+                                    : <p className="text-center py-5 ft-xs-17">データはありません。</p>
+                                } 
+                                </InfiniteScroll>
+                            </div>
+                        }
+                        {
+                            tab_status &&
+                            <div className="meeting-content-wrap is-active" id="item02">
+                                <InfiniteScroll
+                                    dataLength={fetch_meeting_list_non_favorite.length}
+                                    next={fetchMoreListOfNonFavorite}
+                                    hasMore={fetch_meeting_list_non_favorite.length != meeting_list_non_favorite.length}
+                                    loader={
+                                        <div id="dots3">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                    }
+                                    style={{overflow:'none', position:'relative'}}
+                                >
+                                {
+                                    fetch_meeting_list_non_favorite.length > 0 ?
+                                    fetch_meeting_list_non_favorite?.map((item, id) => 
+                                      <div className="meeting-item" key={id}>
+                                          <Link to={`/p-account/meeting/detail/${item.id}`}  className="meeting-link">
+                                              <h3 className="meeting-ttl">{ item.title }</h3>
+                                              <p className="meeting-txt">{ item.text }</p>
+                                              <time dateTime="2021-07-30" className="meeting-time">
+                                                  <span className="meeting-date">{ moment(item.updated_at).format('YYYY/MM/DD') }</span>
+                                              </time>
+                                              <div className="meeting-member">
+                                                  <div className="meeting-member-wrap">
+                                                      <div data-url="login.html" className="meeting-member-link">
+                                                          <ul className="meeting-member-count">
+                                                              <li className="numerator">{item.numerator}</li>
+                                                              <li className="denominator">{item.denominator}</li>
+                                                          </ul>
+                                  
+                                                          <ul className="meeting-member-list" role="list">
+                                                            { 
+                                                              item.approvals?.map((v, inx1) =>
+                                                                <li className="meeting-member__item" role="listitem" key={inx1}>
+                                                                  <div className="avatar">
+                                                                    <img alt="name" className="avatar-img" src={v?.child.image} />
+                                                                  </div>
+                                                                </li>
+                                                              )
+                                                            }
+                                                          </ul>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                          </Link>
+                                          <button aria-label="お気に入り" data-tooltip="お気に入り"  
+                                              onClick={e => handleFavorite(item.id, item.is_favorite, 'nonFavoriteOfFather')} 
+                                              className={`icon a-icon like-icon ${item.is_favorite == 1 ? "icon-starFill" : "icon-star"} a-icon-size_medium`}>
+                                          </button>
+                                      </div>
+                                    )
+                                    : <p className="text-center py-5 ft-xs-17">データはありません。</p>
+                                }
+                                </InfiniteScroll>                                    
+                            </div>
+                        }
+                        </div>
+                    }
+                </section>
+            </div>
+            { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
         </div>
-      </div>
-    </div>
-	)
+        
+    )
 }
+
+
 
 export default Favorite;

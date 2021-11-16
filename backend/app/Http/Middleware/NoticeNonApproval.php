@@ -23,7 +23,7 @@ class NoticeNonApproval
         $count = MeetingApprovals::where('child_id', session()->get('children')['id'])->whereNull('approval_at')->count();
         $content = json_decode($response->content(), true);
         if (json_last_error() == JSON_ERROR_NONE) {
-            $response->setContent(json_encode(array_merge($content, ['notice' => $count])));    
+            $response->setContent(json_encode(array_merge($content, ['notice' => $count])));
         }
 
         return $response;

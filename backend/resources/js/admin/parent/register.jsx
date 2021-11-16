@@ -12,11 +12,9 @@ const ParentRegister = () => {
     const history = useHistory();
 
     const [email, setEmail] = useState('');
-
     const [_422errors, set422Errors] = useState({ email: '' });
     const [_400error, set400Error] = useState('');
     const [_success, setSuccess] = useState('');
-
     const [submit, setSubmit] = useState(false);
 
 
@@ -39,7 +37,6 @@ const ParentRegister = () => {
     }
 
 
-    
 	return (
         <div className="l-content">
             <div className="l-content-w560">
@@ -48,7 +45,6 @@ const ParentRegister = () => {
                         <h2>親追加</h2>
                     </div>
                 </div>
-
                 <div className="l-content-wrap">
                     <section className="profile-container">
                         <div className="profile-wrap">

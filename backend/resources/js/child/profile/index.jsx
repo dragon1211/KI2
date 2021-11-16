@@ -10,8 +10,7 @@ import Notification from '../notification';
 
 const Profile = () => {
 
-    const count = localStorage.getItem('notice');
-    const [notice, setNotice] = useState(count);
+    const [notice, setNotice] = useState(localStorage.getItem('notice'));
 
     const [image, setImage] = useState(''); 
     const [profile, setProfile] = useState({email:'', tel:'', first_name:'', last_name:'', identity:'', company:'', image:''})
@@ -21,18 +20,13 @@ const Profile = () => {
     const [_success_update_image, setSuccessUpdateImage] = useState('');
 
 
-    const handleNotice = (count) => {
-        setNotice(count);
-        localStorage.setItem("notice", count);
-    }
-
     useEffect(() => {
         setLoaded(false);
         let child_id = document.getElementById('child_id').value;
         axios.get('/api/children/detail/'+child_id)
         .then(response => {
             setLoaded(true);
-            handleNotice(response.data.notice);
+            setNotice(response.data.notice);
             if(response.data.status_code==200){
                 setProfile(response.data.params);
                 setImage(response.data.params.image);
@@ -54,7 +48,7 @@ const Profile = () => {
         reader.onloadend = () => {
             axios.put(`/api/children/updateImage/${document.getElementById('child_id').value}`, {image: reader.result})
             .then(response => {
-                handleNotice(response.data.notice);
+                setNotice(response.data.notice);
                 switch(response.data.status_code){
                     case 200: {
                         // setImage(reader.result);

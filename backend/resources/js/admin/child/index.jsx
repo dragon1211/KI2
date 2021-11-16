@@ -5,13 +5,18 @@ import { useHistory, Link } from 'react-router-dom';
 
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+import InfiniteScroll from "react-infinite-scroll-component";
 
+const INFINITE = 10;
+const SCROLL_DELAY_TIME = 1500;
 
 const Child = () => {
 
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
-  const [children_list, setChildrenList ] = useState(null);
+  const [children_list, setChildrenList ] = useState([]);
+  const [fetch_children_list, setFetchChildrenList] = useState([]);
+
   const [_422errors, set422errors] = useState({keyword:''});
   const [_400error, set400error] = useState('');
 
@@ -19,43 +24,50 @@ const Child = () => {
     setLoaded(false);
     axios.get('/api/admin/children/list')
     .then((response) => {
+      setLoaded(true);
       if(response.data.status_code==200){
         setChildrenList(response.data.params);
-      } else if(response.data.status_code==400){
-        //TODO
+        var len = response.data.params.length;
+        if(len > INFINITE)
+            setFetchChildrenList(response.data.params.slice(0, INFINITE));
+        else setFetchChildrenList(response.data.params.slice(0, len));
       }
-      setLoaded(true);
     });
-    ////////////////////////////////////
   }, []);
+
+  const fetchMoreChildrenList = () => {
+      setTimeout(() => {
+          var x = fetch_children_list.length;
+          var y = children_list.length;
+          var c = 0;
+          if(x+INFINITE < y) c = INFINITE;
+          else c = y - x;
+          setFetchChildrenList(children_list.slice(0, x+c));
+      }, SCROLL_DELAY_TIME);
+  };
 
 
   const handleSearch = (e) => {
     e.preventDefault();
-    initErrors();
     if(keyword == '')
     {
       document.getElementById('keyword').focus();
       return;
     }
-
     setLoaded(false);
-    setChildrenList(null);
-
+    set422errors({keyword:''});
+    setChildrenList([]);
     axios.get('/api/admin/children/search', {params:{keyword: keyword}})
     .then((response) => {
-
       setLoaded(true);
       if(response.data.status_code==200){
         setChildrenList(response.data.params);
-      } else if(response.data.status_code==400){
-        //TODO
+        var len = response.data.params.length;
+        if(len > INFINITE)
+            setFetchChildrenList(response.data.params.slice(0, INFINITE));
+        else setFetchChildrenList(response.data.params.slice(0, len));
       }
     });
-  }
-
-  const initErrors = () => {
-    set422errors({keyword:''});
   }
 
 
@@ -91,26 +103,40 @@ const Child = () => {
               }
               { 
                 loaded && 
-                (
-                  children_list && children_list.length>0 ?
-                    children_list.map((child, k) => 
-                      <div className="search-item" key={k}>
-                        <Link to = {`/admin/child/detail/${child.id}`}>
-                          <div className="user-wrap">
-                            <div className="user-avatar">
-                              <img alt="name" className="avatar-img" src={ child.image } />
-                            </div>
-                            <div className="user-info">
-                              <p className="user-name mb-1 font-weight-bold">{ child.last_name }  { child.first_name }</p>
-                              <p className="user-tel">{ child.tel }</p>
-                            </div>
-                          </div>
-                        </Link>
+                <InfiniteScroll
+                  dataLength={fetch_children_list.length}
+                  next={fetchMoreChildrenList}
+                  hasMore={fetch_children_list.length != children_list.length}
+                  loader={
+                      <div id="dots3">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                          <span></span>
                       </div>
-                    ) : <p className="text-center py-5">データが存在していません。</p>
-                )
+                  }
+                  style={{overflow:'none', position:'relative'}}
+                >
+                  {
+                    fetch_children_list.length>0 ?
+                      fetch_children_list.map((child, k) => 
+                        <div className="search-item" key={k}>
+                          <Link to = {`/admin/child/detail/${child.id}`}>
+                            <div className="user-wrap">
+                              <div className="user-avatar">
+                                <img alt="name" className="avatar-img" src={ child.image } />
+                              </div>
+                              <div className="user-info">
+                                <p className="user-name mb-1 font-weight-bold">{ child.last_name }  { child.first_name }</p>
+                                <p className="user-tel">{ child.tel }</p>
+                              </div>
+                            </div>
+                          </Link>
+                        </div>
+                      ) : <p className="text-center py-5">データが存在していません。</p>
+                  }
+                </InfiniteScroll>
               }
-
             </div>
           </div>
         </section>

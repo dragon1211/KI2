@@ -230,20 +230,24 @@ class MeetingsController extends Controller {
         $meeting_select = ['id', 'father_id', 'title', 'text', 'memo', 'updated_at', 'is_favorite'];
         $meeting_approvals_select = ['child_id', 'approval_at'];
         $child_select = ['image'];
+        $father_relation_select = ['id'];
 
         // 取得に成功
         if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->get())) {
             return ['status_code' => 400];
         }
+
         foreach ($list as $i => $l) {
-            if (null !== ($l->approval = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->get())) {
-                foreach ($l->approval as $ii => $ll) {
+            if (null !== ($l->approvals = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->get())) {
+                foreach ($l->approvals as $ii => $ll) {
                     if (null === ($ll->child = Child::select($child_select)->where('id', (int)$ll->child_id)->first())) {
-                        $ll->child = [];
+                        $ll->child = new \stdClass();
+                    }
+
+                    if (!in_array($l, $result)) {
+                        $result[] = $l;
                     }
                 }
-
-                $result[] = $l;
             }
         }
 
@@ -259,6 +263,7 @@ class MeetingsController extends Controller {
         $meeting_select = ['id', 'father_id', 'title', 'text', 'memo', 'updated_at', 'is_favorite'];
         $meeting_approvals_select = ['child_id', 'approval_at'];
         $child_select = ['image'];
+        $father_relation_select = ['id'];
 
         // 取得に成功
         if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->get())) {
@@ -266,14 +271,16 @@ class MeetingsController extends Controller {
         }
 
         foreach ($list as $i => $l) {
-            if (null !== ($l->approval = MeetingApprovals::select($meeting_approvals_select)->whereNull('approval_at')->where('meeting_id', (int)$l->id)->get())) {
-                foreach ($l->approval as $ii => $ll) {
+            if (null !== ($l->approvals = MeetingApprovals::select($meeting_approvals_select)->whereNull('approval_at')->where('meeting_id', (int)$l->id)->get())) {
+                foreach ($l->approvals as $ii => $ll) {
                     if (null === ($ll->child = Child::select($child_select)->where('id', (int)$ll->child_id)->first())) {
-                        $ll->child = [];
+                        $ll->child = new \stdClass();
+                    }
+
+                    if (!in_array($l, $result)) {
+                        $result[] = $l;
                     }
                 }
-
-                $result[] = $l;
             }
         }
 
@@ -525,11 +532,18 @@ class MeetingsController extends Controller {
 
         if (request()->route()->action['as'] != 'mdc') {
             $result->children = [];
+            $rec = [];
     
-            if (null !== ($rel = FatherRelation::select('child_id')->where('father_id', (int)$result->father_id)->first())) {
-                if (null === ($result->children = Child::select($all_child_select)->where('id', $rel->child_id)->get()->toArray())) {
-                    $result->children = [];
+            if (null !== ($rel = FatherRelation::select('child_id')->where('father_id', (int)$result->father_id)->get())) {
+                foreach ($rel as $i => $re) {
+                    if (null !== ($rech = Child::select($all_child_select)->where('id', $re->child_id)->first())) {
+                        if (!in_array($rech, $rec)) {
+                            $rec[$i] = $rech;
+                        }
+                    }
                 }
+
+                $result->children = $rec;
             }
 
             foreach ($result->approval as $i => $a) {
@@ -573,6 +587,7 @@ class MeetingsController extends Controller {
         ];
 
         if (isset($r->memo)) $update['memo'] = $r->memo;
+        else if (is_null($r->memo)) $update['memo'] = '';
 
         try {
             // リクエストでPDFがある場合

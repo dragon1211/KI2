@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Notification from '../../component/notification';
-import ModalAlert from '../../component/modal_alert';
 
 const ProfilePasswordEdit = () => {
   const [newPassword, setNewPassword] = useState('');
@@ -87,12 +86,6 @@ const ProfilePasswordEdit = () => {
           </section>
         </div>
       </div>
-      <ModalAlert 
-        show={showAlert}
-        message={messageAlert}
-        textColor={textColor}
-        handleClose={handleCloseAlert} 
-      />
     </div>
 	)
 }

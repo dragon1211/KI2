@@ -13,9 +13,13 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Father;
 use App\Models\FatherRelation;
 use App\Models\EmailActivation;
+use App\Models\MeetingApprovals;
+
 use App\Mail\FathersForgetPasswordMail;
 use App\Mail\FathersRegistrationTemporaryMail;
 use App\Mail\FathersRegistrationMainMail;
+
+use App\Notifications\SmsNotification;
 
 class FathersController extends Controller {
     use AuthenticationTrait;
@@ -445,6 +449,37 @@ class FathersController extends Controller {
 
         // 成功
         return ['status_code' => 200, 'success_messages' => ['親の更新に成功しました。']];
+    }
+
+    public function approvalNotification (Request $r) {
+        if (!isset($r->meeting_id) || !isset($r->tel) || empty(json_decode($r->tel))) {
+            return ['status_code' => 400];
+        }
+
+        $meeting_approvals_select = ['child_id'];
+        $children_select = ['tel'];
+
+        if (null === ($ma = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$r->meeting_id)->get())) {
+            return ['status_code' => 400];
+        }
+
+        try {
+            foreach (json_decode($r->tel) as $tel) {
+                // SMSを送ります。
+                $message = '未承知のミーティングがあります。
+以下より確認してください。
+'.url('/').'/c-account/meeting/detail/'.$r->meeting_id;
+
+                \Notification::route('nexmo', '81'.substr($tel, 1))->notify(new SmsNotification($message));
+            }
+        }
+        catch (\Throwable $e) {
+            // 失敗
+            Log::critical($e->getMessage());
+            return ['status_code' => 400];
+        }
+
+        return ['status_code' => 200];
     }
 
     public function withdrawal (Request $r) {

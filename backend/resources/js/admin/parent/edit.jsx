@@ -3,10 +3,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { LoadingButton } from '@material-ui/lab';
 import { CircularProgress  } from '@material-ui/core';
-
 import Alert from '../../component/alert';
-
-
 
 const ParentEdit = (props) => {
 
@@ -30,49 +27,39 @@ const ParentEdit = (props) => {
     const [loaded, setLoaded] = useState(false);
 
 
-
-    useEffect(
-        () => {
-            setLoaded(false);
-            axios.get(`/api/admin/fathers/detail/${props.match.params?.father_id}`)
-            .then(response => {
-                setLoaded(true);
-                if(response.data.status_code==200)
-                {
-                    var parent = response.data.params;
-                    if(parent){
-                        setCompany(parent?.company);
-                        setEmail(parent.email);
-                        setTelephone(parent.tel)
-                        setProfile(parent.profile);  
-                    }
+    useEffect(() => {
+        setLoaded(false);
+        axios.get(`/api/admin/fathers/detail/${props.match.params?.father_id}`)
+        .then(response => {
+            setLoaded(true);
+            if(response.data.status_code==200){
+                var parent = response.data.params;
+                if(parent){
+                    setCompany(parent?.company);
+                    setEmail(parent.email);
+                    setTelephone(parent.tel)
+                    setProfile(parent.profile);  
                 }
-            })
-            .catch(err=>console.log(err))
-        },[]
-    );
+            }
+        })
+    },[]);
 
-    
     
     const handleSubmit = (e) => {
         e.preventDefault();
-
         set422Errors({
             company:'',
             email:'',
             tel:'',
             profile:'',
         });
-
         setSubmit(true);
-        
         var request = {
             company: company,
             email: email,
             tel: tel,
             profile: profile,
         };
-
         axios.put(`/api/admin/fathers/updateProfile/${props.match.params?.father_id}`, request)
         .then(response => {
             setSubmit(false);
@@ -82,11 +69,8 @@ const ParentEdit = (props) => {
                 case 422: set422Errors(response.data.error_messages); break;
             }
         })
-        .catch(err=>console.log(err))
     }
 
-
-    
 	return (
     <div className="l-content">
         <div className="l-content-w560">

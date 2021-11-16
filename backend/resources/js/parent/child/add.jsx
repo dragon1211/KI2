@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Notification from '../../component/notification';
-import ModalAlert from '../../component/modal_alert';
+import Alert from '../../component/alert';
+
 
 const ChildAdd = () => {
+  const [_success, setSuccess] = useState('');
   const [identity, setIdentity] = useState('');
   const [textColor, setTextColor] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -80,12 +82,7 @@ const ChildAdd = () => {
           </section>
         </div>
       </div>
-      <ModalAlert 
-        show={showAlert}
-        message={messageAlert}
-        textColor={textColor}
-        handleClose={handleCloseAlert} 
-      />
+      { _success && <Alert type="success">{_success}</Alert> }
     </div>
 	)
 }

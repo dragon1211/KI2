@@ -26,19 +26,15 @@ const ChildPasswordEdit = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         set422Errors({
             password:'',
             password_confirmation:''
         });
-
         setSubmit(true);
-
         const request = {
             password: password,
             password_confirmation: password_confirmation
         }
-        
         axios.put(`/api/admin/children/updatePassword/${props.match.params?.child_id}`, request)
         .then(response => {
             setSubmit(false);
@@ -48,11 +44,9 @@ const ChildPasswordEdit = (props) => {
                 case 422: set422Errors(response.data.error_messages); break;
             }
         })
-        .catch(err=>console.log(err))
     }
 
 
-    
 	return (
         <div className="l-content">
             <div className="l-content-w560">

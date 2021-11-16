@@ -33,34 +33,29 @@ const ChildEdit = (props) => {
     const [loaded, setLoaded] = useState(false);
 
 
-    useEffect(
-        () => {
-            setLoaded(false);
-            axios.get(`/api/admin/children/detail/${props.match.params?.child_id}`)
-            .then(response => {
-                setLoaded(true);
-                if(response.data.status_code==200)
-                {
-                    var child = response.data.params;
-                    if(child){
-                        setFirstName(child.first_name);
-                        setLastName(child.last_name);
-                        setIdentity(child.identity);
-                        setEmail(child.email);
-                        setTelephone(child.tel);
-                        setCompany(child.company);
-                    }
+    useEffect(() => {
+        setLoaded(false);
+        axios.get(`/api/admin/children/detail/${props.match.params?.child_id}`)
+        .then(response => {
+            setLoaded(true);
+            if(response.data.status_code==200)
+            {
+                var child = response.data.params;
+                if(child){
+                    setFirstName(child.first_name);
+                    setLastName(child.last_name);
+                    setIdentity(child.identity);
+                    setEmail(child.email);
+                    setTelephone(child.tel);
+                    setCompany(child.company);
                 }
-            })
-            .catch(err=>console.log(err))
-        },[]
-    );
-
+            }
+        })
+    },[]);
 
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         set422Errors({
             first_name:'',
             last_name:'',
@@ -69,9 +64,7 @@ const ChildEdit = (props) => {
             tel:'',
             company:''
         });
-
         setSubmit(true);
-        
         var request = {
             first_name: first_name,
             last_name: last_name,
@@ -80,7 +73,6 @@ const ChildEdit = (props) => {
             tel: tel,
             company: company
         };
-
         axios.put(`/api/admin/children/updateProfile/${props.match.params?.child_id}`, request)
         .then(response => {
             setSubmit(false);
@@ -90,7 +82,6 @@ const ChildEdit = (props) => {
                 case 422: set422Errors(response.data.error_messages); break;
             }
         })
-        .catch(err=>console.log(err))
     }
 
 

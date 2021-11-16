@@ -5,16 +5,18 @@ import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-
-
+import InfiniteScroll from "react-infinite-scroll-component";
 import Alert from '../../component/alert';
 
+const INFINITE = 5;
+const SCROLL_DELAY_TIME = 1500;
 
 const Meeting = () => {
   
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
-  const [meeting_list, setMeetingList ] = useState(null);
+  const [meeting_list, setMeetingList ] = useState([]);
+  const [fetch_meeting_list, setFetchMeetingList ] = useState([]);
   const [_422errors, set422errors] = useState({keyword:''});
   const [_success, setSuccess] = useState('');
 
@@ -29,11 +31,9 @@ const Meeting = () => {
 
   useEffect(() => {
     setLoaded(false);
-    axios.get('/api/admin/meetings/list').then((response) => {
-
+    axios.get('/api/admin/meetings/list').then(response => {
       setLoaded(true);
       if(response.data.status_code==200){
-
         //------------Calculate Numerator & Denominator--------------
           var list = response.data.params;
           var arr = [];
@@ -46,35 +46,42 @@ const Meeting = () => {
               }
               arr.push({...list[i], denominator:total, numerator:num})
           }
-          //------------------------------------------------------------
-
           setMeetingList(arr);
-
-      } else if(response.data.status_code==400){
-        //TODO
-      }
+          var len = arr.length;
+          if(len > INFINITE)
+              setFetchMeetingList(arr.slice(0, INFINITE));
+          else setFetchMeetingList(arr.slice(0, len));
+      } 
     });
   }, []);
+
+
+  const fetchMoreMeetingList = () => {
+    setTimeout(() => {
+        var x = fetch_meeting_list.length;
+        var y = meeting_list.length;
+        var c = 0;
+        if(x+INFINITE < y) c = INFINITE;
+        else c = y - x;
+        setFetchMeetingList(meeting_list.slice(0, x+c));
+    }, SCROLL_DELAY_TIME);
+};
 
   
   const handleSearch = (e) => {
     e.preventDefault();
-    initErrors();
     if(keyword == '')
     {
       document.getElementById('keyword').focus();
       return;
     }
-
+    set422errors({keyword:''});
     setLoaded(false);
-    setMeetingList(null);
-
+    setMeetingList([]);
     axios.get('/api/admin/meetings/search',{params:{keyword: keyword}})
     .then((response) => {
-
       setLoaded(true);
       if(response.data.status_code==200){
-
         //------------Calculate Numerator & Denominator--------------
           var list = response.data.params;
           var arr = [];
@@ -87,18 +94,13 @@ const Meeting = () => {
               }
               arr.push({...list[i], denominator:total, numerator:num})
           }
-          //------------------------------------------------------------
-
           setMeetingList(arr);
-
-      } else if(response.data.status_code==400){
-        //TODO
+          var len = arr.length;
+          if(len > INFINITE)
+              setFetchMeetingList(arr.slice(0, INFINITE));
+          else setFetchMeetingList(arr.slice(0, len));
       }
     });
-  }
-
-  const initErrors = () => {
-    set422errors({keyword:''});
   }
 
 
@@ -111,7 +113,7 @@ const Meeting = () => {
     </div>
 
     <div className="l-content-wrap">
-        <div className="search-container">
+        <section className="search-container">
             <div className="meeting-head mt-4">
                 <form className="position-relative"  onSubmit={handleSearch}>
                     <label className="control-label" htmlFor="keyword">キーワード</label>
@@ -129,13 +131,27 @@ const Meeting = () => {
               <div className="search-content position-relative" style={{minHeight:'100px'}}>
                 {
                   !loaded &&
-                        <CircularProgress color="secondary" style={{top:'20px', left:'calc(50% - 22px)', color:'green', position:'absolute'}}/>
+                    <CircularProgress color="secondary" style={{top:'20px', left:'calc(50% - 22px)', color:'green', position:'absolute'}}/>
                 }
                 { 
                   loaded && 
-                  (
-                    meeting_list && meeting_list.length > 0 ?
-                      meeting_list.map((item, ki) => 
+                  <InfiniteScroll
+                    dataLength={fetch_meeting_list.length}
+                    next={fetchMoreMeetingList}
+                    hasMore={fetch_meeting_list.length != meeting_list.length}
+                    loader={
+                        <div id="dots3">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    }
+                    style={{overflow:'none', position:'relative'}}
+                  >
+                  {
+                    fetch_meeting_list.length > 0 ?
+                      fetch_meeting_list.map((item, ki) => 
                         <div className="meeting-item" key={ki}>
                             <Link to = {`/admin/meeting/detail/${item.id}`} className="meeting-link">
 
@@ -169,14 +185,15 @@ const Meeting = () => {
                         </div>
                       )
                     : <p className="text-center py-5">データが存在していません。</p>
-                  )
+                  }
+                  </InfiniteScroll>
                 }
               </div>
             </div>
             {
               _success && <Alert type="success">{_success}</Alert>
             }
-        </div>
+        </section>
     </div>
   </div>
 	)

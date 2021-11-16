@@ -13,6 +13,10 @@ const Notification = ({ notice }) => {
         history.push({ pathname: `/c-account/meeting/`,  state: {}});
     }
 
+    useEffect(()=>{
+        localStorage.setItem("notice", notice);
+    }, [notice]);
+
 	return (
     <div className="p-notification" onClick={handleClick}>
         <div className="p-notification-icon">

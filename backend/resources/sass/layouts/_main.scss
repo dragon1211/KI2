@@ -142,10 +142,6 @@ a{
   background-size: 35px 32px;
 }
 
-.css-1t1j96h-MuiPaper-root-MuiDialog-paper{
-  border-radius: 15px !important;
-}
-
 .meeting-item{
   &:last-child{
     border-bottom: none;
@@ -208,10 +204,15 @@ a{
   .p-meetingAdd-btn {
     width: 200px !important;
   }
-
   .btn-meeting .icon {
       margin-left: 5px !important;
       padding: 0 !important;
+  }
+  .search-container {
+    padding-bottom: 50px !important;
+  }
+  .p-file-nav figure{
+    min-width: 100px !important;
   }
 }
 
@@ -221,3 +222,17 @@ a{
     font-size: 16px !important;
   }
 }
+
+.p-article .meeting-member-count {
+  display: block !important; 
+}
+
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper{
+  border-radius: 20px !important;
+  min-width: 300px;
+}
+
+#SettingNotifyModal .css-1t1j96h-MuiPaper-root-MuiDialog-paper{
+  min-height: 70%;
+}
+

@@ -12,16 +12,11 @@ const SCROLL_DELAY_TIME = 1500;
 const Parent = () => {
     
     const history = useHistory();
-    const count = localStorage.getItem('notice');
-    const [notice, setNotice] = useState(count);
+    const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const [parent_list, setParentList] = useState([]);
     const [fetch_parent_list, setFetchParentList] = useState([]);
     const [loaded, setLoaded] = useState(false);
-
-    const handleNotice = (count) => {
-        setNotice(count);
-        localStorage.setItem("notice", count);
-    }
+    
 
     useEffect(() => {
         setLoaded(false);
@@ -29,7 +24,7 @@ const Parent = () => {
         axios.get('/api/children/fathers/listOfChild', {params: {child_id: child_id}})
         .then(response => {
             setLoaded(true);
-            handleNotice(response.data.notice);
+            setNotice(response.data.notice);
             if(response.data.status_code==200){
                 setParentList(response.data.params);
                 var len = response.data.params.length;

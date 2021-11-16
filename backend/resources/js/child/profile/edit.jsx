@@ -11,8 +11,7 @@ import { CircularProgress  } from '@material-ui/core';
 const ProfileEdit = () => {
 
     const history = useHistory();
-    const count = localStorage.getItem('notice');
-    const [notice, setNotice] = useState(count);
+    const [notice, setNotice] = useState(localStorage.getItem('notice'));
 
     const [first_name, setFirstName] = useState('');
     const [last_name, setLastName] = useState('');  
@@ -35,11 +34,6 @@ const ProfileEdit = () => {
     const [submit, setSubmit] = useState(false);
     const [loaded, setLoaded] = useState(false);
 
-    const handleNotice = (count) => {
-        setNotice(count);
-        localStorage.setItem("notice", count);
-    }
-
     
     useEffect(() => {
         setLoaded(false);
@@ -47,7 +41,7 @@ const ProfileEdit = () => {
         axios.get('/api/children/detail/'+child_id)
         .then(response => {
             setLoaded(true);
-            handleNotice(response.data.notice);
+            setNotice(response.data.notice);
             if(response.data.status_code==200){
                 let params = response.data.params;
                 setFirstName(params.first_name);
@@ -93,7 +87,7 @@ const ProfileEdit = () => {
         axios.put('/api/children/updateProfile/'+child_id, post)
         .then(response => {
             setSubmit(false);
-            handleNotice(response.data.notice);
+            setNotice(response.data.notice);
             switch(response.data.status_code){
                 case 200: setSuccess(response.data.success_messages); break;
                 case 400: set400Error(response.data.error_messages); break;

@@ -6,15 +6,9 @@ import Notification from '../notification';
 
 const ParentDetail = (props) => {
 
-    const count = localStorage.getItem('notice');
-    const [notice, setNotice] = useState(count);
+    const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const [loaded, setLoaded] = useState(false);
     const [parent, setParent] = useState({image:'', email:'', profile:'', tel:'', company:''});
-
-    const handleNotice = (count) => {
-        setNotice(count);
-        localStorage.setItem("notice", count);
-    }
 
     useEffect(
         () => {
@@ -22,7 +16,7 @@ const ParentDetail = (props) => {
             axios.get('/api/children/fathers/detail/'+props.match.params.father_id)
             .then(response => {
                 setLoaded(true);
-                handleNotice(response.data.notice);
+                setNotice(response.data.notice);
                 if(response.data.status_code==200){
                     setParent(response.data.params);
                 }

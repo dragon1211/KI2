@@ -2,28 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom'
 import moment from 'moment';
 import axios from 'axios';
-
-import { LoadingButton } from '@material-ui/lab';
 import { CircularProgress  } from '@material-ui/core';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
-
 import Alert from '../../component/alert';
-import ModalPdf from '../../component/admin/pdf_modal_admin';
-import ModalMemo from '../../component/admin/modal_memo';
-import { minWidth } from '@material-ui/system';
-
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
+import ModalPdf from '../../component/pdf/modal_pdf';
+import ModalMemo from '../../component/modal_memo';
+import ModalConfirm from '../../component/modal_confirm';
 
 
 const MeetingDetail = (props) => {
@@ -59,9 +43,7 @@ const MeetingDetail = (props) => {
         }
         setMeeting({...list, denominator:total, numerator:num});
         if(list.meeting_image.length > 0) setThumbnail(list.meeting_image[0].image);
-      } else if(response.data.status_code==400){
-        //TODO
-      }
+      } 
     });
   }, []);
 
@@ -73,7 +55,7 @@ const MeetingDetail = (props) => {
     setOpen(false);
   };
 
-  async function handleAccept() {
+  async function handleAcceptDelete() {
     try {
       setSubmit(true);
       axios.delete(`/api/admin/meetings/delete/${props.match.params?.meeting_id}`)
@@ -163,25 +145,24 @@ const MeetingDetail = (props) => {
     
                         <div className="p-file-list">
                           <div className="p-file-for">
-                            <figure style={{height:'300px'}}>
-                            {
-                              thumbnail && 
-                                  <img src={thumbnail} alt="thumbnail" 
-                                    style={{width: '100%', height:'100%', objectFit:'contain'}}/>
-                            }
+                            <figure>
+                                {
+                                    thumbnail && 
+                                    <img src={thumbnail} alt="thumbnail"/>
+                                }
                             </figure>
                           </div>
                           <div className="p-file-nav">
                             {
                               meeting.meeting_image?.map((x, k)=>
-                                <figure key={k} style={{minWidth:'100px'}}>
+                                <figure key={k}>
                                   <img src={x.image} alt={x.image} onClick={e=>setThumbnail(x.image)}/>
                                 </figure>
                               )
                             }
                             {
                               [...Array(10-meeting.meeting_image.length)].map((x, k)=>
-                                <figure key={k} style={{minWidth:'100px'}}></figure>
+                                <figure key={k}></figure>
                               )
                             }
                           </div>
@@ -196,7 +177,7 @@ const MeetingDetail = (props) => {
                           <button type="button" 
                             aria-label="お気に入り" data-tooltip="お気に入り" 
                             aria-pressed="false" 
-                            className="icon a-icon text-icon icon-text icon-star-wrap a-icon-size_medium" 
+                            className="icon a-icon text-icon icon-text icon-starFill-wrap a-icon-size_medium" 
                             style={{border:'1px solid #f0de00'}}
                             onClick = {()=>setShowMemo(true)} />
                         </div>
@@ -224,29 +205,13 @@ const MeetingDetail = (props) => {
             </div>
           </div>
         </div>
-        <Dialog
-            open={open}
-            TransitionComponent={Transition}
-            keepMounted
-            aria-describedby="alert-dialog-slide-description"
-        >
-            <DialogContent style={{width:'290px', padding:'25px 10px 10px 10px'}}>
-                <DialogContentText id="alert-dialog-slide-description" style={{fontSize:'20px', textAlign:'center'}}>
-                  本当に削除しても<br/>よろしいでしょうか？
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions style={{justifyContent:'space-evenly', padding:'0 20px 20px 20px'}}>
-              <Button onClick={closeModal} size="small">
-                  <span className="ft-20 text-black">いいえ</span>
-              </Button>
-              <LoadingButton variant="text"
-                onClick={handleAccept}
-                loading={submit}
-                size="small">
-                  <span className={`ft-20 ${!submit && 'text-black'}`}>はい</span>
-              </LoadingButton>
-            </DialogActions>
-        </Dialog>
+        <ModalConfirm 
+          show={open} 
+          message={"本当に削除しても\nよろしいでしょうか？"}
+          handleClose={closeModal} 
+          handleAccept={handleAcceptDelete} 
+          loading={submit}
+        />
         {
           _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
         } 

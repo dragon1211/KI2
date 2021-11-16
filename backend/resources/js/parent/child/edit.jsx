@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import ModalAlert from '../../component/modal_alert';
 import ja from "date-fns/locale/ja";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -8,6 +7,7 @@ import axios from 'axios';
 import moment from 'moment';
 
 const ChildEdit = (props) => {
+  const [_success, setSuccess] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [textColor, setTextColor] = useState(null);
   const [messageAlert, setMessageAlert] = useState(null);
@@ -107,12 +107,7 @@ const ChildEdit = (props) => {
           </section>
         </div>
       </div>
-      <ModalAlert 
-        show={showAlert}
-        message={messageAlert}
-        textColor={textColor}
-        handleClose={handleCloseAlert} 
-      />
+      { _success && <Alert type="success">{_success}</Alert> }
     </div>
 	)
 }

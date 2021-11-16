@@ -20,25 +20,20 @@ const ParentPasswordEdit = (props) => {
     const [_400error, set400Error] = useState('');
     const [_success, setSuccess] = useState('');
 
-
     const [submit, setSubmit] = useState(false)
    
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         set422Errors({
             password:'',
             password_confirmation:''
         });
-
         setSubmit(true);
-
         const request = {
             password: password,
             password_confirmation: password_confirmation
         }
-        
         axios.put(`/api/admin/fathers/updatePassword/${props.match.params?.father_id}`, request)
         .then(response => {
             setSubmit(false);
@@ -48,11 +43,8 @@ const ParentPasswordEdit = (props) => {
                 case 422: set422Errors(response.data.error_messages); break;
             }
         })
-        .catch(err=>console.log(err))
     }
 
-
-    
 	return (
         <div className="l-content">
             <div className="l-content-w560">

@@ -28,13 +28,8 @@ const Search = () => {
     const [initPage, setInitPage] = useState(true);
 
     const child_id = document.getElementById('child_id').value;
-    const count = localStorage.getItem('notice');
-    const [notice, setNotice] = useState(count);
+    const [notice, setNotice] = useState(localStorage.getItem('notice'));
 
-    const handleNotice = (count) => {
-        setNotice(count);
-        localStorage.setItem("notice", count);
-    }
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -49,7 +44,7 @@ const Search = () => {
         axios.get('/api/children/meetings/searchOfNonApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
         .then(response => {
             setLoaded1(true);
-            handleNotice(response.data.notice);
+            setNotice(response.data.notice);
             if(response.data.status_code==200){
                 setMettingListNonApproval(response.data.params);
                 var len = response.data.params.length;
@@ -61,7 +56,7 @@ const Search = () => {
         axios.get('/api/children/meetings/searchOfApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
         .then((response) => {
             setLoaded2(true);
-            handleNotice(response.data.notice);
+            setNotice(response.data.notice);
             if(response.data.status_code==200){
                 setMettingListApproval(response.data.params);
                 var len = response.data.params.length;

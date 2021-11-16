@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory, Link } from 'react-router-dom';
 
 const Notification = ({ notice }) => {
+    
+    const history = useHistory();
+
+    const handleClick = () => {
+        var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
+        for(let i=0; i<navbar_list.length; i++)
+            navbar_list[i].classList.remove('nav-active');
+        document.getElementsByClassName("-meeting")[0].classList.add('nav-active');
+        history.push({ pathname: `/p-account/meeting/`,  state: ''});
+    }
+
+    useEffect(()=>{
+        localStorage.setItem("notice", notice);
+    }, [notice]);
 
 	return (
-    <div className="p-notification">
+    <div className="p-notification" onClick={handleClick}>
         <div className="p-notification-icon">
             <div className="p-notification-icon-wrap">
                 {

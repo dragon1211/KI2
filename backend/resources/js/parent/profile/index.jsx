@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Notification from '../../component/notification';
-import ModalAlert from '../../component/modal_alert';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom'
 
@@ -161,12 +160,6 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      <ModalAlert 
-        show={showAlert}
-        message={messageAlert}
-        textColor={textColor}
-        handleClose={handleCloseAlert} 
-      />
     </div>
 	)
 }

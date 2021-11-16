@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import axios from 'axios';
 import ModalConfirm from '../../component/modal_confirm';
-import ModalAlert from '../../component/modal_alert';
-import { useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom';
+import Alert from '../../component/alert';
 
 const ChildDetail = (props) => {
+  const [_success, setSuccess] = useState('');
   const [child, setChild] = useState(null);
   const [show, setShow] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -151,11 +152,7 @@ const ChildDetail = (props) => {
         handleClose={handleClose} 
         handleAccept={handleAccept} 
       />
-      <ModalAlert 
-        show={showAlert}
-        message={messageAlert}
-        handleClose={handleCloseAlert} 
-      />
+      { _success && <Alert type="success">{_success}</Alert> }
     </div>
 	)
 }

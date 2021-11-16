@@ -8,34 +8,35 @@ import IconButton from '@mui/material/IconButton';
 import Notification from '../notification';
 import Alert from '../../component/alert';
 import InfiniteScroll from "react-infinite-scroll-component";
+import { isObject } from 'lodash';
 
 const INFINITE = 5;
 const SCROLL_DELAY_TIME = 1500;
 
-const Meeting = () => {
+const Meeting = (props) => {
 
-    const count = localStorage.getItem('notice');
-    const [notice, setNotice] = useState(count);
+    const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const [tab_status, setTabStatus] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [loaded1, setLoaded1] = useState(false);
     const [loaded2, setLoaded2] = useState(false);
-    const [meeting_list_incomplete, setMeetingListIncomplete] = useState([]);
-    const [meeting_list_complete, setMeetingListComplete] = useState([]);
-    const [fetch_meeting_list_incomplete, setFetchMeetingListIncomplete] = useState([]);
-    const [fetch_meeting_list_complete, setFetchMeetingListComplete] = useState([]);
+    const [meeting_list_incomplete, setMeetingListOfIncomplete] = useState([]);
+    const [meeting_list_complete, setMeetingListOfComplete] = useState([]);
+    const [fetch_meeting_list_incomplete, setFetchMeetingListOfIncomplete] = useState([]);
+    const [fetch_meeting_list_complete, setFetchMeetingListOfComplete] = useState([]);
     const [_success, setSuccess] = useState('');
 
-    const handleNotice = (count) => {
-        setNotice(count);
-        localStorage.setItem("notice", count);
-    }
-
     useEffect(()=>{
-        if(localStorage.getItem("from_login")){
-          setSuccess("ログインに成功しました!");
-          localStorage.removeItem("from_login");
-        }
+      if(localStorage.getItem("from_login")){
+        setSuccess("ログインに成功しました!");
+        localStorage.removeItem("from_login");
+      }
+      if(!isObject(props.history.location.state))
+      setSuccess(props.history.location.state);
+      var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
+      for(let i=0; i<navbar_list.length; i++)
+          navbar_list[i].classList.remove('nav-active');
+      document.getElementsByClassName("-meeting")[0].classList.add('nav-active');
     },[]);
 
     useEffect(()=>{
@@ -43,62 +44,59 @@ const Meeting = () => {
     },[loaded1, loaded2])
 
 
-    useEffect(
-        () => {
-            setLoaded(false);
-            let father_id = document.getElementById('father_id').value;
-
-            axios.get('/api/fathers/meetings/listOfIncompleteOfFather', {params:{father_id: father_id}})
-            .then(response => {
-                setLoaded1(true);
-                handleNotice(response.data.notice);
-                console.log(response.data);
-                if(response.data.status_code==200){
-                    var list = response.data.params;
-                    var arr = [];
-                    for(var i in list){
-                        var total=0, num=0;
-                        for(var j in list[i].approval)
-                        {
-                          if(list[i].approval[j].approval_at) num ++;
-                          total ++;
-                        }
-                        arr.push({...list[i], denominator:total, numerator:num})
+    useEffect(() => {
+        setLoaded(false);
+        let father_id = document.getElementById('father_id').value;
+        if(localStorage.getItem('flag')=="true") return;
+        axios.get('/api/fathers/meetings/listOfIncompleteOfFather', {params:{father_id: father_id}})
+        .then(response => {
+            setLoaded1(true);
+            setNotice(response.data.notice);
+            console.log(response.data);
+            if(response.data.status_code==200){
+                var list = response.data.params;
+                var arr = [];
+                for(var i in list){
+                    var total=0, num=0;
+                    for(var j in list[i].approvals)
+                    {
+                      if(list[i].approvals[j].approval_at) num ++;
+                      total ++;
                     }
-                    setMeetingListIncomplete(arr);
-                    var len = arr.length;
-                    if(len > INFINITE)
-                        setFetchMeetingListIncomplete(arr.slice(0, INFINITE));
-                    else setFetchMeetingListIncomplete(arr.slice(0, len));
+                    arr.push({...list[i], denominator:total, numerator:num})
                 }
-            })
-
-            axios.get('/api/fathers/meetings/listOfCompleteOfFather', {params:{father_id: father_id}})
-            .then(response => {
-              setLoaded2(true);
-              handleNotice(response.data.notice);
-              console.log(response.data);
-              if(response.data.status_code==200){
-                  var list = response.data.params;
-                  var arr = [];
-                  for(var i in list){
-                      var total=0, num=0;
-                      for(var j in list[i].approval)
-                      {
-                        if(list[i].approval[j].approval_at) num ++;
-                        total ++;
-                      }
-                      arr.push({...list[i], denominator:total, numerator:num})
+                setMeetingListOfIncomplete(arr);
+                var len = arr.length;
+                if(len > INFINITE)
+                    setFetchMeetingListOfIncomplete(arr.slice(0, INFINITE));
+                else setFetchMeetingListOfIncomplete(arr.slice(0, len));
+            }
+        })
+        axios.get('/api/fathers/meetings/listOfCompleteOfFather', {params:{father_id: father_id}})
+        .then(response => {
+          setLoaded2(true);
+          setNotice(response.data.notice);
+          console.log(response.data);
+          if(response.data.status_code==200){
+              var list = response.data.params;
+              var arr = [];
+              for(var i in list){
+                  var total=0, num=0;
+                  for(var j in list[i].approvals)
+                  {
+                    if(list[i].approvals[j].approval_at) num ++;
+                    total ++;
                   }
-                  setMeetingListComplete(arr);
-                  var len = arr.length;
-                  if(len > INFINITE)
-                      setFetchMeetingListComplete(arr.slice(0, INFINITE));
-                  else setFetchMeetingListComplete(arr.slice(0, len));
-                }
-            })
-        },[]
-    );
+                  arr.push({...list[i], denominator:total, numerator:num})
+              }
+              setMeetingListOfComplete(arr);
+              var len = arr.length;
+              if(len > INFINITE)
+                  setFetchMeetingListOfComplete(arr.slice(0, INFINITE));
+              else setFetchMeetingListOfComplete(arr.slice(0, len));
+            }
+        })
+    },[]);
 
     const fetchMoreListNonApproval = () => {
         setTimeout(() => {
@@ -107,7 +105,7 @@ const Meeting = () => {
             var c = 0;
             if(x+INFINITE < y) c = INFINITE;
             else c = y - x;
-            setFetchMeetingListIncomplete(meeting_list_incomplete.slice(0, x+c));
+            setFetchMeetingListOfIncomplete(meeting_list_incomplete.slice(0, x+c));
         }, SCROLL_DELAY_TIME);
     };
 
@@ -118,7 +116,7 @@ const Meeting = () => {
             var c = 0;
             if(x+INFINITE < y) c = INFINITE;
             else c = y - x;
-            setFetchMeetingListComplete(meeting_list_complete.slice(0, x+c));
+            setFetchMeetingListOfComplete(meeting_list_complete.slice(0, x+c));
         }, SCROLL_DELAY_TIME);
     };
 
@@ -128,6 +126,7 @@ const Meeting = () => {
       formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
       axios.post('/api/fathers/meetings/registerFavorite', formdata)
       .then(response=>{
+        setNotice(response.data.notice);
         if(response.data.status_code==200){
             if(stateName == "inCompleteOfFather") {
               const newList = meeting_list_incomplete.map((item) => {
@@ -140,8 +139,8 @@ const Meeting = () => {
                 }
                 return item;
               });
-              setMeetingListIncomplete(newList);
-              setFetchMeetingListIncomplete(newList.slice(0, fetch_meeting_list_incomplete.length));
+              setMeetingListOfIncomplete(newList);
+              setFetchMeetingListOfIncomplete(newList.slice(0, fetch_meeting_list_incomplete.length));
             } else {
               const newList = meeting_list_complete.map((item) => {
                 if (item.id === meetingId) {
@@ -153,8 +152,8 @@ const Meeting = () => {
                 }
                 return item;
               });
-              setMeetingListComplete(newList);
-              setFetchMeetingListComplete(newList.slice(0, fetch_meeting_list_complete.length));
+              setMeetingListOfComplete(newList);
+              setFetchMeetingListOfComplete(newList.slice(0, fetch_meeting_list_complete.length));
             }  
         }
       })
@@ -251,10 +250,7 @@ const Meeting = () => {
                                               </div>
                                           </Link>
                                           <button aria-label="お気に入り" data-tooltip="お気に入り"  
-                                              onClick={e => {
-                                                e.preventDefault();
-                                                handleFavorite(item.id, item.is_favorite, 'inCompleteOfFather');
-                                              }} 
+                                              onClick={e => handleFavorite(item.id, item.is_favorite, 'inCompleteOfFather')} 
                                               className={`icon a-icon like-icon ${item.is_favorite == 1 ? "icon-starFill" : "icon-star"} a-icon-size_medium`}>
                                           </button>
                                       </div>
@@ -300,7 +296,7 @@ const Meeting = () => {
                                                     </ul>
                                                     <ul className="meeting-member-list" role="list">
                                                       { 
-                                                        item.approval?.map((v, inx1) =>
+                                                        item.approvals?.map((v, inx1) =>
                                                           <li className="meeting-member__item" role="listitem" key={inx1}>
                                                             <div className="avatar">
                                                               <img alt="name" className="avatar-img" src={v?.child.image} />
@@ -314,10 +310,7 @@ const Meeting = () => {
                                               </div>
                                           </Link>
                                           <button aria-label="お気に入り" data-tooltip="お気に入り"  
-                                              onClick={e => {
-                                                e.preventDefault();
-                                                handleFavorite(item.id, item.is_favorite, 'completeOfFather');
-                                              }} 
+                                              onClick={e => handleFavorite(item.id, item.is_favorite, 'completeOfFather')} 
                                               className={`icon a-icon like-icon ${item.is_favorite == 1 ? "icon-starFill" : "icon-star"} a-icon-size_medium`}>
                                           </button>
                                       </div>
@@ -331,9 +324,7 @@ const Meeting = () => {
                     }
                 </section>
             </div>
-            {
-              _success && <Alert type="success">{_success}</Alert>
-            }
+            { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
         </div>
         
     )

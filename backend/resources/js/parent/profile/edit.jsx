@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Notification from '../../component/notification';
-import ModalAlert from '../../component/modal_alert';
+import Notification from '../notification';
 
 const ProfileEdit = () => {
   const [father, setFather] = useState(null);
@@ -131,12 +130,6 @@ const ProfileEdit = () => {
           </div>
         </div>
       </div>
-      <ModalAlert 
-        show={showAlert}
-        message={messageAlert}
-        textColor={textColor}
-        handleClose={handleCloseAlert} 
-      />
     </div>
 	)
 }

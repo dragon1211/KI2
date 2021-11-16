@@ -2,16 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { CircularProgress  } from '@material-ui/core';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
-
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+import InfiniteScroll from "react-infinite-scroll-component";
+
+const INFINITE = 8;
+const SCROLL_DELAY_TIME = 1500;
 
 
 const Parent = () => {
 
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
-  const [father_list, setFatherList ] = useState(null);
+  const [father_list, setFatherList ] = useState([]);
+  const [fetch_father_list, setFetchFatherList ] = useState([]);
   const [_422errors, set422errors] = useState({keyword:''});
   const [_400error, set400error] = useState('');
 
@@ -19,43 +23,51 @@ const Parent = () => {
     setLoaded(false);
     axios.get('/api/admin/fathers/list')
     .then((response) => {
+        setLoaded(true);
         if(response.data.status_code==200){
             setFatherList(response.data.params);
+            var len = response.data.params.length;
+            if(len > INFINITE)
+              setFetchFatherList(response.data.params.slice(0, INFINITE));
+            else setFetchFatherList(response.data.params.slice(0, len));
         } 
-        setLoaded(true);
     });
-    ////////////////////////////////////
   }, []);
+
+  const fetchMoreFatherList = () => {
+      setTimeout(() => {
+          var x = fetch_father_list.length;
+          var y = father_list.length;
+          var c = 0;
+          if(x+INFINITE < y) c = INFINITE;
+          else c = y - x;
+          setFetchFatherList(father_list.slice(0, x+c));
+      }, SCROLL_DELAY_TIME);
+  };
 
 
   const handleSearch = (e) => {
     e.preventDefault();
-    initErrors();
     if(keyword == '')
     {
       document.getElementById('keyword').focus();
       return;
     }
-
+    set422errors({keyword:''});
     setLoaded(false);
-    setFatherList(null);
-
+    setFatherList([]);
     axios.get('/api/admin/fathers/search',{params: {keyword: keyword}})
     .then((response) => {
-
       setLoaded(true);
       if(response.data.status_code==200){
         setFatherList(response.data.params);
-      } else if(response.data.status_code==400){
-        //TODO
-      }
+        var len = response.data.params.length;
+        if(len > INFINITE)
+          setFetchFatherList(response.data.params.slice(0, INFINITE));
+        else setFetchFatherList(response.data.params.slice(0, len));
+      } 
     });
   }
-
-  const initErrors = () => {
-    set422errors({keyword:''});
-  }
-
 
 	return (
     <div className="l-content">
@@ -89,9 +101,23 @@ const Parent = () => {
               }
               { 
                 loaded && 
-                (
-                  father_list && father_list.length>0 ?
-                    father_list.map((father, k) => 
+                <InfiniteScroll
+                  dataLength={fetch_father_list.length}
+                  next={fetchMoreFatherList}
+                  hasMore={fetch_father_list.length != father_list.length}
+                  loader={
+                      <div id="dots3">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                      </div>
+                  }
+                  style={{overflow:'none', position:'relative'}}
+                >
+                {
+                  fetch_father_list.length>0 ?
+                    fetch_father_list.map((father, k) => 
                       <div className="search-item" key={k}>
                         <Link to = {`/admin/parent/detail/${father.id}`}>
                           <div className="user-wrap">
@@ -106,9 +132,9 @@ const Parent = () => {
                         </Link>
                       </div>
                     ) : <p className="text-center py-5">データが存在していません。</p>
-                )
+                }
+                </InfiniteScroll>
               }
-
             </div>
           </div>
         </section>

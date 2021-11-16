@@ -77,9 +77,6 @@ const MeetingEdit = (props) => {
                 }
                 setChildrenTemp(arr);
             } 
-            else if(response.data.status_code==400){
-                //TODO
-            }
         });
     }, []);
 

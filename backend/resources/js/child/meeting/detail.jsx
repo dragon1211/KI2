@@ -1,34 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useHistory, useLocation, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { CircularProgress  } from '@material-ui/core';
-import { LoadingButton } from '@material-ui/lab';
 
 import Notification from '../notification';
 import moment from 'moment';
-
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
-
 import Alert from '../../component/alert';
-import ModalPdf from '../../component/admin/pdf_modal_admin';
-import ModalMemo from '../../component/admin/modal_memo';
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-  });
-  
+import ModalPdf from '../../component/pdf/modal_pdf';
+import ModalMemo from '../../component/modal_memo';
+import ModalConfirm from '../../component/modal_confirm';
 
 const MeetingDetail = (props) => {
 
-    const history = useHistory();
-    const count = localStorage.getItem('notice');
-    const [notice, setNotice] = useState(count);
+    const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const [loaded, setLoaded] = useState(false);
     const [meeting, setMeeting] = useState(null);
     const [thumbnail, setThumbnail] = useState('');
@@ -41,18 +25,13 @@ const MeetingDetail = (props) => {
     const [_400error, set400Error] = useState('');
     const [_success, setSuccess] = useState('');
 
-    const handleNotice = (count) => {
-        setNotice(count);
-        localStorage.setItem("notice", count);
-    }
-   
     useEffect(() => {
         setLoaded(false);
         let child_id = document.getElementById('child_id').value;
         axios.get(`/api/children/meetings/detail/${props.match.params?.meeting_id}`, {params:{child_id: child_id}})
         .then(response => {
             setLoaded(true);
-            handleNotice(response.data.notice);
+            setNotice(response.data.notice);
             if(response.data.status_code == 200)
             {
                 var meeting = response.data.params;
@@ -75,7 +54,7 @@ const MeetingDetail = (props) => {
         .then(response => {
             setSubmit(false);
             setShowConfirm(false);
-            handleNotice(response.data.notice);
+            setNotice(response.data.notice);
             switch(response.data.status_code){
                 case 200: {
                     setSuccess(response.data.success_messages);
@@ -212,30 +191,12 @@ const MeetingDetail = (props) => {
                     : <p className="text-center mt-5 ft-18">データが存在しません。</p>
                 )
             }
-            <Dialog
-                open={showConfirm}
-                TransitionComponent={Transition}
-                keepMounted
-                aria-describedby="alert-dialog-slide-description"
-                onClose={e=>setShowConfirm(false)}
-            >
-                <DialogContent style={{width:'290px', padding:'25px 10px 10px'}}>
-                    <DialogContentText id="alert-dialog-slide-description" className="text-center">
-                        <span className="ft-16 text-black">一度承知したら元に戻せません。<br/>よろしいでしょうか。</span>
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions style={{justifyContent:'space-evenly', padding:'0 20px 20px 20px'}}>
-                    <Button onClick={e=>setShowConfirm(false)} size="small">
-                        <span className="ft-16 font-weight-bold text-black">いいえ</span>
-                    </Button>
-                    <LoadingButton variant="text"
-                        onClick={handleApprovalRegister}
-                        loading={submit}
-                        size="small">
-                        <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>はい</span>
-                    </LoadingButton>
-                </DialogActions>
-            </Dialog>
+            <ModalConfirm 
+            show={showConfirm} 
+            message={"一度承知したら元に戻せません。\nよろしいでしょうか。"}
+            handleClose={()=>setShowConfirm(false)} 
+            handleAccept={handleApprovalRegister} 
+            loading={submit}/>
             {
                 _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
             } 

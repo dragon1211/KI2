@@ -12,9 +12,9 @@
     color: #fff;
     font-weight: 700;
     border-radius: 0;
-    z-index: 10;
+    z-index: 1000;
     // duration | timing-function | delay | iteration-count | direction | fill-mode | play-state | name
-    animation: 1s ease-out 3s 1 normal forwards running fadeOut;
+    animation: 1s ease-out 2s 1 normal forwards running fadeOut;
 
 }
 .alert-fail {

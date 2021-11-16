@@ -7,15 +7,8 @@ import { CircularProgress  } from '@material-ui/core';
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
-
 import Alert from '../../component/alert';
+import ModalConfirm from '../../component/modal_confirm';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -39,33 +32,25 @@ const ParentDetail = (props) => {
     const [_success_delete, setSuccessDelete] = useState('');
     const [_success_update_image, setSuccessUpdateImage] = useState('');
 
-    useEffect(
-        () => {
-            
-            setLoaded(false);
-            axios.get(`/api/admin/fathers/detail/${props.match.params?.father_id}`)
-            .then(response => {
-                setLoaded(true);
-                if(response.data.status_code==200){
-                    setParent(response.data.params);
-                    setImage(response.data.params.image);
-                }
-            })
-            .catch(err=>console.log(err))
-        },[]
-    );
+    useEffect(() => {
+        setLoaded(false);
+        axios.get(`/api/admin/fathers/detail/${props.match.params?.father_id}`)
+        .then(response => {
+            setLoaded(true);
+            if(response.data.status_code==200){
+                setParent(response.data.params);
+                setImage(response.data.params.image);
+            }
+        })
+    },[]);
 
 
     const handleImageChange = (e) => {
-
         e.preventDefault();
         let reader = new FileReader();
         let _file = e.target.files[0];
-
         reader.readAsDataURL(_file);
-
         reader.onloadend = () => {
-            
             axios.put(`/api/admin/fathers/updateImage/${props.match.params?.father_id}`, {image: reader.result})
             .then(response => {
                 switch(response.data.status_code){
@@ -78,7 +63,6 @@ const ParentDetail = (props) => {
                     case 422: set422Errors(response.data.error_messages); break;
                 } 
             });
-
         };
     };
 
@@ -91,7 +75,7 @@ const ParentDetail = (props) => {
         setOpen(false);
     };
     
-    async function handleDelete() {
+    async function handleAcceptDelete() {
         try {
             setSubmit(true);
             axios.delete(`/api/admin/fathers/delete/${props.match.params?.father_id}`)
@@ -205,29 +189,13 @@ const ParentDetail = (props) => {
                 </section>   
             </div>
         </div>
-        <Dialog
-            open={open}
-            TransitionComponent={Transition}
-            keepMounted
-            aria-describedby="alert-dialog-slide-description"
-        >
-            <DialogContent style={{width:'290px', padding:'25px 25px 10px'}}>
-                <DialogContentText id="alert-dialog-slide-description" style={{fontSize:'20px', textAlign:'center'}}>
-                    本当に削除してもよろしいでしょうか？
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions style={{justifyContent:'space-evenly', padding:'0 20px 20px 20px'}}>
-                <Button onClick={closeModal} size="small">
-                    <span className="ft-20 text-black">いいえ</span>
-                </Button>
-                <LoadingButton variant="text"
-                    onClick={handleDelete}
-                    loading={submit}
-                    size="small">
-                    <span className={`ft-20 ${!submit && 'text-black'}`}>はい</span>
-                </LoadingButton>
-            </DialogActions>
-        </Dialog>
+        <ModalConfirm 
+          show={open} 
+          message={"本当に削除しても\nよろしいでしょうか？"}
+          handleClose={closeModal} 
+          handleAccept={handleAcceptDelete} 
+          loading={submit}
+        />
         {
             _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
         } 
