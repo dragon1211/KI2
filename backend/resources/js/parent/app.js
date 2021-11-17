@@ -19,7 +19,6 @@ import Profile from '../parent/profile';
 import ProfileEdit from '../parent/profile/edit';
 import ProfilePasswordEdit from '../parent/profile/password_edit';
 import ProfileWithdrawal from '../parent/profile/withdrawal';
-import ProfileWithdrawalComplete from '../parent/profile/withdrawal_complete';
 
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 export const App = ({app}) => {
@@ -47,7 +46,6 @@ export const App = ({app}) => {
                     <Route exact path='/p-account/profile/edit/:father_id' component={ProfileEdit} />
                     <Route exact path='/p-account/profile/edit/password/:father_id' component={ProfilePasswordEdit} />
                     <Route exact path='/p-account/profile/withdrawal' component={ProfileWithdrawal} />
-                    <Route exact path='/p-account/profile/withdrawal/complete' component={ProfileWithdrawalComplete} />
                 </Switch>
                 <Side />
             </BrowserRouter>

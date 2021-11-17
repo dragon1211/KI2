@@ -21,7 +21,15 @@ class MeetingApprovalsController extends Controller {
 
         if (null !== ($list = Meeting::select('id')->where('father_id', (int)session()->get('fathers')['id'])->get())) {
             foreach ($list as $i => $l) {
-                $count += MeetingApprovals::where('meeting_id', (int)$l->id)->whereNull('approval_at')->count();
+                if (null === ($apr = MeetingApprovals::select('id')->where('meeting_id', (int)$l->id)->get())) {
+                    continue;
+                }
+    
+                if (count($apr) == MeetingApprovals::select('id')->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count()) {
+                    continue;
+                }
+    
+                $count++;
             }
         }
 

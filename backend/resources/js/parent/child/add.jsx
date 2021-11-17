@@ -1,46 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import Notification from '../../component/notification';
+import { LoadingButton } from '@material-ui/lab';
+import axios from 'axios';
 import Alert from '../../component/alert';
+import Notification from '../notification';
 
 
 const ChildAdd = () => {
-  const [_success, setSuccess] = useState('');
+  const [notice, setNotice] = useState(localStorage.getItem('notice'));
   const [identity, setIdentity] = useState('');
-  const [textColor, setTextColor] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);
-  const [messageAlert, setMessageAlert] = useState(null);
-  const fatherId = document.getElementById('father_id').value;
 
-  async function handleClick() {
-    try {
-      if(identity == '') {
-        return;
-      }
+  const [_success, setSuccess] = useState('');
+  const [_400error, set400Error] = useState('');
+  const [_422errors, set422Errors] = useState({identity: ''});
+  const [submit, setSubmit] = useState(false);
+  const father_id = document.getElementById('father_id').value;
+
+  const handleSubmit = (e) => {
+      e.preventDefault();
+      set422Errors({identity: ''});
       const formdata = new FormData();
       formdata.append('identity', identity);
-      formdata.append('father_id', fatherId);
-
-      axios.post('/fathers/father-relations/register', formdata)
-        .then(response => {
-          if(response.data.status_code==200){
-            // const formdata2 = new FormData();
-            // formdata2.append('father_id ', fatherId);
-            // axios.post('/api/children/registerTemporary', formdata2)
-            //   .then(response2 => {
-            //     if(response2.data.status_code==200){
-            //     } 
-            //   });
-          } else if(response.data.status_code==400){
-          }
-        });
-    } catch (error) {
-      console.log('error', error);
-    }
+      formdata.append('father_id', father_id);
+      setSubmit(true);
+      axios.post('/api/fathers/relations/register', formdata)
+      .then(response => {
+        setSubmit(false);
+        setNotice(response.data.notice);
+        switch(response.data.status_code){
+          case 200: setSuccess(response.data.success_messages); break;
+          case 400: set400Error(response.data.error_messages);  break;
+          case 422: set422Errors(response.data.error_messages);  break;
+        }
+      });
   }
 
-  async function handleCloseAlert() {
-    setShowAlert(false);
-  };
+  const copyInviteURL = () => {
+    const inviteText = "https://kikikan.jp/register-temporary/c-account";
+    navigator.clipboard.writeText(inviteText).then(function() {
+      setSuccess('招待用URLをコピーしました。');
+    })
+  }
+
+  const copyLineText = () => {
+    const lineText = "「KIKI」の招待が届いています。\n"+
+    "まずは以下より仮登録を行なってください。\n"+
+    "https://kikikan.jp/register-temporary/c-account\n"+
+    "▼ 公式サイトはこちら\n"+
+    "https://kikikan.jp\n";
+    navigator.clipboard.writeText(lineText).then(function() {
+      setSuccess('招待用URLをLINEで追信しました。');
+    })
+  }
 
 	return (
     <div className="l-content">
@@ -49,7 +59,7 @@ const ChildAdd = () => {
           <div className="l-content__ttl__left">
             <h2>子追加</h2>
           </div>
-          <Notification />
+          <Notification  notice={notice}/>
         </div>
 
         <div className="l-content-wrap">
@@ -57,32 +67,43 @@ const ChildAdd = () => {
             <div className="edit-wrap">
               <div className="edit-content">
 
-                <form action="" className="edit-form">
+                <form className="edit-form" onSubmit={handleSubmit}>
                   <div className="edit-set">
-                    <label className="control-label" htmlFor="tel">追加する子のIDを入力</label>
-                    <input type="text" name="identity" onChange={e=>setIdentity(e.target.value)} value={identity} 
-                      className="input-default input-tel input-h60 input-w480" id="identity" />
+                    <label className="control-label" htmlFor="identify">追加する子のIDを入力</label>
+                    <input type="text" 
+                      name="identity"
+                      id="identity" 
+                      value={identity} 
+                      onChange={e=>setIdentity(e.target.value)} 
+                      className={`input-default input-title input-h60 input-w480 ${  _422errors.identity && 'is-invalid c-input__target'} `} />
+                    {
+                      _422errors.identity &&
+                        <span className="l-alert__text--error ft-16 ft-md-14">
+                            {_422errors.identity}
+                        </span> 
+                    }
                   </div>
-                  <button 
-                    onClick={e => {
-                      e.preventDefault();
-                      handleClick();
-                    }}
-                    type="button" 
-                    className="btn-edit btn-default btn-h70 btn-r14 btn-yellow">追加</button>
+                  <LoadingButton 
+                      type="submit" fullWidth
+                      loading={submit}
+                      className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
+                      style={{marginTop:'50px'}}>
+                      <span className={`ft-20 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>追加</span>
+                  </LoadingButton>
                 </form>
-                <div style={{color:"#0dcaf0",display:"flex", justifyContent:"center", alignItems:"center", paddingTop:10}} >
-                  <a href="#">招待用URLをコピーする</a>
+                <div style={{color:"#49A3FC",display:"flex", justifyContent:"center", alignItems:"center", paddingTop:40}} >
+                  <a onClick={copyInviteURL}>招待用URLをコピーする</a>
                 </div>
-                <div style={{color:"#0dcaf0",display:"flex", justifyContent:"center", alignItems:"center", paddingTop:10}}>
-                  <a href="#">招待用URLをLINEで追信</a>
+                <div style={{color:"#49A3FC",display:"flex", justifyContent:"center", alignItems:"center", paddingTop:20}}>
+                  <a onClick={copyLineText}>招待用URLをLINEで追信</a>
                 </div>
               </div>
             </div>
           </section>
         </div>
       </div>
-      { _success && <Alert type="success">{_success}</Alert> }
+      { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+      { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
     </div>
 	)
 }

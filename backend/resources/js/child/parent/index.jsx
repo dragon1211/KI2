@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { CircularProgress  } from '@material-ui/core';
 
 import Notification from '../notification';
@@ -60,7 +60,7 @@ const Parent = () => {
             <div className="l-content-wrap">
             {
                 !loaded &&
-                    <CircularProgress color="secondary" className="css-loader"/>
+                    <CircularProgress className="css-loader"/>
             }
             {
                 loaded && 
@@ -85,14 +85,7 @@ const Parent = () => {
                                 fetch_parent_list.length>0 ?
                                     fetch_parent_list.map((item, id)=>
                                     <div className="search-item border-0" key={id}>
-                                        <a onClick={e => {
-                                                e.preventDefault();
-                                                history.push({
-                                                pathname: `/c-account/parent/detail/${item.id}`,
-                                                state: {}
-                                                });
-                                            }}
-                                        >
+                                        <Link to={`/c-account/parent/detail/${item.id}`}>
                                             <div className="user-wrap">
                                                 <div className="user-avatar">
                                                     <img alt="name" className="avatar-img" src={item.image}/>
@@ -101,7 +94,7 @@ const Parent = () => {
                                                     <p className="user-name">{item.company}</p>
                                                 </div>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </div>
                                     )
                                 :<p className="text-center py-5 ft-xs-17">親データはありません。</p>

@@ -56,10 +56,7 @@ const ProfileWithdrawal = () => {
         
                         </div>
                     </div>
-                    {
-                        _400error && 
-                            <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-                    } 
+                    {  _400error &&  <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
                 </section>
             </div>
         </div>

@@ -1,167 +1,163 @@
 import React, { useEffect, useState } from 'react';
-import Notification from '../../component/notification';
+import { useHistory, Link } from 'react-router-dom';
+import IconButton from "@material-ui/core/IconButton";
 import axios from 'axios';
-import { useHistory } from 'react-router-dom'
+import { CircularProgress  } from '@material-ui/core';
+import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
-const Profile = () => {
-  const [father, setFather] = useState(null);
-  const history = useHistory();
-  const fatherId = document.getElementById('father_id').value;
-  const [image, setImage] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);
-  const [messageAlert, setMessageAlert] = useState(null);
-  const [textColor, setTextColor] = useState(null);
-  
-  useEffect(() => {
-    axios.get(`/api/fathers/detail/${fatherId}`).then((response) => {
-      if(response.data.status_code==200){
-        //console.log(response.data.params[0]);
-        setFather(response.data.params[0]);
-        setImage(response.data.params[0]?.image);
-      } else if(response.data.status_code==400){
-        //TODO
-      }
-    
-    });
-  }, []);
+import Alert from '../../component/alert';
+import Notification from '../notification';
 
-  if (!father) return null;
+const Profile = (props) => {
 
-  const handleImageChange = (e) => {
-    e.preventDefault();
-    let reader = new FileReader();
-    let _file = e.target.files[0];
-    reader.readAsDataURL(_file);
-    reader.onloadend = () => {
-        setImage(reader.result);
+    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+
+    const [image, setImage] = useState(''); 
+    const [profile, setProfile] = useState({email:'', tel:'', first_name:'', last_name:'', identity:'', company:'', image:''})
+    const [loaded, setLoaded] = useState(false);
+    const [_400error, set400Error] = useState('');
+    const [_422errors, set422Errors] = useState({ image: '' });
+    const [_success, setSuccess] = useState(props.history.location.state);
+
+    const father_id = document.getElementById('father_id').value;
+
+    useEffect(() => {
+      setLoaded(false);
+      axios.get('/api/fathers/detail/'+father_id)
+      .then(response => {
+          setLoaded(true);
+          setNotice(response.data.notice);
+          if(response.data.status_code==200){
+              setProfile(response.data.params);
+              setImage(response.data.params.image);
+          }
+      })
+    },[]);
+
+    const handleLogout = () => {
+        axios.get('/p-account/logout')
+        .then(() => location.href = '/p-account/login')
+    }
+
+    const handleImageChange = (e) => {
+        e.preventDefault();
+        set422Errors({image: ''});
+        let reader = new FileReader();
+        let _file = e.target.files[0];
+        reader.readAsDataURL(_file);
+        reader.onloadend = () => {
+            axios.put(`/api/fathers/updateImage/${father_id}`, {image: reader.result})
+            .then(response => {
+                setNotice(response.data.notice);
+                switch(response.data.status_code){
+                    case 200: {
+                        setSuccess(response.data.success_messages);
+                        window.location.reload(true);
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: set422Errors(response.data.error_messages); break;
+                } 
+            });
+        };
     };
 
-    //upload image
-    try {
-      const formdata = new FormData();
-      formdata.append('father_id', fatherId);
-      formdata.append('image', _file);
-      axios.put("/api/fathers/updateImage", formdata)
-        .then(response => {
-          if(response.data.status_code == 200){
-            setMessageAlert(response.data.success_messages);
-            setTextColor("black");
-          } else {
-            setMessageAlert(response.data.success_messages);
-          }
-          setShowAlert(true);
-        });
-    } catch (error) {
-      console.log('error', error);
-    }
-  };
-
-  async function handleCloseAlert() {
-    setShowAlert(false);
-  };
-
+    
 	return (
     <div className="l-content">
-      <div className="l-content-w560">
-        <div className="l-content__ttl">
-          <div className="l-content__ttl__left">
-            <h2>プロフィール</h2>
-          </div>
-          <Notification />
-        </div>
-
-        <div className="l-content-wrap">
-          <div className="profile-container">
-            <div className="profile-wrap">
-              <div className="profile-content">
-                <div className="profile-thumb">
-                  {/* <label> */}
-                    {/* <input id="profile-file" type="file" className="profile-thumb-img" onChange={(e) => handleImageChange(e)} /> */}
-                    <img src={ image } id="profile-file-preview" className="profile-thumb__image" alt="" />
-                  {/* </label> */}
-                  <div className="profile-camera">
-                    <label className="btn-default btn-camera btn-shadow">
-                      <input id="profile-file" type="file" className="profile-thumb-img"  accept=".png, .jpg, .jpeg" onChange={(e) => handleImageChange(e)} />
-                      <i className="icon icon-camera"></i>
-                    </label>
-                  </div>
+        <div className="l-content-w560">
+            <div className="l-content__ttl">
+                <div className="l-content__ttl__left">
+                    <h2>プロフィール</h2>
                 </div>
-                <p className="profile-name">{ father.last_name }　{ father.first_name }</p>
-                <div className="profile-info">
-                  <div className="profile-info__item">
-                    <p className="profile-info__icon">
-                      <img src="/assets/img/icon/mail.svg" alt="メール" />
-                    </p>
-                    <p className="txt">{ father.email }</p>
-                  </div>
-                  <div className="profile-info__item">
-                    <p className="profile-info__icon">
-                      <img src="/assets/img/icon/phone.svg" alt="電話" />
-                    </p>
-                    <p className="txt">{ father.tel }</p>
-                  </div>
-                  <div className="profile-info__item">
-                    <p className="profile-info__icon">
-                      <img src="/assets/img/icon/building.svg" alt="会社名"/>
-                    </p>
-                    <p className="txt">{ father.company }</p>
-                  </div>
-                </div>
-                <div className="p-profile-btn">
-                  <a 
-                    onClick={e => {
-                      e.preventDefault();
-                      history.push({
-                        pathname: '/p-account/profile/edit/1',
-                        state: {}
-                      });
-                    }}
-                    data-v-ade1d018="" 
-                    className="btn-default btn-yellow btn-profile btn-r8 btn-h52">
-                      <span>プロフィールを変更する</span>
-                  </a>
-                </div>
-
-                <div className="p-profile-btn">
-                  <a 
-                    onClick={e => {
-                      e.preventDefault();
-                      history.push({
-                        pathname: '/p-account/profile/edit/password/1',
-                        state: {}
-                      });
-                    }}
-                    data-v-ade1d018="" 
-                    className="btn-default btn-yellow btn-password btn-r8 btn-h52">
-                      <span>パスワードを変更する</span>
-                  </a>
-                </div>
-
-                <div className="p-profile-txtLink">
-                  <a href="/login/p-account">
-                    <button type="button" className="a-icon txt-link">ログアウト</button>
-                  </a>
-                </div>
-
-                <div className="p-profile-txtLink">
-                  <button 
-                    onClick={e => {
-                      e.preventDefault();
-                      history.push({
-                        pathname: '/p-account/profile/withdrawal',
-                        state: {}
-                      });
-                    }}
-                    type="button" className="a-icon txt-link">退会する</button>
-                </div>
-
-              </div>
+                <Notification notice={notice}/>
             </div>
-          </div>
+            <div className="l-content-wrap">
+                <section className="profile-container">
+                    {
+                        !loaded &&
+                            <CircularProgress className="css-loader"/>
+                    }
+                    {
+                        loaded &&
+                        <div className="profile-wrap">
+                            <div className="profile-content">
+                                <div>
+                                    <input type="file" id="avatar" name="avatar" className="d-none" accept=".png, .jpg, .jpeg" onChange={(e) => handleImageChange(e)}/>
+                                    <div className="avatar-wrapper">
+                                        <label htmlFor="avatar" className='avatar-label'>
+                                            <IconButton color="primary" aria-label="upload picture" component="span" className="bg-yellow shadow-sm w-50-px h-50-px">
+                                                <PhotoCameraOutlinedIcon style={{width:'25px', height:'25px', color:'black'}}/>
+                                            </IconButton>
+                                        </label>
+                                        <img src={image} className="avatar-img" alt="avatar-img"/>  
+                                    </div>
+                                    {
+                                        _422errors.image &&
+                                            <span className="l-alert__text--error ft-16 ft-md-14">
+                                                {_422errors.image}
+                                            </span> 
+                                    }
+                                </div>
+                                <p className="profile-name ft-xs-16">{ profile.company }</p>
+                                <div className="profile-info ft-xs-17">
+                                    <div className="profile-info__item">
+                                        <a href={`mailto:${profile.email}`}>
+                                            <p className="profile-info__icon">
+                                                <img src="/assets/img/icon/mail.svg" alt="メール"/>
+                                            </p>
+                                            <p className="txt">{profile.email}</p>
+                                        </a>
+                                    </div>
+                                    <div className="profile-info__item">
+                                        <a href={`tel:${profile.tel}`}>
+                                            <p className="profile-info__icon">
+                                                <img src="/assets/img/icon/phone.svg" alt="電話" />
+                                            </p>
+                                            <p className="txt">{profile.tel}</p>
+                                        </a>
+                                    </div>
+                                    <div className="profile-info__item">
+                                        <p className="txt">{profile.profile ? profile.profile: '未入力'}</p>
+                                    </div>
+                                </div>
+            
+                                <div className="p-profile-btn">
+                                    <Link to={`/p-account/profile/edit/${father_id}`} 
+                                        className="btn-default btn-yellow btn-profile btn-r8 btn-h52 h-xs-60-px">
+                                        <span className="ft-xs-16">プロフィールを変更する</span>
+                                    </Link>
+                                </div>
+            
+                                <div className="p-profile-btn">
+                                    <Link to={`/p-account/profile/edit/password/${father_id}`}
+                                        className="btn-default btn-yellow btn-password btn-r8 btn-h52 h-xs-60-px">
+                                        <span className="ft-xs-16">パスワードを変更する</span>
+                                    </Link>
+                                </div>
+            
+                                <div className="p-profile-txtLink">
+                                    <a onClick={handleLogout}>
+                                        <span className="ft-xs-16">ログアウト</span>
+                                    </a>
+                                </div>
+                
+                                <div className="p-profile-txtLink">
+                                    <Link to={`/p-account/profile/withdrawal`}>
+                                        <span className="ft-xs-16">退会する</span>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+                    { _success && <Alert type="success" hide={()=>setSuccess('') }>{_success}</Alert> }
+                </section>   
+            </div>
         </div>
-      </div>
-    </div>
-	)
+    </div>    
+    )
 }
+
 
 export default Profile;

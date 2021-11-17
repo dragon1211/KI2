@@ -134,7 +134,7 @@ const MeetingEdit = (props) => {
             axios.post(`/api/admin/meeting/images/register`, formdata,  {params:{meeting_id: props.match.params.meeting_id}})
             .then(response => {
                 switch(response.data.status_code){
-                    case 200: setMeetingImages(response.data.params); notify_save(); break;
+                    case 200: setMeetingImages(response.data.params); break;
                     case 400: set400Error(response.data.error_messages); break;
                     case 422: set422Errors(response.data.error_messages); break;
                 } 
@@ -158,7 +158,7 @@ const MeetingEdit = (props) => {
         axios.delete(`/api/admin/meeting/images/delete/${props.match.params?.meeting_id}`, {params:{image_id: image_id}})
         .then(response=>{
             switch(response.data.status_code){
-                case 200: setMeetingImages(response.data.params); notify_delete(); break;
+                case 200: setMeetingImages(response.data.params); break;
                 case 400: set400Error("画像の削除に失敗しました。");
             }
         })

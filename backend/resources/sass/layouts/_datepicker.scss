@@ -1,0 +1,17 @@
+.react-datepicker__month-container{
+    width: 250px;
+    font-size: 13px;
+}
+.react-datepicker__current-month{
+    font-size: 15px !important;
+}
+.react-datepicker-popper[data-placement^=top] .react-datepicker__triangle::before, .react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle::before, .react-datepicker-popper[data-placement^=top] .react-datepicker__triangle::after, .react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle::after{
+    left: -130px !important;
+}
+.react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name{
+    margin: 5px !important;
+}
+
+.react-datepicker__year-read-view--down-arrow, .react-datepicker__month-read-view--down-arrow, .react-datepicker__month-year-read-view--down-arrow, .react-datepicker__navigation-icon::before{
+    top: 14px !important;
+}

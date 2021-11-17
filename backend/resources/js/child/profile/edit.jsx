@@ -112,7 +112,7 @@ const ProfileEdit = () => {
                 <section className="profile-container">
                     {
                         !loaded &&
-                            <CircularProgress color="secondary" className="css-loader"/>
+                            <CircularProgress className="css-loader"/>
                     }
                     <div className="profile-wrap">
                         <div className="profile-content">

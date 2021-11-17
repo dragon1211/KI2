@@ -240,7 +240,9 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
     }
 
     public function list () {
-        if (null === ($result = Child::orderBy('created_at', 'desc')->get())) {
+        $child_select = ['first_name', 'last_name', 'tel'];
+
+        if (null === ($result = Child::select($child_select)->orderBy('created_at', 'desc')->get())) {
             // 親一覧の取得に失敗
             return ['status_code' => 400];
         }
@@ -254,7 +256,7 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
             return ['status_code' => 400];
         }
         $result = [];
-        $child_select = ['id', 'first_name', 'last_name', 'tel'];
+        $child_select = ['id', 'image', 'first_name', 'last_name', 'company', 'tel'];
 
         if (null === ($list = FatherRelation::select('child_id')->where('father_id', (int)$r->father_id)->orderBy('created_at', 'desc')->get())) {
             return ['status_code' => 400];
@@ -338,9 +340,14 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
         }
 
         $child_select = ['email', 'tel', 'last_name', 'first_name', 'identity', 'image', 'company'];
+        $father_relations_select = ['hire_at'];
 
         // 親詳細の取得に成功
         if (null === ($params = Child::select($child_select)->where('id', (int)$child_id)->first())) {
+            return ['status_code' => 400];
+        }
+
+        if (null === ($params->father_relations = FatherRelation::select($father_relations_select)->where('child_id', (int)$child_id)->first())) {
             return ['status_code' => 400];
         }
 

@@ -5,54 +5,66 @@ import "react-datepicker/dist/react-datepicker.css";
 registerLocale("ja", ja);
 import axios from 'axios';
 import moment from 'moment';
+import { LoadingButton } from '@material-ui/lab';
+import Notification from '../notification';
+import Alert from '../../component/alert';
+import { useHistory } from 'react-router';
+import { CircularProgress } from '@material-ui/core';
 
 const ChildEdit = (props) => {
+
+  const history = useHistory();
+  const [notice, setNotice] = useState(localStorage.getItem('notice'));
   const [_success, setSuccess] = useState('');
-  const [showAlert, setShowAlert] = useState(false);
-  const [textColor, setTextColor] = useState(null);
-  const [messageAlert, setMessageAlert] = useState(null);
-  const [hireDate, setHireDate] = useState(null);
-  const fatherId = document.getElementById('father_id').value;
+  const [_400error, set400Error] = useState('');
+  const [_422errors, set422Errors] = useState({hire_at: ''});
+
+  const [hire_at, setHireAt] = useState(null);
+  const [submit, setSubmit] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  const father_id = document.getElementById('father_id').value;
+  const child_id = props.match.params.child_id;
 
   useEffect(() => {
-    axios.get(`/api/children/detail/${props.match.params?.id}`, {params: { father_id: fatherId }}).then((response) => {
-      if(response.data.status_code==200){
-        if(response.data.params[0]?.father_relation?.hire_at) {
-          let hire_at = moment(response.data.params[0]?.father_relation?.hire_at).toDate();
-          setHireDate(hire_at);
+    setLoaded(false);
+    axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
+    .then(response => {
+        setNotice(response.data.notice);
+        setLoaded(true);
+        if(response.data.status_code==200){
+          let hire_at = moment(response.data.params.father_relations?.hire_at).toDate();
+          setHireAt(hire_at);
         }
-      } else if(response.data.status_code==400){
-        //TODO
-      }
-    
-    });
-  }, []);
+    })
+  },[]);
 
-  async function handleClick() {
-    try {
-      const formdata = new FormData();
-      formdata.append('father_id', fatherId);
-      formdata.append('child_id', props.match.params?.id);
-      formdata.append('hire_at', hireDate);
-      axios.post(`/api/father-relations/updateHireDate/${props.match.params?.id}`, formdata)
-        .then(response => {
-          if(response.data.status_code == 200){
-            setMessageAlert(response.data.success_messages);
-            setTextColor("black");
-          } else {
-            setMessageAlert(response.data.success_messages);
-          }
-          setShowAlert(true);
-        });
-    } catch (error) {
-      console.log('error', error);
-    }
+  const handleSubmit = (e) => {
+      e.preventDefault();
+      set422Errors({hire_at: ''});
+      const request = {
+        father_id: father_id,
+        hire_at: hire_at
+      }
+      setSubmit(true);
+      axios.put(`/api/fathers/relations/updateHireDate/${child_id}`, request)
+      .then(response => {
+        setSubmit(false);
+        setNotice(response.data.notice);
+        switch(response.data.status_code){
+          case 200:{
+            history.push({
+                pathname: '/p-account/child/detail/'+child_id,
+                state: response.data.success_messages
+            });
+            break;
+          } 
+          case 400: set400Error(response.data.error_messages); break;
+          case 422: set422Errors(response.data.error_messages); break;
+        }
+      });
   }
   
-  async function handleCloseAlert() {
-    setShowAlert(false);
-  };
-
 	return (
     <div className="l-content">
       <div className="l-content-w560">
@@ -60,54 +72,54 @@ const ChildEdit = (props) => {
           <div className="l-content__ttl__left">
             <h2>入社日を変更</h2>
           </div>
-          <div className="p-notification">
-            <div className="p-notification-icon">
-              <div className="p-notification-icon-wrap">
-                <div className="count">1</div>
-                <div className="p-notification-icon-bg"></div>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22.742 19.855" className="icon svg-icon svg-fill svg-y50" ><g fill="none" stroke="#080808" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" data-name="Icon feather-alert-triangle" transform="translate(0.777 0.75)"><path d="M11.188,5.322,2.6,19.659A2.028,2.028,0,0,0,4.334,22.7H21.51a2.028,2.028,0,0,0,1.734-3.042L14.656,5.322a2.028,2.028,0,0,0-3.468,0Z" data-name="パス 3" transform="translate(-2.328 -4.346)"/><path d="M18,13.5v6.91" data-name="パス 4" transform="translate(-7.406 -8.547)"/><path d="M18,25.5h0" data-name="パス 5" transform="translate(-7.406 -11.2)"/></g></svg>
-              </div>
-            </div>
-          </div>
+          <Notification notice={notice}/>
         </div>
 
         <div className="l-content-wrap">
           <section className="edit-container">
-            <div className="edit-wrap">
-              <div className="edit-content">
-
-                <form action="" className="edit-form">
-                  <div className="edit-set">
-                    <label className="control-label" htmlFor="hireDate">入社日</label>
-                    {/* <input type="text" name="hireDate" value="" className="input-default input-hiredate input-h60 input-w480" id="hireDate" />
-                    <i className="icon icon-calendar"></i> */}
-                    <div>
-                    <DatePicker 
-                      selected={hireDate} 
-                      className="input-default input-hiredate input-h60 input-w480"
-                      onChange={date => setHireDate(date)} 
-                      dateFormat="yyyy/MM/dd"
-                      locale="ja"
-                      minDate={new Date()} 
-                    />
+            { !loaded && 
+              <CircularProgress className="css-loader"/> }
+            {
+              loaded &&
+              <div className="edit-wrap">
+                <div className="edit-content">
+                  <form className="edit-form" onSubmit={handleSubmit}>
+                    <div className="edit-set">
+                      <label className="control-label" htmlFor="hire_at">入社日</label>
+                      <div>
+                        <label htmlFor="hire_at"><i className="icon icon-calendar"></i></label>
+                        <DatePicker 
+                          id="hire_at"
+                          selected={hire_at} 
+                          className={`input-default input-hire_at input-h60 input-w480 ${  _422errors.hire_at && 'is-invalid c-input__target'} `}
+                          onChange={date => setHireAt(date)} 
+                          dateFormat="yyyy/MM/dd"
+                          locale="ja"
+                        />
+                        {
+                          _422errors.hire_at &&
+                            <span className="l-alert__text--error ft-16 ft-md-14">
+                                {_422errors.hire_at}
+                            </span> 
+                        }
+                      </div>
                     </div>
-                  </div>
-                  
-                  <button 
-                    onClick={e => {
-                      e.preventDefault();
-                      handleClick();
-                    }}
-                    type="button" 
-                    className="btn-edit btn-default btn-h70 btn-r14 btn-yellow">変更内容を保存する</button>
-                </form>
-
+                    <LoadingButton 
+                        type="submit" fullWidth
+                        loading={submit}
+                        className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
+                        style={{marginTop:'50px'}}>
+                        <span className={`ft-20 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>変更内容を保存する</span>
+                    </LoadingButton>
+                  </form>
+                </div>
               </div>
-            </div>
+            }
           </section>
         </div>
       </div>
-      { _success && <Alert type="success">{_success}</Alert> }
+      { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+      { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
     </div>
 	)
 }

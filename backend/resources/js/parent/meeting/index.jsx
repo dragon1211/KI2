@@ -24,15 +24,13 @@ const Meeting = (props) => {
     const [meeting_list_complete, setMeetingListOfComplete] = useState([]);
     const [fetch_meeting_list_incomplete, setFetchMeetingListOfIncomplete] = useState([]);
     const [fetch_meeting_list_complete, setFetchMeetingListOfComplete] = useState([]);
-    const [_success, setSuccess] = useState('');
+    const [_success, setSuccess] = useState(props.history.location?.state);
 
     useEffect(()=>{
       if(localStorage.getItem("from_login")){
         setSuccess("ログインに成功しました!");
         localStorage.removeItem("from_login");
       }
-      if(!isObject(props.history.location.state))
-      setSuccess(props.history.location.state);
       var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
       for(let i=0; i<navbar_list.length; i++)
           navbar_list[i].classList.remove('nav-active');
@@ -52,7 +50,6 @@ const Meeting = (props) => {
         .then(response => {
             setLoaded1(true);
             setNotice(response.data.notice);
-            console.log(response.data);
             if(response.data.status_code==200){
                 var list = response.data.params;
                 var arr = [];
@@ -76,7 +73,6 @@ const Meeting = (props) => {
         .then(response => {
           setLoaded2(true);
           setNotice(response.data.notice);
-          console.log(response.data);
           if(response.data.status_code==200){
               var list = response.data.params;
               var arr = [];
@@ -194,7 +190,7 @@ const Meeting = (props) => {
                     </div>
                     {
                         !loaded &&
-                            <CircularProgress color="secondary" className="css-loader"/>
+                            <CircularProgress className="css-loader"/>
                     }
                     {
                         loaded &&

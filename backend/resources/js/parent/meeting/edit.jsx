@@ -64,6 +64,15 @@ const MeetingEdit = (props) => {
         });
     }, []);
 
+//-------------------------------------------------------------
+useEffect(()=>{
+    var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
+    for(let i=0; i<navbar_list.length; i++)
+        navbar_list[i].classList.remove('nav-active');
+    document.getElementsByClassName("-meeting")[0].classList.add('nav-active');
+},[]);
+
+
 
 //--------------------------------------------------------
     useEffect(()=>{
@@ -108,28 +117,24 @@ const MeetingEdit = (props) => {
         axios.post('/api/fathers/meeting/approvals/register', formdata, {params:{meeting_id: meeting_id}})
         axios.delete('/api/fathers/meeting/approvals/delete', {params:{children: approval_deleteIndexes, meeting_id: meeting_id}})
         
-        try {
-            const request = { title: title, text: text, memo: memo, pdf: pdf };
-            setSubmit(true);
-            axios.put(`/api/fathers/meetings/update/${meeting_id}`, request)
-            .then(response => {
-                setNotice(response.data.notice);
-                setSubmit(false);
-                switch(response.data.status_code){
-                    case 200: {
-                        history.push({
-                            pathname: `/p-account/meeting/detail/${props.match.params?.meeting_id}`,
-                            state: "更新成功しました!"
-                        });
-                        break;
-                    }
-                    case 400: set400Error("更新失敗しました。"); break;
-                    case 422: set422Errors(response.data.error_messages); break;
+        const request = { title: title, text: text, memo: memo, pdf: pdf };
+        setSubmit(true);
+        axios.put(`/api/fathers/meetings/update/${meeting_id}`, request)
+        .then(response => {
+            setNotice(response.data.notice);
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: {
+                    history.push({
+                        pathname: `/p-account/meeting/detail/${props.match.params?.meeting_id}`,
+                        state: "編集が完了しました!"
+                    });
+                    break;
                 }
-            });
-        } catch (error) {
-          console.log('error', error);
-        }
+                case 400: set400Error("編集が失敗しました。"); break;
+                case 422: set422Errors(response.data.error_messages); break;
+            }
+        });
     }
 
 
@@ -146,16 +151,26 @@ const MeetingEdit = (props) => {
             .then(response => {
                 setNotice(response.data.notice);
                 switch(response.data.status_code){
-                    case 200: setMeetingImages(response.data.params); notify_save(); break;
+                    case 200: setMeetingImages(response.data.params);  break;
                     case 400: set400Error(response.data.error_messages); break;
                     case 422: set422Errors(response.data.error_messages); break;
                 } 
-            });
-
+            });  
         };
     };
 
-    const handlePDFChange = (e) => {
+    const handleDeleteImage = (image_id) => {
+        axios.delete(`/api/fathers/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
+        .then(response=>{
+            setNotice(response.data.notice);
+            switch(response.data.status_code){
+                case 200: setMeetingImages(response.data.params); break;
+                case 400: set400Error("画像の削除に失敗しました。");
+            }
+        })
+    }
+
+    const handleChangePDF = (e) => {
         e.preventDefault();
         let reader = new FileReader();
         let _file = e.target.files[0];
@@ -164,17 +179,6 @@ const MeetingEdit = (props) => {
         reader.onloadend = () => {
             setPdf(reader.result);
         }
-    }
-
-    const handleDeleteImage = (image_id) => {
-        axios.delete(`/api/fathers/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
-        .then(response=>{
-            setNotice(response.data.notice);
-            switch(response.data.status_code){
-                case 200: setMeetingImages(response.data.params); notify_delete(); break;
-                case 400: set400Error("画像の削除に失敗しました。");
-            }
-        })
     }
 
     const handleCheck = (e, index) => {
@@ -226,7 +230,7 @@ const MeetingEdit = (props) => {
                     <div className="p-article-wrap position-relative" style={{ minHeight:'500px'}}>
                     {
                         !loaded &&
-                        <CircularProgress color="secondary" style={{top:'150px',  left:'calc(50% - 22px)', color:'green', position:'absolute'}}/>
+                            <CircularProgress className="css-loader"/>
                     }
                     {
                         loaded && 
@@ -267,8 +271,22 @@ const MeetingEdit = (props) => {
                                         <div className="edit-set edit-set-mt15">
                                             <label className="edit-set-file-label" htmlFor="file_pdf">
                                                 PDFアップロード
-                                                <input type="file" name="file_pdf" accept=".pdf" id="file_pdf" onChange={handlePDFChange} />
+                                                <input type="file" name="file_pdf" accept=".pdf" id="file_pdf" onChange={handleChangePDF} />
                                             </label> 
+                                            {
+                                                pdf && 
+                                                <IconButton
+                                                    onClick={()=>setPdf('')}
+                                                    style={{position: 'absolute',
+                                                        top: '-6px',
+                                                        right: '-6px'}}>
+                                                    <RemoveIcon 
+                                                        style={{width:'22px', height:'22px',
+                                                        color: 'white',
+                                                        background: '#dd0000',
+                                                        borderRadius: '50%'}}/>
+                                                </IconButton>
+                                            }
                                             {
                                                 _422errors.pdf &&
                                                   <span className="l-alert__text--error ft-16 ft-md-14">

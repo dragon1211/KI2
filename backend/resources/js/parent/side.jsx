@@ -22,7 +22,7 @@ export default function Side() {
     return (
         <div className="l-side">
             <div className="l-side-logo">
-                <a href=""><img src="../../../assets/img/common/logo.svg" alt="ロゴ" /></a>
+                <a href=""><img src="/assets/img/common/logo.svg" alt="ロゴ" /></a>
             </div>
             <nav className="mypage-nav">
                 <ul className="mypage-nav-list">

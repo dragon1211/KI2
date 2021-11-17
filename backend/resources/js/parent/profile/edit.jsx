@@ -1,78 +1,75 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { CircularProgress  } from '@material-ui/core';
+import { LoadingButton } from '@material-ui/lab';
 import Notification from '../notification';
+import Alert from '../../component/alert';
+import { useHistory } from 'react-router';
 
 const ProfileEdit = () => {
-  const [father, setFather] = useState(null);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+
+  const history = useHistory();
+  const [notice, setNotice] = useState(localStorage.getItem('notice'));
+  const father_id = document.getElementById('father_id').value;
+
+  const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
   const [tel, setTel] = useState('');
   const [profile, setProfile] = useState('');
-  const fatherId = document.getElementById('father_id').value;
-  const [showAlert, setShowAlert] = useState(false);
-  const [messageAlert, setMessageAlert] = useState(null);
-  const [textColor, setTextColor] = useState(null);
 
-  const [errors, setErrors] = useState({
-      firstName:'',
-      lastName:'',
-      email:'',
-      tel:'',
-      profile:''
+  const [_success, setSuccess] = useState('');
+  const [_400error, set400Error] = useState('');
+  const [_422errors, set422Errors] = useState({
+    company: '',
+    email:'',
+    tel:'',
+    profile:''
   })
+  const [loaded, setLoaded] = useState(false);
+  const [submit, setSubmit] = useState(false);
 
   useEffect(() => {
-    axios.get(`/api/fathers/detail/${fatherId}`).then((response) => {
+    setLoaded(false);
+    axios.get(`/api/fathers/detail/${father_id}`)
+    .then(response => {
+      setLoaded(true);
+      setNotice(response.data.notice);
       if(response.data.status_code==200) {
-        console.log(response.data.params[0]);
-        setFather(response.data.params[0]);
-        setEmail(response.data.params[0]?.email);
-        setTel(response.data.params[0]?.tel);
-        setProfile(response.data.params[0]?.profile);
-      } else if(response.data.status_code==400){
-        //TODO
-      }
-    
+        setCompany(response.data.params?.company);
+        setEmail(response.data.params?.email);
+        setTel(response.data.params?.tel);
+        setProfile(response.data.params?.profile);
+      }     
     });
   }, []);
 
-  async function handleClick() {
-    setErrors({
-      firstName:'',
-      lastName:'',
-      email: email ? '' : 'error',
-      tel: tel ? '' : 'error',
-      profile:''
-    });
-
-    if(email && tel) {
-      try {
-        const formdata = new FormData();
-        formdata.append('father_id', fatherId);
-        formdata.append('first_name', firstName);
-        formdata.append('last_name', lastName);
-        formdata.append('email', email);
-        formdata.append('tel', tel);
-        formdata.append('profile', profile);
-        axios.put(`/api/fathers/updateProfile/${fatherId}`, formdata)
-          .then(response => {
-            if(response.data.status_code == 200){
-              setMessageAlert(response.data.success_messages);
-              setTextColor("black");
-            } else {
-              setMessageAlert(response.data.success_messages);
-            }
-            setShowAlert(true);
-          });
-      } catch (error) {
-        console.log('error', error);
-      }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    set422Errors({ company:'', email: '',  tel: '',  profile:'' });
+    const request = {
+      company: company,
+      email: email,
+      tel: tel,
+      profile: profile
     }
+    setSubmit(true);
+    axios.put(`/api/fathers/updateProfile/${father_id}`, request)
+    .then(response => {
+      setNotice(response.data.notice);
+      setSubmit(false);
+      switch(response.data.status_code){
+        case 200:{
+          history.push({
+              pathname: '/p-account/profile',
+              state: response.data.success_messages
+          });
+          break;
+        } 
+        case 400: set400Error(response.data.error_messages); break;
+        case 422: set422Errors(response.data.error_messages); break;
+      }
+    });
   }
 
-  async function handleCloseAlert() {
-    setShowAlert(false);
-  };
   
 	return (
     <div className="l-content">
@@ -81,53 +78,85 @@ const ProfileEdit = () => {
           <div className="l-content__ttl__left">
             <h2>プロフィール編集</h2>
           </div>
-          <Notification />
+          <Notification notice={notice}/>
         </div>
 
         <div className="l-content-wrap">
-          <div className="edit-container">
+          <section className="edit-container">
+          {
+            !loaded && 
+            <CircularProgress className="css-loader"/>
+          }
+          {
+            loaded &&
             <div className="edit-wrap">
               <div className="edit-content">
+                <form className="edit-form" onSubmit={handleSubmit}>
 
-                <form action="" className="edit-form">
                   <div className="edit-set">
-                    <label className="control-label" htmlFor="nameSei">姓</label>
-                    <input type="text" name="nameSei" value={ lastName } onChange={e=>setLastName(e.target.value)} 
-                      className={`input-default input-nameSei input-h60 input-w480 ${ errors['firstName'] != '' && "validation_error"}`} id="nameSei" />
+                    <label className="control-label" htmlFor="nameSei">会社名</label>
+                    <input type="text" name="nameSei" value={ company } onChange={e=>setCompany(e.target.value)} 
+                      className={`input-default input-nameSei input-h60 input-w480 ${ _422errors.company && "is-invalid c-input__target" }`} id="company" />
+                    {
+                      _422errors.company &&
+                          <span className="l-alert__text--error ft-16 ft-md-14">
+                              { _422errors.company }
+                          </span>
+                    }
                   </div>
-                  <div className="edit-set">
-                    <label className="control-label" htmlFor="nameMei">名</label>
-                    <input type="text" name="nameMei" value={ firstName } onChange={e=>setFirstName(e.target.value)} 
-                      className={`input-default input-nameMei input-h60 input-w480 ${ errors['lastName'] != '' && "validation_error"}`} id="nameMei" />
-                  </div>
+
                   <div className="edit-set">
                     <label className="control-label" htmlFor="mail">メールアドレス</label>
                     <input type="email" name="mail" value={ email } onChange={e=>setEmail(e.target.value)} 
-                      className={`input-default input-mail input-h60 input-w480 ${ errors['email'] != '' && "validation_error"}`} id="mail" />
+                      className={`input-default input-mail input-h60 input-w480 ${ _422errors.email && "is-invalid c-input__target" } `} id="mail" />
+                    {
+                      _422errors.email &&
+                          <span className="l-alert__text--error ft-16 ft-md-14">
+                              { _422errors.email }
+                          </span>
+                    }
                   </div>
+
                   <div className="edit-set">
                     <label className="control-label" htmlFor="tel">電話番号</label>
                     <input type="tel" name="tel" value={ tel } onChange={e=>setTel(e.target.value)} 
-                      className={`input-default input-tel input-h60 input-w480 ${ errors['tel'] != '' && "validation_error"}`} id="tel" />
+                      className={`input-default input-tel input-h60 input-w480 ${ _422errors.tel && "is-invalid c-input__target" } `} id="tel" />
+                    {
+                      _422errors.tel &&
+                          <span className="l-alert__text--error ft-16 ft-md-14">
+                              { _422errors.tel }
+                          </span>
+                    }
                   </div>
+
                   <div className="edit-set">
                     <label className="control-label" htmlFor="profile_textarea">プロフィール</label>
                     <textarea name="profile" value={ profile } onChange={e=>setProfile(e.target.value)} rows="8" 
-                      className={`textarea-default ${ errors['profile'] != '' && "validation_error"}`} id="profile_textarea" />
+                      className={`textarea-default ${ _422errors.profile && "is-invalid c-input__target" } `} id="profile_textarea" />
+                    {
+                      _422errors.profile &&
+                          <span className="l-alert__text--error ft-16 ft-md-14">
+                              { _422errors.profile }
+                          </span>
+                    }
                   </div>
                   
-                  <button 
-                    type="button" 
-                    onClick={e => {
-                      e.preventDefault();
-                      handleClick();
-                    }}
-                    className="btn-edit btn-default btn-h70 btn-r14 btn-yellow">プロフィール更新</button>
-                </form>
+                  <LoadingButton type="submit" 
+                    loading={submit} 
+                    fullWidth 
+                    className="btn-edit btn-default btn-h75 bg-yellow rounded-20"> 
+                    <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>
+                        プロフィールを更新
+                    </span> 
+                  </LoadingButton>
 
+                  { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+                  { _success && <Alert type="success" hide={()=>setSuccess('') }>{_success}</Alert> }
+                </form>
               </div>
             </div>
-          </div>
+          }
+            </section>
         </div>
       </div>
     </div>

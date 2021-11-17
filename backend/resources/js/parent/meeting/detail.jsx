@@ -37,7 +37,6 @@ const MeetingDetail = (props) => {
     setLoaded(false);
     axios.get(`/api/fathers/meetings/detail/${props.match.params?.meeting_id}`, {params: { father_id: father_id}})
     .then((response) => {
-      console.log(response.data.params);
       setLoaded(true);
       setNotice(response.data.notice);
       if(response.data.status_code==200){
@@ -53,6 +52,14 @@ const MeetingDetail = (props) => {
       } 
     });
   }, []);
+
+  //-------------------------------------------------------------
+  useEffect(()=>{
+    var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
+    for(let i=0; i<navbar_list.length; i++)
+        navbar_list[i].classList.remove('nav-active');
+    document.getElementsByClassName("-meeting")[0].classList.add('nav-active');
+  },[]);
 
 
   const handleAcceptDelete = () => {
@@ -94,29 +101,30 @@ const MeetingDetail = (props) => {
   const handleNotifyAllChild = () => {
       setSubmitNotify(true);
       axios.get('/api/fathers/meeting/approvals/listChildrenOfUnapprovel', {params:{meeting_id: props.match.params?.meeting_id}})
-        .then(response => {
-          if(response.data.status_code == 200){
-            var list = response.data.params;
-            const tel_list = [];
-            for(var i in list){
-              tel_list.push(list[i].child.tel);
-            }
-            const formdata = new FormData();
-            formdata.append('tel', JSON.stringify(tel_list));
-            formdata.append('meeting_id', props.match.params.meeting_id);
-            axios.post('/api/fathers/approvalNotification', formdata)
-            .then(response=>{
-              setSubmitNotify(false);
-              setShowNotify(false);
-              switch(response.data.status_code){
-                case 200: setSuccess('SMSの送信に成功しました!'); break;
-                case 400: set400Error('SMSの送信に失敗しました。'); break;
-              }
-            })
+      .then(response => {
+        setNotice(response.data.notice);
+        if(response.data.status_code == 200){
+          var list = response.data.params;
+          const tel_list = [];
+          for(var i in list){
+            tel_list.push(list[i].child.tel);
           }
-          setNotice(response.data.notice);
-        });
+          const formdata = new FormData();
+          formdata.append('tel', JSON.stringify(tel_list));
+          formdata.append('meeting_id', props.match.params.meeting_id);
+          axios.post('/api/fathers/approvalNotification', formdata)
+          .then(response=>{
+            setSubmitNotify(false);
+            setShowNotify(false);
+            switch(response.data.status_code){
+              case 200: setSuccess('SMSの送信に成功しました!'); break;
+              case 400: set400Error('SMSの送信に失敗しました。'); break;
+            }
+          })
+        }
+      });
   }
+
 
   return (
       <div className="l-content">
@@ -129,7 +137,7 @@ const MeetingDetail = (props) => {
           </div>
           {
             !loaded && !meeting &&
-              <CircularProgress color="secondary" className="css-loader"/>
+              <CircularProgress className="css-loader"/>
           }
           {
             loaded && meeting &&
@@ -173,8 +181,12 @@ const MeetingDetail = (props) => {
                           <a onClick={()=>setShowDelete(true)} className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">削除</a>
                         </li>
                         <li className="p-article-btn__item">
-                          <Link to='/p-account/meeting/new'
-                             className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">複製</Link>
+                          <a onClick={()=>
+                            history.push({ 
+                              pathname: "/p-account/meeting/new",  
+                              state: meeting 
+                            })}
+                            className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">複製</a>
                         </li>
                         <li className="p-article-btn__item">
                           <a onClick={()=>setShowNotify(true)} className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">再通知</a>

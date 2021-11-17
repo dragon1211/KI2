@@ -17,7 +17,7 @@ const Profile = () => {
     const [loaded, setLoaded] = useState(false);
     const [_400error, set400Error] = useState('');
     const [_422errors, set422Errors] = useState({ image: '' });
-    const [_success_update_image, setSuccessUpdateImage] = useState('');
+    const [_success, setSuccess] = useState('');
 
 
     useEffect(() => {
@@ -52,7 +52,7 @@ const Profile = () => {
                 switch(response.data.status_code){
                     case 200: {
                         // setImage(reader.result);
-                        setSuccessUpdateImage(response.data.success_messages);
+                        setSuccess(response.data.success_messages);
                         window.location.reload(true);
                         break;
                     }
@@ -77,7 +77,7 @@ const Profile = () => {
                 <section className="profile-container">
                     {
                         !loaded &&
-                            <CircularProgress color="secondary" className="css-loader"/>
+                            <CircularProgress className="css-loader"/>
                     }
                     {
                         loaded &&
@@ -128,7 +128,7 @@ const Profile = () => {
                                         <p className="profile-info__icon">
                                             <img src="/assets/img/icon/building.svg" alt="会社名"/>
                                         </p>
-                                        <p className="txt">{profile.company ? profile.company: '-'}</p>
+                                        <p className="txt">{profile.company ? profile.company: '未入力'}</p>
                                     </div>
                                 </div>
             
@@ -163,9 +163,9 @@ const Profile = () => {
                     {
                         _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
                     }
-                    {   _success_update_image && 
-                        <Alert type="success" hide={()=>setSuccessUpdateImage('')}>
-                            {_success_update_image}
+                    {   _success && 
+                        <Alert type="success" hide={()=>setSuccess('')}>
+                            {_success}
                         </Alert> 
                     }
                 </section>   

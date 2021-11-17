@@ -87,7 +87,7 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
         </DialogTitle>
         <DialogContent className="position-relative">
           {
-            !loaded && <CircularProgress style={{color:'green', position:'absolute', top: 'calc( 30% - 22px )', left:'calc( 50% - 22px )'}}/>
+            !loaded && <CircularProgress className="css-loader"/>
           }
           {
             loaded &&

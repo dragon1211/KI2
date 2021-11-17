@@ -5,9 +5,6 @@ import { CircularProgress  } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
 import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
 import Alert from '../../component/alert';
 import Notification from '../notification';
 
@@ -16,7 +13,6 @@ const MeetingAdd = (props) => {
 
     const history = useHistory();
     const father_id = document.getElementById('father_id').value;
-    const meeting_id = props.match.params.meeting_id;
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     
     const [title, setTitle] = useState('');
@@ -28,61 +24,55 @@ const MeetingAdd = (props) => {
     
     const [_422errors, set422Errors] = useState({title:'', text:'', memo:'', pdf:'', image:''})
     const [_400error, set400Error] = useState('');
-    const [_success, setSuccess] = useState('');
 
     const [loaded, setLoaded] = useState(false);
     const [submit, setSubmit] = useState(false);
-
-    const [check_radio, setCheckRadio] = useState(null);
+    const [check_radio, setCheckRadio] = useState('');
 
     
     useEffect(()=>{
-      setLoaded(false);
-      axios.get('/api/fathers/children/listOfFather', {params:{father_id: father_id}})
-      .then(response=>{
-        setLoaded(true);
-        setNotice(response.data.notice);
-        console.log(response.data)
-        if(response.data.status_code == 200){
-          var list = response.data.params;
-          var arr = [];
-          for(var i in list){
-            arr.push({...list[i], checked: false})
-          }
-          setChildrenList(arr);
-          console.log(arr)
+        setLoaded(false);
+        const state = props.history.location.state;
+        if(state){
+            setLoaded(true);
+            setTitle(state?.title);
+            setMemo(state?.memo);
+            setText(state?.text);
+            setPdf(state?.pdf);
+            let images = [];
+            for(let i in state.meeting_image){
+                images.push(state.meeting_image[i].image);
+            }
+            setMeetingImages(images);
+            var arr = [];
+            for(let i in state.children){
+                arr.push({...state.children[i], checked: false})
+            }
+            setChildrenList(arr);
         }
-      })
+        else{
+            axios.get('/api/fathers/children/listOfFather', {params:{father_id: father_id}})
+            .then(response=>{
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code == 200){
+                var list = response.data.params;
+                var arr = [];
+                for(var i in list){
+                    arr.push({...list[i], checked: false})
+                }
+                setChildrenList(arr);
+            }})
+        }
     },[])
 
-
-    // useEffect(() => {
-    //     setLoaded(false);
-    //     axios.get(`/api/fathers/meetings/detail/${meeting_id}`, {params: { father_id: father_id}})
-    //     .then(response => {
-    //         setLoaded(true);
-    //         setNotice(response.data.notice)
-    //         if(response.data.status_code==200){
-    //             setTitle(response.data.params?.title);
-    //             setMemo(response.data.params?.memo);
-    //             setText(response.data.params?.text);
-    //             setMeetingImages(response.data.params?.meeting_image);
-    //             setApproval(response.data.params?.approval);
-    //             setPdf(response.data.params?.pdf);
-    //             setChildren(response.data.params?.children);
-    //             var list = [...response.data.params?.children];
-    //             var approval = [...response.data.params?.approval];
-    //             var arr = [];
-    //             for(var i=0; i<list.length; i++){
-    //                 if(approval.findIndex(ele=>ele.child_id == list[i].child_id) >= 0)
-    //                     arr.push({...list[i], checked: true});
-    //                 else arr.push({...list[i], checked: false});
-    //             }
-    //             setChildrenList(arr);
-    //         } 
-    //     });
-    // }, []);
-
+//-------------------------------------------------------------
+    useEffect(()=>{
+        var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
+        for(let i=0; i<navbar_list.length; i++)
+            navbar_list[i].classList.remove('nav-active');
+        document.getElementsByClassName("-meeting")[0].classList.add('nav-active');
+    },[]);
 
 //--------------------------------------------------------
     useEffect(()=>{
@@ -107,28 +97,31 @@ const MeetingAdd = (props) => {
         formdata.append('title', title);        
         formdata.append('text', text);        
         formdata.append('memo', memo);        
-        formdata.append('pdf', pdf);        
-
-        try {
-            setSubmit(true);
-            axios.post('/api/fathers/meetings/register', formdata)
-            .then(response => {
-                setNotice(response.data.notice);
-                setSubmit(false);
-                switch(response.data.status_code){
-                    case 200: {
-                      history.push({
-                        pathname: `/p-account/meeting/detail/${props.match.params?.meeting_id}`,
-                        state: "登録成功しました"});
-                      break;
-                    }
-                    case 400: set400Error("更新失敗しました。"); break;
-                    case 422: set422Errors(response.data.error_messages); break;
-                }
-            });
-        } catch (error) {
-          console.log('error', error);
+        formdata.append('pdf', pdf);
+        formdata.append('image', JSON.stringify(meeting_image));        
+        let c_arr = [];
+        for(let i in children_list){
+            if(children_list[i].checked) c_arr.push(children_list[i].id);
         }
+        formdata.append('children', JSON.stringify(c_arr));
+        console.log(c_arr);
+
+        setSubmit(true);
+        axios.post('/api/fathers/meetings/register', formdata)
+        .then(response => {
+            setSubmit(false);
+            setNotice(response.data.notice);
+            switch(response.data.status_code){
+                case 200: {
+                    history.push({
+                    pathname: `/p-account/meeting/detail/${props.match.params?.meeting_id}`,
+                    state: "登録成功しました"});
+                    break;
+                }
+                case 400: set400Error("登録失敗しました。"); break;
+                case 422: set422Errors(response.data.error_messages); break;
+            }
+        });
     }
 
 
@@ -139,18 +132,7 @@ const MeetingAdd = (props) => {
         if(!_file) return;
         reader.readAsDataURL(_file);
         reader.onloadend = () => {
-            const formdata = new FormData();
-            formdata.append('image', reader.result);
-            axios.post(`/api/fathers/meeting/images/register`, formdata,  {params:{meeting_id: meeting_id}})
-            .then(response => {
-                setNotice(response.data.notice);
-                switch(response.data.status_code){
-                    case 200: setMeetingImages(response.data.params); notify_save(); break;
-                    case 400: set400Error(response.data.error_messages); break;
-                    case 422: set422Errors(response.data.error_messages); break;
-                } 
-            });
-
+            setMeetingImages([...meeting_image, reader.result]);
         };
     };
 
@@ -165,15 +147,10 @@ const MeetingAdd = (props) => {
         }
     }
 
-    const handleDeleteImage = (image_id) => {
-        axios.delete(`/api/fathers/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
-        .then(response=>{
-            setNotice(response.data.notice);
-            switch(response.data.status_code){
-                case 200: setMeetingImages(response.data.params); notify_delete(); break;
-                case 400: set400Error("画像の削除に失敗しました。");
-            }
-        })
+    const handleRemoveImage = (image_id) => {
+        let list = [...meeting_image];
+        list.splice(image_id, 1);
+        setMeetingImages(list);
     }
 
     const handleCheck = (e, index) => {
@@ -183,49 +160,22 @@ const MeetingAdd = (props) => {
     }
 
 
-    const notify_delete = () => 
-    toast.success("削除成功しました。", {
-        position: "top-right",
-        autoClose: 5000,
-        className:"bg-danger",
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: false,
-        progress: undefined,
-        style:{ color: '#ffffff'}
-    });
-
-    const notify_save = () => 
-    toast.success("更新が成功しました。", {
-        position: "top-right",
-        autoClose: 5000,
-        className:"bg-danger",
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: false,
-        progress: undefined,
-        style:{ color: '#ffffff'}
-    });
-
-
 	return (
-        <div className="l-content">
-            <div className="l-content-w560">
-                <div className="l-content__ttl">
-                    <div className="l-content__ttl__left">
-                        <h2>ミーティング作成</h2>
-                    </div>
-                    <Notification notice={notice}/>
+    <div className="l-content">
+        <div className="l-content-w560">
+            <div className="l-content__ttl">
+                <div className="l-content__ttl__left">
+                    <h2>ミーティング作成</h2>
                 </div>
-        
-                <div className="l-content-wrap">
-                    <div className="p-article">
+                <Notification notice={notice}/>
+            </div>
+    
+            <div className="l-content-wrap">
+                <div className="p-article">
                     <div className="p-article-wrap position-relative" style={{ minHeight:'500px'}}>
                     {
                         !loaded &&
-                        <CircularProgress color="secondary" style={{top:'150px',  left:'calc(50% - 22px)', color:'green', position:'absolute'}}/>
+                        <CircularProgress className="css-loader"/>
                     }
                     {
                         loaded && 
@@ -269,22 +219,36 @@ const MeetingAdd = (props) => {
                                                 <input type="file" name="file_pdf" accept=".pdf" id="file_pdf" onChange={handlePDFChange} />
                                             </label> 
                                             {
+                                                pdf && 
+                                                <IconButton
+                                                    onClick={()=>setPdf('')}
+                                                    style={{position: 'absolute',
+                                                        top: '-6px',
+                                                        right: '-6px'}}>
+                                                    <RemoveIcon 
+                                                        style={{width:'22px', height:'22px',
+                                                        color: 'white',
+                                                        background: '#dd0000',
+                                                        borderRadius: '50%'}}/>
+                                                </IconButton>
+                                            }
+                                            {
                                                 _422errors.pdf &&
-                                                  <span className="l-alert__text--error ft-16 ft-md-14">
-                                                      {_422errors.pdf}
-                                                  </span> 
+                                                <span className="l-alert__text--error ft-16 ft-md-14">
+                                                    {_422errors.pdf}
+                                                </span> 
                                             }
                                         </div>
                                         <div className="edit-set edit-set-mt15">
-                                            <label className="edit-set-file-label" htmlFor="file_image">
+                                            <label className="edit-set-file-label" htmlFor={meeting_image.length < 10 ? 'file_image': ''}>
                                                 画像アップロード
                                                 <input type="file" name="file_image" accept=".png, .jpg, .jpeg" id="file_image"  onChange={handleImageChange}/> 
                                             </label>
                                             {
                                                 _422errors.image &&
-                                                  <span className="l-alert__text--error ft-16 ft-md-14">
-                                                      {_422errors.image}
-                                                  </span> 
+                                                <span className="l-alert__text--error ft-16 ft-md-14">
+                                                    {_422errors.image}
+                                                </span> 
                                             }
                                         </div>
                                         
@@ -292,9 +256,9 @@ const MeetingAdd = (props) => {
                                         {
                                             meeting_image?.map((x, k)=>
                                                 <figure className="image-upload" key={k}>
-                                                    <img src={x.image} alt={x.image} />
+                                                    <img src={x} alt={x} />
                                                     <IconButton
-                                                        onClick={e=>handleDeleteImage(x.id)}
+                                                        onClick={e=>handleRemoveImage(k)}
                                                         style={{position: 'absolute',
                                                             bottom: '-6px',
                                                             right: '-6px'}}>
@@ -339,11 +303,11 @@ const MeetingAdd = (props) => {
                                                 <span>選んで送信</span>
                                             </label>
                                         </div>
-                                       
+                                    
                                         <div className={`checkbox-wrap edit-bg ${check_radio!="true" && 'd-none'}`}>
                                             {
                                                 children_list.length != 0 ?
-                                                  children_list?.map((item, k)=>
+                                                children_list?.map((item, k)=>
                                                         <div className="checkbox" key={k}>
                                                             <label htmlFor={`user_name${k}`}>
                                                                 <input className="boolean optional" 
@@ -373,13 +337,11 @@ const MeetingAdd = (props) => {
                             </div>
                         </article>
                     }
-                        
-                    </div>
                     </div>
                 </div>
             </div>
-            <ToastContainer />
-        </div>   
+        </div>
+    </div>   
 	)
 }
 

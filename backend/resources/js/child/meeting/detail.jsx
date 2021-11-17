@@ -88,7 +88,7 @@ const MeetingDetail = (props) => {
             </div>
             {
                 !loaded &&
-                    <CircularProgress color="secondary" className="css-loader"/>
+                    <CircularProgress className="css-loader"/>
             }
             {
                 loaded && 

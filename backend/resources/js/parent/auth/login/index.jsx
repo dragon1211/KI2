@@ -13,7 +13,7 @@ const ParentLogin = () => {
     const [password, setPassword] = useState('');
 
     const [_422errors, set422Errors] = useState({email: '', password: ''});
-    const [_400error, set400Error] = useState(null);
+    const [_400error, set400Error] = useState('');
 
 
     const handleSubmit = (e) => {

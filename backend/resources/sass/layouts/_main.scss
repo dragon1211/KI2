@@ -1,3 +1,7 @@
+.l-container{
+  min-height: 100vh;
+}
+
 .avatar-wrapper{
     position: relative;
     width: 220px;
@@ -24,70 +28,6 @@ textarea{
 a{
   text-decoration: none !important;
 }
-
-
-@include media-breakpoint-down(xs){
-
-      .l-content__ttl h2{
-        font-size: 25px !important;
-      }
-      
-      .meeting-tab{
-        height: 55px !important;
-        font-size: 16px;
-      }
-
-      .meeting-ttl{
-        font-size: 17px !important;
-      }
-      
-      .meeting-txt{
-        font-size: 16px !important;
-      }
-      
-      .user-date span{
-        font-size: 14px !important;
-      }
-
-      .count{
-          min-width: 20px !important;
-          min-height: 20px !important;
-      }
-
-      .meeting-label{
-        font-size: 17px !important;
-      }
-
-      .user-name{
-        font-size: 16px !important;
-      }
-
-      .user-advice-btn span{
-        font-size: 15px !important;
-      }
-
-      .meeting-date{
-        font-size: 15px !important;
-      }
-
-      .p-article__pdf__btn span{
-        font-size: 16px !important;
-      }
-
-      .p-article__txt{
-        font-size: 16px !important;
-      }
-
-      .p-consent-btn span{
-        font-size: 16px !important;
-      }
-
-      .profile-info__item{
-        padding: 10px 20px 10px 15px !important;
-      }
-
-}
-
 
 .input-default{
   border-radius: 20px !important;
@@ -188,13 +128,45 @@ a{
 }
 
 .css-loader{
-  top: calc(45vh - 22px);
   color: green !important;
   position: fixed;
-  left: calc(50vw - 22px);
   z-index: 10;
   @media screen and (min-width:1068px){
+    width: 40px !important;
+    height: 40px !important;
+    top: calc(45vh - 22px);
     left: calc( 50vw + 240px / 2 - 22px);
+  }
+  @media screen and (max-width:1068px){
+    width: 30px !important;
+    height: 30px !important;
+    top: calc(45vh - 15px);
+    left: calc(50vw - 15px);
+  }
+}
+
+.p-article .meeting-member-count {
+  display: block !important; 
+}
+
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper{
+  border-radius: 20px !important;
+  min-width: 300px;
+}
+
+#SettingNotifyModal .css-1t1j96h-MuiPaper-root-MuiDialog-paper{
+  min-height: 70%;
+}
+
+.meeting-member-list{
+  overflow-y: scroll;
+}
+
+.icon-calendar{
+  z-index: 2 !important;
+  &:after{
+    width: 30px !important;
+    height: 30px !important;
   }
 }
 
@@ -216,23 +188,75 @@ a{
   }
 }
 
+@media screen and (max-width: 1068px){
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+
 
 @include media-breakpoint-down(xs){
+
+  .l-content__ttl h2{
+    font-size: 25px !important;
+  }
+  
+  .meeting-tab{
+    height: 55px !important;
+    font-size: 16px;
+  }
+
+  .meeting-ttl{
+    font-size: 17px !important;
+  }
+  
+  .meeting-txt{
+    font-size: 16px !important;
+  }
+  
+  .user-date span{
+    font-size: 14px !important;
+  }
+
+  .count{
+      min-width: 20px !important;
+      min-height: 20px !important;
+  }
+
+  .meeting-label{
+    font-size: 17px !important;
+  }
+
+  .user-name{
+    font-size: 16px !important;
+  }
+
+  .user-advice-btn span{
+    font-size: 15px !important;
+  }
+
+  .meeting-date{
+    font-size: 15px !important;
+  }
+
+  .p-article__pdf__btn span{
+    font-size: 16px !important;
+  }
+
+  .p-article__txt{
+    font-size: 16px !important;
+  }
+
+  .p-consent-btn span{
+    font-size: 16px !important;
+  }
+
+  .profile-info__item{
+    padding: 10px 20px 10px 15px !important;
+  }
+
   .numerator, .denominator{
     font-size: 16px !important;
   }
 }
-
-.p-article .meeting-member-count {
-  display: block !important; 
-}
-
-.css-1t1j96h-MuiPaper-root-MuiDialog-paper{
-  border-radius: 20px !important;
-  min-width: 300px;
-}
-
-#SettingNotifyModal .css-1t1j96h-MuiPaper-root-MuiDialog-paper{
-  min-height: 70%;
-}
-

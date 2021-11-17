@@ -6,12 +6,12 @@ import Alert from '../../component/alert';
 
 const ContactComplete = () => {
 
-    const [contactEmail, SetContactEmail] = useState('sample@gmail.com');
-    const [saveFlag, SetSaveFlag] = useState(false);
+    const contactEmail = 'sample@gmail.com';
+    const [_success, setSuccess] = useState('');
 
     const saveStorage = () => {
         navigator.clipboard.writeText(contactEmail).then(function() {
-            SetSaveFlag(true);
+            setSuccess('メールアドレスのコビーに成功しました');
         })
     }
 
@@ -37,7 +37,8 @@ const ContactComplete = () => {
                 </div>
             </div>
             {
-                saveFlag && <Alert type="success" hide={()=>SetSaveFlag(false)}>メールアドレスのコビーに成功しました!</Alert>
+                _success && 
+                    <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert>
             }
         </div>
 	)

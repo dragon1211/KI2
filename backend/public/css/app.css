@@ -12120,6 +12120,10 @@ input:-internal-autofill-selected {
   background-color: transparent;
 }
 
+.l-container {
+  min-height: 100vh;
+}
+
 .avatar-wrapper {
   position: relative;
   width: 220px;
@@ -12147,65 +12151,6 @@ a {
   text-decoration: none !important;
 }
 
-@media (max-width: 575.98px) {
-  .l-content__ttl h2 {
-    font-size: 25px !important;
-  }
-
-  .meeting-tab {
-    height: 55px !important;
-    font-size: 16px;
-  }
-
-  .meeting-ttl {
-    font-size: 17px !important;
-  }
-
-  .meeting-txt {
-    font-size: 16px !important;
-  }
-
-  .user-date span {
-    font-size: 14px !important;
-  }
-
-  .count {
-    min-width: 20px !important;
-    min-height: 20px !important;
-  }
-
-  .meeting-label {
-    font-size: 17px !important;
-  }
-
-  .user-name {
-    font-size: 16px !important;
-  }
-
-  .user-advice-btn span {
-    font-size: 15px !important;
-  }
-
-  .meeting-date {
-    font-size: 15px !important;
-  }
-
-  .p-article__pdf__btn span {
-    font-size: 16px !important;
-  }
-
-  .p-article__txt {
-    font-size: 16px !important;
-  }
-
-  .p-consent-btn span {
-    font-size: 16px !important;
-  }
-
-  .profile-info__item {
-    padding: 10px 20px 10px 15px !important;
-  }
-}
 .input-default {
   border-radius: 20px !important;
   height: 55px;
@@ -12303,16 +12248,50 @@ a {
 }
 
 .css-loader {
-  top: calc(45vh - 22px);
   color: green !important;
   position: fixed;
-  left: calc(50vw - 22px);
   z-index: 10;
 }
 @media screen and (min-width: 1068px) {
   .css-loader {
+    width: 40px !important;
+    height: 40px !important;
+    top: calc(45vh - 22px);
     left: calc(50vw + 120px - 22px);
   }
+}
+@media screen and (max-width: 1068px) {
+  .css-loader {
+    width: 30px !important;
+    height: 30px !important;
+    top: calc(45vh - 15px);
+    left: calc(50vw - 15px);
+  }
+}
+
+.p-article .meeting-member-count {
+  display: block !important;
+}
+
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper {
+  border-radius: 20px !important;
+  min-width: 300px;
+}
+
+#SettingNotifyModal .css-1t1j96h-MuiPaper-root-MuiDialog-paper {
+  min-height: 70%;
+}
+
+.meeting-member-list {
+  overflow-y: scroll;
+}
+
+.icon-calendar {
+  z-index: 2 !important;
+}
+.icon-calendar:after {
+  width: 30px !important;
+  height: 30px !important;
 }
 
 @media screen and (min-width: 1068px) {
@@ -12333,20 +12312,91 @@ a {
     min-width: 100px !important;
   }
 }
+@media screen and (max-width: 1068px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
 @media (max-width: 575.98px) {
+  .l-content__ttl h2 {
+    font-size: 25px !important;
+  }
+
+  .meeting-tab {
+    height: 55px !important;
+    font-size: 16px;
+  }
+
+  .meeting-ttl {
+    font-size: 17px !important;
+  }
+
+  .meeting-txt {
+    font-size: 16px !important;
+  }
+
+  .user-date span {
+    font-size: 14px !important;
+  }
+
+  .count {
+    min-width: 20px !important;
+    min-height: 20px !important;
+  }
+
+  .meeting-label {
+    font-size: 17px !important;
+  }
+
+  .user-name {
+    font-size: 16px !important;
+  }
+
+  .user-advice-btn span {
+    font-size: 15px !important;
+  }
+
+  .meeting-date {
+    font-size: 15px !important;
+  }
+
+  .p-article__pdf__btn span {
+    font-size: 16px !important;
+  }
+
+  .p-article__txt {
+    font-size: 16px !important;
+  }
+
+  .p-consent-btn span {
+    font-size: 16px !important;
+  }
+
+  .profile-info__item {
+    padding: 10px 20px 10px 15px !important;
+  }
+
   .numerator, .denominator {
     font-size: 16px !important;
   }
 }
-.p-article .meeting-member-count {
-  display: block !important;
+.react-datepicker__month-container {
+  width: 250px;
+  font-size: 13px;
 }
 
-.css-1t1j96h-MuiPaper-root-MuiDialog-paper {
-  border-radius: 20px !important;
-  min-width: 300px;
+.react-datepicker__current-month {
+  font-size: 15px !important;
 }
 
-#SettingNotifyModal .css-1t1j96h-MuiPaper-root-MuiDialog-paper {
-  min-height: 70%;
+.react-datepicker-popper[data-placement^=top] .react-datepicker__triangle::before, .react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle::before, .react-datepicker-popper[data-placement^=top] .react-datepicker__triangle::after, .react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle::after {
+  left: -130px !important;
+}
+
+.react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name {
+  margin: 5px !important;
+}
+
+.react-datepicker__year-read-view--down-arrow, .react-datepicker__month-read-view--down-arrow, .react-datepicker__month-year-read-view--down-arrow, .react-datepicker__navigation-icon::before {
+  top: 14px !important;
 }

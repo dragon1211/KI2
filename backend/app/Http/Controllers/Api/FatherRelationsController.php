@@ -3,15 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+use App\Models\Child;
 use App\Models\FatherRelation;
 
 class FatherRelationsController extends Controller {
-    public function register (Register $r) {
-        if (!isset($r->father_id) || !isset($r->identity)) {
+    public function register (Request $r) {
+        if (!isset($r->father_id)) {
             return ['status_code' => 400, 'error_messages' => ['子の追加に失敗しました。']];
+        }
+
+        $validate = Validator::make($r->all(), [
+            'identity' => 'required|max:20|alpha_num',
+        ]);
+
+        if ($validate->fails()) {
+            return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
         if (null === ($child = Child::select('id')->where('identity', $r->identity)->first())) {
@@ -39,8 +49,16 @@ class FatherRelationsController extends Controller {
     }
 
     public function updateHireDate (Request $r, $child_id) {
-        if (!isset($child_id) || !isset($r->father_id) || !isset($r->hire_at)) {
-            return ['status_code' => 400, 'success_messages' => ['子の入社日の更新に失敗しました。']];
+        if (!isset($child_id) || !isset($r->father_id)) {
+            return ['status_code' => 400, 'error_messages' => ['子の入社日の更新に失敗しました。']];
+        }
+
+        $validate = Validator::make($r->all(), [
+            'hire_at' => 'date',
+        ]);
+
+        if ($validate->fails()) {
+            return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
         $update = [
@@ -52,7 +70,7 @@ class FatherRelationsController extends Controller {
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
-            return ['status_code' => 400, 'success_messages' => ['子の入社日の更新に失敗しました。']];
+            return ['status_code' => 400, 'error_messages' => ['子の入社日の更新に失敗しました。']];
         }
 
         return ['status_code' => 200, 'success_messages' => ['子の入社日の更新に成功しました。']];
@@ -60,15 +78,15 @@ class FatherRelationsController extends Controller {
 
     public function deleteRelationChild ($child_id) {
         if (!isset($child_id)) {
-            return ['status_code' => 400, 'success_messages' => ['子の削除に失敗しました。']];
+            return ['status_code' => 400, 'error_messages' => ['子の削除に失敗しました。']];
         }
 
         try {
-            FatherRelation::where('father_id', $r->session()->get('fathers')->id)->where('child_id', $child_id)->delete();
+            FatherRelation::where('father_id', session()->get('fathers')['id'])->where('child_id', $child_id)->delete();
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
-            return ['status_code' => 400, 'success_messages' => ['子の削除に失敗しました。']];
+            return ['status_code' => 400, 'error_messages' => ['子の削除に失敗しました。']];
         }
 
         return ['status_code' => 200, 'success_messages' => ['子の削除に成功しました。']];

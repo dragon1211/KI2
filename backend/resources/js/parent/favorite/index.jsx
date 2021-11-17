@@ -39,7 +39,6 @@ const Favorite = (props) => {
         .then(response => {
             setLoaded1(true);
             setNotice(response.data.notice);
-            console.log(response.data);
             if(response.data.status_code==200){
                 var list = response.data.params;
                 var arr = [];
@@ -63,7 +62,6 @@ const Favorite = (props) => {
         .then(response => {
           setLoaded2(true);
           setNotice(response.data.notice);
-          console.log(response.data);
           if(response.data.status_code==200){
               var list = response.data.params;
               var arr = [];
@@ -181,7 +179,7 @@ const Favorite = (props) => {
                     </div>
                     {
                         !loaded &&
-                            <CircularProgress color="secondary" className="css-loader"/>
+                          <CircularProgress className="css-loader"/>
                     }
                     {
                         loaded &&
