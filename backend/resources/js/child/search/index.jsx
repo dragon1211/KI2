@@ -10,7 +10,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
 
 
-const INFINITE = 5;
+const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
 const Search = () => {

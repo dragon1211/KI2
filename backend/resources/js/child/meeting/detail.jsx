@@ -18,9 +18,9 @@ const MeetingDetail = (props) => {
     const [thumbnail, setThumbnail] = useState('');
     const [_approval_register, setApprovalRegister] = useState(false);
 
-    const [showPdf, setShowPdf] = useState(false);
-    const [showMemo, setShowMemo] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
+    const [show_pdf_modal, setShowPDFMoal] = useState(false);
+    const [show_memo_modal, setShowMemoModal] = useState(false);
+    const [show_confirm_modal, setShowConfirmMoal] = useState(false);
     const [submit, setSubmit] = useState(false);
     const [_400error, set400Error] = useState('');
     const [_success, setSuccess] = useState('');
@@ -41,6 +41,9 @@ const MeetingDetail = (props) => {
                     setApprovalRegister(true); 
                 }
             }
+            else {
+                set400Error("失敗しました。");
+            }
         })
     },[]);
 
@@ -53,7 +56,7 @@ const MeetingDetail = (props) => {
         axios.post('/api/children/meeting/approvals/registerApproval', formdata)
         .then(response => {
             setSubmit(false);
-            setShowConfirm(false);
+            setShowConfirmMoal(false);
             setNotice(response.data.notice);
             switch(response.data.status_code){
                 case 200: {
@@ -75,10 +78,10 @@ const MeetingDetail = (props) => {
                 <div className="l-content__ttl__left">
                     <h2>ミーティング詳細</h2>
                     {
-                        loaded && _approval_register == false &&
+                        loaded && _approval_register == false && meeting &&
                             <div className="p-consent-btn">
                                 <button className="btn-default btn-yellow btn-consent btn-shadow btn-r8 btn-h42"
-                                    onClick={e=>setShowConfirm(true)}>
+                                    onClick={e=>setShowConfirmMoal(true)}>
                                     <span>承認</span>
                                 </button>
                             </div>
@@ -91,118 +94,111 @@ const MeetingDetail = (props) => {
                     <CircularProgress className="css-loader"/>
             }
             {
-                loaded && 
-                (meeting ?
-                    <div className="l-content-wrap">
-                        <div className="p-article p-article-single">
-                            <div className="p-article-wrap">
-                                <article className="p-article__body">
-                                    <div className="p-article__content">
-                                        <p className="meeting-label">{`${_approval_register ? '承知済み':'未承知'}`}</p>
-                                        <h3 className="meeting-ttl">{meeting.title}</h3>
-                                        <time dateTime="2021-07-30" className="meeting-time">
-                                            <span className="meeting-date">{moment(meeting.updated_at).format('YYYY/MM/DD')}</span>
-                                        </time>
-                                        <div className="user-wrap user-sm">
-                                            <Link to = {`/c-account/parent/detail/${meeting?.father_id}`}>
-                                                <div className="user-avatar">
-                                                    <img alt="name" className="avatar-img" 
-                                                        src={meeting.father.image}
-                                                    />
-                                                </div>
-                                                <p className="user-name text-grey">
-                                                    {meeting.father.company}
-                                                </p>
-                                            </Link>
-                                            <div className="user-advice-btn">
-                                                <a href={`tel:${meeting.father.tel}`} className="btn-default btn-yellow  btn-r8 btn-h50">
-                                                    <span>親に電話で相談</span>
-                                                </a>
+                loaded && meeting &&
+                <div className="l-content-wrap">
+                    <div className="p-article p-article-single">
+                        <div className="p-article-wrap">
+                            <article className="p-article__body">
+                                <div className="p-article__content">
+                                    <p className="meeting-label">{`${_approval_register ? '承知済み':'未承知'}`}</p>
+                                    <h3 className="meeting-ttl">{meeting.title}</h3>
+                                    <time dateTime="2021-07-30" className="meeting-time">
+                                        <span className="meeting-date">{moment(meeting.updated_at).format('YYYY/MM/DD')}</span>
+                                    </time>
+                                    <div className="user-wrap user-sm">
+                                        <Link to = {`/c-account/parent/detail/${meeting?.father_id}`}>
+                                            <div className="user-avatar">
+                                                <img alt="name" className="avatar-img" 
+                                                    src={meeting.father.image}
+                                                />
+                                            </div>
+                                            <p className="user-name text-grey">
+                                                {meeting.father.company}
+                                            </p>
+                                        </Link>
+                                        <div className="user-advice-btn">
+                                            <a href={`tel:${meeting.father.tel}`} className="btn-default btn-yellow  btn-r8 btn-h50">
+                                                <span>親に電話で相談</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                            
+                                    <div className="p-article__context">
+                                        <div className="p-file-list">
+                                            <div className="p-file-for">
+                                                <figure>
+                                                    {
+                                                        thumbnail && 
+                                                        <img src={thumbnail} alt="thumbnail"/>
+                                                    }
+                                                </figure>
+                                            </div>
+                                            <div className="p-file-nav">
+                                                {
+                                                    meeting.meeting_image.map((item, k)=>
+                                                        <figure key={k}><img src={item.image} alt="dumy-image"  onClick={e=>setThumbnail(item.image)}/></figure>
+                                                    )
+                                                }
+                                                {
+                                                    [...Array(10-meeting.meeting_image.length)].map((x, k)=>
+                                                        <figure key={k}></figure>
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div className="p-article__pdf">
+                                            <div className="p-article__pdf__btn mr-3">
+                                                {
+                                                    _approval_register == false ?
+                                                    <a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled"> 
+                                                        <span>PDFを確認する</span>
+                                                    </a>
+                                                    :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-yellow" 
+                                                        onClick={()=>setShowPDFMoal(true)}>
+                                                        <span>PDFを確認する</span>
+                                                    </a>
+                                                }
+                                            </div>
+                                            <div className="p-article__pdf__btn mr-0">
+                                                {
+                                                    _approval_register == true ?
+                                                    <a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled"> 
+                                                        <span>メモを確認する</span>
+                                                    </a>
+                                                    :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-yellow" 
+                                                        onClick={()=>setShowMemoModal(true)}>
+                                                        <span>メモを確認する</span>
+                                                    </a>
+                                                }
                                             </div>
                                         </div>
                                 
-                                        <div className="p-article__context">
-                                            <div className="p-file-list">
-                                                <div className="p-file-for">
-                                                    <figure>
-                                                        {
-                                                            thumbnail && 
-                                                            <img src={thumbnail} alt="thumbnail"/>
-                                                        }
-                                                    </figure>
-                                                </div>
-                                                <div className="p-file-nav">
-                                                    {
-                                                        meeting.meeting_image.map((item, k)=>
-                                                            <figure key={k}><img src={item.image} alt="dumy-image"  onClick={e=>setThumbnail(item.image)}/></figure>
-                                                        )
-                                                    }
-                                                    {
-                                                        [...Array(10-meeting.meeting_image.length)].map((x, k)=>
-                                                            <figure key={k}></figure>
-                                                        )
-                                                    }
-                                                </div>
-                                            </div>
-
-                                            <div className="p-article__pdf">
-                                                <div className="p-article__pdf__btn mr-3">
-                                                    {
-                                                        _approval_register == false ?
-                                                        <a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled"> 
-                                                            <span>PDFを確認する</span>
-                                                        </a>
-                                                        :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-yellow" 
-                                                            onClick={()=>setShowPdf(true)}>
-                                                            <span>PDFを確認する</span>
-                                                        </a>
-                                                    }
-                                                </div>
-                                                <div className="p-article__pdf__btn mr-0">
-                                                    {
-                                                        _approval_register == true ?
-                                                        <a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled"> 
-                                                            <span>メモを確認する</span>
-                                                        </a>
-                                                        :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-yellow" 
-                                                            onClick={()=>setShowMemo(true)}>
-                                                            <span>メモを確認する</span>
-                                                        </a>
-                                                    }
-                                                </div>
-                                            </div>
-                                    
-                                            <p className="p-article__txt">{meeting.text}</p>
-                                        </div>
+                                        <p className="p-article__txt">{meeting.text}</p>
                                     </div>
-                                </article>
-                                <ModalMemo 
-                                    show={showMemo}
-                                    title={"メモ"}
-                                    content={meeting?.memo}
-                                    handleClose={()=>setShowMemo(false)} />
-                                <ModalPdf 
-                                    show={showPdf}
-                                    pdfPath={meeting.pdf ?? '/pdf/test.pdf'}
-                                    handleClose={()=>setShowPdf(false)} />
-                            </div>
+                                </div>
+                            </article>
+                            <ModalMemo 
+                                show={show_memo_modal}
+                                title={"メモ"}
+                                content={meeting?.memo}
+                                handleClose={()=>setShowMemoModal(false)} />
+                            <ModalPdf 
+                                show={show_pdf_modal}
+                                pdfPath={meeting.pdf ?? '/pdf/test.pdf'}
+                                handleClose={()=>setShowPDFMoal(false)} />
                         </div>
                     </div>
-                    : <p className="text-center mt-5 ft-18">データが存在しません。</p>
-                )
+                </div>
             }
             <ModalConfirm 
-            show={showConfirm} 
+            show={show_confirm_modal} 
             message={"一度承知したら元に戻せません。\nよろしいでしょうか。"}
-            handleClose={()=>setShowConfirm(false)} 
+            handleClose={()=>setShowConfirmMoal(false)} 
             handleAccept={handleApprovalRegister} 
             loading={submit}/>
-            {
-                _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-            } 
-            {
-                _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert>
-            }
+            {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+            {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
         </div>
     </div>
     )

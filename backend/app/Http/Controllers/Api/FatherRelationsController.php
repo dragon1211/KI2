@@ -35,17 +35,19 @@ class FatherRelationsController extends Controller {
         ];
 
         try {
-            FatherRelation::create($create);
+            if (null === ($fr = FatherRelation::where('child_id', $child->id)->where('father_id', (int)$r->father_id)->first())) {
+                FatherRelation::create($create);
+            }
+            else {
+                return ['status_code' => 400, 'error_messages' => ['すでに追加されました']];
+            }
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
             return ['status_code' => 400, 'error_messages' => ['子の追加に失敗しました。']];
         }
 
-        return ['status_code' => 200, 'success_messages' => ['子の追加に成功しました。'], 'params' => ['child_id' => $child_id]];
-
-        // 1.POSTで受け取ったidentityと紐づくchildrenのデータのidを取得。
-        // 2.1で取得したidとPOSTで受け取ったfather_idをfather_relatoinsに登録。（hire_atはPOST時の日時）
+        return ['status_code' => 200, 'success_messages' => ['子の追加に成功しました。'], 'params' => ['child_id' => $child->id]];
     }
 
     public function updateHireDate (Request $r, $child_id) {
@@ -66,7 +68,7 @@ class FatherRelationsController extends Controller {
         ];
 
         try {
-            FatherRelation::where('father_id', $r->father_id)->where('child_id', $child_id)->update($update);
+            FatherRelation::where('father_id', (int)$r->father_id)->where('child_id', (int)$child_id)->update($update);
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());

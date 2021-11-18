@@ -18,6 +18,7 @@ const Child = (props) => {
     const [fetch_children_list, setFetchChildrenList] = useState([]);
     const [loaded, setLoaded] = useState(false);
     const [_success, setSuccess] = useState(props.history.location.state);
+    const [_400error, set400Error] = useState('');
 
     useEffect(() => {
         setLoaded(false);
@@ -32,6 +33,9 @@ const Child = (props) => {
                 if(len > INFINITE)
                     setFetchChildrenList(response.data.params.slice(0, INFINITE));
                 else setFetchChildrenList(response.data.params.slice(0, len));
+            }
+            else {
+                set400Error("失敗しました。");
             }
         })
     }, []);
@@ -115,8 +119,9 @@ const Child = (props) => {
                     </div>
                 </section>
             }
-            </div>
             { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+            { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
+            </div>
         </div>
     )
 }

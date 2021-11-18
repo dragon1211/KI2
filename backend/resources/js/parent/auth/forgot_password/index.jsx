@@ -32,7 +32,7 @@ const ParentForgotPassword = () => {
 
 
 	return (
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleSubmit} className="edit-form">
             <p className="pb-60-px text-center font-weight-bold ft-25">パスワードを忘れた方</p>
           
             <div className="edit-set">
@@ -46,22 +46,16 @@ const ParentForgotPassword = () => {
                 }
             </div>
 
-            <div className="mt-5">
-                <LoadingButton type="submit" 
-                    loading={submit} 
-                    fullWidth 
-                    className="btn-edit btn-default btn-h60 bg-yellow rounded-20 py-5"> 
-                    <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>
-                        パスワード再設定URLを送信
-                    </span> 
-                </LoadingButton>
-            </div>
-            {
-                _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-            } 
-            {
-                _success && <Alert type="success" hide={()=>setSucess('')}> {_success}</Alert>
-            }
+            <LoadingButton type="submit" 
+                loading={submit} 
+                fullWidth 
+                className="btn-edit btn-default btn-h75 bg-yellow rounded-20"> 
+                <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>
+                    パスワード再設定URLを送信
+                </span> 
+            </LoadingButton>
+            { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+            { _success && <Alert type="success" hide={()=>setSucess('')}> {_success}</Alert> }
         </form>
 	)
 }

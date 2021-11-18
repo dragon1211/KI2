@@ -1,19 +1,19 @@
 
 
-.ft-12{ font-size: 12px; }
-.ft-13{ font-size: 13px; }
-.ft-14{ font-size: 14px; }
-.ft-15{ font-size: 15px; }
-.ft-16{ font-size: 16px; }
-.ft-17{ font-size: 17px; }
-.ft-18{ font-size: 18px; }
-.ft-19{ font-size: 19px; }
-.ft-20{ font-size: 20px; }
-.ft-22{ font-size: 22px; }
-.ft-25{ font-size: 25px; }
-.ft-30{ font-size: 30px; }
-.ft-35{ font-size: 35px; }
-.ft-40{ font-size: 40px; }
+.ft-12{ font-size: 12px !important;}
+.ft-13{ font-size: 13px !important;}
+.ft-14{ font-size: 14px !important;}
+.ft-15{ font-size: 15px !important;}
+.ft-16{ font-size: 16px !important;}
+.ft-17{ font-size: 17px !important;}
+.ft-18{ font-size: 18px !important;}
+.ft-19{ font-size: 19px !important;}
+.ft-20{ font-size: 20px !important;}
+.ft-22{ font-size: 22px !important;}
+.ft-25{ font-size: 25px !important;}
+.ft-30{ font-size: 30px !important;}
+.ft-35{ font-size: 35px !important;}
+.ft-40{ font-size: 40px !important;}
 
 
 .ft-md-12{  @include media-breakpoint-down(md){  font-size: 12px !important;  }  }

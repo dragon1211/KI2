@@ -11,7 +11,7 @@ import Alert from '../../component/alert';
 import InfiniteScroll from "react-infinite-scroll-component";
 import { isObject } from 'lodash';
 
-const INFINITE = 5;
+const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
 const Search = (props) => {
@@ -26,6 +26,7 @@ const Search = (props) => {
     const [fetch_meeting_list_complete, setFetchMeetingListOfComplete] = useState([]);
     
     const [_success, setSuccess] = useState('');
+    const [_400error, set400Error] = useState('');
     const [loaded1, setLoaded1] = useState(true);
     const [loaded2, setLoaded2] = useState(true);
     const [loaded, setLoaded] = useState(true);
@@ -125,38 +126,35 @@ const Search = (props) => {
       formdata.append('meeting_id', meetingId);
       formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
       axios.post('/api/fathers/meetings/registerFavorite', formdata)
-      .then(response=>{
-        setNotice(response.data.notice);
-        if(response.data.status_code==200){
-            if(stateName == "inCompleteOfFather") {
-              const newList = meeting_list_incomplete.map((item) => {
-                if (item.id === meetingId) {
-                  const updatedItem = {
-                    ...item,
-                    is_favorite: currentFavorite == 1 ? 0 : 1,
-                  };
-                  return updatedItem;
-                }
-                return item;
-              });
-              setMeetingListOfIncomplete(newList);
-              setFetchMeetingListOfIncomplete(newList.slice(0, fetch_meeting_list_incomplete.length));
-            } else {
-              const newList = meeting_list_complete.map((item) => {
-                if (item.id === meetingId) {
-                  const updatedItem = {
-                    ...item,
-                    is_favorite: currentFavorite == 1 ? 0 : 1,
-                  };
-                  return updatedItem;
-                }
-                return item;
-              });
-              setMeetingListOfComplete(newList);
-              setFetchMeetingListOfComplete(newList.slice(0, fetch_meeting_list_complete.length));
-            }  
-        }
-      })
+      .then(response=>{setNotice(response.data.notice)})
+
+      if(stateName == "inCompleteOfFather") {
+        const newList = meeting_list_incomplete.map((item) => {
+          if (item.id === meetingId) {
+            const updatedItem = {
+              ...item,
+              is_favorite: item.is_favorite == 1 ? 0 : 1,
+            };
+            return updatedItem;
+          }
+          return item;
+        });
+        setMeetingListOfIncomplete(newList);
+        setFetchMeetingListOfIncomplete(newList.slice(0, fetch_meeting_list_incomplete.length));
+      } else {
+        const newList = meeting_list_complete.map((item) => {
+          if (item.id === meetingId) {
+            const updatedItem = {
+              ...item,
+              is_favorite: item.is_favorite == 1 ? 0 : 1,
+            };
+            return updatedItem;
+          }
+          return item;
+        });
+        setMeetingListOfComplete(newList);
+        setFetchMeetingListOfComplete(newList.slice(0, fetch_meeting_list_complete.length));
+      }  
     };
   
 
@@ -329,7 +327,8 @@ const Search = (props) => {
                     }
                 </section>
             </div>
-            { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+            { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+            { _success && <Alert type="success" hide={()=>setSuccess('') }>{_success}</Alert> }
         </div>
         
     )

@@ -49,6 +49,9 @@ const MeetingDetail = (props) => {
         }
         setMeeting({...list, denominator:total, numerator:num});
         setThumbnail(response.data.params.meeting_image[0]?.image);
+      }
+      else {
+        set400Error("失敗しました。");
       } 
     });
   }, []);
@@ -86,16 +89,12 @@ const MeetingDetail = (props) => {
     formdata.append('meeting_id', meetingId);
     formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
     axios.post('/api/fathers/meetings/registerFavorite', formdata)
-    .then(response => {
-      setNotice(response.data.notice);
-      if(response.data.status_code == 200){
-        const updatedItem = {
-          ...meeting,
-          is_favorite: currentFavorite == 1 ? 0 : 1,
-        };
-        setMeeting(updatedItem);
-      }
-    })
+    .then(response => {setNotice(response.data.notice)})
+    const updatedItem = {
+      ...meeting,
+      is_favorite: currentFavorite == 1 ? 0 : 1,
+    };
+    setMeeting(updatedItem);
   };
 
   const handleNotifyAllChild = () => {
@@ -136,7 +135,7 @@ const MeetingDetail = (props) => {
             <Notification notice={notice}/>
           </div>
           {
-            !loaded && !meeting &&
+            !loaded && 
               <CircularProgress className="css-loader"/>
           }
           {

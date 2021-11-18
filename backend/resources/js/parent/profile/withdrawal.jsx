@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LoadingButton } from '@material-ui/lab';
 import Notification from '../notification';
+import Alert from '../../component/alert';
 
 const ProfileWithdrawal = () => {
   const [notice, setNotice] = useState(localStorage.getItem('notice'));

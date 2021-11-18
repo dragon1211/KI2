@@ -4,6 +4,7 @@ import { useHistory, Link } from 'react-router-dom';
 import { CircularProgress  } from '@material-ui/core';
 
 import Notification from '../notification';
+import Alert from '../../component/alert';
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const INFINITE = 10;
@@ -16,7 +17,9 @@ const Parent = () => {
     const [parent_list, setParentList] = useState([]);
     const [fetch_parent_list, setFetchParentList] = useState([]);
     const [loaded, setLoaded] = useState(false);
-    
+    const [_400error, set400Error] = useState('');
+    const [_success, setSuccess] = useState('');
+
 
     useEffect(() => {
         setLoaded(false);
@@ -31,6 +34,9 @@ const Parent = () => {
                 if(len > INFINITE)
                     setFetchParentList(response.data.params.slice(0, INFINITE));
                 else setFetchParentList(response.data.params.slice(0, len));
+            }
+            else {
+                set400Error("失敗しました。");
             }
         })
     }, []);
@@ -104,6 +110,8 @@ const Parent = () => {
                     </div>
                 </section>
             }
+            {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+            {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
             </div>
         </div>
         

@@ -24,8 +24,11 @@ class MeetingApprovalsController extends Controller {
                 if (null === ($apr = MeetingApprovals::select('id')->where('meeting_id', (int)$l->id)->get())) {
                     continue;
                 }
+
+                $cnt = MeetingApprovals::select('id')->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count();
+                $apr = count($apr);
     
-                if (count($apr) == MeetingApprovals::select('id')->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count()) {
+                if ($apr != 0 && $apr == $cnt) {
                     continue;
                 }
     

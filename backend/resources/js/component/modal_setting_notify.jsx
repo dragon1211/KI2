@@ -34,7 +34,6 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
     .then((response) => {
       setLoaded1(true);
       if(response.data.status_code==200){
-        console.log(response.data.params);
         setApproval(response.data.params);
       } 
     });
@@ -46,7 +45,6 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
     .then((response) => {
       setLoaded2(true);
       if(response.data.status_code==200){
-        console.log(response.data.params);
         setUnapproval(response.data.params);
       }
     });

@@ -8,7 +8,7 @@ import Notification from '../notification';
 import Alert from '../../component/alert';
 import InfiniteScroll from "react-infinite-scroll-component";
 
-const INFINITE = 5;
+const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
 const Meeting = () => {
@@ -23,6 +23,7 @@ const Meeting = () => {
     const [fetch_meeting_list_non_approval, setFetchMettingListNonApproval] = useState([]);
     const [fetch_meeting_list_approval, setFetchMettingListApproval] = useState([]);
     const [_success, setSuccess] = useState('');
+    const [_400error, set400Error] = useState('');
 
     useEffect(()=>{
         if(localStorage.getItem("from_login")){
@@ -52,6 +53,9 @@ const Meeting = () => {
                         setFetchMettingListNonApproval(response.data.params.slice(0, INFINITE));
                     else setFetchMettingListNonApproval(response.data.params.slice(0, len));
                 }
+                else {
+                    set400Error("失敗しました。");
+                }
             })
 
             axios.get('/api/children/meetings/listOfApprovalOfChild', {params:{child_id: child_id}})
@@ -64,6 +68,9 @@ const Meeting = () => {
                     if(len > INFINITE)
                         setFetchMettingListApproval(response.data.params.slice(0, INFINITE));
                     else setFetchMettingListApproval(response.data.params.slice(0, len));
+                }
+                else {
+                    set400Error("失敗しました。");
                 }
             })
         },[]
@@ -232,9 +239,8 @@ const Meeting = () => {
                     }
                 </section>
             </div>
-            {
-              _success && <Alert type="success">{_success}</Alert>
-            }
+            {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+            {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
         </div>
         
     )

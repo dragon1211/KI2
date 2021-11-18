@@ -20,6 +20,11 @@ class NoticeNonApproval
     {
         $response = $next($request);
 
+        if (is_null(session()->get('children'))) {
+            session()->forget('children');
+            return $response;
+        }
+
         $count = MeetingApprovals::where('child_id', session()->get('children')['id'])->whereNull('approval_at')->count();
         $content = json_decode($response->content(), true);
         if (json_last_error() == JSON_ERROR_NONE) {

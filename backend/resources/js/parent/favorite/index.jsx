@@ -10,7 +10,7 @@ import Alert from '../../component/alert';
 import InfiniteScroll from "react-infinite-scroll-component";
 import { isObject } from 'lodash';
 
-const INFINITE = 5;
+const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
 const Favorite = (props) => {
@@ -25,7 +25,7 @@ const Favorite = (props) => {
     const [fetch_meeting_list_non_favorite, setFetchMeetingListOfNonFavorite] = useState([]);
     const [fetch_meeting_list_favorite, setFetchMeetingListOfFavorite] = useState([]);
     const [_success, setSuccess] = useState(props.history.location.state);
-
+    const [_400error, set400Error] = useState('');
    
     useEffect(()=>{
         setLoaded(loaded1 && loaded2);
@@ -57,6 +57,9 @@ const Favorite = (props) => {
                     setFetchMeetingListOfNonFavorite(arr.slice(0, INFINITE));
                 else setFetchMeetingListOfNonFavorite(arr.slice(0, len));
             }
+            else {
+              set400Error("失敗しました。");
+            }
         })
         axios.get('/api/fathers/meetings/listOfFavoriteOfFather', {params:{father_id: father_id}})
         .then(response => {
@@ -79,7 +82,10 @@ const Favorite = (props) => {
               if(len > INFINITE)
                   setFetchMeetingListOfFavorite(arr.slice(0, INFINITE));
               else setFetchMeetingListOfFavorite(arr.slice(0, len));
-            }
+          }
+          else {
+            set400Error("失敗しました。");
+          }
         })
     },[]);
 
@@ -110,38 +116,35 @@ const Favorite = (props) => {
       formdata.append('meeting_id', meetingId);
       formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
       axios.post('/api/fathers/meetings/registerFavorite', formdata)
-      .then(response=>{
-        setNotice(response.data.notice);
-        if(response.data.status_code==200){
-            if(stateName == "nonFavoriteOfFather") {
-              const newList = meeting_list_non_favorite.map((item) => {
-                if (item.id === meetingId) {
-                  const updatedItem = {
-                    ...item,
-                    is_favorite: currentFavorite == 1 ? 0 : 1,
-                  };
-                  return updatedItem;
-                }
-                return item;
-              });
-              setMeetingListOfNonFavorite(newList);
-              setFetchMeetingListOfNonFavorite(newList.slice(0, fetch_meeting_list_non_favorite.length));
-            } else {
-              const newList = meeting_list_favorite.map((item) => {
-                if (item.id === meetingId) {
-                  const updatedItem = {
-                    ...item,
-                    is_favorite: currentFavorite == 1 ? 0 : 1,
-                  };
-                  return updatedItem;
-                }
-                return item;
-              });
-              setMeetingListOfFavorite(newList);
-              setFetchMeetingListOfFavorite(newList.slice(0, fetch_meeting_list_favorite.length));
-            }  
-        }
-      })
+      .then(response=>{setNotice(response.data.notice)})
+
+      if(stateName == "nonFavoriteOfFather") {
+        const newList = meeting_list_non_favorite.map((item) => {
+          if (item.id === meetingId) {
+            const updatedItem = {
+              ...item,
+              is_favorite: item.is_favorite == 1 ? 0 : 1,
+            };
+            return updatedItem;
+          }
+          return item;
+        });
+        setMeetingListOfNonFavorite(newList);
+        setFetchMeetingListOfNonFavorite(newList.slice(0, fetch_meeting_list_non_favorite.length));
+      } else {
+        const newList = meeting_list_favorite.map((item) => {
+          if (item.id === meetingId) {
+            const updatedItem = {
+              ...item,
+              is_favorite: item.is_favorite == 1 ? 0 : 1,
+            };
+            return updatedItem;
+          }
+          return item;
+        });
+        setMeetingListOfFavorite(newList);
+        setFetchMeetingListOfFavorite(newList.slice(0, fetch_meeting_list_favorite.length));
+      }  
     };
   
 
@@ -310,6 +313,7 @@ const Favorite = (props) => {
                 </section>
             </div>
             { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+            { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
         </div>
         
     )

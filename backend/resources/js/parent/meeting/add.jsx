@@ -56,13 +56,16 @@ const MeetingAdd = (props) => {
                 setLoaded(true);
                 setNotice(response.data.notice);
                 if(response.data.status_code == 200){
-                var list = response.data.params;
-                var arr = [];
-                for(var i in list){
-                    arr.push({...list[i], checked: false})
+                    var list = response.data.params;
+                    var arr = [];
+                    for(var i in list)
+                        arr.push({...list[i], checked: false})
+                    setChildrenList(arr);
                 }
-                setChildrenList(arr);
-            }})
+                else {
+                    set400Error("失敗しました。");
+                }
+            })
         }
     },[])
 
@@ -104,7 +107,6 @@ const MeetingAdd = (props) => {
             if(children_list[i].checked) c_arr.push(children_list[i].id);
         }
         formdata.append('children', JSON.stringify(c_arr));
-        console.log(c_arr);
 
         setSubmit(true);
         axios.post('/api/fathers/meetings/register', formdata)
@@ -114,7 +116,7 @@ const MeetingAdd = (props) => {
             switch(response.data.status_code){
                 case 200: {
                     history.push({
-                    pathname: `/p-account/meeting/detail/${props.match.params?.meeting_id}`,
+                    pathname: `/p-account/meeting/detail/${response.data.params.meeting_id}`,
                     state: "登録成功しました"});
                     break;
                 }
@@ -329,9 +331,7 @@ const MeetingAdd = (props) => {
                                             className="btn-edit btn-default btn-h75 bg-yellow rounded-15">
                                             <span className={`ft-20 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>ミーティングを登録</span>
                                         </LoadingButton>
-                                        {
-                                            _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-                                        } 
+                                        {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>  } 
                                     </form>
                                 </div>     
                             </div>

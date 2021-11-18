@@ -31,8 +31,18 @@ const Profile = (props) => {
               setProfile(response.data.params);
               setImage(response.data.params.image);
           }
+          else {
+            set400Error("失敗しました。");
+          } 
       })
     },[]);
+
+    useEffect(() => {
+        if(localStorage.getItem('image_upload_success')){
+            setSuccess(localStorage.getItem('image_upload_success'));
+            localStorage.removeItem('image_upload_success');
+        }
+    })
 
     const handleLogout = () => {
         axios.get('/p-account/logout')
@@ -51,7 +61,7 @@ const Profile = (props) => {
                 setNotice(response.data.notice);
                 switch(response.data.status_code){
                     case 200: {
-                        setSuccess(response.data.success_messages);
+                        localStorage.setItem('image_upload_success', response.data.success_messages);
                         window.location.reload(true);
                         break;
                     }
@@ -99,8 +109,8 @@ const Profile = (props) => {
                                             </span> 
                                     }
                                 </div>
-                                <p className="profile-name ft-xs-16">{ profile.company }</p>
-                                <div className="profile-info ft-xs-17">
+                                <p className="profile-name">{ profile.company }</p>
+                                <div className="profile-info">
                                     <div className="profile-info__item">
                                         <a href={`mailto:${profile.email}`}>
                                             <p className="profile-info__icon">
@@ -124,26 +134,29 @@ const Profile = (props) => {
             
                                 <div className="p-profile-btn">
                                     <Link to={`/p-account/profile/edit/${father_id}`} 
-                                        className="btn-default btn-yellow btn-profile btn-r8 btn-h52 h-xs-60-px">
+                                        className="btn-default btn-yellow btn-profile btn-r8 btn-h52">
                                         <span className="ft-xs-16">プロフィールを変更する</span>
                                     </Link>
                                 </div>
             
                                 <div className="p-profile-btn">
                                     <Link to={`/p-account/profile/edit/password/${father_id}`}
-                                        className="btn-default btn-yellow btn-password btn-r8 btn-h52 h-xs-60-px">
+                                        className="btn-default btn-yellow btn-password btn-r8 btn-h52">
                                         <span className="ft-xs-16">パスワードを変更する</span>
                                     </Link>
                                 </div>
             
                                 <div className="p-profile-txtLink">
-                                    <a onClick={handleLogout}>
+                                    <a className="btn-default btn-password btn-r8 btn-h30"
+                                        onClick={handleLogout}
+                                    >
                                         <span className="ft-xs-16">ログアウト</span>
                                     </a>
                                 </div>
-                
                                 <div className="p-profile-txtLink">
-                                    <Link to={`/p-account/profile/withdrawal`}>
+                                    <Link to="/p-account/profile/withdrawal"
+                                        className="btn-default btn-password btn-r8 btn-h30"
+                                    >
                                         <span className="ft-xs-16">退会する</span>
                                     </Link>
                                 </div>

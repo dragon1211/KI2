@@ -21,13 +21,15 @@ class MeetingsController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['ミーティングの登録に失敗しました。']];
         }
 
-        // tmp
-        /////////////////////////
+        if (isset($r->image)) {
+            $r->image = json_decode($r->image);
+        }
+
         // ファイルサイズは10MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
             try {
                 $ok = true;
-                foreach ($value as $v) {
+                foreach (json_decode($value) as $v) {
                     if (strlen(base64_decode($v)) > 1048576) {
                         $ok = false;
                     }
@@ -40,30 +42,48 @@ class MeetingsController extends Controller {
         });
 
         // ミームタイプ
+        //// 画像
         Validator::extend('image_meme', function ($attribute, $value, $params, $validator) {
             try {
                 $ok = true;
-                foreach ($value as $v) {
-                    if (
-                        mime_content_type($v) == 'image/jpeg' || // jpg
-                        mime_content_type($v) == 'image/png'  || // png
-                        mime_content_type($v) == 'image/gif'     // gif
-                    ) {
-                        $ok = false;
+                foreach (json_decode($value) as $v) {
+                    if (substr($v, -5) == '.jpeg' || substr($v, -4) == '.jpg' || substr($v, -4) == '.png' || substr($v, -4) == '.gif') {
+                        if (
+                            substr($v, -5) != '.jpeg' && // jpeg
+                            substr($v, -4) != '.jpg'  && // jpg
+                            substr($v, -4) != '.png'  && // png
+                            substr($v, -4) != '.gif'     // gif
+                        ) {
+                            $ok = false;
+                        }
+                    }
+                    else {
+                        if (
+                            mime_content_type($v) != 'image/jpeg' && // jpg
+                            mime_content_type($v) != 'image/png'  && // png
+                            mime_content_type($v) != 'image/gif'     // gif
+                        ) {
+                            $ok = false;
+                        }
                     }
                 }
+
                 return $ok;
             } catch (\Throwable $e) {
                 Log::critical($e->getMessage());
                 return false;
             }
         });
-        /////////////////////////
 
-        // ミームタイプ
+        //// PDF
         Validator::extend('pdf_meme', function ($attribute, $value, $params, $validator) {
             try {
-                return mime_content_type($value) == 'application/pdf';
+                if (substr($value, -4) != '.pdf') {
+                    return mime_content_type($value) == 'application/pdf';
+                }
+                else {
+                    return substr($value, -4) == '.pdf';
+                }
             } catch (\Throwable $e) {
                 Log::critical($e->getMessage());
                 return false;
@@ -75,7 +95,7 @@ class MeetingsController extends Controller {
             'text' => 'required|max:2000',
             'memo' => 'max:2000',
             'pdf' => 'pdf_meme',
-            'image' => 'image_size|image_meme', // tmp
+            'image' => 'image_size|image_meme',
         ]);
 
         if ($validate->fails()) {
@@ -92,42 +112,55 @@ class MeetingsController extends Controller {
         try {
             if (isset($r->pdf)) {
                 $filename = uniqid() . '.pdf';
-                $pdf = base64_decode(substr($r->pdf, strpos($r->pdf, ',') + 1));
-
                 $insert['pdf'] = '/storage/'.$filename;
-                Storage::disk('public')->put($filename, $pdf);
+
+                if (substr($r->pdf, -4) != '.pdf') {
+                    $pdf = base64_decode(substr($r->pdf, strpos($r->pdf, ',') + 1));
+
+                    Storage::disk('public')->put($filename, $pdf);
+                }
+                else {
+                    $insert['pdf'] = $r->pdf;
+                }
             }
 
-            $id = Meeting::create($insert);
+            $meeting = Meeting::create($insert);
 
-            // tmp
-            /////////////////////////
-            foreach ($r->image as $img) {
-                $ext = explode('/', mime_content_type($img))[1];
-                $filename = uniqid() . '.'.$ext;
-                $image = base64_decode(substr($img, strpos($img, ',') + 1));
-                Storage::disk('public')->put($filename, $image);
+            if (isset($r->image)) {
+                foreach ($r->image as $img) {
+                    if (substr($img, -5) != '.jpeg' && substr($img, -4) != '.jpg' && substr($img, -4) != '.png' && substr($img, -4) != '.gif') {
+                        $ext = explode('/', mime_content_type($img))[1];
+                        $fname = uniqid() . '.'.$ext;
+                        $image = base64_decode(substr($img, strpos($img, ',') + 1));
+                        Storage::disk('public')->put($fname, $image);
 
-                $insert_image = [
-                    'meeting_id' => (int)$id,
-                    'image' => '/storage/'.$filename,
-                ];
+                        $filename = '/storage/'.$fname;
+        
+                    }
+                    else {
+                        $filename = $img;
+                    }
 
-                MeetingImage::create($insert_image);
+                    $insert_image = [
+                        'meeting_id' => (int)$meeting->id,
+                        'image' => $filename,
+                    ];
+
+                    MeetingImage::create($insert_image);
+                }
             }
-            /////////////////////////
 
-            foreach ($r->children as $child) {
+            foreach (json_decode($r->children) as $child) {
                 $insert_approval = [
                     'child_id' => $child,
-                    'meeting_id' => (int)$id,
-                    'approval_at' => date('Y-m-d H:i:s'),
+                    'meeting_id' => (int)$meeting->id,
+                    'approval_at' => null,
                 ];
 
                 MeetingApprovals::create($insert_approval);
             }
 
-            $params = ['meeting_id' => $id];
+            $params = ['meeting_id' => $meeting->id];
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
@@ -152,7 +185,7 @@ class MeetingsController extends Controller {
             return ['status_code' => 400];
         }
 
-        return ['status_code' => 200];
+        return ['status_code' => 200, 'params' => ['meeting_id' => (int)$r->meeting_id]];
     }
 
     public function search (Request $r) {
@@ -348,8 +381,17 @@ class MeetingsController extends Controller {
                 continue;
             }
 
-            if (count($l->approvals) == MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count()) {
+            $cnt = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count();
+            $acnt = count($l->approvals);
+
+            if ($acnt != 0 && $acnt == $cnt) {
                 continue;
+            }
+
+            if ($acnt == 0 && $cnt == 0) {
+                if (!in_array($l, $result)) {
+                    $result[] = $l;
+                }
             }
 
             foreach ($l->approvals as $ii => $ll) {
@@ -382,7 +424,7 @@ class MeetingsController extends Controller {
         }
 
         foreach ($list as $i => $l) {
-            if (null === ($l->approvals = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
+            if (null === ($l->approvals = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->get())) {
                 continue;
             }
 
@@ -416,7 +458,7 @@ class MeetingsController extends Controller {
         }
 
         foreach ($list as $i => $l) {
-            if (null === ($l->approvals = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->orderBy('updated_at', 'desc')->get())) {
+            if (null === ($l->approvals = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->get())) {
                 continue;
             }
 
@@ -560,8 +602,17 @@ class MeetingsController extends Controller {
                 continue;
             }
 
-            if (count($l->approvals) == MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count()) {
+            $cnt = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count();
+            $acnt = count($l->approvals);
+
+            if ($acnt != 0 && $acnt == $cnt) {
                 continue;
+            }
+
+            if ($acnt == 0 && $cnt == 0) {
+                if (!in_array($l, $result)) {
+                    $result[] = $l;
+                }
             }
 
             foreach ($l->approvals as $ii => $ll) {
@@ -589,7 +640,7 @@ class MeetingsController extends Controller {
         $meeting_approvals_select = ['approval_at', 'child_id'];
         $father_select = ['image', 'company', 'tel'];
         $child_select = ['id', 'image', 'last_name', 'first_name', 'tel'];
-        $all_child_select = ['id as child_id', 'last_name', 'first_name'];
+        $all_child_select = ['id', 'last_name', 'first_name'];
 
         // 取得に成功
         if (null === ($result = Meeting::select($meeting_select)->where('id', (int)$meeting_id)->first())) {
@@ -606,7 +657,7 @@ class MeetingsController extends Controller {
             }
         }
         else {
-            if (null === ($result->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$result->id)->first())) {
+            if (null === ($result->approval = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$result->id)->where('child_id', (int)session()->get('children')['id'])->first())) {
                 $result->approval = new \stdClass();
             }
         }

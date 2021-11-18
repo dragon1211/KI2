@@ -170,6 +170,27 @@ a{
   }
 }
 
+.p-article__txt, .profile-info__item .txt{
+  white-space: pre-wrap;
+}
+
+.meeting-txt{
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+}
+
+.profile-name, .profile-info{
+  font-size: 18px !important;
+  @include media-breakpoint-down(xs){
+    font-size: 16px !important;
+  }
+}
+.meeting-member-count .numerator:after{
+  display: inline !important;
+}
+
 /////////////////////////////////////////////////////////////////////////
 
 @media screen and (min-width: 1068px){
@@ -191,6 +212,10 @@ a{
 @media screen and (max-width: 1068px){
   ::-webkit-scrollbar {
     display: none;
+  }
+  .search-item{
+    &:first-child{ border-top: none !important; }
+    &:last-child{ border-bottom: none !important;}
   }
 }
 

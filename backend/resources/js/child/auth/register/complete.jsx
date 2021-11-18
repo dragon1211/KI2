@@ -7,7 +7,7 @@ const ChildSignUpComplete = () => {
     const history = useHistory();
 
     const gotoLogin = () => {
-        history.push({pathname: '/c-account/login',  state: {}});
+        history.push({pathname: '/c-account/login',  state: ''});
     }
 
 	return (

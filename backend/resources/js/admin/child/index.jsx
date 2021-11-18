@@ -6,11 +6,12 @@ import { useHistory, Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
+import Alert from '../../component/alert';
 
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
-const Child = () => {
+const Child = (props) => {
 
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
@@ -18,7 +19,8 @@ const Child = () => {
   const [fetch_children_list, setFetchChildrenList] = useState([]);
 
   const [_422errors, set422errors] = useState({keyword:''});
-  const [_400error, set400error] = useState('');
+  const [_400error, set400Error] = useState('');
+  const [_success, setSuccess] = useState(props.history.location.state);
 
   useEffect(() => {
     setLoaded(false);
@@ -31,6 +33,9 @@ const Child = () => {
         if(len > INFINITE)
             setFetchChildrenList(response.data.params.slice(0, INFINITE));
         else setFetchChildrenList(response.data.params.slice(0, len));
+      }
+      else {
+        set400Error("失敗しました。");
       }
     });
   }, []);
@@ -96,10 +101,10 @@ const Child = () => {
           </div>
 
           <div className="search-wrap">
-            <div className="search-content position-relative" style={{minHeight:'100px'}}>
+            <div className="search-content">
               {
                 !loaded &&
-                      <CircularProgress color="secondary" style={{top:'20px', left:'calc(50% - 22px)', color:'green', position:'absolute'}}/>
+                  <CircularProgress className="css-loader"/>
               }
               { 
                 loaded && 
@@ -127,7 +132,7 @@ const Child = () => {
                                 <img alt="name" className="avatar-img" src={ child.image } />
                               </div>
                               <div className="user-info">
-                                <p className="user-name mb-1 font-weight-bold">{ child.last_name }  { child.first_name }</p>
+                                <p className="user-name mb-1 font-weight-bold">{`${child.first_name} ${child.last_name}`}</p>
                                 <p className="user-tel">{ child.tel }</p>
                               </div>
                             </div>
@@ -139,6 +144,8 @@ const Child = () => {
               }
             </div>
           </div>
+          { _400error && <Alert type="fail" hide={()=>set400Error('')}> {_400error} </Alert> } 
+          { _success && <Alert type="success" hide={()=>setSuccess('')}> {_success} </Alert> }
         </section>
       </div>
     </div>

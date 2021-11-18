@@ -8,17 +8,19 @@ import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
 import Alert from '../../component/alert';
 
-const INFINITE = 5;
+const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
-const Meeting = () => {
+const Meeting = (props) => {
   
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
   const [meeting_list, setMeetingList ] = useState([]);
   const [fetch_meeting_list, setFetchMeetingList ] = useState([]);
+
+  const [_400error, set400Error] = useState('');
   const [_422errors, set422errors] = useState({keyword:''});
-  const [_success, setSuccess] = useState('');
+  const [_success, setSuccess] = useState(props.history.location.state);
 
 
   useEffect(()=>{
@@ -52,6 +54,9 @@ const Meeting = () => {
               setFetchMeetingList(arr.slice(0, INFINITE));
           else setFetchMeetingList(arr.slice(0, len));
       } 
+      else {
+        set400Error("失敗しました。");
+      }
     });
   }, []);
 
@@ -128,10 +133,10 @@ const Meeting = () => {
                 </form>
             </div>
             <div className="search-wrap">
-              <div className="search-content position-relative" style={{minHeight:'100px'}}>
+              <div className="search-content">
                 {
                   !loaded &&
-                    <CircularProgress color="secondary" style={{top:'20px', left:'calc(50% - 22px)', color:'green', position:'absolute'}}/>
+                    <CircularProgress className="css-loader"/>
                 }
                 { 
                   loaded && 
@@ -190,9 +195,8 @@ const Meeting = () => {
                 }
               </div>
             </div>
-            {
-              _success && <Alert type="success">{_success}</Alert>
-            }
+            {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+            {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
         </section>
     </div>
   </div>

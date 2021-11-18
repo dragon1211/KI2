@@ -94,9 +94,7 @@ const ParentLogin = () => {
                     パスワード紛失の方はコチラ
                 </Link>
             </div>
-            {
-                _400error && <Alert type="fail" hide={()=>set400Error(null)}>{_400error}</Alert>
-            } 
+            { _400error && <Alert type="fail" hide={()=>set400Error(null)}>{_400error}</Alert>  } 
         </form>
 	)
 }

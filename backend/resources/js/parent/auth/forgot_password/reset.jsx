@@ -31,7 +31,7 @@ const ParentForgotPasswordReset = (props) => {
             setSubmit(false);
             switch(response.data.status_code){
                 case 200: {
-                    history.push({pathname: '/p-account/forgot-password/complete',  state: {}}); 
+                    history.push({pathname: '/p-account/forgot-password/complete',  state: response.data.success_messages}); 
                     break;
                 }
                 case 422: set422Errors(response.data.error_messages); break;
@@ -42,7 +42,7 @@ const ParentForgotPasswordReset = (props) => {
 
 
 	return (
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleSubmit} className="edit-form">
             <p className="pb-60-px text-center font-weight-bold ft-25">パスワード再登録</p>
             <div className="edit-set">
                 <label htmlFor="password"   className="control-label ft-14 ft-md-12"> 
@@ -72,19 +72,15 @@ const ParentForgotPasswordReset = (props) => {
                 }
             </div>
           
-            <div className="mt-5">
-                <LoadingButton type="submit" 
-                    loading={submit} 
-                    fullWidth 
-                    className="btn-edit btn-default btn-h60 bg-yellow rounded-20 py-5"> 
-                    <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>
-                        パスワードを更新する
-                    </span> 
-                </LoadingButton>
-            </div>
-            {
-                _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-            } 
+            <LoadingButton type="submit" 
+                loading={submit} 
+                fullWidth 
+                className="btn-edit btn-default btn-h75 bg-yellow rounded-20"> 
+                <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>
+                    パスワードを更新する
+                </span> 
+            </LoadingButton>
+            { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
         </form>
 	)
 }

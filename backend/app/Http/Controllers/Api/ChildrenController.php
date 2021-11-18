@@ -240,7 +240,7 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
     }
 
     public function list () {
-        $child_select = ['first_name', 'last_name', 'tel'];
+        $child_select = ['id', 'first_name', 'last_name', 'tel', 'image'];
 
         if (null === ($result = Child::select($child_select)->orderBy('created_at', 'desc')->get())) {
             // 親一覧の取得に失敗
@@ -347,8 +347,10 @@ KIKI承知システムを使って「聞いてない！」「言ってない！�
             return ['status_code' => 400];
         }
 
-        if (null === ($params->father_relations = FatherRelation::select($father_relations_select)->where('child_id', (int)$child_id)->first())) {
-            return ['status_code' => 400];
+        if (request()->route()->action['as'] == 'mdp') {
+            if (null === ($params->father_relations = FatherRelation::select($father_relations_select)->where('child_id', (int)$child_id)->where('father_id', (int)$r->father_id)->first())) {
+                $params->father_relations = new \stdClass();
+            }
         }
 
         return ['status_code' => 200, 'params' => $params];

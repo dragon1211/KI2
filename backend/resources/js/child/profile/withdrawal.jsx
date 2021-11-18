@@ -3,6 +3,7 @@ import axios from 'axios';
 import { LoadingButton } from '@material-ui/lab';
 
 import Notification from '../notification';
+import Alert from '../../component/alert';
 
 const ProfileWithdrawal = () => {
 

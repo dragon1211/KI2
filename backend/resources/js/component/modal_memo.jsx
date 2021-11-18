@@ -26,8 +26,8 @@ export default function ModalMemo({ show, content, handleClose }){
                     <span className="ft-18 text-center font-weight-bold">メモ</span>
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-slide-description" style={{minHeight:'200px'}} className="pt-4">
-                        <span className="ft-18 ft-xs-16 text-black">{content}</span>
+                    <DialogContentText id="alert-dialog-slide-description" style={{minHeight:'200px', whiteSpace:'pre-wrap'}} className="ft-18 ft-xs-16 text-black pt-4">
+                        {content}
                     </DialogContentText>
                 </DialogContent>
             </Dialog>

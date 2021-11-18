@@ -46,38 +46,31 @@ const ParentRegister = () => {
                     </div>
                 </div>
                 <div className="l-content-wrap">
-                    <section className="profile-container">
-                        <div className="profile-wrap">
-                            <div className="mx-5">
-                                <form onSubmit={handleSubmit} noValidate>
-                                                            
-                                    <div className="edit-set">
-                                        <label htmlFor="email"   className="control-label ft-12"> メールアドレス </label>
-                                        <input type="email" name="email" id="email"  className = {`input-default input-nameSei input-h60 ${ _422errors.email && "is-invalid c-input__target" }`}  value={email} onChange={e=>setEmail(e.target.value)}/>
-                                        {
-                                            _422errors.email && 
-                                                <span className="l-alert__text--error ft-16 ft-md-14">
-                                                    { _422errors.email }
-                                                </span>
-                                        }
-                                    </div>
-                                    
-                                    <div className="mt-5">
-                                        <LoadingButton type="submit" fullWidth 
-                                            className="btn-edit btn-default btn-h60 bg-yellow rounded-15"
-                                            loading={submit}>
-                                            <span className={`ft-20 font-weight-bold ${!submit && 'text-black'}`}>親追加</span>
-                                        </LoadingButton>
-                                    </div>
+                    <section className="edit-container">
+                        <div className="edit-wrap">
+                            <form onSubmit={handleSubmit} className="edit-form">
+                                                        
+                                <div className="edit-set">
+                                    <label htmlFor="email"   className="control-label ft-12"> メールアドレス </label>
+                                    <input type="email" name="email" id="email"  className = {`input-default input-nameSei input-h60 ${ _422errors.email && "is-invalid c-input__target" }`}  value={email} onChange={e=>setEmail(e.target.value)}/>
                                     {
-                                        _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-                                    } 
-                                    {
-                                        _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert>
+                                        _422errors.email && 
+                                            <span className="l-alert__text--error ft-16 ft-md-14">
+                                                { _422errors.email }
+                                            </span>
                                     }
-                                </form>
-            
-                            </div>
+                                </div>
+                                
+                                <LoadingButton type="submit" fullWidth 
+                                    className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
+                                    loading={submit}>
+                                    <span className={`ft-18 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>親追加</span>
+                                </LoadingButton>
+
+                                {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+                                {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+                            </form>
+        
                         </div>
                     </section>   
                 </div>

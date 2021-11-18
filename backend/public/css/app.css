@@ -11313,59 +11313,59 @@ input[type=date].hide-calender::-webkit-inner-spin-button, input[type=date].hide
 }
 
 .ft-12 {
-  font-size: 12px;
+  font-size: 12px !important;
 }
 
 .ft-13 {
-  font-size: 13px;
+  font-size: 13px !important;
 }
 
 .ft-14 {
-  font-size: 14px;
+  font-size: 14px !important;
 }
 
 .ft-15 {
-  font-size: 15px;
+  font-size: 15px !important;
 }
 
 .ft-16 {
-  font-size: 16px;
+  font-size: 16px !important;
 }
 
 .ft-17 {
-  font-size: 17px;
+  font-size: 17px !important;
 }
 
 .ft-18 {
-  font-size: 18px;
+  font-size: 18px !important;
 }
 
 .ft-19 {
-  font-size: 19px;
+  font-size: 19px !important;
 }
 
 .ft-20 {
-  font-size: 20px;
+  font-size: 20px !important;
 }
 
 .ft-22 {
-  font-size: 22px;
+  font-size: 22px !important;
 }
 
 .ft-25 {
-  font-size: 25px;
+  font-size: 25px !important;
 }
 
 .ft-30 {
-  font-size: 30px;
+  font-size: 30px !important;
 }
 
 .ft-35 {
-  font-size: 35px;
+  font-size: 35px !important;
 }
 
 .ft-40 {
-  font-size: 40px;
+  font-size: 40px !important;
 }
 
 @media (max-width: 991.98px) {
@@ -12294,6 +12294,30 @@ a {
   height: 30px !important;
 }
 
+.p-article__txt, .profile-info__item .txt {
+  white-space: pre-wrap;
+}
+
+.meeting-txt {
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+}
+
+.profile-name, .profile-info {
+  font-size: 18px !important;
+}
+@media (max-width: 575.98px) {
+  .profile-name, .profile-info {
+    font-size: 16px !important;
+  }
+}
+
+.meeting-member-count .numerator:after {
+  display: inline !important;
+}
+
 @media screen and (min-width: 1068px) {
   .p-meetingAdd-btn {
     width: 200px !important;
@@ -12315,6 +12339,13 @@ a {
 @media screen and (max-width: 1068px) {
   ::-webkit-scrollbar {
     display: none;
+  }
+
+  .search-item:first-child {
+    border-top: none !important;
+  }
+  .search-item:last-child {
+    border-bottom: none !important;
   }
 }
 @media (max-width: 575.98px) {

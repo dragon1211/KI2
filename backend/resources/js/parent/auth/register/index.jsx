@@ -50,10 +50,10 @@ const ParentSignUp = (props) => {
         .then(response => {
             setSubmit(false);
             switch(response.data.status_code){
-                case 200: history.push({pathname: '/p-account/register/complete/'+props.match.params.token,  state: {}}); break;
+                case 200: history.push({pathname: '/p-account/register/complete/'+props.match.params.token,  state: response.data.success_messages}); break;
                 case 422: set422Errors(response.data.error_messages); break;
                 case 400: set400Error(response.data.error_messages); break;
-                case 401: history.push({pathname: '/p-account/register/error/'+props.match.params.token,  state: {}}); break;
+                case 401: history.push({pathname: '/p-account/register/error/'+props.match.params.token,  state: response.data.error_messages}); break;
             };
         })
     }
@@ -73,7 +73,7 @@ const ParentSignUp = (props) => {
     };
 
 	return (
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleSubmit} className="edit-form">
             <p className="text-center font-weight-bold ft-25">本登録</p>
             <div className="mt-25-px">
                 <input type="file" id="avatar" name="avatar" className="d-none" accept=".png, .jpg, .jpeg" onChange={(e) => handleImageChange(e)}/>
@@ -139,16 +139,12 @@ const ParentSignUp = (props) => {
                 }
             </div>
             
-            <div className="mt-5">
-                <LoadingButton type="submit" fullWidth 
-                    className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
-                    loading={submit}>
-                    <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>本登録</span>
-                </LoadingButton>
-            </div>
-            {
-                _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-            } 
+            <LoadingButton type="submit" fullWidth 
+                className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
+                loading={submit}>
+                <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>本登録</span>
+            </LoadingButton>
+            { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
         </form>
 	)
 }

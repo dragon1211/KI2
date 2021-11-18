@@ -5,7 +5,6 @@ import { CircularProgress  } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
 import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import Alert from '../../component/alert';
@@ -26,6 +25,7 @@ const MeetingEdit = (props) => {
     const [meeting_image, setMeetingImages] = useState([]);
     const [approval_list, setApproval] = useState([]);
     const [children_list, setChildrenList] = useState([]);
+    const [meeting, setMeeting] = useState(null);
 
     const [_422errors, set422Errors] = useState({title:'', text:'', memo:'', pdf:'', image:''})
     const [_400error, set400Error] = useState('');
@@ -44,6 +44,7 @@ const MeetingEdit = (props) => {
             setLoaded(true);
             setNotice(response.data.notice)
             if(response.data.status_code==200){
+                setMeeting(response.data.params);
                 setTitle(response.data.params?.title);
                 setMemo(response.data.params?.memo);
                 setText(response.data.params?.text);
@@ -54,13 +55,16 @@ const MeetingEdit = (props) => {
                 var list = [...response.data.params?.children];
                 var approval = [...response.data.params?.approval];
                 var arr = [];
-                for(var i=0; i<list.length; i++){
-                    if(approval.findIndex(ele=>ele.child_id == list[i].child_id) >= 0)
+                for(var i in list){
+                    if(approval.findIndex(ele=>ele.child_id == list[i].id) >= 0)
                         arr.push({...list[i], checked: true});
                     else arr.push({...list[i], checked: false});
                 }
                 setChildrenList(arr);
-            } 
+            }
+            else{
+                set400Error("失敗しました。");
+            }
         });
     }, []);
 
@@ -85,8 +89,8 @@ useEffect(()=>{
         }
         else if(check_radio=="true"){                     //send pickup
             list = [...children_list];
-            for(var i=0; i<list.length; i++){
-                if(approval_list.findIndex(ele=>ele.child_id == list[i].child_id) >= 0)
+            for(var i in list){
+                if(approval_list.findIndex(ele=>ele.child_id == list[i].id) >= 0)
                     list[i].checked = true;
                 else list[i].checked = false;
             }
@@ -101,14 +105,14 @@ useEffect(()=>{
 
         var approval_registerIndexes = [];
         var approval_deleteIndexes = [];
-        for(let i=0; i<children_list.length; i++){
+        for(let i in children_list){
             if(children_list[i].checked){
-                if(approval_list.findIndex(ele=>ele.child_id == children_list[i].child_id) < 0)
-                    approval_registerIndexes.push(children_list[i].child_id);
+                if(approval_list.findIndex(ele=>ele.child_id == children_list[i].id) < 0)
+                    approval_registerIndexes.push(children_list[i].id);
             }
         }
-        for(let i=0; i<approval_list.length; i++){
-            if(children_list.findIndex(ele=> ele.checked && ele.child_id == approval_list[i].child_id) < 0)
+        for(let i in approval_list){
+            if(children_list.findIndex(ele=> ele.checked && ele.id == approval_list[i].child_id) < 0)
                 approval_deleteIndexes.push(approval_list[i].child_id);
         }
 
@@ -188,33 +192,6 @@ useEffect(()=>{
     }
 
 
-    const notify_delete = () => 
-    toast.success("削除成功しました。", {
-        position: "top-right",
-        autoClose: 5000,
-        className:"bg-danger",
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: false,
-        progress: undefined,
-        style:{ color: '#ffffff'}
-    });
-
-    const notify_save = () => 
-    toast.success("更新が成功しました。", {
-        position: "top-right",
-        autoClose: 5000,
-        className:"bg-danger",
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: false,
-        progress: undefined,
-        style:{ color: '#ffffff'}
-    });
-
-
 	return (
         <div className="l-content">
             <div className="l-content-w560">
@@ -233,7 +210,7 @@ useEffect(()=>{
                             <CircularProgress className="css-loader"/>
                     }
                     {
-                        loaded && 
+                        loaded && meeting &&
                         <article className="p-article__body">
                             <div className="p-article__content">       
                                 <div className="p-article__context">
@@ -295,7 +272,7 @@ useEffect(()=>{
                                             }
                                         </div>
                                         <div className="edit-set edit-set-mt15">
-                                            <label className="edit-set-file-label" htmlFor="file_image">
+                                            <label className="edit-set-file-label" htmlFor={meeting_image.length < 10 ? 'file_image': ''}>
                                                 画像アップロード
                                                 <input type="file" name="file_image" accept=".png, .jpg, .jpeg" id="file_image"  onChange={handleImageChange}/> 
                                             </label>
@@ -384,20 +361,18 @@ useEffect(()=>{
                                             className="btn-edit btn-default btn-h75 bg-yellow rounded-15">
                                             <span className={`ft-20 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>ミーティングを更新</span>
                                         </LoadingButton>
-                                        {
-                                            _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-                                        } 
                                     </form>
                                 </div>     
                             </div>
                         </article>
                     }
                         
+                    { _400error && <Alert type="fail"  hide={()=>set400Error('')}>{_400error}</Alert> }
+                    { _success && <Alert type="success"  hide={()=>setSuccess('')}>{_success}</Alert> }
                     </div>
                     </div>
                 </div>
             </div>
-            <ToastContainer />
         </div>   
 	)
 }

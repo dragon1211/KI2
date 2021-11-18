@@ -36,6 +36,9 @@ const ChildEdit = (props) => {
           let hire_at = moment(response.data.params.father_relations?.hire_at).toDate();
           setHireAt(hire_at);
         }
+        else {
+          set400Error("失敗しました。");
+        }
     })
   },[]);
 
@@ -80,7 +83,7 @@ const ChildEdit = (props) => {
             { !loaded && 
               <CircularProgress className="css-loader"/> }
             {
-              loaded &&
+              loaded && hire_at &&
               <div className="edit-wrap">
                 <div className="edit-content">
                   <form className="edit-form" onSubmit={handleSubmit}>

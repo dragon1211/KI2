@@ -15,6 +15,7 @@ const ProfileEdit = () => {
   const [email, setEmail] = useState('');
   const [tel, setTel] = useState('');
   const [profile, setProfile] = useState('');
+  const [params, setParams] = useState(null);
 
   const [_success, setSuccess] = useState('');
   const [_400error, set400Error] = useState('');
@@ -34,11 +35,15 @@ const ProfileEdit = () => {
       setLoaded(true);
       setNotice(response.data.notice);
       if(response.data.status_code==200) {
+        setParams(response.data.params);
         setCompany(response.data.params?.company);
         setEmail(response.data.params?.email);
         setTel(response.data.params?.tel);
         setProfile(response.data.params?.profile);
-      }     
+      }
+      else {
+        set400Error("失敗しました。");
+      } 
     });
   }, []);
 
@@ -88,7 +93,7 @@ const ProfileEdit = () => {
             <CircularProgress className="css-loader"/>
           }
           {
-            loaded &&
+            loaded && params &&
             <div className="edit-wrap">
               <div className="edit-content">
                 <form className="edit-form" onSubmit={handleSubmit}>
@@ -150,13 +155,13 @@ const ProfileEdit = () => {
                     </span> 
                   </LoadingButton>
 
-                  { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
-                  { _success && <Alert type="success" hide={()=>setSuccess('') }>{_success}</Alert> }
                 </form>
               </div>
             </div>
           }
-            </section>
+          { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+          { _success && <Alert type="success" hide={()=>setSuccess('') }>{_success}</Alert> }
+          </section>
         </div>
       </div>
     </div>

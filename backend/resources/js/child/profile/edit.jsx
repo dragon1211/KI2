@@ -19,6 +19,7 @@ const ProfileEdit = () => {
     const [email, setEmail] = useState('');
     const [tel, setTel] = useState('');
     const [company, setCompany] = useState('');
+    const [profile, setProfile] = useState(null);
 
     const [_422errors, set422Errors] = useState({
         first_name:'',
@@ -44,12 +45,15 @@ const ProfileEdit = () => {
             setNotice(response.data.notice);
             if(response.data.status_code==200){
                 let params = response.data.params;
+                setProfile(params);
                 setFirstName(params.first_name);
                 setLastName(params.last_name);
                 setEmail(params.email);
                 setTel(params.tel);
                 setIdentity(params.identity);
                 if(params.company)setCompany(params.company);
+            }else {
+                set400Error("失敗しました。");
             }
         })
     },[]);
@@ -89,7 +93,12 @@ const ProfileEdit = () => {
             setSubmit(false);
             setNotice(response.data.notice);
             switch(response.data.status_code){
-                case 200: setSuccess(response.data.success_messages); break;
+                case 200: {
+                    history.push({
+                    pathname: "/c-account/profile",
+                    state: response.data.success_messages});
+                    break;
+                }
                 case 400: set400Error(response.data.error_messages); break;
                 case 422: set422Errors(response.data.error_messages); break;
             }
@@ -109,14 +118,16 @@ const ProfileEdit = () => {
             </div>
 
             <div className="l-content-wrap">
-                <section className="profile-container">
-                    {
-                        !loaded &&
-                            <CircularProgress className="css-loader"/>
-                    }
-                    <div className="profile-wrap">
-                        <div className="profile-content">
-                            <form onSubmit={handleSubmit} noValidate>
+                <section className="edit-container">
+                {
+                    !loaded &&
+                        <CircularProgress className="css-loader"/>
+                }
+                {
+                    loaded && profile &&
+                    <div className="edit-wrap">
+                        <div className="edit-content">
+                            <form onSubmit={handleSubmit} className="edit-form">
 
                                 <div className="edit-set">
                                     <label htmlFor="first_name"  className="control-label ft-12"> 姓 </label>
@@ -184,32 +195,20 @@ const ProfileEdit = () => {
                                     }
                                 </div>
                                 
-                                <div className="mt-5">
-                                    <LoadingButton type="submit" 
-                                        loading={submit} 
-                                        fullWidth 
-                                        className="btn-edit btn-default btn-h75 bg-yellow rounded-20"> 
-                                        <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>
-                                            プロフィールを更新
-                                        </span> 
-                                    </LoadingButton>
-                                </div>
-                                {
-                                    _400error && 
-                                        <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-                                } 
-                                {
-                                    _success && 
-                                    <Alert type="success" 
-                                    hide={()=>  
-                                        history.push({
-                                        pathname: `/c-account/profile`,
-                                        state: {}
-                                    })}>{_success}</Alert>
-                                }
+                                <LoadingButton type="submit" 
+                                    loading={submit} 
+                                    fullWidth 
+                                    className="btn-edit btn-default btn-h75 bg-yellow rounded-20"> 
+                                    <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>
+                                        プロフィールを更新
+                                    </span> 
+                                </LoadingButton>
                             </form>
                         </div>
                     </div>
+                }
+                {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+                {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
                 </section>   
             </div>
         </div>

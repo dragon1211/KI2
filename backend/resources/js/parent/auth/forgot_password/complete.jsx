@@ -7,7 +7,7 @@ const ParentForgotPasswordComplete = () => {
     const history = useHistory();
 
     const gotoLogin = () => {
-        history.push({pathname: '/p-account/login',  state: {}});
+        history.push({pathname: '/p-account/login',  state: ''});
     }
 
 	return (

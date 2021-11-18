@@ -39,7 +39,12 @@ const ChildPasswordEdit = (props) => {
         .then(response => {
             setSubmit(false);
             switch(response.data.status_code){
-                case 200: setSuccess(response.data.success_messages); break;
+                case 200: {
+                    history.push({
+                    pathname: `/admin/child/detail/${props.match.params?.child_id}`,
+                    state: response.data.success_messages});
+                    break;
+                }
                 case 400: set400Error(response.data.error_messages); break;
                 case 422: set422Errors(response.data.error_messages); break;
             }
@@ -57,10 +62,10 @@ const ChildPasswordEdit = (props) => {
                 </div>
 
                 <div className="l-content-wrap">
-                    <section className="profile-container">
-                        <div className="profile-wrap">
-                            <div className="mx-5">
-                                <form onSubmit={handleSubmit} noValidate>
+                    <section className="edit-container">
+                        <div className="edit-wrap">
+                            <div className="edit-content">
+                                <form onSubmit={handleSubmit} className="edit-form">
                                                             
                                     <div className="edit-set">
                                         <label htmlFor="password"   className="control-label ft-14 ft-md-12"> 
@@ -90,25 +95,13 @@ const ChildPasswordEdit = (props) => {
                                         }
                                     </div>
                                     
-                                    <div className="mt-5">
-                                        <LoadingButton type="submit" fullWidth 
-                                            loading = {submit}
-                                            className="btn-edit btn-default btn-h60 bg-yellow rounded-15">
-                                            <span className={`ft-18 font-weight-bold ${!submit && 'text-black'}`}>パスワードを更新</span>
-                                        </LoadingButton>
-                                    </div>
-                                    {
-                                        _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-                                    } 
-                                    {
-                                        _success && 
-                                        <Alert type="success" 
-                                        hide={()=>  
-                                            history.push({
-                                            pathname: `/admin/child/detail/${props.match.params?.child_id}`,
-                                            state: {}
-                                        })}>{_success}</Alert>
-                                    }
+                                    <LoadingButton type="submit" fullWidth 
+                                        loading = {submit}
+                                        className="btn-edit btn-default btn-h75 bg-yellow rounded-20">
+                                        <span className={`ft-18 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>パスワードを更新</span>
+                                    </LoadingButton>
+                                    { _400error && <Alert type="fail" hide={()=>set400Error('')}> {_400error} </Alert> } 
+                                    { _success && <Alert type="success" hide={()=>setSuccess('')}> {_success} </Alert> }
                                 </form>
             
                             </div>

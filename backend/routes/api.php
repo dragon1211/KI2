@@ -41,7 +41,7 @@ Route::group(['prefix' => 'admin'], function () {
             Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile');
             Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage');
             Route::put('/updatePassword/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updatePassword');
-            Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail');
+            Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail')->name('mda');
             Route::delete('/delete/{child_id}', '\App\Http\Controllers\Api\ChildrenController@withdrawal');
         });
 
@@ -93,7 +93,7 @@ Route::group(['prefix' => 'fathers'], function () {
             Route::get('/listOfMeeting', '\App\Http\Controllers\Api\ChildrenController@listOfMeeting');
             Route::post('/listOfMeetingNotifyUnapprovel', '\App\Http\Controllers\Api\ChildrenController@listOfMeetingNotifyUnapprovel');
             Route::post('/listOfMeetingNotifyApprovel', '\App\Http\Controllers\Api\ChildrenController@listOfMeetingNotifyApprovel');
-            Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail');
+            Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail')->name('mdp');
         });
 
         // MeetingsController
@@ -147,7 +147,7 @@ Route::group(['prefix' => 'children'], function () {
     Route::put('/updatePassword/{child_id?}', '\App\Http\Controllers\Api\ChildrenController@updatePassword');
 
     Route::group(['middleware' => ['auth:children', 'notice.nonapproval']], function () {
-        Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail');
+        Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail')->name('mdc');
         Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage');
         Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile');
         Route::delete('/withdrawal', '\App\Http\Controllers\Api\ChildrenController@withdrawal');

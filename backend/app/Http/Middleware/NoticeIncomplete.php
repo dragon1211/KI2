@@ -21,13 +21,21 @@ class NoticeIncomplete
         $response = $next($request);
         $count = 0;
 
+        if (is_null(session()->get('fathers'))) {
+            session()->forget('fathers');
+            return $response;
+        }
+
         if (null !== ($list = Meeting::select('id')->where('father_id', (int)session()->get('fathers')['id'])->get())) {
             foreach ($list as $i => $l) {
                 if (null === ($apr = MeetingApprovals::select('id')->where('meeting_id', (int)$l->id)->get())) {
                     continue;
                 }
+
+                $cnt = MeetingApprovals::select('id')->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count();
+                $apr = count($apr);
     
-                if (count($apr) == MeetingApprovals::select('id')->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count()) {
+                if ($apr != 0 && $apr == $cnt) {
                     continue;
                 }
     

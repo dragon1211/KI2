@@ -5,9 +5,6 @@ import { CircularProgress  } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
 import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
 import Alert from '../../component/alert';
 
 
@@ -15,6 +12,7 @@ const MeetingEdit = (props) => {
 
     const history = useHistory();
     
+    const [meeting, setMeeting] = useState(null);
     const [title, setTitle] = useState('');
     const [memo, setMemo] = useState('');
     const [text, setText] = useState('');
@@ -39,13 +37,13 @@ const MeetingEdit = (props) => {
         var list = [];
         if(check_radio=="false"){        //send all children
             list = [...children_temp];
-            for(var i=0; i<list.length; i++)
+            for(var i in list)
                 list[i].checked = true;
         }
         else if(check_radio=="true"){                     //send pickup
             list = [...children_temp];
-            for(var i=0; i<list.length; i++){
-                if(approval_list.findIndex(ele=>ele.child_id == list[i].child_id) >= 0)
+            for(var i in list){
+                if(approval_list.findIndex(ele=>ele.child_id == list[i].id) >= 0)
                     list[i].checked = true;
                 else list[i].checked = false;
             }
@@ -60,6 +58,7 @@ const MeetingEdit = (props) => {
         .then(response => {
             setLoaded(true);
             if(response.data.status_code==200){
+                setMeeting(response.data.params);         //Success
                 setTitle(response.data.params?.title);
                 setMemo(response.data.params?.memo);
                 setText(response.data.params?.text);
@@ -70,13 +69,16 @@ const MeetingEdit = (props) => {
                 var list = [...response.data.params?.children];
                 var approval = [...response.data.params?.approval];
                 var arr = [];
-                for(var i=0; i<list.length; i++){
-                    if(approval.findIndex(ele=>ele.child_id == list[i].child_id) >= 0)
+                for(var i in list){
+                    if(approval.findIndex(ele=>ele.child_id == list[i].id) >= 0)
                         arr.push({...list[i], checked: true});
                     else arr.push({...list[i], checked: false});
                 }
                 setChildrenTemp(arr);
             } 
+            else {
+                set400Error("失敗しました。");
+            }
         });
     }, []);
 
@@ -89,36 +91,36 @@ const MeetingEdit = (props) => {
         var approval_deleteIndexes = [];
         for(let i=0; i<children_temp.length; i++){
             if(children_temp[i].checked){
-                if(approval_list.findIndex(ele=>ele.child_id == children_temp[i].child_id) < 0)
-                    approval_registerIndexes.push(children_temp[i].child_id);
+                if(approval_list.findIndex(ele=>ele.child_id == children_temp[i].id) < 0)
+                    approval_registerIndexes.push(children_temp[i].id);
             }
         }
         for(let i=0; i<approval_list.length; i++){
-            if(children_temp.findIndex(ele=> ele.checked && ele.child_id == approval_list[i].child_id) < 0)
+            if(children_temp.findIndex(ele=> ele.checked && ele.id == approval_list[i].child_id) < 0)
                 approval_deleteIndexes.push(approval_list[i].child_id);
         }
-        console.log(approval_registerIndexes, approval_deleteIndexes);
 
         const formdata = new FormData();
         formdata.append('children', JSON.stringify(approval_registerIndexes));
         axios.post('/api/admin/meeting/approvals/register',formdata, {params:{meeting_id: props.match.params.meeting_id}})
         axios.delete('/api/admin/meeting/approvals/delete',{params:{children: approval_deleteIndexes, meeting_id: props.match.params.meeting_id}})
         
-        try {
-            const request = { title: title, text: text, memo: memo, pdf: pdf };
-            setSubmit(true);
-            axios.put(`/api/admin/meetings/update/${props.match.params?.meeting_id}`, request)
-            .then(response => {
-                setSubmit(false);
-                switch(response.data.status_code){
-                    case 200: setSuccess("更新成功しました!"); break;
-                    case 400: set400Error("更新失敗しました。"); break;
-                    case 422: set422Errors(response.data.error_messages); break;
+        const request = { title: title, text: text, memo: memo, pdf: pdf };
+        setSubmit(true);
+        axios.put(`/api/admin/meetings/update/${props.match.params?.meeting_id}`, request)
+        .then(response => {
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: {
+                    history.push({
+                    pathname: `/admin/meeting/detail/${props.match.params?.meeting_id}`,
+                    state: "更新成功しました!"});
+                    break;
                 }
-            });
-        } catch (error) {
-          console.log('error', error);
-        }
+                case 400: set400Error("更新失敗しました。"); break;
+                case 422: set422Errors(response.data.error_messages); break;
+            }
+        });
     }
 
 
@@ -170,34 +172,6 @@ const MeetingEdit = (props) => {
         setChildrenTemp(list);
     }
 
-
-    const notify_delete = () => 
-    toast.success("削除成功しました。", {
-        position: "top-right",
-        autoClose: 5000,
-        className:"bg-danger",
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: false,
-        progress: undefined,
-        style:{ color: '#ffffff'}
-    });
-
-    const notify_save = () => 
-    toast.success("更新が成功しました。", {
-        position: "top-right",
-        autoClose: 5000,
-        className:"bg-danger",
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: false,
-        progress: undefined,
-        style:{ color: '#ffffff'}
-    });
-
-
 	return (
         <div className="l-content">
             <div className="l-content-w560">
@@ -209,13 +183,13 @@ const MeetingEdit = (props) => {
         
                 <div className="l-content-wrap">
                     <div className="p-article">
-                    <div className="p-article-wrap position-relative" style={{ minHeight:'500px'}}>
+                    <div className="p-article-wrap" style={{ minHeight:'500px'}}>
                     {
                         !loaded &&
-                        <CircularProgress color="secondary" style={{top:'150px',  left:'calc(50% - 22px)', color:'green', position:'absolute'}}/>
+                            <CircularProgress className="css-loader"/>
                     }
                     {
-                        loaded && 
+                        loaded && meeting &&
                         <article className="p-article__body">
                             <div className="p-article__content">       
                                 <div className="p-article__context">
@@ -256,6 +230,20 @@ const MeetingEdit = (props) => {
                                                 <input type="file" name="file_pdf" accept=".pdf" id="file_pdf" onChange={handlePDFChange} />
                                             </label> 
                                             {
+                                                pdf && 
+                                                <IconButton
+                                                    onClick={()=>setPdf('')}
+                                                    style={{position: 'absolute',
+                                                        top: '-6px',
+                                                        right: '-6px'}}>
+                                                    <RemoveIcon 
+                                                        style={{width:'22px', height:'22px',
+                                                        color: 'white',
+                                                        background: '#dd0000',
+                                                        borderRadius: '50%'}}/>
+                                                </IconButton>
+                                            }
+                                            {
                                                 _422errors.pdf &&
                                                   <span className="l-alert__text--error ft-16 ft-md-14">
                                                       {_422errors.pdf}
@@ -263,7 +251,7 @@ const MeetingEdit = (props) => {
                                             }
                                         </div>
                                         <div className="edit-set edit-set-mt15">
-                                            <label className="edit-set-file-label" htmlFor="file_image">
+                                            <label className="edit-set-file-label" htmlFor={meeting_image.length < 10 ? 'file_image': ''}>
                                                 画像アップロード
                                                 <input type="file" name="file_image" accept=".png, .jpg, .jpeg" id="file_image"  onChange={handleImageChange}/> 
                                             </label>
@@ -328,53 +316,41 @@ const MeetingEdit = (props) => {
                                         </div>
                                        
                                         <div className={`checkbox-wrap edit-bg ${check_radio!="true" && 'd-none'}`}>
-                                            {
-                                                children_list.length != 0 ?
-                                                    children_temp?.map((item, k)=>
-                                                        <div className="checkbox" key={k}>
-                                                            <label htmlFor={`user_name${k}`}>
-                                                                <input className="boolean optional" 
-                                                                    type="checkbox" 
-                                                                    id={`user_name${k}`}
-                                                                    checked =  {item.checked}
-                                                                    onChange={e=>handleCheck(e, k)}/>
-                                                                {`${item.first_name} ${item.last_name}`}
-                                                            </label>
-                                                        </div>
-                                                    )
-                                                : <p className="text-center">子はありません。</p>
-                                            }
+                                        {
+                                            children_list.length != 0 ?
+                                                children_temp?.map((item, k)=>
+                                                    <div className="checkbox" key={k}>
+                                                        <label htmlFor={`user_name${k}`}>
+                                                            <input className="boolean optional" 
+                                                                type="checkbox" 
+                                                                id={`user_name${k}`}
+                                                                checked =  {item.checked}
+                                                                onChange={e=>handleCheck(e, k)}/>
+                                                            {`${item.first_name} ${item.last_name}`}
+                                                        </label>
+                                                    </div>
+                                                )
+                                            : <p className="text-center">子はありません。</p>
+                                        }
                                         </div>
 
                                         <LoadingButton 
                                             type="submit" fullWidth
                                             loading={submit}
-                                            className="btn-edit btn-default btn-h60 bg-yellow rounded-15">
-                                            <span className={`ft-20 font-weight-bold ${!submit && 'text-black'}`}>ミーティングを更新</span>
+                                            className="btn-edit btn-default btn-h75 bg-yellow rounded-20">
+                                            <span className={`ft-18 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>ミーティングを更新</span>
                                         </LoadingButton>
-                                        {
-                                            _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-                                        } 
-                                        {
-                                            _success && 
-                                            <Alert type="success" 
-                                            hide={()=>  
-                                                history.push({
-                                                pathname: `/admin/meeting/detail/${props.match.params?.meeting_id}`,
-                                                state: {}
-                                            })}>{_success}</Alert>
-                                        }
                                     </form>
                                 </div>     
                             </div>
                         </article>
                     }
-                        
+                    { _400error && <Alert type="fail" hide={()=>set400Error('')}> {_400error} </Alert> } 
+                    { _success && <Alert type="success" hide={()=>setSuccess('')}> {_success} </Alert> }
                     </div>
                     </div>
                 </div>
             </div>
-            <ToastContainer />
         </div>   
 	)
 }

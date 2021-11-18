@@ -14,7 +14,7 @@ const ChildDetail = (props) => {
     const [loaded, setLoaded] = useState(false);
     const [show_delete, setShowDelete] = useState(false);
     const [submit, setSubmit] = useState(false);
-    const [child, setChild] = useState({});
+    const [child, setChild] = useState(null);
     const [_400error, set400Error] = useState('');
     const [_success, setSuccess] = useState(props.history.location.state);
     
@@ -29,6 +29,9 @@ const ChildDetail = (props) => {
           setNotice(response.data.notice);
           if(response.data.status_code==200){
               setChild(response.data.params);
+          }
+          else {
+              set400Error("失敗しました。");
           }
       })
     },[]);
@@ -76,7 +79,7 @@ const ChildDetail = (props) => {
                     <CircularProgress className="css-loader"/>
               }
               {
-                loaded && 
+                loaded && child &&
                 <section className="profile-container">
                   <div className="profile-wrap">
                     <div className="profile-content">
@@ -121,12 +124,11 @@ const ChildDetail = (props) => {
                             <span>入社日を変更</span>
                         </Link>
                       </div>
-
                       <div className="p-profile-txtLink">
-                        <button type="button" className="a-icon txt-link"
-                          onClick={e=>setShowDelete(true)}>
-                          削除する
-                        </button>
+                          <a className="btn-default btn-password btn-r8 btn-h30"
+                              onClick={e=>setShowDelete(true)}>
+                              <span className="ft-xs-16">削除する</span>
+                          </a>
                       </div>
                     </div>
                   </div>

@@ -5,19 +5,21 @@ import { useHistory, Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
+import Alert from '../../component/alert';
 
-const INFINITE = 8;
+const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
 
-const Parent = () => {
+const Parent = (props) => {
 
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
   const [father_list, setFatherList ] = useState([]);
   const [fetch_father_list, setFetchFatherList ] = useState([]);
   const [_422errors, set422errors] = useState({keyword:''});
-  const [_400error, set400error] = useState('');
+  const [_400error, set400Error] = useState('');
+  const [_success, setSuccess] = useState(props.history.location.state);
 
   useEffect(() => {
     setLoaded(false);
@@ -31,6 +33,9 @@ const Parent = () => {
               setFetchFatherList(response.data.params.slice(0, INFINITE));
             else setFetchFatherList(response.data.params.slice(0, len));
         } 
+        else {
+          set400Error("失敗しました。");
+        }
     });
   }, []);
 
@@ -94,10 +99,10 @@ const Parent = () => {
           </div>
 
           <div className="search-wrap">
-            <div className="search-content position-relative" style={{minHeight:'100px'}}>
+            <div className="search-content">
               {
                 !loaded &&
-                      <CircularProgress color="secondary" style={{top:'20px', left:'calc(50% - 22px)', color:'green', position:'absolute'}}/>
+                  <CircularProgress className="css-loader"/>
               }
               { 
                 loaded && 
@@ -136,7 +141,9 @@ const Parent = () => {
                 </InfiniteScroll>
               }
             </div>
-          </div>
+          </div> 
+          { _400error && <Alert type="fail" hide={()=>set400Error('')}> {_400error} </Alert> } 
+          { _success && <Alert type="success" hide={()=>setSuccess('')}> {_success} </Alert> }
         </section>
       </div>
     </div>
