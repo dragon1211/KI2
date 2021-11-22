@@ -56,6 +56,7 @@ const Profile = (props) => {
         let _file = e.target.files[0];
         reader.readAsDataURL(_file);
         reader.onloadend = () => {
+            set422Errors({image: ''});
             axios.put(`/api/fathers/updateImage/${father_id}`, {image: reader.result})
             .then(response => {
                 setNotice(response.data.notice);

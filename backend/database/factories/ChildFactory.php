@@ -35,7 +35,7 @@ class ChildFactory extends Factory
             'password' => Hash::make('password'),
             'last_name' => $this->faker->lastName,
             'first_name' => $this->faker->firstName,
-            'image' => "/assets/img/avatar/avatar-sample02@2x.png",
+            'image' => '/assets/img/dummy/post-dummy01.jpg',
             'company' => $this->faker->company,
             'created_at' => $this->faker->dateTime,
             'updated_at' => $this->faker->dateTime,

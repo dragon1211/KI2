@@ -48,6 +48,7 @@ const ChildDetail = (props) => {
         let _file = e.target.files[0];
         reader.readAsDataURL(_file);
         reader.onloadend = () => {
+            set422Errors({image: ''});
             axios.put(`/api/admin/children/updateImage/${props.match.params?.child_id}`, {image: reader.result})
             .then(response => {
                 switch(response.data.status_code){

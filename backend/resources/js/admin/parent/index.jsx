@@ -79,6 +79,15 @@ const Parent = (props) => {
       <div className="l-content__ttl">
         <div className="l-content__ttl__left">
           <h2>親一覧</h2>
+          <div className="p-meetingAdd-btn">
+              <Link to = '/admin/parent/register' data-v-ade1d018="kikikanri" 
+                className="btn-default btn-yellow btn-meeting btn-shadow btn-r8 btn-h48 btn-fz14">
+                  <span>親を追加する</span>
+                  <svg version="1.1" viewBox="0 0 500 500" className="icon svg-icon svg-fill svg-up">
+                    <path fill="#000" stroke="none" pid="0" d="M250 437.6c-16.5 0-30-13.5-30-30V280.1H92.5c-16.5 0-30-13.5-30-30s13.5-30 30-30H220V92.6c0-16.5 13.5-30 30-30s30 13.5 30 30v127.5h127.5c16.5 0 30 13.5 30 30s-13.5 30-30 30H280v127.5c0 16.5-13.5 30-30 30z"></path>
+                  </svg>
+              </Link>
+          </div>
         </div>
       </div>
       <div className="l-content-wrap">

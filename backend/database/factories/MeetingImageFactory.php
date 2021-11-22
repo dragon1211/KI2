@@ -23,7 +23,7 @@ class MeetingImageFactory extends Factory
     {
         return [
             'meeting_id' => rand(1, 10),
-            'image' => "/assets/img/avatar/avatar-sample02@2x.png",
+            'image' => '/assets/img/dummy/post-dummy01.jpg',
             'created_at' => $this->faker->dateTime,
             'updated_at' => $this->faker->dateTime,
         ];

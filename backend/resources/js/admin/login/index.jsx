@@ -83,8 +83,8 @@ const AdminLogin = () => {
                                 <LoadingButton type="submit" 
                                     loading={submit} 
                                     fullWidth 
-                                    className="btn-edit btn-default btn-h60 bg-yellow rounded-15"> 
-                                    <span className={`ft-18 font-weight-bold ${!submit && 'text-black'}`}>
+                                    className="btn-edit btn-default btn-h75 bg-yellow rounded-20"> 
+                                    <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>
                                         ログイン
                                     </span> 
                                 </LoadingButton>
