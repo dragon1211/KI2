@@ -22,26 +22,12 @@ class MeetingImagesController extends Controller {
 
         // ファイルサイズは10MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
-            try {
-                return strlen(base64_decode($value)) < 1048576;
-            } catch (\Throwable $e) {
-                Log::critical($e->getMessage());
-                return false;
-            }
+            return $this->imagesize($value);
         });
 
         // ミームタイプ
         Validator::extend('image_meme', function ($attribute, $value, $params, $validator) {
-            try {
-                return (
-                    mime_content_type($value) == 'image/jpeg' || // jpg
-                    mime_content_type($value) == 'image/png'  || // png
-                    mime_content_type($value) == 'image/gif'     // gif
-                );
-            } catch (\Throwable $e) {
-                Log::critical($e->getMessage());
-                return false;
-            }
+            return $this->imagememe($value);
         });
 
         // バリデーションエラー
@@ -51,9 +37,10 @@ class MeetingImagesController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
+        $ext = explode('/', mime_content_type($r->image))[1];
+        $filename = $this->uuidv4() . '.'.$ext;
+
         try {
-            $ext = explode('/', mime_content_type($r->image))[1];
-            $filename = uniqid() . '.'.$ext;
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
             Storage::disk('public')->put($filename, $image);
 
@@ -66,6 +53,7 @@ class MeetingImagesController extends Controller {
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
+            Storage::disk('public')->delete($filename);
             return ['status_code' => 400];
         }
 

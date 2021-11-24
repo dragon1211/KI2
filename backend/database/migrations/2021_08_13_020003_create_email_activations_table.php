@@ -18,7 +18,7 @@ class CreateEmailActivationsTable extends Migration
             $table->unsignedTinyInteger('type');
             $table->unsignedBigInteger('father_id')->nullable();
             $table->string('email', 255)->unique();
-            $table->string('token', 16);
+            $table->string('token', 64)->unique();
             $table->dateTime('ttl');
             $table->timestamps();
         });

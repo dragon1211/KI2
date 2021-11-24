@@ -3,6 +3,7 @@ import { LoadingButton } from '@material-ui/lab';
 import axios from 'axios';
 import Alert from '../../component/alert';
 import Notification from '../notification';
+import copy from 'clipboard-copy';
 
 
 const ChildAdd = () => {
@@ -36,9 +37,8 @@ const ChildAdd = () => {
 
   const copyInviteURL = () => {
     const inviteText = "https://kikikan.jp/register-temporary/c-account";
-    navigator.clipboard.writeText(inviteText).then(function() {
-      setSuccess('招待用URLをコピーしました。');
-    })
+    copy(inviteText);
+    setSuccess('招待用URLをコピーしました。');
   }
 
   const copyLineText = () => {
@@ -47,9 +47,8 @@ const ChildAdd = () => {
     "https://kikikan.jp/register-temporary/c-account\n"+
     "▼ 公式サイトはこちら\n"+
     "https://kikikan.jp\n";
-    navigator.clipboard.writeText(lineText).then(function() {
-      setSuccess('招待用URLをLINEで追信しました。');
-    })
+    copy(lineText);
+    setSuccess('招待用URLをLINEで追信しました。');
   }
 
 	return (

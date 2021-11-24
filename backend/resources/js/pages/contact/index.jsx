@@ -38,7 +38,7 @@ const Contact = () => {
 
 
 	return (
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleSubmit} className="edit-form">
             <p className="text-center font-weight-bold ft-25">お問い合わせ</p>
             <div className="edit-set">
                 <label htmlFor="email" className="control-label ft-md-12">メールアドレス</label>
@@ -57,17 +57,13 @@ const Contact = () => {
                         <span className="l-alert__text--error ft-16 ft-md-14">{_422errors.message}</span> 
                 }
             </div>
-
-            <div className="mt-5">
-                <LoadingButton type="submit" fullWidth 
-                    className="btn-edit btn-default btn-h60 bg-yellow rounded-15 py-5"
-                    loading={submit}>
-                    <span className={`ft-18 font-weight-bold ${!submit && 'text-black'}`}>送信</span>
-                </LoadingButton>
-            </div>
-            {
-                _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-            } 
+            <LoadingButton 
+                type="submit" fullWidth
+                loading={submit}
+                className="btn-edit btn-default btn-h75 bg-yellow rounded-20">
+                <span className={`ft-20 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>送信</span>
+            </LoadingButton>
+            {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
         </form>
 	)
 }

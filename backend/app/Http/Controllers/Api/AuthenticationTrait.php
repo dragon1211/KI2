@@ -26,12 +26,7 @@ trait AuthenticationTrait {
 
         if ($this->getGuard() == 'children') {
             Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
-                try {
-                    return strlen((string)$value) == 10 || strlen((string)$value) == 11;
-                } catch (\Throwable $e) {
-                    Log::critical($e->getMessage());
-                    return false;
-                }
+                return $this->telsize($value);
             });
         }
 

@@ -25,7 +25,7 @@ class MeetingFactory extends Factory
             'father_id' => rand(1, 10),
             'title' => $this->faker->name,
             'text' => $this->faker->realText(49),
-            'pdf' => '/assets/img/dummy/sample.pdf',
+            'pdf' => '/assets/default/default.pdf',
             'memo' => $this->faker->realText(49),
             'is_favorite' => $this->faker->numberBetween($min=0, $max=1),
             'created_at' => $this->faker->dateTime,

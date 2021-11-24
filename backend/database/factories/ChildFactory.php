@@ -29,13 +29,13 @@ class ChildFactory extends Factory
         ];
 
         return [
-            'identity' => $this->faker->text(20),
+            'identity' => $this->faker->word,
             'email' => $this->faker->email,
             'tel' => $tel[rand(0, 2)],
             'password' => Hash::make('password'),
             'last_name' => $this->faker->lastName,
             'first_name' => $this->faker->firstName,
-            'image' => '/assets/img/dummy/post-dummy01.jpg',
+            'image' => '/assets/default/avatar.jpg',
             'company' => $this->faker->company,
             'created_at' => $this->faker->dateTime,
             'updated_at' => $this->faker->dateTime,

@@ -32,7 +32,7 @@ class FatherFactory extends Factory
             'email' => $this->faker->email,
             'password' => Hash::make('password'),
             'company' => $this->faker->company,
-            'image' => '/assets/img/dummy/post-dummy01.jpg',
+            'image' => '/assets/default/avatar.jpg',
             'profile' => $this->faker->realText(49),
             'tel' => $tel[rand(0, 2)],
             'created_at' => $this->faker->dateTime,

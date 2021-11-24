@@ -37,7 +37,7 @@ const UnknownError = () => {
 
     
 	return (
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleSubmit} className="edit-form">
             <p className="text-center font-weight-bold ft-25">不明なエラー</p>
 
             <span className="mb-4 mt-70-px l-alert__text--error ft-18 ft-md-16 ">
@@ -62,16 +62,13 @@ const UnknownError = () => {
                 }
             </div>
 
-            <div className="mt-5">
-                <LoadingButton type="submit" fullWidth 
-                    className="btn-edit btn-default btn-h60 bg-yellow rounded-15 py-5"
-                    loading={submit}>
-                    <span className={`ft-18 font-weight-bold ${!submit && 'text-black'}`}>送信</span>
-                </LoadingButton>
-            </div>
-            {
-                _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>
-            } 
+            <LoadingButton 
+                type="submit" fullWidth
+                loading={submit}
+                className="btn-edit btn-default btn-h75 bg-yellow rounded-20">
+                <span className={`ft-20 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>送信</span>
+            </LoadingButton>
+            {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
         </form>
 	)
 }

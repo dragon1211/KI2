@@ -16,6 +16,7 @@ const ParentSignUp = (props) => {
     const [image, setImage] = useState(null); 
     const [company, setCompany] = useState('');
     const [password, setPassword] = useState('');
+    const [password_confirmation, setPasswordConfirmation] = useState('');
     const [tel, setTel] = useState('');
     const [profile, setProfile] = useState('');
 
@@ -23,6 +24,7 @@ const ParentSignUp = (props) => {
         image:'',
         company:'',
         password:'',
+        password_confirmation: '',
         tel:'',
         profile:'',
     });
@@ -35,6 +37,7 @@ const ParentSignUp = (props) => {
             image:'',
             company:'',
             password:'',
+            password_confirmation: '',
             tel:'',
             profile:'',
         });
@@ -43,6 +46,7 @@ const ParentSignUp = (props) => {
         formdata.append('image', image);
         formdata.append('company', company);
         formdata.append('password', password);
+        formdata.append('password_confirmation', password_confirmation);
         formdata.append('tel', tel);
         formdata.append('profile', profile);
         formdata.append('token', props.match.params.token);
@@ -113,6 +117,17 @@ const ParentSignUp = (props) => {
                     _422errors.password &&
                         <span className="l-alert__text--error ft-16 ft-md-14">
                             { _422errors.password }
+                        </span>
+                }
+            </div>
+
+            <div className="edit-set">
+                <label htmlFor="password_confirmation" className="control-label"> 確認用パスワード </label>
+                <input type="password" name="password_confirmation" id="password_confirmation"  className = {`input-default input-nameSei input-h60 input-w480 ${ _422errors.password_confirmation && "is-invalid c-input__target" }`}  value={password_confirmation} onChange={e=>setPasswordConfirmation(e.target.value)}/>
+                {
+                    _422errors.password_confirmation &&
+                        <span className="l-alert__text--error ft-16 ft-md-14">
+                            { _422errors.password_confirmation }
                         </span>
                 }
             </div>

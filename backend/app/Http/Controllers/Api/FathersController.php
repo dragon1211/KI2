@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller, Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -48,13 +49,13 @@ class FathersController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['メールアドレスが未登録です。入力した情報を確認してください。']];
         }
 
-        $token = bin2hex(random_bytes(8));
+        $token = bin2hex(random_bytes(24));
         $create = [
             'type' => 1,
             'father_id' => $result->id,
             'email' => $r->email,
             'token' => $token,
-            'ttl' => date('Y-m-d H:i:s', time()+28800)
+            'ttl' => date('Y-m-d H:i:s', time()+env('TTL_SEC'))
         ];
 
         try {
@@ -97,8 +98,8 @@ class FathersController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['入力したメールアドレスは既に登録済みです。同じメールアドレスは使用できません。']];
         }
         else {
-            $token = bin2hex(random_bytes(8));
-            $create = ['email' => $r->email, 'token' => $token, 'ttl' => date('Y-m-d H:i:s', time()+28800)];
+            $token = bin2hex(random_bytes(24));
+            $create = ['email' => $r->email, 'token' => $token, 'ttl' => date('Y-m-d H:i:s', time()+env('TTL_SEC'))];
 
             try {
                 // DBに入ります。
@@ -120,43 +121,22 @@ class FathersController extends Controller {
     public function registerMain (Request $r) {
         // 電話番号の文字数。
         Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
-            try {
-                return strlen((string)$value) == 10 || strlen((string)$value) == 11;
-            } catch (\Throwable $e) {
-                Log::critical($e->getMessage());
-                return false;
-            }
+            return $this->telsize($value);
         });
 
         // ファイルサイズは10MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
-            try {
-                if (is_null($value)) return true;
-                return strlen($value) < 1048576;
-            } catch (\Throwable $e) {
-                Log::critical($e->getMessage());
-                return false;
-            }
+            return $this->imagesizecannull($value);
         });
-    
+
         // ミームタイプ
         Validator::extend('image_meme', function ($attribute, $value, $params, $validator) {
-            try {
-                if (is_null($value)) return true;
-                return (
-                    mime_content_type($value) == 'image/jpeg' || // jpg
-                    mime_content_type($value) == 'image/png'  || // png
-                    mime_content_type($value) == 'image/gif'     // gif
-                );
-            } catch (\Throwable $e) {
-                Log::critical($e->getMessage());
-                return false;
-            }
+            return $this->imagememecannull($value);
         });
 
         $validate = Validator::make($r->all(), [
             'token' => 'required',
-            'password' => 'required|min:8|max:72',
+            'password' => 'required|min:8|max:72|confirmed',
             'company' => 'max:100',
             'image' => 'image_size|image_meme',
             'profile' => 'max:1000',
@@ -178,12 +158,14 @@ class FathersController extends Controller {
         $password = Hash::make($r->password);
 
         $ext = explode('/', mime_content_type($r->image))[1];
-        $filename = uniqid() . '.'.$ext;
+        $filename = $this->uuidv4() . '.'.$ext;
         $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
         Storage::disk('public')->put($filename, $image);
 
         try {
             // DBの値の準備。
+            DB::beginTransaction();
+
             $create = [
                 'email' => $get->email,
                 'password' => $password,
@@ -194,16 +176,24 @@ class FathersController extends Controller {
             ];
 
             // DBに入ります。
-            Father::create($create);
+            $father = new Father;
+            $emaact = EmailActivation::where('token', $r->token);
+
+            $father->fill($create);
+            $father->push();
 
             // メールを送ります。
             Mail::to($get->email)->send(new FathersRegistrationMainMail());
 
             // email_activationsから削除します。
-            EmailActivation::where('token', $r->token)->delete();
+            $emaact->delete();
+
+            DB::commit();
         } catch (\Throwable $e) {
             // 本登録に失敗
             Log::critical($e->getMessage());
+            DB::rollback();
+            Storage::disk('public')->delete($filename);
             return ['status_code' => 400, 'error_messages' => ['本登録に失敗しました。']];
         }
 
@@ -299,26 +289,12 @@ class FathersController extends Controller {
 
         // ファイルサイズは10MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
-            try {
-                return strlen(base64_decode($value)) < 1048576;
-            } catch (\Throwable $e) {
-                Log::critical($e->getMessage());
-                return false;
-            }
+            return $this->imagesize($value);
         });
 
         // ミームタイプ
         Validator::extend('image_meme', function ($attribute, $value, $params, $validator) {
-            try {
-                return (
-                    mime_content_type($value) == 'image/jpeg' || // jpg
-                    mime_content_type($value) == 'image/png'  || // png
-                    mime_content_type($value) == 'image/gif'     // gif
-                );
-            } catch (\Throwable $e) {
-                Log::critical($e->getMessage());
-                return false;
-            }
+            return $this->imagememe($value);
         });
 
         // バリデーションエラー
@@ -329,27 +305,40 @@ class FathersController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
+        $ext = explode('/', mime_content_type($r->image))[1];
+        $filename = $this->uuidv4() . '.'.$ext;
+        $oldimg = null;
+
         try {
-            $ext = explode('/', mime_content_type($r->image))[1];
-            $filename = uniqid() . '.'.$ext;
+            DB::beginTransaction();
+
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
             Storage::disk('public')->put($filename, $image);
 
-            $update = [
-                'image' => '/storage/'.$filename
-            ];
+            $father = Father::find((int)$father_id);
+            if (!is_null($father->image)) {
+                $oldimg = $father->image;
+            }
+            $father->image = '/storage/'.$filename;
+            $father->save();
 
-            Father::where('id', (int)$father_id)->update($update);
-
-            $get = Father::where('id', (int)$father_id)->first();
-            $login_user_datum = $get->toArray();
+            $login_user_datum = $father->toArray();
             unset($login_user_datum['password']);
+
             // セッションに保存する
             session()->put('fathers', $login_user_datum);
+
+            DB::commit();
         } catch (\Throwable $e) {
             // 親プロフィール画像のアップロードに失敗
             Log::critical($e->getMessage());
+            DB::rollback();
+            Storage::disk('public')->delete($filename);
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
+        }
+
+        if (!is_null($oldimg)) {
+            $stor = Storage::disk('public')->delete($oldimg);
         }
 
         // 親プロフィール画像のアップロードに成功
@@ -367,12 +356,7 @@ class FathersController extends Controller {
 
         // 電話番号の文字数。
         Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
-            try {
-                return strlen((string)$value) == 10 || strlen((string)$value) == 11;
-            } catch (\Throwable $e) {
-                Log::critical($e->getMessage());
-                return false;
-            }
+            return $this->telsize($value);
         });
 
         // バリデーションエラー
@@ -431,19 +415,23 @@ class FathersController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
-        $update = [
-            'password' => Hash::make($r->password)
-        ];
-
         try {
-            Father::where('id', (int)$father_id)->update($update);
+            DB::beginTransaction();
+
+            $father = Father::find((int)$father_id);
+            $father->password = Hash::make($r->password);
+            $father->save();
 
             if (isset($r->token)) {
-                EmailActivation::where('token', $r->token)->delete();
+                $emaact = EmailActivation::where('token', $r->token);
+                $emaact->delete();
             }
+
+            DB::commit();
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
+            DB::rollback();
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
@@ -466,10 +454,7 @@ class FathersController extends Controller {
         try {
             foreach (json_decode($r->tel) as $tel) {
                 // SMSを送ります。
-                $message = '未承知のミーティングがあります。
-以下より確認してください。
-'.url('/').'/c-account/meeting/detail/'.$r->meeting_id;
-
+                $message = view('sms.fathers.approval', ['meeting_id' => $r->meeting_id]);
                 \Notification::route('nexmo', '81'.substr($tel, 1))->notify(new SmsNotification($message));
             }
         }
@@ -484,7 +469,13 @@ class FathersController extends Controller {
 
     public function withdrawal (Request $r) {
         try {
-            Father::where('id', (int)$r->father_id)->delete();
+            $father = Father::find((int)$r->father_id);
+            $img = $father->image;
+            $father->delete();
+
+            if (!is_null($img)) {
+                Storage::disk('public')->delete($img);
+            }
             Session::forget($this->getGuard());
         } catch (\Throwable $e) {
             // 失敗

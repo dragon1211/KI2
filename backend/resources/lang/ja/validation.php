@@ -154,6 +154,24 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'email' => 'メール',
+        'password' => 'パスワード',
+        'password_confirm' => '確認用パスワード',
+        'company' => '会社名',
+        'image' => '画像',
+        'profile' => 'プロフィール',
+        'identity' => 'ID',
+        'tel' => '電話',
+        'token' => 'トークン',
+        'hire_at' => '入社日',
+        'title' => 'タイトル',
+        'text' => '本文',
+        'memo' => 'メモ',
+        'pdf' => 'PDF',
+        'message' => 'お問合せ内容',
+        'last_name' => '姓',
+        'first_name' => '名',
+    ],
 
 ];

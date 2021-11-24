@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\Child;
@@ -66,11 +67,17 @@ class MeetingApprovalsController extends Controller {
         }
 
         try {
+            DB::beginTransaction();
+
             foreach ($r->children as $k => $v) {
-                MeetingApprovals::where('child_id', (int)$v)->where('meeting_id', (int)$r->meeting_id)->delete();
+                $meap = MeetingApprovals::where('child_id', (int)$v)->where('meeting_id', (int)$r->meeting_id);
+                $meap->delete();
             }
+
+            DB::commit();
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
+            DB::rollback();
             return ['status_code' => 400];
         }
 

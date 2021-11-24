@@ -31,7 +31,7 @@ class ContactsController extends Controller {
             Contacts::create($insert);
 
             // メールを送ります。
-            Mail::to($r->email)->cc(config('mail.cc.address'))->bcc(config('mail.bcc.address'))->send(new FathersRegistrationTemporaryMail($r->message));
+            Mail::to($r->email)->cc(config('mail.cc.address'))->bcc(config('mail.bcc.address'))->send(new ContactsMail($r->message));
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());

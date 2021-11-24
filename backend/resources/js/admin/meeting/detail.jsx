@@ -140,18 +140,13 @@ const MeetingDetail = (props) => {
                           </figure>
                         </div>
                         <div className="p-file-nav">
-                          {
-                            meeting.meeting_image?.map((x, k)=>
-                              <figure key={k}>
-                                <img src={x.image} alt={x.image} onClick={e=>setThumbnail(x.image)}/>
-                              </figure>
-                            )
-                          }
-                          {
-                            [...Array(10-meeting.meeting_image.length)].map((x, k)=>
-                              <figure key={k}></figure>
-                            )
-                          }
+                        {
+                          meeting.meeting_image?.map((x, k)=>
+                            <figure key={k}>
+                              <img src={x.image} alt={x.image} onClick={e=>setThumbnail(x.image)}/>
+                            </figure>
+                          )
+                        }
                         </div>
                       </div>
   

@@ -27,67 +27,18 @@ class MeetingsController extends Controller {
 
         // ファイルサイズは10MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
-            try {
-                $ok = true;
-                foreach (json_decode($value) as $v) {
-                    if (strlen(base64_decode($v)) > 1048576) {
-                        $ok = false;
-                    }
-                }
-                return $ok;
-            } catch (\Throwable $e) {
-                Log::critical($e->getMessage());
-                return false;
-            }
+            return $this->imagesizemulti($value);
         });
 
         // ミームタイプ
         //// 画像
         Validator::extend('image_meme', function ($attribute, $value, $params, $validator) {
-            try {
-                $ok = true;
-                foreach (json_decode($value) as $v) {
-                    if (substr($v, -5) == '.jpeg' || substr($v, -4) == '.jpg' || substr($v, -4) == '.png' || substr($v, -4) == '.gif') {
-                        if (
-                            substr($v, -5) != '.jpeg' && // jpeg
-                            substr($v, -4) != '.jpg'  && // jpg
-                            substr($v, -4) != '.png'  && // png
-                            substr($v, -4) != '.gif'     // gif
-                        ) {
-                            $ok = false;
-                        }
-                    }
-                    else {
-                        if (
-                            mime_content_type($v) != 'image/jpeg' && // jpg
-                            mime_content_type($v) != 'image/png'  && // png
-                            mime_content_type($v) != 'image/gif'     // gif
-                        ) {
-                            $ok = false;
-                        }
-                    }
-                }
-
-                return $ok;
-            } catch (\Throwable $e) {
-                Log::critical($e->getMessage());
-                return false;
-            }
+            return $this->imagememeorfile($value);
         });
 
         //// PDF
         Validator::extend('pdf_meme', function ($attribute, $value, $params, $validator) {
-            try {
-                if (substr($value, -4) != '.pdf') {
-                    return mime_content_type($value) == 'application/pdf';
-                }
-                else {
-                    return substr($value, -4) == '.pdf';
-                }
-            } catch (\Throwable $e) {
-                Log::critical($e->getMessage());
-                return false;
-            }
+            return $this->pdfmeme($value);
         });
 
         $validate = Validator::make($r->all(), [
@@ -109,9 +60,12 @@ class MeetingsController extends Controller {
             'memo' => $r->memo
         ];
 
+        $filename = '';
+        $fnames = [];
+
         try {
             if (isset($r->pdf)) {
-                $filename = uniqid() . '.pdf';
+                $filename = $this->uuidv4() . '.pdf';
                 $insert['pdf'] = '/storage/'.$filename;
 
                 if (substr($r->pdf, -4) != '.pdf') {
@@ -130,7 +84,8 @@ class MeetingsController extends Controller {
                 foreach ($r->image as $img) {
                     if (substr($img, -5) != '.jpeg' && substr($img, -4) != '.jpg' && substr($img, -4) != '.png' && substr($img, -4) != '.gif') {
                         $ext = explode('/', mime_content_type($img))[1];
-                        $fname = uniqid() . '.'.$ext;
+                        $fname = $this->uuidv4() . '.'.$ext;
+                        $fnames[] = $fname;
                         $image = base64_decode(substr($img, strpos($img, ',') + 1));
                         Storage::disk('public')->put($fname, $image);
 
@@ -164,6 +119,14 @@ class MeetingsController extends Controller {
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
+            if (isset($r->pdf)) {
+                Storage::disk('public')->delete($filename);
+            }
+            if (isset($r->image)) {
+                foreach ($fnames as $f) {
+                    Storage::disk('public')->delete($f);
+                }
+            }
             return ['status_code' => 400, 'error_messages' => ['ミーティングの登録に失敗しました。']];
         }
 
@@ -700,26 +663,9 @@ class MeetingsController extends Controller {
         }
 
         // ミームタイプ
-        if (substr($r->pdf, -4) != '.pdf') {
-            Validator::extend('pdf_meme', function ($attribute, $value, $params, $validator) {
-                try {
-                    return mime_content_type($value) == 'application/pdf';
-                } catch (\Throwable $e) {
-                    Log::critical($e->getMessage());
-                    return false;
-                }
-            });
-        }
-        else {
-            Validator::extend('pdf_meme', function ($attribute, $value, $params, $validator) {
-                try {
-                    return substr($value, -4) == '.pdf';
-                } catch (\Throwable $e) {
-                    Log::critical($e->getMessage());
-                    return false;
-                }
-            });
-        }
+        Validator::extend('pdf_meme', function ($attribute, $value, $params, $validator) {
+            return $this->pdfmeme($value);
+        });
 
         $validate = Validator::make($r->all(), [
             'title' => 'required|max:100',
@@ -732,6 +678,10 @@ class MeetingsController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
+        if ($r->pdf == '/assets/default/default.pdf') {
+            $r->pdf = null;
+        }
+
         $update = [
             'title' => $r->title,
             'text' => $r->text,
@@ -740,10 +690,12 @@ class MeetingsController extends Controller {
         if (isset($r->memo)) $update['memo'] = $r->memo;
         else if (is_null($r->memo)) $update['memo'] = '';
 
+        $filename = '';
+
         try {
             // リクエストでPDFがある場合
-            if (isset($r->pdf)) {
-                $filename = uniqid() . '.pdf';
+            if (isset($r->pdf) && !is_null($r->pdf)) {
+                $filename = $this->uuidv4() . '.pdf';
 
                 // DBにミーティングがある場合
                 if ($chk = Meeting::select('pdf')->where('id', (int)$meeting_id)->first()) {
@@ -778,6 +730,9 @@ class MeetingsController extends Controller {
             Meeting::where('id', (int)$meeting_id)->update($update);
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
+            if (isset($r->pdf) && !is_null($r->pdf)) {
+                Storage::disk('public')->delete($filename);
+            }
             return ['status_code' => 400];
         }
 

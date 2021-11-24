@@ -23,7 +23,7 @@ class AdminsTableSeeder extends Seeder
             'password' => Hash::make('password')
         ]);
         \App\Models\Admin::create([
-            'email' => 'chnakna77@gmail.com',
+            'email' => 'chankan77@gmail.com',
             'password' => Hash::make('password')
         ]);
     }
