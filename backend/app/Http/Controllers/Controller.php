@@ -50,6 +50,7 @@ class Controller extends BaseController
     }
 
     public function imagesizecannull ($value) {
+        if ($value == 'null') $value = null;
         if (is_null($value)) return true;
         return $this->imagesize($value);
     }
@@ -68,6 +69,7 @@ class Controller extends BaseController
     }
 
     public function imagememecannull ($value) {
+        if ($value == 'null') $value = null;
         if (is_null($value)) return true;
         return $this->imagememe($value);
     }
@@ -91,6 +93,25 @@ class Controller extends BaseController
                 }
             }
 
+            return $ok;
+        } catch (\Throwable $e) {
+            Log::critical($e->getMessage());
+            return false;
+        }
+    }
+
+    public function imagemememulti ($value) {
+        try {
+            $ok = true;
+            foreach (json_decode($value) as $v) {
+                if (
+                    mime_content_type($v) != 'image/jpeg' && // jpg
+                    mime_content_type($v) != 'image/png'  && // png
+                    mime_content_type($v) != 'image/gif'     // gif
+                ) {
+                    $ok = false;
+                }
+            }
             return $ok;
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());

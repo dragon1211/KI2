@@ -30,12 +30,12 @@ const ContactComplete = () => {
             <div className="d-flex justify-content-between">
                 <div className="w-50 pr-1">
                     <Button fullWidth className="btn-edit btn-default btn-h75 bg-yellow rounded-20" onClick={()=>{window.location.href="/p-account/login"}}>
-                        <span className="ft-20 ft-xs-16 font-weight-bold text-black">親ログイン画面へ</span>
+                        <span className="ft-18 ft-xs-16 font-weight-bold text-black">親ログイン画面へ</span>
                     </Button>
                 </div>
                 <div className="w-50 pl-1">
                     <Button fullWidth className="btn-edit btn-default btn-h75 bg-yellow rounded-20"  onClick={()=>{window.location.href="/c-account/login"}}>
-                        <span className="ft-20 ft-xs-16 font-weight-bold text-black">子ログイン画面へ</span>
+                        <span className="ft-18 ft-xs-16 font-weight-bold text-black">子ログイン画面へ</span>
                     </Button>
                 </div>
             </div>

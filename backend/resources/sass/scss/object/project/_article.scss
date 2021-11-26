@@ -1,0 +1,214 @@
+ /* #Article
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: article
+name: article
+categories: [project]
+---
+
+記事に関するコンポーネントです。
+
+```block
+```
+*/
+
+.p-article{
+  &-wrap{
+    @include pc{
+      padding: 30px 35px 50px;
+    }
+  }
+
+  &__content{
+    .meeting-member{
+      margin-bottom: 15px;
+    }
+    .meeting-ttl{
+      @include pc{
+        margin-bottom: 3px;
+      }
+    }
+    .meeting-time{
+      margin-bottom: 25px;
+    }
+  }
+  &__txt{
+    margin-bottom: 15px;
+    max-height: 100%;
+  }
+  &__pdf{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    &__btn{
+      width: 100%;
+      margin-right: 10px;
+    }
+  }
+  &-btn{
+    &-list{
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 25px;
+    }
+    &__item{
+      width: 23.5%;
+      a{
+        @include sp{
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
+  .meeting-member-count{
+    @include sp{
+      display: none;
+    }
+  }
+  .meeting-member__item{
+    .avatar{
+      @include sp{
+        width: 38px;
+        height: 38px;
+      }
+      @include min{
+        width: 30px;
+        height: 30px;
+      }
+    }
+  }
+  .meeting-member-link{
+    @include sp{
+      margin-bottom: 20px;
+    }
+  }
+}
+.p-article__context{
+  width: 100%;
+}
+.p-article__content{
+  width: 100%;
+}
+.p-file{
+  &-list{
+    margin-bottom: 25px;
+    max-width: 700px;
+  }
+  &-for{
+    padding: 50px 0;
+    border: 1px solid rgba(36,77,138,.1);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    @include pc{
+      padding: 80px 0;
+    }
+  }
+  &-nav{
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    width: 100%;
+    max-width: 100%;
+    @include pc{
+      max-width: 495px;
+    }
+    figure{
+      width: calc((100% - 220px) / 3);
+      min-width: 54px;
+      margin-right: 10px;
+      border: 1px solid rgba(36,77,138,.1);
+      transition: all .2s ease-out;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      @include pc{
+        &:hover{
+          opacity: 0.8;
+        }
+      }
+      &:before{
+        content: "";
+        display: block;
+        padding-top: 100%;
+      }
+      img{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        -o-object-fit: cover;
+        object-fit: cover;
+        font-family: "object-fit: cover;";
+      }
+    }
+  }
+  &-image{
+    display: flex;
+    flex-wrap: wrap;
+    margin: 8px -6px;
+    align-items: center;
+    justify-content: space-between;
+    figure{
+      width: calc(20% - 12px);
+      overflow: hidden;
+      margin: 10px 5px 0;
+      border: 1px solid rgba(36,77,138,.1);
+      transition: all .2s ease-out;
+      position: relative;
+      @include pc{
+        &:hover{
+          opacity: 0.8;
+        }
+      }
+      &:before{
+        content: "";
+        display: block;
+        padding-top: 100%;
+      }
+      &:last-child{
+        @include sp{
+          margin-right: auto;
+        }
+      }
+      img{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        object-fit: cover;
+        font-family: 'object-fit: cover;';
+      }
+      &.image-upload{
+        cursor: pointer;
+        &:after{
+          display: block;
+          content: "";
+          width: 22px;
+          height: 22px;
+          border-radius: 11px;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 21 21'%3E%3Ccircle cx='10.5' cy='10.5' r='10.5' style='fill:%23d82828'/%3E%3Cline x1='4' y1='10.5' x2='17' y2='10.5' style='fill:none;stroke:%23fff'/%3E%3C/svg%3E");
+          position: absolute;
+          right: 2px;
+          bottom: 2px;
+          box-shadow: 0 0px 4px rgb(0 0 0 / 30%);
+          @include sp{
+            width: 18px;
+            height: 18px;
+            border-radius: 9px;
+          }
+        }
+        
+      }
+      
+    }
+  }
+}

@@ -1,0 +1,106 @@
+ /* #Main
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: main
+name: main
+categories: [layout]
+---
+
+`<main>`タグのスタイルです。ドキュメントのメインコンテンツを示し、ドキュメント内で1つしか記述できません。
+<article>タグや<nav>タグなどの中に入れることはできません。
+
+取り扱いの難しいタグなので、使わないという選択をするのもいいでしょう。
+
+```block
+<body>
+  <main id="l-main">
+  </main>
+</body>
+```
+*/
+
+.l-centeringbox{
+  width: 100%;
+  height: 100%;
+  &-wrap{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%,0);
+    width: 100%;
+    border-radius: 20px;
+    box-sizing: border-box;
+    @include pc{
+      padding: 192px 0;
+    }
+  }
+}
+.l-container{
+  display: flex;
+  flex-flow: row-reverse;
+  background: #fff;
+  justify-content: flex-end;
+  @include pc{
+    background: $_color-bg02;
+  }
+}
+.l-single {
+  &-main{
+    min-height: 100vh; /* Fallback */
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+  &-container{
+    max-width: 540px;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 8px;
+    padding: 50px 24px 70px;
+    background: #fff;
+    box-sizing: border-box;
+    display: block;
+    @include pc{
+      width: 540px;
+      max-width: none;
+      box-shadow: 0 1px 4px #dddddd;
+      padding: 60px 60px 60px;
+    }
+    h1{
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 35px;
+      line-height: 1;
+      @include pc{
+        margin-bottom: 35px;
+        font-size: 2.8rem;
+      }
+      @include sp{
+        letter-spacing: 0.02em;
+      }
+      @include min{
+        font-size: 2.8rem;
+      }
+   }
+  }
+  &-inner{
+    width: 100%;
+    margin: 0 auto;
+    width: 410px;
+    @include sp02{
+      width: 100%;
+    }
+    .form-group{
+      margin: 0 0 17px;
+      @include pc{
+        margin: 0 0 20px;
+      }
+    }
+  }
+}
+.l-registration{
+  .l-single-container h1{
+    @include pc{
+      margin-bottom: 40px;
+    }
+  }
+}

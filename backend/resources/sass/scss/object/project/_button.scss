@@ -1,0 +1,288 @@
+ /* #Btn-icon
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: btn-icon
+name: btn-icon
+categories: [project]
+---
+
+ボタンコンポーネントです。
+
+Modifierは以下のとおりです。
+
+* 100%表示 `-full`
+* width指定 `-w`
+* height指定 `-h`
+* 真円 `-circle`
+* 楕円 `-r`
+
+```block
+```
+*/
+
+/* icon */
+.icon{
+
+}
+.svg{
+  &-icon{
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    color: inherit;
+    vertical-align: middle;
+    fill: none;
+    stroke: currentColor;
+  }
+  &-fill{
+    fill: currentColor;
+    stroke: none;
+  }
+  &-up{
+    transform: rotate(0deg);
+  }
+  &-y50{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.btn{
+  &-meeting{
+    @include pc{
+      padding: 0 5px 0 8px;
+    }
+    .icon{
+      width: 22px;
+      height: 22px;
+      position: relative;
+      @include pc{
+        top: -1px;
+        padding-left: 11px;
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+}
+
+.btn {
+  &-default{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font-size: 1.6rem;
+    font-weight: bold;
+    border: 1px solid transparent;
+    -webkit-transition: all ease-out .2s;
+    transition: all ease-out .2s;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1;
+    &:hover{
+      opacity: 0.7;
+    }
+  }
+  &-yellow{
+    background: #F0DE00;
+    /* border: 1px solid #F0DE00; */
+    border: none;
+  }
+  /* font-size */
+  &-fz14{
+    font-size: 1.4rem;
+  }
+  /* shadow */
+  &-shadow{
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+}
+/* 
+.p-btn {
+  display: inline-block;
+  margin: 0;
+  padding: 0.75em;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  @include _on-event {
+    text-decoration: none;
+  }
+  &:disabled,
+  &.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  &--base{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &--inner{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1px;
+  }
+}
+*/
+
+.p-btn--full {
+  width: 100%;
+}
+
+.p-btn--circle {
+  border-radius: 50%;
+}
+
+
+/**
+ * 角丸
+ */
+.btn-r3 {
+  border-radius: 3px;
+} 
+.btn-r5 {
+  border-radius: 5px;
+}
+.btn-r8 {
+  border-radius: 8px;
+}
+.btn-r10 {
+  border-radius: 10px;
+}
+.btn-r14{
+  border-radius: 10px;
+  @include pc{
+    border-radius: 14px;
+  }
+}
+.btn-r15 {
+  border-radius: 15px;
+}
+.btn-r20 {
+  border-radius: 20px;
+}
+.btn-r24 {
+  border-radius: 24px;
+}
+.btn-r25 {
+  border-radius: 25px;
+}
+.btn-r30 {
+  border-radius: 5px;
+}
+.btn-r35 {
+  border-radius: 35px;
+}
+.btn-r40 {
+  border-radius: 40px;
+}
+.btn-r45 {
+  border-radius: 45px;
+}
+.btn-r50 {
+  border-radius: 50px;
+}
+
+/**
+ * width
+ */
+
+.btn-w100p{
+  max-width: 100%;
+}
+.btn-w56 {
+  max-width: 56px;
+}
+.btn-w130 {
+  max-width: 130px;
+}
+.btn-w150 {
+  max-width: 150px;
+}
+.btn-w170 {
+  max-width: 170px;
+}
+.btn-w200 {
+  max-width: 200px;
+}
+.btn-w230 {
+  max-width: 230px;
+}
+.btn-w250 {
+  max-width: 250px;
+}
+.btn-w300 {
+  max-width: 300px;
+}
+.btn-w320 {
+  max-width: 320px;
+}
+
+
+/**
+ * height
+ */
+.btn-h28 {
+  height: 28px;
+}
+.btn-h30 {
+  height: 30px;
+}
+.btn-h42 {
+  height: 42px;
+}
+.btn-h45 {
+  height: 45px;
+}
+.btn-h48 {
+  height: 48px;
+}
+.btn-h50 {
+  height: 50px;
+}
+.btn-h52 {
+  height: 52px;
+  line-height: 48px;
+}
+.btn-h55 {
+  height: 55px;
+}
+.btn-h60 { 
+  height: 60px;
+  line-height: 56px;
+}
+.btn-h65 {
+  height: 65px;
+}
+.btn-h70 {
+  height: 66px;
+  @include pc{
+    height: 70px;
+  } 
+}
+.btn-h75 {
+  height: 75px;
+}
+.btn-h80 {
+  height: 80px;
+}
+.btn-h85 {
+  height: 85px;
+}
+.btn-h90 {
+  height: 90px;
+}

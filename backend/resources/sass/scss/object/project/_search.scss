@@ -1,0 +1,102 @@
+ /* #Search
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: search
+name: search
+categories: [project]
+---
+
+検索ページ関係のコンポーネントです。
+
+```block
+```
+*/
+
+.search{
+  &-container{
+    @include pc{
+      padding: 10px 32px;
+    }
+  }
+  &-wrap{
+
+  }
+  &-content{
+
+  }
+  &-item{
+    &:not(:last-child){
+      border-bottom: 1px solid rgba(36,77,138,.1);
+    }
+    &:first-child{
+      @include sp{
+        border-top: 1px solid rgba(36,77,138,.1);
+      }
+    }
+    &:last-child{
+      @include sp{
+        border-bottom: 1px solid rgba(36,77,138,.1);
+      }
+    }
+    a{
+      display: block;
+      padding: 11px 0;
+      position: relative;
+      @include pc{
+        padding: 15px 0;
+      }
+      &:after{
+        display: block;
+        content: "";
+        position: absolute;
+        left: -32px;
+        top: 0;
+        width: calc(100% + 64px);
+        height: 100%;
+        opacity: 0;
+        background: #f8f8f8;
+        transition: .3s;
+        z-index: 1;
+      }
+      &:hover{
+        &:after{
+          opacity: 1;
+        }
+      }
+    }
+    .user{
+      &-wrap{
+        display: flex;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+      }
+      &-avatar{
+        min-width: 60px;
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        border: 1px solid #f0de00;
+        margin-right: 13px;
+        @include pc{
+          margin-right: 15px;
+        }
+      }
+      &-info{
+
+      }
+      &-name{
+        font-weight: bold;
+        margin-bottom: 6px;
+        line-height: 1.3;
+        padding-right: 15px;
+      }
+      &-tel{
+        font-size: 1.4rem;
+        line-height: 1;
+        margin-bottom: 2px;
+      }
+    }
+  }
+}

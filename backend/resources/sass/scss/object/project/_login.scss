@@ -1,0 +1,38 @@
+ /* #Login
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: login
+name: login
+categories: [project]
+---
+
+ログイン関係のコンポーネントです。
+
+```block
+```
+*/
+
+.login{
+  &-panel{
+    .links{
+      text-align: center;
+      padding: 28px 0 0;
+      @include pc{
+        padding: 32px 0 0;
+      }
+    }
+    a{
+      @include _on-event {
+        text-decoration: underline;
+      }
+    }
+  }
+  &-submit{
+    margin-top: 35px;
+  }
+}
+
+.user_remember_me + .login-submit{
+  margin-top: 30px;
+}

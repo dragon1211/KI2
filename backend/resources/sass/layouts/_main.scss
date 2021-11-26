@@ -31,8 +31,10 @@ a{
 
 .input-default{
   border-radius: 20px !important;
-  height: 55px;
   font-size: 18px;
+  @include sp{
+    height: 55px;
+  }
 }
 
 .control-label{
@@ -65,22 +67,6 @@ a{
   color: #6f7372;
 }
 
-
-.text-icon{
-  position:relative;
-  &:after{
-    background-size:33px 30px;
-    width:33px;
-    height:32px;
-    position:absolute;
-    right:0;
-    top:0
-  }
-}
-.icon-text:after{
-  background:url(/assets/img/icon/file-text.svg) no-repeat;
-  background-size: 35px 32px;
-}
 
 .meeting-item{
   &:last-child{
@@ -285,3 +271,6 @@ a{
     font-size: 16px !important;
   }
 }
+
+
+

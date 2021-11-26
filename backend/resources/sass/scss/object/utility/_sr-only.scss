@@ -1,0 +1,43 @@
+ /* #Sr-only
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: sr-only
+name: sr-only
+categories: [utility]
+---
+
+要素を非表示にさせますが、スクリーンリーダーには読み上げられます。
+
+```block
+
+```
+*/
+
+@include pc {
+  .v-sp,
+  .h-pc {
+    display: none ;
+  }
+}
+@include sp {
+  .v-pc,
+  .h-sp {
+    display: none ;
+  }
+}
+@media screen and (min-width: 1024px) {
+  .h-md{
+    display: none ;
+  }
+}
+@media screen and (max-width: 1023px) {
+  .v-md{
+    display: none ;
+  }
+}
+@media screen and (min-width: 568px) {
+  .v-se {
+    display: none ;
+  }
+}

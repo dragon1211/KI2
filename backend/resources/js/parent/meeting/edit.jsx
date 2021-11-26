@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Alert from '../../component/alert';
 import Notification from '../notification';
 
+const REGISTED_IMAGE_ID = -100;            //登録された画像を区別するために導入されます。
 
 const MeetingEdit = (props) => {
 
@@ -42,7 +43,7 @@ const MeetingEdit = (props) => {
         axios.get(`/api/fathers/meetings/detail/${meeting_id}`, {params: { father_id: father_id}})
         .then(response => {
             setLoaded(true);
-            setNotice(response.data.notice)
+            setNotice(response.data.notice);
             if(response.data.status_code==200){
                 setMeeting(response.data.params);
                 setTitle(response.data.params?.title);
@@ -130,7 +131,7 @@ useEffect(()=>{
             switch(response.data.status_code){
                 case 200: {
                     history.push({
-                        pathname: `/p-account/meeting/detail/${props.match.params?.meeting_id}`,
+                        pathname: `/p-account/meeting/detail/${meeting_id}`,
                         state: "編集が完了しました!"
                     });
                     break;
@@ -144,34 +145,53 @@ useEffect(()=>{
 
     const handleImageChange = (e) => {
         e.preventDefault();
-        let reader = new FileReader();
-        let _file = e.target.files[0];
-        if(!_file) return;
-        reader.readAsDataURL(_file);
-        reader.onloadend = () => {
+        const files = Array.from(e.target.files);
+        if(e.target.files.length + meeting_image.length > 10)
+        {
+            set400Error("画像は最大10個までです。");
+            return;
+        }
+        const promises = files.map(_file => {
+            return (new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.addEventListener('load', (ev) => {
+                    resolve(ev.target.result);
+                });
+                reader.addEventListener('error', reject);
+                reader.readAsDataURL(_file);
+            }))
+        });
+
+        Promise.all(promises).then(images => {
             const formdata = new FormData();
-            formdata.append('image', reader.result);
+            formdata.append('image', JSON.stringify(images));
             axios.post(`/api/fathers/meeting/images/register`, formdata,  {params:{meeting_id: meeting_id}})
-            .then(response => {
+            .then(response=>{
                 setNotice(response.data.notice);
                 switch(response.data.status_code){
-                    case 200: setMeetingImages(response.data.params);  break;
-                    case 400: set400Error(response.data.error_messages); break;
+                    case 400: set400Error("編集が失敗しました。"); break;
                     case 422: set422Errors(response.data.error_messages); break;
-                } 
-            });  
-        };
+                    case 200: {
+                        setMeetingImages(response.data.params); break;
+                    }
+                }
+            })
+        }, 
+        error => { console.error(error); });
     };
 
-    const handleDeleteImage = (image_id) => {
+
+    const handleDeleteImage = (index, image_id) => {
         axios.delete(`/api/fathers/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
         .then(response=>{
             setNotice(response.data.notice);
             switch(response.data.status_code){
-                case 200: setMeetingImages(response.data.params); break;
                 case 400: set400Error("画像の削除に失敗しました。");
             }
         })
+        let list = [...meeting_image];
+        list.splice(index, 1);
+        setMeetingImages(list);
     }
 
     const handleChangePDF = (e) => {
@@ -274,7 +294,7 @@ useEffect(()=>{
                                         <div className="edit-set edit-set-mt15">
                                             <label className="edit-set-file-label" htmlFor={meeting_image.length < 10 ? 'file_image': ''}>
                                                 画像アップロード
-                                                <input type="file" name="file_image" accept=".png, .jpg, .jpeg" id="file_image"  onChange={handleImageChange}/> 
+                                                <input type="file" multiple="multiple" name="file_image[]" accept=".png, .jpg, .jpeg" id="file_image"  onChange={handleImageChange}/> 
                                             </label>
                                             {
                                                 _422errors.image &&
@@ -290,7 +310,7 @@ useEffect(()=>{
                                                 <figure className="image-upload" key={k}>
                                                     <img src={x.image} alt={x.image} />
                                                     <IconButton
-                                                        onClick={e=>handleDeleteImage(x.id)}
+                                                        onClick={e=>handleDeleteImage(k, x.id)}
                                                         style={{position: 'absolute',
                                                             bottom: '-6px',
                                                             right: '-6px'}}>
@@ -319,7 +339,7 @@ useEffect(()=>{
                                                     value={false}
                                                     onClick={e=>setCheckRadio(e.target.value)}
                                                     />
-                                                <span>全員に送信</span>
+                                                <span className="lbl padding-16">全員に送信</span>
                                             </label>
                                         </div>
                 
@@ -332,7 +352,7 @@ useEffect(()=>{
                                                     value={true}
                                                     onClick={e=>setCheckRadio(e.target.value)}
                                                     />
-                                                <span>選んで送信</span>
+                                                <span className="lbl padding-16">選んで送信</span>
                                             </label>
                                         </div>
                                        
@@ -347,7 +367,9 @@ useEffect(()=>{
                                                                     id={`user_name${k}`}
                                                                     checked =  {item.checked}
                                                                     onChange={e=>handleCheck(e, k)}/>
-                                                                {`${item.first_name} ${item.last_name}`}
+                                                                <span className="lbl padding-16">
+                                                                    {`${item.first_name} ${item.last_name}`}
+                                                                </span>
                                                             </label>
                                                         </div>
                                                     )
@@ -359,7 +381,7 @@ useEffect(()=>{
                                             type="submit" fullWidth
                                             loading={submit}
                                             className="btn-edit btn-default btn-h75 bg-yellow rounded-15">
-                                            <span className={`ft-20 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>ミーティングを更新</span>
+                                            <span className={`ft-18 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>ミーティングを更新</span>
                                         </LoadingButton>
                                     </form>
                                 </div>     

@@ -8,10 +8,12 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import Alert from '../../component/alert';
 
 
-const MeetingEdit = (props) => {
+const REGISTED_IMAGE_ID = -100;            //登録された画像を区別するために導入されます。
 
+
+const MeetingEdit = (props) => {
+    const meeting_id = props.match.params.meeting_id;
     const history = useHistory();
-    
     const [meeting, setMeeting] = useState(null);
     const [title, setTitle] = useState('');
     const [memo, setMemo] = useState('');
@@ -54,7 +56,7 @@ const MeetingEdit = (props) => {
 
     useEffect(() => {
         setLoaded(false);
-        axios.get(`/api/admin/meetings/detail/${props.match.params?.meeting_id}`)
+        axios.get(`/api/admin/meetings/detail/${meeting_id}`)
         .then(response => {
             setLoaded(true);
             if(response.data.status_code==200){
@@ -84,7 +86,7 @@ const MeetingEdit = (props) => {
 
 
     const handleSubmit = (e) => {
-        e.preventDefault();
+         e.preventDefault();
         set422Errors({title:'',memo:'',text:'',pdf:'',image:''});
 
         var approval_registerIndexes = [];
@@ -102,18 +104,18 @@ const MeetingEdit = (props) => {
 
         const formdata = new FormData();
         formdata.append('children', JSON.stringify(approval_registerIndexes));
-        axios.post('/api/admin/meeting/approvals/register',formdata, {params:{meeting_id: props.match.params.meeting_id}})
-        axios.delete('/api/admin/meeting/approvals/delete',{params:{children: approval_deleteIndexes, meeting_id: props.match.params.meeting_id}})
+        axios.post('/api/admin/meeting/approvals/register',formdata, {params:{meeting_id: meeting_id}})
+        axios.delete('/api/admin/meeting/approvals/delete',{params:{children: approval_deleteIndexes, meeting_id: meeting_id}})
         
         const request = { title: title, text: text, memo: memo, pdf: pdf };
         setSubmit(true);
-        axios.put(`/api/admin/meetings/update/${props.match.params?.meeting_id}`, request)
+        axios.put(`/api/admin/meetings/update/${meeting_id}`, request)
         .then(response => {
             setSubmit(false);
             switch(response.data.status_code){
                 case 200: {
                     history.push({
-                    pathname: `/admin/meeting/detail/${props.match.params?.meeting_id}`,
+                    pathname: `/admin/meeting/detail/${meeting_id}`,
                     state: "更新成功しました!"});
                     break;
                 }
@@ -126,14 +128,27 @@ const MeetingEdit = (props) => {
 
     const handleImageChange = (e) => {
         e.preventDefault();
-        let reader = new FileReader();
-        let _file = e.target.files[0];
-        if(!_file) return;
-        reader.readAsDataURL(_file);
-        reader.onloadend = () => {
+        const files = Array.from(e.target.files);
+        if(e.target.files.length + meeting_image.length > 10)
+        {
+            set400Error("画像は最大10個までです。");
+            return;
+        }
+        const promises = files.map(_file => {
+            return (new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.addEventListener('load', (ev) => {
+                    resolve(ev.target.result);
+                });
+                reader.addEventListener('error', reject);
+                reader.readAsDataURL(_file);
+            }))
+        });
+
+        Promise.all(promises).then(images => {
             const formdata = new FormData();
-            formdata.append('image', reader.result);
-            axios.post(`/api/admin/meeting/images/register`, formdata,  {params:{meeting_id: props.match.params.meeting_id}})
+            formdata.append('image', JSON.stringify(images));
+            axios.post(`/api/admin/meeting/images/register`, formdata,  {params:{meeting_id: meeting_id}})
             .then(response => {
                 switch(response.data.status_code){
                     case 200: setMeetingImages(response.data.params); break;
@@ -141,9 +156,30 @@ const MeetingEdit = (props) => {
                     case 422: set422Errors(response.data.error_messages); break;
                 } 
             });
-
-        };
+        }, 
+        error => { console.error(error); });
     };
+
+
+
+    const handleDeleteImage = (index, image_id) => {
+        axios.delete(`/api/admin/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
+        .then(response=>{
+            switch(response.data.status_code){
+                case 400: set400Error("画像の削除に失敗しました。");
+            }
+        })
+        let list = [...meeting_image];
+        list.splice(index, 1);
+        setMeetingImages(list);
+    }
+
+
+    const handleCheck = (e, index) => {
+        var list = [...children_temp];
+        list[index].checked = e.target.checked;
+        setChildrenTemp(list);
+    }
 
     const handlePDFChange = (e) => {
         e.preventDefault();
@@ -156,21 +192,7 @@ const MeetingEdit = (props) => {
         }
     }
 
-    const handleDeleteImage = (image_id) => {
-        axios.delete(`/api/admin/meeting/images/delete/${props.match.params?.meeting_id}`, {params:{image_id: image_id}})
-        .then(response=>{
-            switch(response.data.status_code){
-                case 200: setMeetingImages(response.data.params); break;
-                case 400: set400Error("画像の削除に失敗しました。");
-            }
-        })
-    }
 
-    const handleCheck = (e, index) => {
-        var list = [...children_temp];
-        list[index].checked = e.target.checked;
-        setChildrenTemp(list);
-    }
 
 	return (
         <div className="l-content">
@@ -253,7 +275,7 @@ const MeetingEdit = (props) => {
                                         <div className="edit-set edit-set-mt15">
                                             <label className="edit-set-file-label" htmlFor={meeting_image.length < 10 ? 'file_image': ''}>
                                                 画像アップロード
-                                                <input type="file" name="file_image" accept=".png, .jpg, .jpeg" id="file_image"  onChange={handleImageChange}/> 
+                                                <input type="file" multiple="multiple" name="file_image[]" accept=".png, .jpg, .jpeg" id="file_image"  onChange={handleImageChange}/> 
                                             </label>
                                             {
                                                 _422errors.image &&
@@ -269,7 +291,7 @@ const MeetingEdit = (props) => {
                                                 <figure className="image-upload" key={k}>
                                                     <img src={x.image} alt={x.image} />
                                                     <IconButton
-                                                        onClick={e=>handleDeleteImage(x.id)}
+                                                        onClick={e=>handleDeleteImage(k, x.id)}
                                                         style={{position: 'absolute',
                                                             bottom: '-6px',
                                                             right: '-6px'}}>
@@ -298,7 +320,7 @@ const MeetingEdit = (props) => {
                                                     value={false}
                                                     onClick={e=>setCheckRadio(e.target.value)}
                                                     />
-                                                <span>全員に送信</span>
+                                                <span className="lbl padding-16">全員に送信</span>
                                             </label>
                                         </div>
                 
@@ -311,10 +333,10 @@ const MeetingEdit = (props) => {
                                                     value={true}
                                                     onClick={e=>setCheckRadio(e.target.value)}
                                                     />
-                                                <span>選んで送信</span>
+                                                <span className="lbl padding-16">選んで送信</span>
                                             </label>
                                         </div>
-                                       
+
                                         <div className={`checkbox-wrap edit-bg ${check_radio!="true" && 'd-none'}`}>
                                         {
                                             children_list.length != 0 ?
@@ -326,7 +348,7 @@ const MeetingEdit = (props) => {
                                                                 id={`user_name${k}`}
                                                                 checked =  {item.checked}
                                                                 onChange={e=>handleCheck(e, k)}/>
-                                                            {`${item.first_name} ${item.last_name}`}
+                                                            <span className="lbl padding-16">{`${item.first_name} ${item.last_name}`}</span>
                                                         </label>
                                                     </div>
                                                 )

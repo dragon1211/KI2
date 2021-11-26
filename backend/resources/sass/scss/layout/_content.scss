@@ -1,0 +1,91 @@
+ /* #Content
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: content
+name: content
+categories: [layout]
+---
+
+`<article>`タグが使われるようなメインコンテンツのスタイルです。
+ナビゲーションやバナーなどのレイアウトを含むことはできますが、
+コンポーネント自体はobject/projectレイヤーで定義します。
+
+```block
+<body>
+  <article class="l-content s-blog">
+    <header class="l-content__lead"></header>
+  </article>
+</body>
+```
+*/
+.l-content {
+  width: 100%;
+  margin: 30px auto 0;
+  padding: 0 20px;
+  @include pc{
+    margin: 25px 0 0 240px;
+    padding: 0 32px;
+  }
+  @include sp{
+    padding-bottom: 130px;
+    max-width: 700px;
+    box-sizing: border-box;
+  }
+  @include sp02{
+    padding-bottom: 110px;
+  }
+  &-wrap{
+    margin: 0 auto;
+    box-sizing: border-box;
+    @include pc{
+      max-width: 1064px;
+      -webkit-box-shadow: 0 1px 4px #ddd;
+      box-shadow: 0 1px 4px #ddd;
+      margin-bottom: 40px;
+      border-radius: 8px;
+      background: #fff;
+    }
+  }
+  &__ttl{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 35px;
+    @include pc{
+      max-width: 1064px;
+      justify-content: space-between;
+      margin: 0 auto 25px;
+    }
+    @include sp02{
+      margin: 0 auto 30px
+    }
+    &__left{
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    h2{
+      font-size: 2.4rem;
+      font-weight: bold;
+      @include pc{
+        margin-right: 30px;
+        font-size: 3rem;
+      }
+      @include sp{
+        letter-spacing: 0.04em;
+      }
+      @include min{
+        font-size: 2rem;
+      }
+    }
+  }
+  &-w560{
+    margin: 0 auto;
+    width: 100%;
+    @include pc{
+      max-width: 560px;
+    }
+  }
+}

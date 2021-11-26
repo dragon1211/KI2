@@ -36,7 +36,7 @@ const ChildAdd = () => {
   }
 
   const copyInviteURL = () => {
-    const inviteText = "https://kikikan.jp/register-temporary/c-account";
+    const inviteText = "https://kikikan.xyz/c-account/register-temporary";
     copy(inviteText);
     setSuccess('招待用URLをコピーしました。');
   }
@@ -44,9 +44,9 @@ const ChildAdd = () => {
   const copyLineText = () => {
     const lineText = "「KIKI」の招待が届いています。\n"+
     "まずは以下より仮登録を行なってください。\n"+
-    "https://kikikan.jp/register-temporary/c-account\n"+
+    "https://kikikan.xyz/c-account/register-temporary\n"+
     "▼ 公式サイトはこちら\n"+
-    "https://kikikan.jp\n";
+    "https://kikikan.xyz\n";
     copy(lineText);
     setSuccess('招待用URLをLINEで追信しました。');
   }
@@ -87,7 +87,7 @@ const ChildAdd = () => {
                       loading={submit}
                       className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
                       style={{marginTop:'50px'}}>
-                      <span className={`ft-20 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>追加</span>
+                      <span className={`ft-18 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>追加</span>
                   </LoadingButton>
                 </form>
                 <div style={{color:"#49A3FC",display:"flex", justifyContent:"center", alignItems:"center", paddingTop:40}} >

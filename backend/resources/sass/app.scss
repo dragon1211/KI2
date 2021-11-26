@@ -35,6 +35,9 @@ $breakpoint-down: (
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+@import './scss/assets/css/single.scss';
+@import './scss/assets/css/style.scss';
+
 @import './base/layout';
 @import './base/loader';
 @import './base/color';

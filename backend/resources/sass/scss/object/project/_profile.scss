@@ -1,0 +1,186 @@
+ /* #Profile
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: profile
+name: profile
+categories: [project]
+---
+
+プロフィールページ関係のコンポーネントです。
+
+```block
+```
+*/
+
+.profile{
+  &-container{
+
+  }
+  &-wrap{
+    padding: 10px 0 40px;
+    @include pc{
+      padding: 45px 0 40px;
+    }
+  }
+  &-content{
+    max-width: 100%;
+    margin: 0 auto;
+    @include pc{
+      max-width: 380px; 
+    }
+  }
+  &-thumb{
+    margin: 0 auto;
+    width: 220px;
+    height: 220px;
+    border-radius: 110px;
+    position: relative;
+    label{
+      cursor: pointer;
+    }
+    label,figure{
+      display: flex;
+      vertical-align: middle;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-radius: 50%;
+      width: 220px;
+      height: 220px;
+    }
+    &__image{
+      width: 220px;
+      height: 220px;
+      object-fit: cover;
+      font-family: 'object-fit: cover;';
+    }
+
+  }
+  &-camera{
+    width: 52px;
+    height: 52px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    .btn-camera{
+      width: 52px;
+      height: 52px;
+      background-color: #f0de00;
+      border-radius: 26px;
+      position: relative;
+      &:hover{
+        opacity: 1;
+        .icon{
+          opacity: 0.6;
+        }
+      }
+      .icon{
+        transition: all .2s ease-out;
+        &:after{
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translateX(-50%) translateY(-50%);
+          width: 22px;
+          height: 18px;
+          background-repeat: no-repeat;
+          background-position: center center;
+          background-size: 100% auto;
+          background-image: url(../../assets/img/icon/camera.svg);
+        }
+      }
+    }
+  }
+  &-name{
+    font-weight: bold;
+    font-size: 2.2rem;
+    text-align: center;
+    padding: 13px 0 30px;
+    letter-spacing: 0.06em;
+    @include pc{
+      font-size: 1.8rem;
+      padding: 17px 0 25px;
+    }
+  }
+  &-info{
+    background: $_color-ui-gray;
+    border-radius: 4px;
+    margin-bottom: 30px;
+    @include pc{
+      margin-bottom: 35px;
+    }
+    &__item{
+      display: flex;
+      align-items: center;
+      padding: 15px 20px 15px 15px;
+      position: relative;
+      @include pc{
+        padding: 15px 30px 15px 20px;
+      }
+      &:not(:first-child){
+        border-top: 1px solid #EAEFF2;
+      }
+      .txt{
+       margin-left: 35px;
+       max-height: 100%;
+      }
+      &.txt-long{
+        .txt{
+          padding-bottom: 10px;
+        }
+      }
+    }
+    &__icon{
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      @include pc{
+        left: 20px;
+      }
+    }
+  }
+}
+
+.p-profile-btn{
+  + .p-profile-btn{
+    margin-top: 17px;
+  }
+  + .p-profile-txtLink{
+    margin-top: 43px;
+    @include pc{
+      margin-top: 37px;
+    }
+  }
+}
+
+.p-profile-txtLink{
+  text-align: center;
+  .a-icon{
+    width: auto;
+  }
+  + .p-profile-txtLink{
+    margin-top: 7px;
+  }
+}
+
+#profile{
+  &-file{
+    &-preview{
+      width: 220px;
+      height: 220px;
+      -o-object-fit: cover;
+      object-fit: cover;
+      border-radius: 110px;
+      overflow: hidden;
+      border: 1px solid #d0d0d0;
+      box-sizing: border-box;
+      font-family: "object-fit: cover;";
+    }
+  }
+}

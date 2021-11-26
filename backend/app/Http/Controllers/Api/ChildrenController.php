@@ -45,8 +45,12 @@ class ChildrenController extends Controller {
         }
 
         if ($get = TelActivation::where('tel', $r->tel)->first()) {
-            // すでにDBに登録されている場合
-            return ['status_code' => 400, 'error_messages' => ['既に使用されている電話番号です。']];
+            if (time() > strtotime($get->ttl)) {
+                TelActivation::where('tel', $r->tel)->delete();
+            }
+            else {
+                return ['status_code' => 400, 'error_messages' => ['既に使用されている電話番号です。']];
+            }
         }
 
         $token = bin2hex(random_bytes(24));
@@ -120,6 +124,7 @@ class ChildrenController extends Controller {
         $password = Hash::make($r->password);
 
         $ext = explode('/', mime_content_type($r->image))[1];
+        $lastid = Child::select('id')->orderBy('id', 'desc')->first();
         $filename = $this->uuidv4() . '.'.$ext;
 
         $insert = [

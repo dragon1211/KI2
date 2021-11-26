@@ -160,8 +160,7 @@ const MeetingDetail = (props) => {
                         <button type="button" 
                           aria-label="お気に入り" data-tooltip="お気に入り" 
                           aria-pressed="false" 
-                          className="icon a-icon text-icon icon-text icon-starFill-wrap a-icon-size_medium" 
-                          style={{border:'1px solid #f0de00'}}
+                          className="icon a-icon like-icon icon-text icon-text-wrap a-icon-size_medium mr-0"
                           onClick = {()=>setShowMemoModal(true)} />
                       </div>
                   
@@ -176,7 +175,7 @@ const MeetingDetail = (props) => {
                   />
                   <ModalPdf 
                     show={show_pdf_modal}
-                    pdfPath={meeting.pdf ?? '/pdf/test.pdf'}
+                    pdfPath={meeting.pdf}
                     handleClose={()=>setShowPDFModal(false)} 
                   />
                 </article>

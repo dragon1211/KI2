@@ -1,0 +1,426 @@
+ /* #Meeting
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: meeting
+name: meeting
+categories: [project]
+---
+
+画像やテキストなどを縦に並べるコンポーネントです。
+
+ラベルはデフォルトで右上に配置されます。Modifierで以下のように変更できます。
+
+- 右下 `.p-box__labels--right-bottom`
+- 左上 `.p-box__labels--left-top`
+- 左下 `.p-box__labels--left-bottom`
+
+```block
+```
+*/
+@keyframes show{
+  from{
+      opacity: 0.1;
+  }
+  to{
+      opacity: 1;
+  }
+}
+.meeting{
+  &-content{
+    &-wrap{
+      display: none;
+      &.is-active{
+        display: block;
+        animation: show 0.15s linear 0s;
+      }
+    }
+  }
+  &-head{
+    display: flex;
+    align-items:flex-end;
+    margin-bottom: 7px;
+    @include pc{
+      margin-bottom: 10px;
+    }
+    @include sp{
+      width: 100%;
+    }
+  }
+  &-form{
+    margin-right: 30px;
+    position: relative;
+    width: 100%;
+    @include pc{
+      width: 380px;
+    }
+    @include sp{
+      margin-bottom: 23px;
+      margin-top: -13px;
+    }
+  }
+  &-item{
+    border-bottom: 1px solid rgba(36,77,138,0.1);
+    position: relative;
+    .like-icon{
+      position: absolute;
+      right: 0;
+      top: 55px;
+    }
+  }
+  &-link{
+    padding: 18px 60px 22px 0;
+    display: block;
+    @include pc{
+      padding: 21px 80px 21px 0;
+    }
+    @include sp02{
+      padding-right: 50px;
+    }
+  }
+  &-ttl{
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 7px;
+    line-height: 1.52;
+    max-height: 100%;
+    @include sp{
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      overflow: hidden;
+      display: -webkit-box;
+      margin-bottom: 7px;
+    }
+  }
+  &-txt{
+    font-size: 1.4rem;
+    color: $_color-text--gray02;
+    margin-bottom: 11px;
+    line-height: 1.4;
+    max-height: 100%;
+    @include sp{
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      display: -webkit-box;
+    }
+  }
+  &-time{
+    margin-bottom: 13px;
+    display: block;
+    line-height: 1;
+    @include pc{
+      margin-bottom: 16px;
+    }
+  }
+  &-date{
+    font-size: 1.3rem;
+    color: $_color-text--gray02;
+    letter-spacing: 0.04em;
+  }
+  &-member{
+    &__read{
+      margin-left: auto;
+      @include pc{
+        display: none;
+      }
+      p{
+        color: $_color-text--gray03;
+        font-size: 1.4rem;
+      }
+    }
+    &-link{
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all .2s ease-out;
+      @include pc{
+        &:hover{
+          opacity: 0.7;
+        }
+      }
+    }
+    &-count{
+      display: table;
+      background: $_color-ui-yellow;
+      border-radius: 6px;
+      padding: 2px 11px;
+      margin-right: 13px;
+      li{
+        font-size: 1.4rem;
+        font-weight: bold;
+        display: table-cell;
+      }
+      .numerator{
+        position: relative;
+        &:after{
+          display: inline-block;
+          content: '/';
+          font-size: 1.3rem;
+          position: relative;
+          bottom: 1px;
+          padding: 0 0.1rem;
+        }
+      }
+    }
+    &-list{
+      display: flex;
+      align-items: center;
+    }
+    &__item{
+      &:not(:first-child){
+        margin-left: -3px;
+      }
+      a{
+        display: block;
+        transition: all .2s ease-out;
+        @include pc{
+          &:hover{
+            opacity: 0.8;
+          }
+        }
+      }
+      .avatar{
+        width: 46px;
+        height: 46px;
+        border-radius: 23px;
+        border: 1px solid $_color-ui-yellow;
+        @include pc{
+          width: 40px;
+          height: 40px;
+          border-radius: 20px;
+        }
+      }
+    }
+  }
+  &-tab{
+    background: $_color-ui-gray;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    @include pc{
+      border-radius: 20px;
+    }
+    @include sp{
+      width: 100%;
+    }
+    &-container{
+      @include pc{
+        padding: 35px 35px 50px;
+      }
+    }
+    &-wrap{
+      display: flex;
+      flex-wrap: wrap;
+      .tab-switch{
+        display: none;
+      }
+      .tab-label{
+        font-weight: 500;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 50%;
+        position: relative;
+        letter-spacing: 0.03em;
+        background: #f0f0f0;
+        cursor: pointer;
+        @include pc{
+          width: 190px;
+        }
+        &.is-active{
+          span{
+            color: #fff;
+            font-weight: bold;
+          }
+        }
+        span{
+          position: relative;
+          z-index: 2;
+          color: #6f7372;
+          max-height: 100%;
+        }
+        &:first-child{
+          &:before{
+            content: "";
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 100%;
+            z-index: 1;
+            transition: 0.3s ease all;
+            background: #000;
+            color: #fff;
+            border-radius: 16px;
+            @include pc{
+              width: 190px;
+              border-radius: 20px;
+              left: 190px;
+            }
+          }
+          &.is-active{
+            &:before{
+              left: 0px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.p{
+  &-meetingAdd{
+    &-btn{
+      width: 64px;
+      display: flex;
+      @include pc{
+        width: 181px;
+      }
+      @include sp02{
+        width: 58px;
+      }
+      @include sp{
+        position: fixed;
+        right: 20px;
+        bottom: 76px;
+        z-index: 5;
+        @include sp02{
+          bottom: 74px;
+        }
+        .btn-r8{
+          border-radius: 35px;
+        }
+        .btn-h48{
+          height: 64px;
+          @include sp02{
+            height: 58px;
+          }
+        }
+        
+        span{
+          display: none;
+        }
+      }
+    }
+  }
+  &-consent{
+    &-btn{
+      display: flex;
+      width: 64px;
+      @include sp{
+        width: 62px;
+        position: fixed;
+        right: 20px;
+        bottom: 72px;
+        z-index: 5;
+        .btn-r8{
+          border-radius: 35px;
+        }
+        .btn-h42{
+          height: 62px;
+        }
+        
+        span{
+          font-size: 1.6rem;
+        }
+      }
+    }
+  }
+}
+
+
+.meeting-consent{
+  .meeting{
+    &-item{
+      padding: 17px 0 22px;
+    @include pc{
+      padding: 19px 0 21px;
+      }
+    }
+    &-link{
+      padding: 9px 0 14px;
+    @include pc{
+      padding: 10px 0 11px;
+      }
+    }
+    &-txt{
+      margin-bottom: 0;
+    }
+    &-label{
+      background: #EAEFF2;
+      width: 120px;
+      height: 34px;
+      border-radius: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+    &-search{
+      .meeting-head{
+        margin-bottom: 14px;
+      }
+    }
+  }
+  .p-article{
+    &__content{
+      .meeting{
+        &-time{
+          margin-bottom: 18px;
+          @include pc{
+            margin-bottom: 13px;
+          }
+        }
+      }
+    }
+    &__context{
+      margin-top: 21px;
+    }
+    &-single{
+      .meeting-ttl{
+        margin-bottom: 6px;
+        @include sp{
+          overflow: visible;
+          display: block;
+          -webkit-line-clamp: auto;
+        }
+      }
+    }
+  }
+  .search-item{
+    .user-name{
+      margin-bottom: 0;
+      font-weight: normal;
+    }
+  }
+  
+}
+/* meeting-consent */
+/*
+.meeting-consent{
+  .meeting-link{
+    padding-right: 0;
+  }
+  .like-icon{
+    display: none;
+  }
+}
+いらないかも */
+
+/* meeting-search */
+.meeting-search{
+  .meeting-head{
+    @include sp{
+      display: block;
+    }
+  }
+}

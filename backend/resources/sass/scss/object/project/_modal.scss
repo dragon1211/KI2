@@ -1,0 +1,180 @@
+ /* #Modal
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: modal
+name: modal
+categories: [project]
+---
+
+モーダル関係のコンポーネントです。
+
+```block
+```
+*/
+
+@keyframes show{
+  from{
+      opacity: 0.1;
+  }
+  to{
+      opacity: 1;
+  }
+}
+.modal{
+  &-area{
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    &.modal01{
+      .modal-wrap{
+        padding-bottom: 9px;
+      }
+    }
+  }
+  &-pd{
+    .modal-ttl{
+      padding: 0;
+    }
+    .modal-wrap{
+      padding: 30px 20px;
+    }
+  }
+  &-bg{
+    width: 100%;
+    height: 100%;
+    background-color: rgba(30,30,30,0.5);
+  }
+  &-wrap{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 70%;
+    background-color: #fff;
+    border-radius: 20px;
+    max-width: 340px;
+    box-sizing: border-box;
+    @include sp{
+      width: 82%;
+    }
+    @include min{
+      width: 88%;
+    }
+  }
+  &-box{
+
+  }
+  &-up65{
+    .modal-wrap{
+      top: 0px;
+      transform: translate(-50%,65px);
+      @include pc{
+        top: 65px;
+      }
+    }
+  }
+  &-content{
+    display: none;
+    &.is-active{
+      display: block;
+      animation: show 0.15s linear 0s;
+    }
+    &-area{
+      padding: 19px 25px 27px 20px;
+      @include pc{
+        padding: 24px 30px 33px 25px;
+      }
+    }
+    &-item{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      &:not(:first-child){
+        margin-top: 23px;
+      }
+      .user{
+        &-wrap{
+          a{
+            display: flex;
+            align-items: center;
+            transition: all .2s ease-out;
+          }
+        }
+        &-avatar{
+          min-width: 40px;
+          width: 40px;
+          height: 40px;
+          border-radius: 20px;
+          border: 1px solid #f0de00;
+          margin-right: 15px;
+        }
+      }
+    }
+  }
+  &-ttl{
+    text-align: center;
+    padding: 30px 20px 0px;
+    @include sp{
+      padding-top: 28px;
+    }
+  }
+  &-answer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 84%;
+    margin: 0 auto;
+    li{
+      width: 50%;
+      p,a{
+        font-weight: bold;
+        text-align: center;
+        display: block;
+        padding: 23px 0 30px;
+        cursor: pointer;
+        transition: all .2s ease-out;
+      }
+    }
+  }
+  &-tab{
+    &-area{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(36,77,138,.1);
+      
+    }
+    &-label{
+      width: 50%;
+      text-align: center;
+      cursor: pointer;
+      padding: 20px 0 18px;
+      span{
+        color: #6f7372;
+      }
+      &.is-active{
+        span{
+          font-weight: 700;
+          color: #000;
+        }
+      }
+    }
+  }
+  &-close-btn{
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    cursor: pointer;
+  }
+}
+
+.p-notification{
+  &-btn{
+    width: 100%;
+    max-width: 62px;
+  }
+}

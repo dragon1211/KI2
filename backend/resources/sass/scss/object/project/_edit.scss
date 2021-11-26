@@ -1,0 +1,205 @@
+ /* #Edit
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: edit
+name: edit
+categories: [project]
+---
+
+エディット関係のコンポーネントです。
+
+```block
+```
+*/
+
+.edit{
+  &-container{
+
+  }
+  &-wrap{
+    @include pc{
+      padding: 38px 40px 55px;
+    }
+  }
+  &-content{
+    .btn-user-add{
+      margin: 19px auto 0;
+    }
+  }
+  &-bg{
+    background: $_color-ui-gray;
+    border-radius: 4px;
+    padding: 22px 26px 15px;
+    margin-top: 18px;
+    @include sp{
+      margin-top: 23px;
+      padding: 25px 23px 15px;
+    }
+    .checkbox{
+      margin-bottom: 10px;
+      @include sp{
+        margin-bottom: 13px;
+      }
+    }
+  }
+  &-form{
+    .btn-edit{
+      margin-top: 40px;
+      @include sp{
+        margin-top: 30px;
+        font-size: 1.8rem;
+      }
+    }
+  }
+  &-set{
+    position: relative;
+    &:not(:first-child){
+      margin-top: 25px;
+      @include pc{
+        margin-top: 30px;
+      }
+    }
+    &-mt5{
+      margin-top: 5px !important;
+      @include sp{
+        margin-top: 13px !important;
+      }
+    }
+    &-mt10{
+      margin-top: 10px !important;
+    }
+    &-mt15{
+      margin-top: 15px !important;
+    }
+    &-bg{
+      background: $_color-ui-gray;
+      border-radius: 3px;
+      padding: 18px 22px;
+      @include pc{
+        padding: 17px 25px;
+      }
+    }
+    &-file{
+      &__txt{
+        color: #93A0A7;
+        font-weight: bold;
+        font-size: 1.4rem;
+        text-align: center;
+      }
+    }
+    &.user_remember_me{
+      margin-top: 30px;
+      margin-bottom: 30px;
+      .checkbox{
+        text-align: center;
+      }
+    }
+    &.edit-set-send{
+      margin-top: 25px;
+      @include pc{
+        margin-top: 22px;
+      }
+    }
+  }
+  &-user{
+    &-wrap{
+      margin-top: 38px;
+      @include pc{
+        margin-top: 43px;
+      }
+    }
+    &-thumb{
+      margin: 0 auto;
+      width: 128px;
+      height: 128px;
+      border-radius: 110px;
+      position: relative;
+      figure{
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        vertical-align: middle;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border-radius: 50%;
+      }
+      &__image{
+        width: 128px;
+        height: 128px;
+        object-fit: cover;
+        font-family: 'object-fit: cover;';
+      }
+    }
+    &-name{
+      font-weight: bold;
+      font-size: 1.8rem;
+      text-align: center;
+      padding: 11px 0 0;
+      letter-spacing: 0.07em;
+      @include pc{
+        font-size: 1.4rem;
+        padding: 13px 0 0;
+      }
+    }
+    &-txt{
+      text-align: center;
+      color: $_color-text--gray03;
+      margin-top: 15px;
+      @include pc{
+        font-size: 1.4rem;
+      }
+    }
+  }
+  &-txtLink{
+    margin-top: 32px;
+    text-align: center;
+    .a-icon{
+      width: auto;
+    }
+  }
+}
+
+/* バリデーション関係 */
+.validation{
+  &_error{
+    border: 1px solid #e71e14 !important;
+  }
+}
+.error{
+  &_area{
+    background: #f2eaea;
+    border-radius: 4px;
+    margin-top: 12px;
+    padding: 12px 20px;
+    @include sp{
+      padding: 12px 18px;
+    }
+    &.area_top{
+      margin-bottom: 30px;
+      padding: 15px 20px;
+      @include sp{
+        margin-bottom: 25px;
+      }
+    }
+    p{
+      color: #e71e14;
+      font-size: 1.5rem;
+      @include sp{
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+
+
+.checkbox{
+  label{
+    letter-spacing: 0.06em;
+  }
+  .label-lsnone{
+    letter-spacing: 0;
+  }
+}

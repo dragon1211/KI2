@@ -129,13 +129,27 @@ const MeetingAdd = (props) => {
 
     const handleImageChange = (e) => {
         e.preventDefault();
-        let reader = new FileReader();
-        let _file = e.target.files[0];
-        if(!_file) return;
-        reader.readAsDataURL(_file);
-        reader.onloadend = () => {
-            setMeetingImages([...meeting_image, reader.result]);
-        };
+        const files = Array.from(e.target.files);
+        if(e.target.files.length + meeting_image.length > 10)
+        {
+            set400Error("画像は最大10個までです。");
+            return;
+        }
+        const promises = files.map(_file => {
+            return (new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.addEventListener('load', (ev) => {
+                    resolve(ev.target.result);
+                });
+                reader.addEventListener('error', reject);
+                reader.readAsDataURL(_file);
+            }))
+        });
+
+        Promise.all(promises).then(images => {
+            setMeetingImages([...meeting_image, ...images]);
+        }, 
+        error => { console.error(error); });
     };
 
     const handlePDFChange = (e) => {
@@ -244,7 +258,7 @@ const MeetingAdd = (props) => {
                                         <div className="edit-set edit-set-mt15">
                                             <label className="edit-set-file-label" htmlFor={meeting_image.length < 10 ? 'file_image': ''}>
                                                 画像アップロード
-                                                <input type="file" name="file_image" accept=".png, .jpg, .jpeg" id="file_image"  onChange={handleImageChange}/> 
+                                                <input type="file"  multiple="multiple" name="file_image[]" accept=".png, .jpg, .jpeg" id="file_image"  onChange={handleImageChange}/> 
                                             </label>
                                             {
                                                 _422errors.image &&
@@ -289,7 +303,7 @@ const MeetingAdd = (props) => {
                                                     value={false}
                                                     onClick={e=>setCheckRadio(e.target.value)}
                                                     />
-                                                <span>全員に送信</span>
+                                                <span className="lbl padding-16">全員に送信</span>
                                             </label>
                                         </div>
                 
@@ -302,7 +316,7 @@ const MeetingAdd = (props) => {
                                                     value={true}
                                                     onClick={e=>setCheckRadio(e.target.value)}
                                                     />
-                                                <span>選んで送信</span>
+                                                <span className="lbl padding-16">選んで送信</span>
                                             </label>
                                         </div>
                                     
@@ -317,7 +331,9 @@ const MeetingAdd = (props) => {
                                                                     id={`user_name${k}`}
                                                                     checked =  {item.checked}
                                                                     onChange={e=>handleCheck(e, k)}/>
-                                                                {`${item.first_name} ${item.last_name}`}
+                                                                <span className="lbl padding-16">
+                                                                    {`${item.first_name} ${item.last_name}`}
+                                                                </span>
                                                             </label>
                                                         </div>
                                                     )
@@ -329,7 +345,7 @@ const MeetingAdd = (props) => {
                                             type="submit" fullWidth
                                             loading={submit}
                                             className="btn-edit btn-default btn-h75 bg-yellow rounded-15">
-                                            <span className={`ft-20 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>ミーティングを登録</span>
+                                            <span className={`ft-18 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>ミーティングを登録</span>
                                         </LoadingButton>
                                         {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>  } 
                                     </form>

@@ -94,8 +94,12 @@ class FathersController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['入力したメールアドレスは既に登録済みです。同じメールアドレスは使用できません。']];
         }
         else if ($get = EmailActivation::where('email', $r->email)->first()) {
-            // すでにemail_activationsに登録されている場合
-            return ['status_code' => 400, 'error_messages' => ['入力したメールアドレスは既に登録済みです。同じメールアドレスは使用できません。']];
+            if (time() > strtotime($get->ttl)) {
+                EmailActivation::where('email', $r->email)->delete();
+            }
+            else {
+                return ['status_code' => 400, 'error_messages' => ['入力したメールアドレスは既に登録済みです。同じメールアドレスは使用できません。']];
+            }
         }
         else {
             $token = bin2hex(random_bytes(24));
@@ -119,6 +123,8 @@ class FathersController extends Controller {
     }
 
     public function registerMain (Request $r) {
+        if ($r->image == 'null') $r->image = null;
+
         // 電話番号の文字数。
         Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
             return $this->telsize($value);
@@ -157,10 +163,13 @@ class FathersController extends Controller {
 
         $password = Hash::make($r->password);
 
-        $ext = explode('/', mime_content_type($r->image))[1];
-        $filename = $this->uuidv4() . '.'.$ext;
-        $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
-        Storage::disk('public')->put($filename, $image);
+        if (!is_null($r->image)) {
+            $ext = explode('/', mime_content_type($r->image))[1];
+            $lastid = Father::select('id')->orderBy('id', 'desc')->first();
+            $filename = $this->uuidv4() . '.'.$ext;
+            $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
+            Storage::disk('public')->put($filename, $image);
+        }
 
         try {
             // DBの値の準備。
@@ -170,7 +179,7 @@ class FathersController extends Controller {
                 'email' => $get->email,
                 'password' => $password,
                 'company' => $r->company,
-                'image' => '/storage/'.$filename,
+                'image' => !is_null($r->image) ? '/storage/'.$filename : '/assets/default/avatar.jpg',
                 'profile' => $r->profile,
                 'tel' => $r->tel,
             ];
@@ -193,7 +202,7 @@ class FathersController extends Controller {
             // 本登録に失敗
             Log::critical($e->getMessage());
             DB::rollback();
-            Storage::disk('public')->delete($filename);
+            if (!is_null($r->image)) Storage::disk('public')->delete($filename);
             return ['status_code' => 400, 'error_messages' => ['本登録に失敗しました。']];
         }
 

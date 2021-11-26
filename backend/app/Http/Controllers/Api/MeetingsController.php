@@ -62,6 +62,7 @@ class MeetingsController extends Controller {
 
         $filename = '';
         $fnames = [];
+        $meeting = 0;
 
         try {
             if (isset($r->pdf)) {
@@ -79,6 +80,7 @@ class MeetingsController extends Controller {
             }
 
             $meeting = Meeting::create($insert);
+            $meeting = $meeting->id;
 
             if (isset($r->image)) {
                 foreach ($r->image as $img) {
@@ -89,16 +91,16 @@ class MeetingsController extends Controller {
                         $image = base64_decode(substr($img, strpos($img, ',') + 1));
                         Storage::disk('public')->put($fname, $image);
 
-                        $filename = '/storage/'.$fname;
+                        $imgname = '/storage/'.$fname;
         
                     }
                     else {
-                        $filename = $img;
+                        $imgname = $img;
                     }
 
                     $insert_image = [
-                        'meeting_id' => (int)$meeting->id,
-                        'image' => $filename,
+                        'meeting_id' => (int)$meeting,
+                        'image' => $imgname,
                     ];
 
                     MeetingImage::create($insert_image);
@@ -108,23 +110,25 @@ class MeetingsController extends Controller {
             foreach (json_decode($r->children) as $child) {
                 $insert_approval = [
                     'child_id' => $child,
-                    'meeting_id' => (int)$meeting->id,
+                    'meeting_id' => (int)$meeting,
                     'approval_at' => null,
                 ];
 
                 MeetingApprovals::create($insert_approval);
             }
 
-            $params = ['meeting_id' => $meeting->id];
+            $params = ['meeting_id' => $meeting];
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
-            if (isset($r->pdf)) {
-                Storage::disk('public')->delete($filename);
-            }
-            if (isset($r->image)) {
-                foreach ($fnames as $f) {
-                    Storage::disk('public')->delete($f);
+            if (!is_null($meeting) && $meeting != 0) {
+                if (isset($r->pdf)) {
+                    Storage::disk('public')->delete($filename);
+                }
+                if (isset($r->image)) {
+                    foreach ($fnames as $f) {
+                        Storage::disk('public')->delete($f);
+                    }
                 }
             }
             return ['status_code' => 400, 'error_messages' => ['ミーティングの登録に失敗しました。']];

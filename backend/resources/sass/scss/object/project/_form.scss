@@ -1,0 +1,84 @@
+ /* #Form
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: form
+name: form
+categories: [project]
+---
+
+フォーム関係のコンポーネントです。
+
+```block
+```
+*/
+
+.control-label{
+  color: $_color-text--gray03;
+  line-height: 1;
+  padding: 0 8px;
+  margin-left: 12px;
+  background: #fff;
+  position: relative;
+  z-index: 1;
+  @include pc{
+    padding: 0 11px;
+  }
+  @include sp{
+    font-size: 1.4rem;
+  }
+}
+.edit-set-file-label{
+  color: #93A0A7; 
+  background-color: #F2F5F7;
+  border: 1px dashed #B8C3C9;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+  transition: all .2s ease-out;
+  cursor: pointer;
+  @include pc{
+    &:hover{
+      opacity: 0.7;
+    }
+  }
+}
+.input{
+  &-default{
+    margin-top: -13px;
+  }
+  &-w380{
+    @include pc{
+      max-width: 380px;
+    }
+  }
+  &-h56{
+    @include pc{
+      height: 56px;
+    }
+  }
+  &-h60{
+    @include pc{
+      height: 60px;
+    }
+  }
+}
+.textarea{
+  &-default{
+    margin-top: -13px;
+    line-height: 1.7;
+    padding-top: 17px;
+    @include sp{
+      height: 205px;
+    }
+  }
+}
+@include sp{
+  .test{
+    display: none;
+  }
+}

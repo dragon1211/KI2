@@ -1,0 +1,26 @@
+ /* #Wrapper
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: wrapper
+name: wrapper
+categories: [component]
+---
+
+横幅を制限するオブジェクトです。
+
+Modifierは以下のとおりです。
+
+* 左右の余白を追加 `--small`, `--medium`, `--large`
+
+```block
+```
+*/
+
+.c-wrapper {
+  width: 100%;
+  max-width: $_max-width;
+  margin-right: auto;
+  margin-left: auto;
+}
+

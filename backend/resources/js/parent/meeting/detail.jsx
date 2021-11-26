@@ -222,8 +222,7 @@ const MeetingDetail = (props) => {
                             aria-label="メモ" 
                             data-tooltip="メモ" 
                             aria-pressed="false" 
-                            style={{marginRight:10}} 
-                            className="icon a-icon text-icon icon-text icon-starFill-wrap a-icon-size_medium"></button>
+                            className="icon a-icon like-icon icon-text icon-text-wrap a-icon-size_medium"></button>
                           <button type="button" 
                             onClick={e => handleFavorite(meeting.id, meeting.is_favorite)} 
                             aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" className={`icon a-icon like-icon  ${meeting.is_favorite == 1 ? "icon-starFill icon-starFill-wrap" : "icon-star icon-star-wrap"} a-icon-size_medium`}></button>
@@ -261,7 +260,7 @@ const MeetingDetail = (props) => {
               />
               <ModalPdf 
                 show={showPdf}
-                pdfPath={meeting.pdf ?? '/pdf/test.pdf'}
+                pdfPath={meeting.pdf}
                 handleClose={()=>setShowPdf(false)} 
               />
             </div>

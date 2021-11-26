@@ -1,0 +1,68 @@
+ /* #User
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: user
+name: user
+categories: [project]
+---
+
+ユーザー関係のコンポーネントです。
+
+```block
+```
+*/
+
+.user{
+  &-advice{
+    &-btn{
+      width: 142px;
+    }
+  }
+  &-date{
+    display: flex;
+    align-items: center;
+    span{
+      color:$_color-text--gray02;
+      font-size: 1.24rem;
+      letter-spacing: 0.01em;
+      @include pc{
+        font-size: 1.4rem;
+      }
+      .date{
+        letter-spacing: 0.06em;
+      }
+    }
+  }
+  &-updated-time{
+    margin-right: 30px;
+    @include pc{
+      margin-right: 50px;
+    }
+  }
+  &-sm{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    a{
+      display: flex;
+      align-items: center;
+    }
+    .user{
+      &-avatar{
+        width: 46px;
+        height: 46px;
+        border-radius: 23px;
+        border: 1px solid #f0de00;
+        margin-right: 12px;
+        @include pc{
+          width: 40px;
+          height: 40px;
+          border-radius: 20px;
+          margin-right: 15px;
+        }
+      }
+      
+    }
+  }
+}

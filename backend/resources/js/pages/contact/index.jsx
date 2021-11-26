@@ -61,7 +61,7 @@ const Contact = () => {
                 type="submit" fullWidth
                 loading={submit}
                 className="btn-edit btn-default btn-h75 bg-yellow rounded-20">
-                <span className={`ft-20 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>送信</span>
+                <span className={`ft-18 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>送信</span>
             </LoadingButton>
             {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
         </form>

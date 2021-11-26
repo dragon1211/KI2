@@ -1,0 +1,195 @@
+ /* #Margin
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: margin
+name: margin
+categories: [utility]
+---
+
+マージンで余白の管理をします。常に下方向にだけ余白をとります。
+`<section>`要素を使うようなセクションの余白はlayout/_section.scssで管理します。
+
+* `.u-mb`は常に余白をとります。
+* `.u-mb-gain`はあるブレイクポイント以上で余白を指定します。
+* `.u-mb-lose`はあるブレイクポイント以上で余白を無くします。
+
+
+```block
+```
+*/
+/* 常に余白を指定するクラス。 */
+.u-mb-auto {
+  margin-bottom: auto !important;
+}
+.u-mb0 {
+  margin-bottom: 0 !important;
+}
+.u-mb5 {
+  margin-bottom: 5px !important;
+}
+.u-mb10 {
+  margin-bottom: 10px !important;
+}
+.u-mb15 {
+  margin-bottom: 15px !important;
+}
+.u-mb20 {
+  margin-bottom: 20px !important;
+}
+.u-mb25 {
+  margin-bottom: 25px !important;
+}
+.u-mb30 {
+  margin-bottom: 30px !important;
+}
+.u-mb35 {
+  margin-bottom: 35px !important;
+}
+.u-mb40 {
+  margin-bottom: 40px !important;
+}
+.u-mb45 {
+  margin-bottom: 45px !important;
+}
+.u-mb50 {
+  margin-bottom: 50px !important;
+}
+.u-mb55 {
+  margin-bottom: 55px !important;
+}
+.u-mb60 {
+  margin-bottom: 60px !important;
+}
+.u-mb65 {
+  margin-bottom: 65px !important;
+}
+.u-mb70 {
+  margin-bottom: 70px !important;
+}
+.u-mb75 {
+  margin-bottom: 75px !important;
+}
+.u-mb80 {
+  margin-bottom: 80px !important;
+}
+.u-mb-small {
+  margin-bottom: 0.5em !important;
+  @include pc {
+    margin-bottom: 1em !important;
+  }
+}
+
+
+/* ブレイクポイント以上 */
+@include sp {
+  .u-mb0-gain {
+    margin-bottom: 0 !important;
+  }
+  .u-mb5-gain {
+    margin-bottom: 5px !important;
+  }
+  .u-mb10-gain {
+    margin-bottom: 10px !important;
+  }
+  .u-mb15-gain {
+    margin-bottom: 15px !important;
+  }
+  .u-mb20-gain {
+    margin-bottom: 20px !important;
+  }
+  .u-mb25-gain {
+    margin-bottom: 25px !important;
+  }
+  .u-mb30-gain {
+    margin-bottom: 30px !important;
+  }
+  .u-mb35-gain {
+    margin-bottom: 35px !important;
+  }
+  .u-mb40-gain {
+    margin-bottom: 40px !important;
+  }
+  .u-mb45-gain {
+    margin-bottom: 45px !important;
+  }
+  .u-mb50-gain {
+    margin-bottom: 50px !important;
+  }
+  .u-mb55-gain {
+    margin-bottom: 55px !important;
+  }
+  .u-mb60-gain {
+    margin-bottom: 60px !important;
+  }
+  .u-mb65-gain {
+    margin-bottom: 65px !important;
+  }
+  .u-mb70-gain {
+    margin-bottom: 70px !important;
+  }
+  .u-mb75-gain {
+    margin-bottom: 75px !important;
+  }
+  .u-mb80-gain {
+    margin-bottom: 80px !important;
+  }
+}
+
+
+
+/* ブレイクポイント以上 */
+@include pc {
+  .u-mb0-lose {
+    margin-bottom: 0 !important;
+  }
+  .u-mb5-lose {
+    margin-bottom: 5px !important;
+  }
+  .u-mb10-lose {
+    margin-bottom: 10px !important;
+  }
+  .u-mb15-lose {
+    margin-bottom: 15px !important;
+  }
+  .u-mb20-lose {
+    margin-bottom: 20px !important;
+  }
+  .u-mb25-lose {
+    margin-bottom: 25px !important;
+  }
+  .u-mb30-lose {
+    margin-bottom: 30px !important;
+  }
+  .u-mb35-lose {
+    margin-bottom: 35px !important;
+  }
+  .u-mb40-lose {
+    margin-bottom: 40px !important;
+  }
+  .u-mb45-lose {
+    margin-bottom: 45px !important;
+  }
+  .u-mb50-lose {
+    margin-bottom: 50px !important;
+  }
+  .u-mb55-lose {
+    margin-bottom: 55px !important;
+  }
+  .u-mb60-lose {
+    margin-bottom: 60px !important;
+  }
+  .u-mb65-lose {
+    margin-bottom: 65px !important;
+  }
+  .u-mb70-lose {
+    margin-bottom: 70px !important;
+  }
+  .u-mb75-lose {
+    margin-bottom: 75px !important;
+  }
+  .u-mb80-lose {
+    margin-bottom: 80px !important;
+  }
+}
+

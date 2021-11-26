@@ -66,14 +66,11 @@ const ChildLogin = () => {
                 }
             </div>
 
-            <div className="edit-set mt-5">
-                <div className="c-input__checkbox text-center">
-                    <label htmlFor="remember_me" className="m-0 ft-18 ft-md-16">
-                        <span>ログイン情報を保持する</span>
-                        <input  id="remember_me"  name="remember"  type="checkbox"  value="remember"/>
-                        <div className="color-box"></div>
-                    </label>
-                </div>
+            <div className="edit-set text-center mt-5">
+                <label htmlFor="remember_me">
+                    <input  id="remember_me"  name="remember"  type="checkbox"  value="remember"/>
+                    <span className="lbl padding-16">ログイン情報を保持する</span>
+                </label>
             </div>
 
             <div className="mt-5">

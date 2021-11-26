@@ -10953,6 +10953,5063 @@ h3 {
     border-color: #dee2e6;
   }
 }
+.font-genju-p-r {
+  font-family: GenJyuuGothic-P, sans-serif;
+  font-weight: 400;
+  font-feature-settings: "palt";
+}
+
+.font-genju-p-b {
+  font-family: GenJyuuGothic-P, sans-serif;
+  font-weight: 700;
+  font-feature-settings: "palt";
+}
+
+@font-face {
+  font-family: GenJyuuGothic-P;
+  font-weight: 400;
+  src: url(/fonts/GenJyuuGothic-P-Regular.woff2?0908714fff61a9145b5006671048da1d) format("woff2"), url(/fonts/GenJyuuGothic-P-Regular.woff?dc4d38bc6b04031d9dd7584d4ed3af1c) format("woff"), url(/fonts/GenJyuuGothic-P-Regular.ttf?ef31255ae22bf70d525f4180be990b8d) format("TrueType");
+}
+@font-face {
+  font-family: GenJyuuGothic-P;
+  font-weight: 700;
+  src: url(/fonts/GenJyuuGothic-P-Bold.woff2?53d44f132e835809b14f46f8bff65d2b) format("woff2"), url(/fonts/GenJyuuGothic-P-Bold.woff?9de1f8813ddd80f73fd30b54c4ed9e34) format("woff"), url(/fonts/GenJyuuGothic-P-Bold.ttf?927d59ad1b7feb82d0fdec9634a00a61) format("TrueType");
+}
+@font-face {
+  font-family: AdobeBlank;
+  src: url(data:application/font-woff;base64,d09GRk9UVE8AAATUAAkAAAAACkAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABDRkYgAAAA4AAAAOcAAAEhIl9jq09TLzIAAAHIAAAARQAAAGBRQK3+Y21hcAAAAhAAAAAmAAAALAAMAFNoZWFkAAACOAAAADAAAAA2BZfPvmhoZWEAAAJoAAAAGgAAACQHWf+LaG10eAAAAoQAAAAIAAAACAPoAYhtYXhwAAACjAAAAAYAAAAGAAJQAG5hbWUAAAKUAAACKwAAB2b3USAEcG9zdAAABMAAAAATAAAAIP+4ADJ42mNkYGFmYGRkFHRMyU9KdcpJzMvWLS5ITE4FCZr8kP4h080j183D+EOW8Ycc0w955h8SLN2/eX7V/GJh7eVRkmF4xS/DyCcow/CeR1WG4TuPCgMbEwMjAxsDH0M4QzpDOUM72GDPlNS8ksySSuf8gsqizPSMEgUFIwNDYx0QaaoAVqIQXFlckppbrOCZl5xfVJBflFiSmqKgkVFSUmClr19eXq6XCFKml5yfq6+ph+5cQnwGBpCzGJhBBJjNyMj1Q4FHbYoMI6tQD4/grxqRHx2iDEwsQFlGsAoGBla+Px18AK/lT1cAeNpjYGZ+wTiBgZWBgamLKYKBgcEbQjPGMRgx3GFABYzIHEcXJ38GBwYFBgXmgv8dDAzMBQwVCfqM/5GUKDAwAAArbQs0AAAAeNpjYGBgZGAGYgYGHgYWBgUgzQKEIL7C//8Q8v9DMJ8BAEreBlwAAHjaY2BkYGAA4vc75S7F89t8ZWBmfgEUYbjo4/oZQf/vYH7BXADkMjMwgUQBcKYMvHjaY2BkYGAu+N/BAAXMLxgYGVABEwBNCALqAAAD6AGIAAAAAAAAUAAAAgAAeNrtkz9r20AYxp+zpZhSCEnpBzgolKQk5/8m2FOSJckUYgi0U2VZtlzbkpAVG2+dSukYQj5Bh36A0KFzpw6dOvXLpI/k1ynNYkq3UB8n/+798zx3JwTgufoOhcXvmHPBChtcLTiHAl4K5xl/LWyRI2EbTbwVXmP8i3CB/I2s8DjT/ylMffVMmPqqKkx91RSmvjoRpr56JUx9dSVMffVR+An5JuXbWzwlf6Wash7R91L9EFbQuZ5wDuu5d8J5xq+ELfKNsI0kt+xdg84fCRfIvvAG+b3wJtbznzLeTH3zn4Xpax0J09fyhelrTYXpa10L09da9tLXfiFMX/tEmL72G2H62h8Ow2geD/p+onWlVK7upM+63u+GHU+355PEG0/0ceCGcRTGTuJ19ZafJFGzWJzNZsZJy4wbjovbJms5GDnBcHcSOa535vUvRk58P3x/fe7Fk0EY6LIp1eqt07aAHyZuGEzTldmrtMbO0AuTnhkNOhVTN41qrdRYpfxwT7ZqjUOE/MrmiDFAHz4SaI4KSiijip07rpP20WV1Bx65zZ4Jqz2M+a/57QVwmY2plj6dLNdlZitTTRhvosgxy4ZhxVLNZJ1j5rbJv10OMGJVgCF26RGRXUbPOPu4yHLxyupV+XPOmOsBqwLutswdlFDjeVs45Sn/jPisSrLdBpje5Qz2eEstnsChupfV9BgdUbXDjGGvQYP3WWN145/3/Hc39P8NP/A3/AvEJ2JBAHjaY2BmAIP/WxmMGLAAACzCAeoA) format("woff");
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 100;
+  src: url(/fonts/YakuHanJP-Thin.woff2?f8706e5306d9a5252d75da086e8d122d) format("woff2"), url(/fonts/YakuHanJP-Thin.woff?c0a6b47f2e150fe2a9b904c1bf57f497) format("woff"), url(/fonts/YakuHanJP-Thin.eot?6ef81d2af5ed27fb99bd6b2d5ccd8041);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 200;
+  src: url(/fonts/YakuHanJP-Light.woff2?0b8ababac4f383c6ad8a9ab02d6fbccc) format("woff2"), url(/fonts/YakuHanJP-Light.woff?98e377e2cd6bb0ab35291192249c9d7e) format("woff"), url(/fonts/YakuHanJP-Light.eot?48a86896772cb42ab312532e5fb1a6ef);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 300;
+  src: url(/fonts/YakuHanJP-DemiLight.woff2?401d79d02744136f1666b742d4133fbd) format("woff2"), url(/fonts/YakuHanJP-DemiLight.woff?c7edfa735d3d4b08bfc5c78189bc7b09) format("woff"), url(/fonts/YakuHanJP-DemiLight.eot?a569268c682e10874d839b9f5e043bab);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 400;
+  src: url(/fonts/YakuHanJP-Regular.woff2?fa89a6a409a61a7ca3f11ca630bd26ab) format("woff2"), url(/fonts/YakuHanJP-Regular.woff?3686af168611043094444da612d2014c) format("woff"), url(/fonts/YakuHanJP-Regular.eot?a5c871a280f58c01dedaa3396cc0410f);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 500;
+  src: url(/fonts/YakuHanJP-Medium.woff2?921de89e5e14a069620bf7f0e34d0ecf) format("woff2"), url(/fonts/YakuHanJP-Medium.woff?f86078184a1d6a41418c31903ce09f93) format("woff"), url(/fonts/YakuHanJP-Medium.eot?0b3bec6520de5392d8fa9e3c040009c5);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 700;
+  src: url(/fonts/YakuHanJP-Bold.woff2?4a19c01ca60630fe0e2e1403930874f7) format("woff2"), url(/fonts/YakuHanJP-Bold.woff?95eb71bf0690e78e09a1baf568a1738d) format("woff"), url(/fonts/YakuHanJP-Bold.eot?77e5e9f3a23cfcda7f67adb41a354ba7);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 900;
+  src: url(/fonts/YakuHanJP-Black.woff2?c9a364c83a7aff52232f8fe87c8609ea) format("woff2"), url(/fonts/YakuHanJP-Black.woff?21712507fa10297fe63d07d5d7c5dac3) format("woff"), url(/fonts/YakuHanJP-Black.eot?9e46da322dfcf324fa76b5ac7a9e1cb0);
+}
+/**
+ * VARIABLE
+ * global...サイト全体に使用するサイズや数値に関する変数です。
+ * breakpoint...メディアクエリで使用するブレイクポイントです。
+ * font-family...font-family指定をまとめています。
+ * color...グローバルに使用する色指定です。
+ * z-index...z-indexの並び順を管理します。
+ * easing...cubic-bezier関数を使用したタイミング関数を定義しています。
+ *
+ * FUNCTION
+ * strip-unit...pxやremなどの単位を取り除きます。
+ * em...pxをemに変換します。
+ * rem...pxをremに変換します。
+ * tint...白色を加えて明度を明るくします。
+ * shade...黒色を加えて明度を暗くします。
+ * z-index...z-indexの並び順を管理します。
+ * tracking...Photoshopのカーニングをemに変換します。
+ *
+ * MIXIN
+ * mq-up...メディアクエリを`min-width`で挿入します。
+ * mq-down...メディアクエリを`max-width`で挿入します。
+ * responsive...レスポンシブ対応クラスを生成します。
+ * clearfix...floatの解除をします。
+ * on-event...:hover, :active, :focusをまとめて指定します。
+ * sr-only...非表示にしてスクリーンリーダーにだけ読み上げさせます。
+ * layout...layoutオブジェクトのベーススタイルです。
+ * media...mediaオブジェクトのベーススタイルです。
+ * flag...flagオブジェクトのベーススタイルです。
+ * list-unstyled...list-unstyledオブジェクトのベーススタイルです。
+ * list-mark...list-markオブジェクトのベーススタイルです。
+ * ratio...ratioオブジェクトのベーススタイルです。
+ * box...boxオブジェクトのベーススタイルです。
+ *
+ * BASE
+ * normalize...Normalize.cssをインポートしています。
+ * base...タイプセレクタと属性セレクタのデフォルトスタイルです。
+ *
+ * LAYOUT
+ * header...`<body>`タグ直下にある`<header>`タグのスタイルです。
+ * footer...`<body>`タグ直下にある`<footer>`タグのスタイルです。
+ * main...`<main>`タグのスタイルです。
+ * content...`<article>`タグが使われるようなメインコンテンツのスタイルです。
+ * side...`<aside>`タグが使われるようなサイドバーのスタイルです。
+ * section...`<section>`要素を使うようなセクションの余白を管理します。
+ *
+ * COMPONENT
+ * wrapper...最大幅を指定します。
+ * layout...汎用的なレイアウトオブジェクトです。グリッドレイアウトなどに使用できます。
+ * media...画像とテキストが横並びになるオブジェクトです。テキストを画像に回り込みさせます。
+ * flag...画像とテキストが横並びになるオブジェクトです。縦方向の指定ができます。
+ * list-unstyled...`<ul>`と`<ol>`でデフォルトスタイルをリセットします。
+ * list-ordered...番号付きリストを入れ子レベルに応じて、1, 1.1のように区切り文字を付け加えます。
+ * list-mark...リストアイテムの左にアイコンを配置します。
+ * embed...Youtubeなどをアスペクト比を固定してレスポンシブ対応させる場合に使用します。
+ * ratio...アスペクト比を固定したまま伸縮させます。
+ * table...tableのレイアウトアルゴリズムの変更、余白の変更をします。
+ *
+ * PROJECT
+ * icon...アイコンフォントです。テンプレートから自動で生成されます。
+ * icon-extend...アイコンフォントを拡張するModifierです。
+ * button...ボタンコンポーネントです。
+ * breadcrumb...パンくずリストコンポーネントです。
+ * label...インラインのラベルコンポーネントです。
+ * box...画像やテキストなどを縦に並べるコンポーネントです。
+ * card...カードタイプのコンポーネントです。
+ * notification...お知らせエリアのコンポーネントです。
+ * meeting...ミーティングエリアのコンポーネントです。
+ * article...詳細ページのコンポーネントです。
+ * modal...モーダルのコンポーネントです。 
+ * search...検索ページのコンポーネントです。 
+ * profile...プロフィールページのコンポーネントです。
+ * edit...エディットページのコンポーネントです。
+ * 
+ * SCOPE
+ * blog...ブログページのスタイルです。
+ *
+ * UTILITY
+ * text...テキストのスタイルに関する汎用クラスです。
+ * align...画像などを中央や右側に配置します。
+ * margin...マージンで余白の管理をします。常に下方向にだけ余白をとります。
+ * display...要素の表示や改行をコントロールする場合に使用します。
+ * width...おもにグリッドで使用する`width`を指定する汎用クラスです。
+ * offset...おもにグリッドで使用する`margin-right`を指定する汎用クラスです。
+ * percent...`width`プロパティを5%刻みで指定する汎用クラスです。
+ * sr-only...要素を非表示にさせますが、スクリーンリーダーには読み上げられます。
+ */
+/**
+ * このスタイルシートは[FLOCSS](https://github.com/hiloki/flocss)をベースにしています。
+ * 定義されているレイヤー以外にもThemeやTestなどのレイヤーを追加することもできます。
+ * 詳しくは[CSSコーディングルール](https://github.com/manabuyasuda/styleguide/blob/master/css-coding-rule.md#flocss)を参照してください。
+ */
+/* =============================================================================
+   #Foundation
+   ========================================================================== */
+.font-genju-p-r {
+  font-family: GenJyuuGothic-P, sans-serif;
+  font-weight: 400;
+  font-feature-settings: "palt";
+}
+
+.font-genju-p-b {
+  font-family: GenJyuuGothic-P, sans-serif;
+  font-weight: 700;
+  font-feature-settings: "palt";
+}
+
+@font-face {
+  font-family: GenJyuuGothic-P;
+  font-weight: 400;
+  src: url(/fonts/GenJyuuGothic-P-Regular.woff2?0908714fff61a9145b5006671048da1d) format("woff2"), url(/fonts/GenJyuuGothic-P-Regular.woff?dc4d38bc6b04031d9dd7584d4ed3af1c) format("woff"), url(/fonts/GenJyuuGothic-P-Regular.ttf?ef31255ae22bf70d525f4180be990b8d) format("TrueType");
+}
+@font-face {
+  font-family: GenJyuuGothic-P;
+  font-weight: 700;
+  src: url(/fonts/GenJyuuGothic-P-Bold.woff2?53d44f132e835809b14f46f8bff65d2b) format("woff2"), url(/fonts/GenJyuuGothic-P-Bold.woff?9de1f8813ddd80f73fd30b54c4ed9e34) format("woff"), url(/fonts/GenJyuuGothic-P-Bold.ttf?927d59ad1b7feb82d0fdec9634a00a61) format("TrueType");
+}
+@font-face {
+  font-family: AdobeBlank;
+  src: url(data:application/font-woff;base64,d09GRk9UVE8AAATUAAkAAAAACkAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABDRkYgAAAA4AAAAOcAAAEhIl9jq09TLzIAAAHIAAAARQAAAGBRQK3+Y21hcAAAAhAAAAAmAAAALAAMAFNoZWFkAAACOAAAADAAAAA2BZfPvmhoZWEAAAJoAAAAGgAAACQHWf+LaG10eAAAAoQAAAAIAAAACAPoAYhtYXhwAAACjAAAAAYAAAAGAAJQAG5hbWUAAAKUAAACKwAAB2b3USAEcG9zdAAABMAAAAATAAAAIP+4ADJ42mNkYGFmYGRkFHRMyU9KdcpJzMvWLS5ITE4FCZr8kP4h080j183D+EOW8Ycc0w955h8SLN2/eX7V/GJh7eVRkmF4xS/DyCcow/CeR1WG4TuPCgMbEwMjAxsDH0M4QzpDOUM72GDPlNS8ksySSuf8gsqizPSMEgUFIwNDYx0QaaoAVqIQXFlckppbrOCZl5xfVJBflFiSmqKgkVFSUmClr19eXq6XCFKml5yfq6+ph+5cQnwGBpCzGJhBBJjNyMj1Q4FHbYoMI6tQD4/grxqRHx2iDEwsQFlGsAoGBla+Px18AK/lT1cAeNpjYGZ+wTiBgZWBgamLKYKBgcEbQjPGMRgx3GFABYzIHEcXJ38GBwYFBgXmgv8dDAzMBQwVCfqM/5GUKDAwAAArbQs0AAAAeNpjYGBgZGAGYgYGHgYWBgUgzQKEIL7C//8Q8v9DMJ8BAEreBlwAAHjaY2BkYGAA4vc75S7F89t8ZWBmfgEUYbjo4/oZQf/vYH7BXADkMjMwgUQBcKYMvHjaY2BkYGAu+N/BAAXMLxgYGVABEwBNCALqAAAD6AGIAAAAAAAAUAAAAgAAeNrtkz9r20AYxp+zpZhSCEnpBzgolKQk5/8m2FOSJckUYgi0U2VZtlzbkpAVG2+dSukYQj5Bh36A0KFzpw6dOvXLpI/k1ynNYkq3UB8n/+798zx3JwTgufoOhcXvmHPBChtcLTiHAl4K5xl/LWyRI2EbTbwVXmP8i3CB/I2s8DjT/ylMffVMmPqqKkx91RSmvjoRpr56JUx9dSVMffVR+An5JuXbWzwlf6Wash7R91L9EFbQuZ5wDuu5d8J5xq+ELfKNsI0kt+xdg84fCRfIvvAG+b3wJtbznzLeTH3zn4Xpax0J09fyhelrTYXpa10L09da9tLXfiFMX/tEmL72G2H62h8Ow2geD/p+onWlVK7upM+63u+GHU+355PEG0/0ceCGcRTGTuJ19ZafJFGzWJzNZsZJy4wbjovbJms5GDnBcHcSOa535vUvRk58P3x/fe7Fk0EY6LIp1eqt07aAHyZuGEzTldmrtMbO0AuTnhkNOhVTN41qrdRYpfxwT7ZqjUOE/MrmiDFAHz4SaI4KSiijip07rpP20WV1Bx65zZ4Jqz2M+a/57QVwmY2plj6dLNdlZitTTRhvosgxy4ZhxVLNZJ1j5rbJv10OMGJVgCF26RGRXUbPOPu4yHLxyupV+XPOmOsBqwLutswdlFDjeVs45Sn/jPisSrLdBpje5Qz2eEstnsChupfV9BgdUbXDjGGvQYP3WWN145/3/Hc39P8NP/A3/AvEJ2JBAHjaY2BmAIP/WxmMGLAAACzCAeoA) format("woff");
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 100;
+  src: url(/fonts/YakuHanJP-Thin.woff2?f8706e5306d9a5252d75da086e8d122d) format("woff2"), url(/fonts/YakuHanJP-Thin.woff?c0a6b47f2e150fe2a9b904c1bf57f497) format("woff"), url(/fonts/YakuHanJP-Thin.eot?6ef81d2af5ed27fb99bd6b2d5ccd8041);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 200;
+  src: url(/fonts/YakuHanJP-Light.woff2?0b8ababac4f383c6ad8a9ab02d6fbccc) format("woff2"), url(/fonts/YakuHanJP-Light.woff?98e377e2cd6bb0ab35291192249c9d7e) format("woff"), url(/fonts/YakuHanJP-Light.eot?48a86896772cb42ab312532e5fb1a6ef);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 300;
+  src: url(/fonts/YakuHanJP-DemiLight.woff2?401d79d02744136f1666b742d4133fbd) format("woff2"), url(/fonts/YakuHanJP-DemiLight.woff?c7edfa735d3d4b08bfc5c78189bc7b09) format("woff"), url(/fonts/YakuHanJP-DemiLight.eot?a569268c682e10874d839b9f5e043bab);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 400;
+  src: url(/fonts/YakuHanJP-Regular.woff2?fa89a6a409a61a7ca3f11ca630bd26ab) format("woff2"), url(/fonts/YakuHanJP-Regular.woff?3686af168611043094444da612d2014c) format("woff"), url(/fonts/YakuHanJP-Regular.eot?a5c871a280f58c01dedaa3396cc0410f);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 500;
+  src: url(/fonts/YakuHanJP-Medium.woff2?921de89e5e14a069620bf7f0e34d0ecf) format("woff2"), url(/fonts/YakuHanJP-Medium.woff?f86078184a1d6a41418c31903ce09f93) format("woff"), url(/fonts/YakuHanJP-Medium.eot?0b3bec6520de5392d8fa9e3c040009c5);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 700;
+  src: url(/fonts/YakuHanJP-Bold.woff2?4a19c01ca60630fe0e2e1403930874f7) format("woff2"), url(/fonts/YakuHanJP-Bold.woff?95eb71bf0690e78e09a1baf568a1738d) format("woff"), url(/fonts/YakuHanJP-Bold.eot?77e5e9f3a23cfcda7f67adb41a354ba7);
+}
+@font-face {
+  font-family: YakuHanJP;
+  font-weight: 900;
+  src: url(/fonts/YakuHanJP-Black.woff2?c9a364c83a7aff52232f8fe87c8609ea) format("woff2"), url(/fonts/YakuHanJP-Black.woff?21712507fa10297fe63d07d5d7c5dac3) format("woff"), url(/fonts/YakuHanJP-Black.eot?9e46da322dfcf324fa76b5ac7a9e1cb0);
+}
+/**
+ * Foundationレイヤーでは`html`や`body`のような広範囲にわたるベーススタイル、
+ * `h2`や`ul`のような基本的なタイプセレクタのデフォルトスタイルを定義します。
+ * 装飾的なスタイルは避けて、できる限り低詳細度に保ちます。idセレクタやclassセレクタは使用しません。
+ */
+/* #Normalize.css
+   -------------------------------------------------------------------------- */
+/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+/**
+ * 1. Set default font family to sans-serif.
+ * 2. Prevent iOS and IE text size adjust after device orientation change,
+ *    without disabling user zoom.
+ */
+html {
+  font-family: sans-serif;
+  /* 1 */
+  -ms-text-size-adjust: 100%;
+  /* 2 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */
+}
+
+/**
+ * Remove default margin.
+ */
+body {
+  margin: 0;
+}
+
+/* HTML5 display definitions
+   ========================================================================== */
+/**
+ * Correct `block` display not defined for any HTML5 element in IE 8/9.
+ * Correct `block` display not defined for `details` or `summary` in IE 10/11
+ * and Firefox.
+ * Correct `block` display not defined for `main` in IE 11.
+ */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+  display: block;
+}
+
+/**
+ * 1. Correct `inline-block` display not defined in IE 8/9.
+ * 2. Normalize vertical alignment of `progress` in Chrome, Firefox, and Opera.
+ */
+audio,
+canvas,
+progress,
+video {
+  display: inline-block;
+  /* 1 */
+  vertical-align: baseline;
+  /* 2 */
+}
+
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+audio:not([controls]) {
+  display: none;
+  height: 0;
+}
+
+/**
+ * Address `[hidden]` styling not present in IE 8/9/10.
+ * Hide the `template` element in IE 8/9/10/11, Safari, and Firefox < 22.
+ */
+[hidden],
+template {
+  display: none;
+}
+
+/* Links
+   ========================================================================== */
+/**
+ * Remove the gray background color from active links in IE 10.
+ */
+a {
+  background-color: transparent;
+}
+
+/**
+ * Improve readability of focused elements when they are also in an
+ * active/hover state.
+ */
+a:active,
+a:hover {
+  outline: 0;
+}
+
+/* Text-level semantics
+   ========================================================================== */
+/**
+ * Address styling not present in IE 8/9/10/11, Safari, and Chrome.
+ */
+abbr[title] {
+  border-bottom: 1px dotted;
+}
+
+/**
+ * Address style set to `bolder` in Firefox 4+, Safari, and Chrome.
+ */
+b,
+strong {
+  font-weight: bold;
+}
+
+/**
+ * Address styling not present in Safari and Chrome.
+ */
+dfn {
+  font-style: italic;
+}
+
+/**
+ * Address variable `h1` font-size and margin within `section` and `article`
+ * contexts in Firefox 4+, Safari, and Chrome.
+ */
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+/**
+ * Address styling not present in IE 8/9.
+ */
+mark {
+  background: #ff0;
+  color: #000;
+}
+
+/**
+ * Address inconsistent and variable font size in all browsers.
+ */
+small {
+  font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ */
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sup {
+  top: -0.5em;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+/* Embedded content
+   ========================================================================== */
+/**
+ * Remove border when inside `a` element in IE 8/9/10.
+ */
+img {
+  border: 0;
+}
+
+/**
+ * Correct overflow not hidden in IE 9/10/11.
+ */
+svg:not(:root) {
+  overflow: hidden;
+}
+
+/* Grouping content
+   ========================================================================== */
+/**
+ * Address margin not present in IE 8/9 and Safari.
+ */
+figure {
+  margin: 1em 40px;
+}
+
+/**
+ * Address differences between Firefox and other browsers.
+ */
+hr {
+  box-sizing: content-box;
+  height: 0;
+}
+
+/**
+ * Contain overflow in all browsers.
+ */
+pre {
+  overflow: auto;
+}
+
+/**
+ * Address odd `em`-unit font size rendering in all browsers.
+ */
+code,
+kbd,
+pre,
+samp {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+/* Forms
+   ========================================================================== */
+/**
+ * Known limitation: by default, Chrome and Safari on OS X allow very limited
+ * styling of `select`, unless a `border` property is set.
+ */
+/**
+ * 1. Correct color not being inherited.
+ *    Known issue: affects color of disabled elements.
+ * 2. Correct font properties not being inherited.
+ * 3. Address margins set differently in Firefox 4+, Safari, and Chrome.
+ */
+button,
+input,
+optgroup,
+select,
+textarea {
+  color: inherit;
+  /* 1 */
+  font: inherit;
+  /* 2 */
+  margin: 0;
+  /* 3 */
+}
+
+/**
+ * Address `overflow` set to `hidden` in IE 8/9/10/11.
+ */
+button {
+  overflow: visible;
+}
+
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Firefox, IE 8/9/10/11, and Opera.
+ * Correct `select` style inheritance in Firefox.
+ */
+button,
+select {
+  text-transform: none;
+}
+
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ */
+button,
+html input[type=button],
+input[type=reset],
+input[type=submit] {
+  -webkit-appearance: button;
+  /* 2 */
+  cursor: pointer;
+  /* 3 */
+}
+
+/**
+ * Re-set default cursor for disabled elements.
+ */
+button[disabled],
+html input[disabled] {
+  cursor: default;
+}
+
+/**
+ * Remove inner padding and border in Firefox 4+.
+ */
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+/**
+ * Address Firefox 4+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+input {
+  line-height: normal;
+}
+
+/**
+ * It's recommended that you don't attempt to style these elements.
+ * Firefox's implementation doesn't respect box-sizing, padding, or width.
+ *
+ * 1. Address box sizing set to `content-box` in IE 8/9/10.
+ * 2. Remove excess padding in IE 8/9/10.
+ */
+input[type=checkbox],
+input[type=radio] {
+  box-sizing: border-box;
+  /* 1 */
+  padding: 0;
+  /* 2 */
+}
+
+/**
+ * Fix the cursor style for Chrome's increment/decrement buttons. For certain
+ * `font-size` values of the `input`, it causes the cursor style of the
+ * decrement button to change from `default` to `text`.
+ */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/**
+ * 1. Address `appearance` set to `searchfield` in Safari and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari and Chrome.
+ */
+input[type=search] {
+  -webkit-appearance: textfield;
+  /* 1 */
+  box-sizing: content-box;
+  /* 2 */
+}
+
+/**
+ * Remove inner padding and search cancel button in Safari and Chrome on OS X.
+ * Safari (but not Chrome) clips the cancel button when the search input has
+ * padding (and `textfield` appearance).
+ */
+input[type=search]::-webkit-search-cancel-button,
+input[type=search]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/**
+ * Define consistent border, margin, and padding.
+ */
+fieldset {
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em;
+}
+
+/**
+ * 1. Correct `color` not being inherited in IE 8/9/10/11.
+ * 2. Remove padding so people aren't caught out if they zero out fieldsets.
+ */
+legend {
+  border: 0;
+  /* 1 */
+  padding: 0;
+  /* 2 */
+}
+
+/**
+ * Remove default vertical scrollbar in IE 8/9/10/11.
+ */
+textarea {
+  overflow: auto;
+}
+
+/**
+ * Don't inherit the `font-weight` (applied by a rule above).
+ * NOTE: the default cannot safely be changed in Chrome and Safari on OS X.
+ */
+optgroup {
+  font-weight: bold;
+}
+
+/* Tables
+   ========================================================================== */
+/**
+ * Remove most spacing between table cells.
+ */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+td,
+th {
+  padding: 0;
+}
+
+/* #Reset.css
+   -------------------------------------------------------------------------- */
+/*
+html5doctor.com Reset Stylesheet
+v1.6.1
+Last Updated: 2010-09-17
+Author: Richard Clark - http://richclarkdesign.com
+Twitter: @rich_clark
+*/
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+  background: transparent;
+}
+
+body {
+  line-height: 1;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+nav ul {
+  list-style: none;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: "";
+  content: none;
+}
+
+a {
+  margin: 0;
+  padding: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+  background: transparent;
+}
+
+/* change colours to suit your needs */
+ins {
+  background-color: #ff9;
+  color: #000;
+  text-decoration: none;
+}
+
+/* change colours to suit your needs */
+mark {
+  background-color: #ff9;
+  color: #000;
+  font-style: italic;
+  font-weight: bold;
+}
+
+del {
+  text-decoration: line-through;
+}
+
+abbr[title], dfn[title] {
+  border-bottom: 1px dotted;
+  cursor: help;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* change border colour to suit your needs */
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #cccccc;
+  margin: 1em 0;
+  padding: 0;
+}
+
+input, select {
+  vertical-align: middle;
+}
+
+/* #Base
+   -------------------------------------------------------------------------- */
+/**
+ * Baseレイヤーにはプロジェクトにおける、基本的なベーススタイルを定義します。
+ * 要素セレクタや属性セレクタなど、詳細度はできるかぎり低く保っておきます。
+ * 基本的にclass属性は使用しません。
+ */
+/**
+ * `padding`と`border`を`width`に含めます。
+ * https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+ */
+html {
+  overflow-x: hidden;
+  font-size: 62.5%;
+  min-height: 100%;
+}
+
+body {
+  min-width: 320px;
+  background: #fff;
+  font-family: "Open Sans", "Myriad", Helvetica, Arial, sans-serif;
+}
+@media screen and (min-width: 1068px) {
+  body {
+    background: #F7FAFC;
+  }
+}
+
+body, button, code, input, optgroup, pre, select, textarea {
+  color: #080808;
+  font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Segoe UI, Hiragino Kaku Gothic ProN, Hiragino Sans, ヒラギノ角ゴ ProN W3, Arial, メイリオ, Meiryo, sans-serif;
+  font-size: 1.6rem;
+  word-wrap: break-word;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  font-feature-settings: "kern";
+  font-kerning: normal;
+  line-height: 1.6;
+}
+
+input[type=number], input[type=url], input[type=tel], input[type=text], input[type=email], input[type=password], select, textarea {
+  font-family: inherit;
+  -webkit-appearance: none;
+}
+
+img, legend {
+  max-width: 100%;
+}
+
+progress, sub, sup {
+  vertical-align: baseline;
+}
+
+body, svg:not(:root) {
+  overflow: hidden;
+}
+
+a, legend {
+  color: inherit;
+}
+
+a[href^="tel:"] {
+  cursor: text;
+  pointer-events: none;
+  text-decoration: none;
+}
+
+[type=submit], a, button {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+button {
+  padding: 0;
+}
+
+button:focus {
+  outline: 0;
+}
+
+input[type=checkbox], input[type=radio] {
+  margin-right: 0.5em;
+  margin-top: -2px;
+}
+
+input[type=number], input[type=url], input[type=tel], input[type=text], input[type=email], input[type=password], input[type=search], select, textarea {
+  border: 1px solid #D0D0D0;
+  background-color: #fff;
+  outline: 0 !important;
+  width: 100%;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-weight: 400;
+  color: #414141;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+}
+@media screen and (min-width: 1068px) {
+  input[type=number], input[type=url], input[type=tel], input[type=text], input[type=email], input[type=password], input[type=search], select, textarea {
+    padding: 15px 20px;
+    border-radius: 14px;
+  }
+}
+
+@media screen and (min-width: 1068px) {
+  input[type=search] {
+    padding-right: 52px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  input[type=search] {
+    padding-right: 40px;
+  }
+}
+
+html:not(.sp) input[type=number]:focus, html:not(.sp) input[type=url]:focus, html:not(.sp) input[type=tel]:focus, html:not(.sp) input[type=text]:focus,
+html:not(.sp) input[type=email]:focus, html:not(.sp) input[type=password]:focus, html:not(.sp) select:focus, html:not(.sp) textarea:focus {
+  border-color: #00c4ac;
+  background-color: #fff;
+  transition: all 0.2s ease-out;
+}
+
+html.sp input[type=number], html.sp input[type=url], html.sp input[type=tel], html.sp input[type=text], html.sp input[type=email], html.sp input[type=password], html.sp select, html.sp textarea {
+  font-size: 16px !important;
+  font-size: 1.6rem !important;
+}
+
+input[type=file] {
+  display: none;
+}
+
+select {
+  -moz-appearance: none;
+  background-color: #fff;
+}
+
+input[type=number]::-webkit-input-placeholder, input[type=url]::-webkit-input-placeholder, input[type=tel]::-webkit-input-placeholder, input[type=text]::-webkit-input-placeholder, input[type=email]::-webkit-input-placeholder, input[type=password]::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: #999;
+  font-size: 1.6rem;
+}
+
+input[type=number]:-ms-input-placeholder, input[type=url]:-ms-input-placeholder, input[type=tel]:-ms-input-placeholder, input[type=text]:-ms-input-placeholder, input[type=email]:-ms-input-placeholder, input[type=password]:-ms-input-placeholder, textarea:-ms-input-placeholder {
+  color: #999;
+  font-size: 1.6rem;
+}
+
+input[type=number]::-moz-placeholder, input[type=url]::-moz-placeholder, input[type=tel]::-moz-placeholder, input[type=text]::-moz-placeholder, input[type=email]::-moz-placeholder, input[type=password]::-moz-placeholder, textarea::-moz-placeholder {
+  color: #999;
+  font-size: 1.6rem;
+}
+
+h1, h2, h3, h4, h5 {
+  font-weight: bold;
+}
+
+/* =============================================================================
+   #Layout
+   ========================================================================== */
+/**
+ * Layoutレイヤーはヘッダーやフッターのような、ページを構成するコンテナブロックのスタイルを定義します。
+ * 目安としてはワイヤーフレームに書かれるような大きな単位のブロックです。
+ * 汎用性のあるグリッドシステムは次のObject/Componentレイヤーで定義します。
+ * グローバルナビゲーションやコピーライトのようなコンポーネントは、Object/Projectレイヤーで定義します。
+ * 基本的にはclass属性を使用しますが、id属性を使用することもできます。
+ * プレフィックス（接頭辞）として`l-`をつけます。
+ */
+/* #Header
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: header
+name: header
+categories: [layout]
+---
+
+`<body>`タグ直下にある`<header>`タグのスタイルです。
+ロゴやグローバルナビゲーションのレイアウトを含むことはできますが、
+コンポーネント自体はobject/projectレイヤーで定義します。
+
+```block
+<body>
+  <header class="l-header">
+    <div class="l-header__logo">
+      <h1 class="p-logo">logo</h1>
+    </div>
+    <nav class="l-header__global-nav">
+      <ul class="p-global-nav">
+        <li></li>
+        <li></li>
+      <ul>
+    </nav>
+  </header>
+</body>
+```
+*/
+/* #Footer
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: footer
+name: footer
+categories: [layout]
+---
+
+`<body>`タグ直下にある`<footer>`タグのスタイルです。
+コピーライトやナビゲーションのレイアウトを含むことはできますが、
+コンポーネント自体はobject/projectレイヤーで定義します。
+
+```block
+<body>
+  <footer class="l-footer">
+    <div class="l-footer__copyright">
+      <small class="p-copyright"></small>
+    </div>
+    <nav class="l-footer__sub-nav">
+      <ul class="p-foot-nav">
+        <li></li>
+        <li></li>
+      <ul>
+    </nav>
+  </footer>
+</body>
+```
+*/
+/* #Main
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: main
+name: main
+categories: [layout]
+---
+
+`<main>`タグのスタイルです。ドキュメントのメインコンテンツを示し、ドキュメント内で1つしか記述できません。
+<article>タグや<nav>タグなどの中に入れることはできません。
+
+取り扱いの難しいタグなので、使わないという選択をするのもいいでしょう。
+
+```block
+<body>
+  <main id="l-main">
+  </main>
+</body>
+```
+*/
+.l-centeringbox {
+  width: 100%;
+  height: 100%;
+}
+.l-centeringbox-wrap {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 100%;
+  border-radius: 20px;
+  box-sizing: border-box;
+}
+@media screen and (min-width: 1068px) {
+  .l-centeringbox-wrap {
+    padding: 192px 0;
+  }
+}
+
+.l-container {
+  display: flex;
+  flex-flow: row-reverse;
+  background: #fff;
+  justify-content: flex-end;
+}
+@media screen and (min-width: 1068px) {
+  .l-container {
+    background: #F7FAFC;
+  }
+}
+
+.l-single-main {
+  min-height: 100vh;
+  /* Fallback */
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+.l-single-container {
+  max-width: 540px;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 8px;
+  padding: 50px 24px 70px;
+  background: #fff;
+  box-sizing: border-box;
+  display: block;
+}
+@media screen and (min-width: 1068px) {
+  .l-single-container {
+    width: 540px;
+    max-width: none;
+    box-shadow: 0 1px 4px #dddddd;
+    padding: 60px 60px 60px;
+  }
+}
+.l-single-container h1 {
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 35px;
+  line-height: 1;
+}
+@media screen and (min-width: 1068px) {
+  .l-single-container h1 {
+    margin-bottom: 35px;
+    font-size: 2.8rem;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .l-single-container h1 {
+    letter-spacing: 0.02em;
+  }
+}
+@media screen and (max-width: 374px) {
+  .l-single-container h1 {
+    font-size: 2.8rem;
+  }
+}
+.l-single-inner {
+  width: 100%;
+  margin: 0 auto;
+  width: 410px;
+}
+@media screen and (max-width: 430px) {
+  .l-single-inner {
+    width: 100%;
+  }
+}
+.l-single-inner .form-group {
+  margin: 0 0 17px;
+}
+@media screen and (min-width: 1068px) {
+  .l-single-inner .form-group {
+    margin: 0 0 20px;
+  }
+}
+
+@media screen and (min-width: 1068px) {
+  .l-registration .l-single-container h1 {
+    margin-bottom: 40px;
+  }
+}
+
+/* #Content
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: content
+name: content
+categories: [layout]
+---
+
+`<article>`タグが使われるようなメインコンテンツのスタイルです。
+ナビゲーションやバナーなどのレイアウトを含むことはできますが、
+コンポーネント自体はobject/projectレイヤーで定義します。
+
+```block
+<body>
+  <article class="l-content s-blog">
+    <header class="l-content__lead"></header>
+  </article>
+</body>
+```
+*/
+.l-content {
+  width: 100%;
+  margin: 30px auto 0;
+  padding: 0 20px;
+}
+@media screen and (min-width: 1068px) {
+  .l-content {
+    margin: 25px 0 0 240px;
+    padding: 0 32px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .l-content {
+    padding-bottom: 130px;
+    max-width: 700px;
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 430px) {
+  .l-content {
+    padding-bottom: 110px;
+  }
+}
+.l-content-wrap {
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+@media screen and (min-width: 1068px) {
+  .l-content-wrap {
+    max-width: 1064px;
+    box-shadow: 0 1px 4px #ddd;
+    margin-bottom: 40px;
+    border-radius: 8px;
+    background: #fff;
+  }
+}
+.l-content__ttl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 35px;
+}
+@media screen and (min-width: 1068px) {
+  .l-content__ttl {
+    max-width: 1064px;
+    justify-content: space-between;
+    margin: 0 auto 25px;
+  }
+}
+@media screen and (max-width: 430px) {
+  .l-content__ttl {
+    margin: 0 auto 30px;
+  }
+}
+.l-content__ttl__left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.l-content__ttl h2 {
+  font-size: 2.4rem;
+  font-weight: bold;
+}
+@media screen and (min-width: 1068px) {
+  .l-content__ttl h2 {
+    margin-right: 30px;
+    font-size: 3rem;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .l-content__ttl h2 {
+    letter-spacing: 0.04em;
+  }
+}
+@media screen and (max-width: 374px) {
+  .l-content__ttl h2 {
+    font-size: 2rem;
+  }
+}
+.l-content-w560 {
+  margin: 0 auto;
+  width: 100%;
+}
+@media screen and (min-width: 1068px) {
+  .l-content-w560 {
+    max-width: 560px;
+  }
+}
+
+/* #Side
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: side
+name: side
+categories: [layout]
+---
+
+`<aside>`タグが使われるようなサイドバーのスタイルです。
+ナビゲーションやバナーなどのレイアウトを含むことはできますが、
+コンポーネント自体はobject/projectレイヤーで定義します。
+
+```block
+<body>
+  <article class="l-content"></article>
+  <aside class="l-side">
+    <div class="l-side__item">
+       <ul class="p-side-nav"></ul>
+    </div>
+    <div class="l-side__item">
+       <div class="p-banner"></div>
+    </div>
+  </aside>
+</body>
+```
+*/
+.l-side {
+  position: fixed;
+  left: 0;
+  overflow-x: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  -webkit-overflow-scrolling: touch;
+  background: #000000;
+  z-index: 3;
+  width: calc(100% - 20px);
+  height: 54px;
+}
+@media screen and (min-width: 1068px) {
+  .l-side {
+    height: 100vh;
+    width: 240px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .l-side {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 7px;
+    right: 7px;
+    bottom: 7px;
+    border-radius: 12px;
+    width: calc(100% - 14px);
+  }
+}
+.l-side-logo {
+  line-height: 1;
+  margin: 35px auto;
+}
+@media screen and (min-width: 1068px) {
+  .l-side-logo {
+    width: 38px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .l-side-logo {
+    display: none;
+  }
+}
+.l-side-logo a {
+  display: block;
+  line-height: 1;
+}
+
+@media screen and (max-width: 1067px) {
+  .mypage-nav {
+    width: 100%;
+    height: 100%;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .mypage-nav-list {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0 7px;
+  }
+}
+.mypage-nav-list__item {
+  display: flex;
+  align-items: center;
+}
+@media screen and (min-width: 1068px) {
+  .mypage-nav-list__item.nav-active a {
+    background: #F0DE00;
+    color: #000;
+  }
+  .mypage-nav-list__item.nav-active a:hover {
+    opacity: 1;
+  }
+}
+.mypage-nav-list__item.nav-active .prof-wrap {
+  border: 1px solid #F0DE00;
+}
+.mypage-nav-list__item.nav-active.-profile .prof-wrap {
+  border: 1px solid #ccc;
+}
+.mypage-nav-list__item.nav-active .icon.meeting:before {
+  background-image: url(/images/list-yellow.svg?58c753f895165d8b559b97118431078a);
+}
+@media screen and (min-width: 1068px) {
+  .mypage-nav-list__item.nav-active .icon.meeting:before {
+    background-image: url(/images/list-black.svg?bb77778dacd15a2e89c94df413b610b1);
+  }
+}
+@media screen and (max-width: 1067px) {
+  .mypage-nav-list__item.nav-active .icon.star:before {
+    background-image: url(/images/star-outline-yellow02.svg?12419a0efb747f2bf657265d762cf945);
+  }
+}
+.mypage-nav-list__item.nav-active .icon.parents:before {
+  background-image: url(/images/people-yellow.svg?b09a58e795d7dae70bf454e2dd9c95dc);
+}
+@media screen and (min-width: 1068px) {
+  .mypage-nav-list__item.nav-active .icon.parents:before {
+    background-image: url(/images/people-black.svg?18cbc02573ca628a754516d565471689);
+  }
+}
+.mypage-nav-list__item.nav-active .icon.search:before {
+  background-image: url(/images/search-yellow.svg?0230b5a2addb282f90a11f03e1fa18b6);
+}
+@media screen and (min-width: 1068px) {
+  .mypage-nav-list__item.nav-active .icon.search:before {
+    background-image: url(/images/search-black.svg?720fc6249963ccfb199cad011367407b);
+  }
+}
+.mypage-nav-list__item.nav-active .icon.log-out:before {
+  background-image: url(/images/log-out-yellow.svg?1b68f7d254d3418c246ab6caf4df2a81);
+}
+@media screen and (min-width: 1068px) {
+  .mypage-nav-list__item.nav-active .icon.log-out:before {
+    background-image: url(/images/log-out-black.svg?84c65984fe1dc8214afbb0e6e42873c0);
+  }
+}
+@media screen and (max-width: 1067px) {
+  .mypage-nav-list__item {
+    width: 20%;
+    height: 100%;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .mypage-nav-list__item.-logout {
+    display: none;
+  }
+}
+@media screen and (min-width: 1068px) {
+  .mypage-nav-list__item.-favorite {
+    display: none;
+  }
+}
+.mypage-nav-list__item a {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  color: #ccc;
+  line-height: 1.5;
+  font-weight: bold;
+  word-break: break-all;
+  transition: all 0.25s ease-out;
+  text-decoration: none;
+}
+@media screen and (min-width: 1068px) {
+  .mypage-nav-list__item a {
+    padding: 13px 1.2em;
+  }
+  .mypage-nav-list__item a:hover {
+    opacity: 0.6;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .mypage-nav-list__item a {
+    justify-content: center;
+    box-sizing: border-box;
+    height: 100%;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .mypage-nav-list__item a span {
+    display: none;
+  }
+}
+.mypage-nav-list__item .icon {
+  width: 29px;
+  height: 29px;
+  position: relative;
+}
+@media screen and (min-width: 1068px) {
+  .mypage-nav-list__item .icon {
+    margin-right: 13px;
+    transition: all 0.25s ease-out;
+    width: 24px;
+    height: 24px;
+  }
+}
+.mypage-nav-list__item .icon:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: 100%;
+}
+.mypage-nav-list__item .icon.meeting:before {
+  background-image: url(/images/list-gray.svg?dcc142fe211efe22393797a2c9e28bf1);
+}
+.mypage-nav-list__item .icon.star:before {
+  background-image: url(/images/star-outline-gray02.svg?df9815f0291c30e50a5cfd1c496e155b);
+}
+.mypage-nav-list__item .icon.search:before {
+  background-image: url(/images/search-gray.svg?c5c7a01d0dd6ebe7e325306d6ef0ba7a);
+}
+.mypage-nav-list__item .icon.parents:before {
+  background-image: url(/images/people-gray.svg?acfa94944f8df8a43eef099e3a77b2fb);
+}
+.mypage-nav-list__item .icon.log-out:before {
+  background-image: url(/images/log-out-gray.svg?861c1a3bffcbc6494ae12c18598d3b42);
+}
+.mypage-nav-list__link.user-icon figure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media screen and (min-width: 1068px) {
+  .mypage-nav-list__link.user-icon figure {
+    margin-right: 13px;
+    width: 24px;
+    height: 24px;
+  }
+}
+.mypage-nav-list__link.user-icon figure .prof-wrap {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  overflow: hidden;
+}
+@media screen and (max-width: 1067px) {
+  .mypage-nav-list__link.user-icon figure .prof-wrap {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* #Section
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: section
+name: section
+categories: [layout]
+---
+
+`<section>`タグを使うようなセクションの余白（`margin`）を管理します。
+コンポーネント単位での余白はobject/utility/_margin.scssで管理をします。
+
+サイズはデフォルトで3つ、最大で5つとします。
+
+1. tiny(optional)
+2. small
+3. medium(default)
+4. large
+5. huge(optional)
+
+Modifierなしをmedium、変更する場合にはModifierを指定します。
+
+```block
+<div class="l-section">
+  <h2>見出し2</h2>
+</div>
+
+<div class="l-section l-section--small">
+  <h2>見出し2</h2>
+</div>
+
+<div class="l-section l-section--large">
+  <h2>見出し2</h2>
+</div>
+```
+*/
+/* =============================================================================
+   #Object
+   ========================================================================== */
+/**
+ * Objectレイヤーはプロジェクトにおけるビジュアルパターンです。抽象度や詳細度、
+ * 拡張性などによって、4つのレイヤーにわけられます。
+ * それぞれのレイヤーにはプレフィックス（接頭辞）をつけます。
+ * 1. Component（`c-`）
+ * 2. Project（`p-`）
+ * 3. Scope(`s-`)
+ * 4. Utility（`u-`）
+ *
+ * ランディングページのようにページ特有のスタイルを多く含む場合は、
+ * ページ専用のCSSファイルを作成することもできます。
+ * ページ専用のスタイルは、そのページにだけ読み込ませることでスコープをつくり、
+ * プレフィックス（接頭辞）をつけないことで名前の重複を防ぎます。
+ */
+/* -----------------------------------------------------------------------------
+   #Component
+   -------------------------------------------------------------------------- */
+/**
+ * Componentレイヤーは多くのプロジェクトで横断的に再利用のできるような、小さな単位のモジュール（機能）です。
+ * OOCSSの構造（structure）の機能を担うため、装飾的なスタイルをできるだけ含めないようにします。
+ * また、`width`や`margin`といったレイアウトに影響を与えるプロパティもできるだけ含めないようにします。
+ * 例えばgridやmediaといったレイアウトパターンが該当します。
+ * プレフィックス（接頭辞）として`c-`をつけます。
+ */
+/* #Wrapper
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: wrapper
+name: wrapper
+categories: [component]
+---
+
+横幅を制限するオブジェクトです。
+
+Modifierは以下のとおりです。
+
+* 左右の余白を追加 `--small`, `--medium`, `--large`
+
+```block
+```
+*/
+.c-wrapper {
+  width: 100%;
+  max-width: 960px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* #Layout
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: layout
+name: layout
+categories: [component]
+---
+
+汎用的なレイアウトオブジェクトです。`width`の変更はUtilityレイヤーで指定します。
+
+Modifierは以下のとおりです。
+
+* ガターの追加 `--small`, `--medium`, `--large`
+* text-alignの変更 `--middle`, `--bottom`
+* 配置を反転 `--reverse`
+* `.c-layout__item`のカラム幅をまとめて指定 `--colx`, `--colxandx`
+
+```block
+<div class="c-wrapper">
+  <div class="c-layout c-layout--medium" style="margin-bottom:1rem;">
+    <div class="c-layout__item u-8of12-md"><div style="background-color:lightblue;">c-layout__item u-8of12-md</div></div>
+    <div class="c-layout__item u-4of12-md"><div style="background-color:lightblue;">c-layout__item u-4of12-md</div></div>
+  </div>
+
+  <div class="c-layout c-layout--reverse c-layout--medium" style="margin-bottom:1rem;">
+    <div class="c-layout__item u-8of12-md"><div style="background-color:lightblue;">c-layout--rev c-layout__item u-8of12-md</div></div>
+    <div class="c-layout__item u-4of12-md"><div style="background-color:lightblue;">c-layout--rev c-layout__item u-4of12-md</div></div>
+  </div>
+
+  <div class="c-layout c-layout--center c-layout--medium" style="margin-bottom:1rem;">
+    <div class="c-layout__item u-8of12-md"><div style="background-color:lightblue;">c-layout--center c-layout__item u-8of12-md</div></div>
+  </div>
+
+  <div class="c-layout c-layout--medium c-layout--col2-sm c-layout--col3-md" style="margin-bottom:1rem;">
+    <div class="c-layout__item"><div style="background-color:lightblue;">c-layout__item c-layout--col2-sm c-layout--col3-md</div></div>
+    <div class="c-layout__item"><div style="background-color:lightblue;">c-layout__item c-layout--col2-sm c-layout--col3-md</div></div>
+    <div class="c-layout__item"><div style="background-color:lightblue;">c-layout__item c-layout--col2-sm c-layout--col3-md</div></div>
+  </div>
+
+  <div class="c-layout c-layout--col4and8" style="margin-bottom:1rem;">
+    <div class="c-layout__item"><div style="background-color:lightblue;">c-layout__item u-8of12-md</div></div>
+    <div class="c-layout__item"><div style="background-color:lightblue;">c-layout__item u-4of12-md</div></div>
+  </div>
+</div>
+```
+*/
+.c-layout {
+  display: block;
+  margin: 0;
+  padding: 0;
+  font-size: 0;
+  list-style-type: none;
+}
+
+.c-layout__item {
+  display: inline-block;
+  width: 100%;
+  font-size: medium;
+  font-size: 1rem;
+  vertical-align: top;
+}
+
+/**
+ * ガターを3つのパリエーションから選択します。
+ */
+.c-layout--small {
+  margin-left: -0.85rem;
+}
+.c-layout--small > .c-layout__item {
+  padding-left: 0.85rem;
+}
+
+.c-layout--medium {
+  margin-left: -1.7rem;
+}
+.c-layout--medium > .c-layout__item {
+  padding-left: 1.7rem;
+}
+
+.c-layout--large {
+  margin-left: -3.4rem;
+}
+.c-layout--large > .c-layout__item {
+  padding-left: 3.4rem;
+}
+
+/**
+ * 垂直位置を2つのパリエーションから選択します（デフォルトは`top`）。
+ */
+.c-layout--middle > .c-layout__item {
+  vertical-align: middle;
+}
+
+.c-layout--bottom > .c-layout__item {
+  vertical-align: bottom;
+}
+
+/**
+ * 要素を中央配置にします（デフォルトは`left`）。
+ */
+.c-layout--center {
+  text-align: center;
+}
+.c-layout--center > .c-layout__item {
+  text-align: left;
+}
+
+/**
+ * 要素を右端寄せにします（デフォルトは`left`）。
+ */
+.c-layout--right {
+  text-align: right;
+}
+.c-layout--right > .c-layout__item {
+  text-align: left;
+}
+
+/**
+ * `.c-layout__item`のカラム数をまとめて指定します。
+ */
+.c-layout--col2 > .c-layout__item {
+  width: 50%;
+}
+
+@media screen and (min-width: 400px) {
+  .c-layout--col2-sm > .c-layout__item {
+    width: 50%;
+  }
+}
+@media screen and (min-width: 768px) {
+  .c-layout--col2-md > .c-layout__item {
+    width: 50%;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .c-layout--col2-lg > .c-layout__item {
+    width: 50%;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .c-layout--col2-xl > .c-layout__item {
+    width: 50%;
+  }
+}
+.c-layout--col3 > .c-layout__item {
+  width: 33.3333333333%;
+}
+
+@media screen and (min-width: 400px) {
+  .c-layout--col3-sm > .c-layout__item {
+    width: 33.3333333333%;
+  }
+}
+@media screen and (min-width: 768px) {
+  .c-layout--col3-md > .c-layout__item {
+    width: 33.3333333333%;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .c-layout--col3-lg > .c-layout__item {
+    width: 33.3333333333%;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .c-layout--col3-xl > .c-layout__item {
+    width: 33.3333333333%;
+  }
+}
+.c-layout--col4 > .c-layout__item {
+  width: 25%;
+}
+
+@media screen and (min-width: 400px) {
+  .c-layout--col4-sm > .c-layout__item {
+    width: 25%;
+  }
+}
+@media screen and (min-width: 768px) {
+  .c-layout--col4-md > .c-layout__item {
+    width: 25%;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .c-layout--col4-lg > .c-layout__item {
+    width: 25%;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .c-layout--col4-xl > .c-layout__item {
+    width: 25%;
+  }
+}
+.c-layout--col2and10 > .c-layout__item:nth-child(odd) {
+  width: 16.6666666667%;
+}
+.c-layout--col2and10 > .c-layout__item:nth-child(even) {
+  width: 83.3333333333%;
+}
+
+@media screen and (min-width: 400px) {
+  .c-layout--col2and10-sm > .c-layout__item:nth-child(odd) {
+    width: 16.6666666667%;
+  }
+  .c-layout--col2and10-sm > .c-layout__item:nth-child(even) {
+    width: 83.3333333333%;
+  }
+}
+@media screen and (min-width: 768px) {
+  .c-layout--col2and10-md > .c-layout__item:nth-child(odd) {
+    width: 16.6666666667%;
+  }
+  .c-layout--col2and10-md > .c-layout__item:nth-child(even) {
+    width: 83.3333333333%;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .c-layout--col2and10-lg > .c-layout__item:nth-child(odd) {
+    width: 16.6666666667%;
+  }
+  .c-layout--col2and10-lg > .c-layout__item:nth-child(even) {
+    width: 83.3333333333%;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .c-layout--col2and10-xl > .c-layout__item:nth-child(odd) {
+    width: 16.6666666667%;
+  }
+  .c-layout--col2and10-xl > .c-layout__item:nth-child(even) {
+    width: 83.3333333333%;
+  }
+}
+.c-layout--col3and9 > .c-layout__item:nth-child(odd) {
+  width: 25%;
+}
+.c-layout--col3and9 > .c-layout__item:nth-child(even) {
+  width: 75%;
+}
+
+@media screen and (min-width: 400px) {
+  .c-layout--col3and9-sm > .c-layout__item:nth-child(odd) {
+    width: 25%;
+  }
+  .c-layout--col3and9-sm > .c-layout__item:nth-child(even) {
+    width: 75%;
+  }
+}
+@media screen and (min-width: 768px) {
+  .c-layout--col3and9-md > .c-layout__item:nth-child(odd) {
+    width: 25%;
+  }
+  .c-layout--col3and9-md > .c-layout__item:nth-child(even) {
+    width: 75%;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .c-layout--col3and9-lg > .c-layout__item:nth-child(odd) {
+    width: 25%;
+  }
+  .c-layout--col3and9-lg > .c-layout__item:nth-child(even) {
+    width: 75%;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .c-layout--col3and9-xl > .c-layout__item:nth-child(odd) {
+    width: 25%;
+  }
+  .c-layout--col3and9-xl > .c-layout__item:nth-child(even) {
+    width: 75%;
+  }
+}
+.c-layout--col4and8 > .c-layout__item:nth-child(odd) {
+  width: 33.3333333333%;
+}
+.c-layout--col4and8 > .c-layout__item:nth-child(even) {
+  width: 66.6666666667%;
+}
+
+@media screen and (min-width: 400px) {
+  .c-layout--col4and8-sm > .c-layout__item:nth-child(odd) {
+    width: 33.3333333333%;
+  }
+  .c-layout--col4and8-sm > .c-layout__item:nth-child(even) {
+    width: 66.6666666667%;
+  }
+}
+@media screen and (min-width: 768px) {
+  .c-layout--col4and8-md > .c-layout__item:nth-child(odd) {
+    width: 33.3333333333%;
+  }
+  .c-layout--col4and8-md > .c-layout__item:nth-child(even) {
+    width: 66.6666666667%;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .c-layout--col4and8-lg > .c-layout__item:nth-child(odd) {
+    width: 33.3333333333%;
+  }
+  .c-layout--col4and8-lg > .c-layout__item:nth-child(even) {
+    width: 66.6666666667%;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .c-layout--col4and8-xl > .c-layout__item:nth-child(odd) {
+    width: 33.3333333333%;
+  }
+  .c-layout--col4and8-xl > .c-layout__item:nth-child(even) {
+    width: 66.6666666667%;
+  }
+}
+.c-layout--col5and7 > .c-layout__item:nth-child(odd) {
+  width: 41.6666666667%;
+}
+.c-layout--col5and7 > .c-layout__item:nth-child(even) {
+  width: 58.3333333333%;
+}
+
+@media screen and (min-width: 400px) {
+  .c-layout--col5and7-sm > .c-layout__item:nth-child(odd) {
+    width: 41.6666666667%;
+  }
+  .c-layout--col5and7-sm > .c-layout__item:nth-child(even) {
+    width: 58.3333333333%;
+  }
+}
+@media screen and (min-width: 768px) {
+  .c-layout--col5and7-md > .c-layout__item:nth-child(odd) {
+    width: 41.6666666667%;
+  }
+  .c-layout--col5and7-md > .c-layout__item:nth-child(even) {
+    width: 58.3333333333%;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .c-layout--col5and7-lg > .c-layout__item:nth-child(odd) {
+    width: 41.6666666667%;
+  }
+  .c-layout--col5and7-lg > .c-layout__item:nth-child(even) {
+    width: 58.3333333333%;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .c-layout--col5and7-xl > .c-layout__item:nth-child(odd) {
+    width: 41.6666666667%;
+  }
+  .c-layout--col5and7-xl > .c-layout__item:nth-child(even) {
+    width: 58.3333333333%;
+  }
+}
+/**
+ * 要素を右から配置させます（HTMLの記述を反転させた状態でレイアウトされます）。
+ */
+.c-layout--reverse {
+  text-align: left;
+  direction: rtl;
+}
+.c-layout--reverse > .c-layout__item {
+  text-align: left;
+  direction: ltr;
+}
+
+@media screen and (min-width: 400px) {
+  .c-layout--reverse-sm {
+    text-align: left;
+    direction: rtl;
+  }
+  .c-layout--reverse-sm > .c-layout__item {
+    text-align: left;
+    direction: ltr;
+  }
+}
+@media screen and (min-width: 768px) {
+  .c-layout--reverse-md {
+    text-align: left;
+    direction: rtl;
+  }
+  .c-layout--reverse-md > .c-layout__item {
+    text-align: left;
+    direction: ltr;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .c-layout--reverse-lg {
+    text-align: left;
+    direction: rtl;
+  }
+  .c-layout--reverse-lg > .c-layout__item {
+    text-align: left;
+    direction: ltr;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .c-layout--reverse-xl {
+    text-align: left;
+    direction: rtl;
+  }
+  .c-layout--reverse-xl > .c-layout__item {
+    text-align: left;
+    direction: ltr;
+  }
+}
+/* -----------------------------------------------------------------------------
+   #Project
+   -------------------------------------------------------------------------- */
+/**
+ * Projectレイヤーはプロジェクト固有のパターンで、複数のページで使い回せるようなコンポーネントです。
+ * 具体的なスタイルを持つUI（ユーザーフェイス）で、追加されるコンポーネントのほとんどはこのレイヤーに置かれます。
+ * もし、このレイヤーで同じパターンが3箇所で使われていたら、別のコンポーネントとしてまとめられないか検討しましょう。
+ * プレフィックス（接頭辞）として`p-`をつけます。
+ */
+/* #Icon
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: icon
+name: icon
+categories: [project]
+---
+
+アイコンフォントを使ったアイコンを表示します。デフォルトでは`:before`擬似要素で表示されます。
+サンプルコードはパンくずリストのホームをアイコンで（2つ目以降はアイコンだけで）示した場合の例です。
+
+装飾的なアイコンは`<span>`と`aria-hidden="true"`でマークアップをします。
+
+意味を伝えたいアイコンは`aria-label=""`でマークアップします。
+テキスト全体を読み上げたときに違和感が出ないようにします。
+
+テキストを表示できない場合は`.u-sr-only`でテキストをマークアップします（非表示のままスクリーンリーダーには読み上げられます）。
+
+```block
+<div>
+  <span class="p-icon p-icon--home" aria-hidden="true"></span>ホーム
+</div>
+
+<div>
+  <span class="p-icon p-icon--home" aria-label="ホーム"></span>
+</div>
+
+<div>
+  <span class="p-icon p-icon--home" aria-hidden="true"></span>
+  <span class="u-sr-only">ホーム</span>
+</div>
+```
+*/
+@font-face {
+  font-family: "iconfont";
+  src: url(/fonts/iconfont.eot?9bd2f8e21fb68f3cb69f306c7a5a07d2);
+  src: url(/fonts/iconfont.eot?9bd2f8e21fb68f3cb69f306c7a5a07d2) format("eot"), url(/fonts/iconfont.woff?72290a51f520574be856b3621acc29a1) format("woff"), url(/fonts/iconfont.ttf?e240ce427caf7549e576c77b39a1d3f1) format("truetype"), url(/fonts/iconfont.svg?9e48c54f8bbb472c1c286234fdd6636f) format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+/* `p-icon p-icon--icon-name`のようなマルチクラスで指定します。 */
+.p-icon:before {
+  font-family: "iconfont";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  top: -0.1em;
+  display: inline-block;
+  vertical-align: middle;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: none;
+  speak: none;
+}
+
+.p-icon--home:before {
+  content: "\e001";
+}
+
+/* 使用中CSS */
+.icon:after {
+  display: block;
+  content: "";
+}
+
+.a-icon {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 30px;
+  line-height: 1;
+  color: inherit;
+  vertical-align: top;
+  touch-action: manipulation;
+  background-color: transparent;
+  border: none;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
+
+.like-icon {
+  position: relative;
+}
+.like-icon:after {
+  background-size: 33px 30px;
+  width: 33px;
+  height: 32px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.icon-star:after {
+  background: url(/images/star-outline-gray.svg?fb6de7c36be81c88a02cb11feadab076) no-repeat;
+}
+.icon-starFill:after {
+  background: url(/images/star-outline-yellow.svg?61adcd7ba18d472270a83696daf142fd) no-repeat;
+}
+.icon-starFill-wrap {
+  border: 1px solid #F0DE00;
+  border-radius: 8px;
+  min-width: 52px;
+  height: 52px;
+}
+.icon-starFill-wrap:after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+.icon-star-wrap {
+  border: 1px solid #D0D0D0;
+  border-radius: 8px;
+  min-width: 52px;
+  height: 52px;
+}
+.icon-star-wrap:after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.icon-text:after {
+  background: url(/images/file-text.svg?eef62fb61b190a7078a1e41813859c13) no-repeat;
+  background-size: 35px 32px;
+}
+.icon-text-wrap {
+  border: 1px solid #F0DE00;
+  border-radius: 8px;
+  min-width: 52px;
+  height: 52px;
+  margin-right: 10px;
+}
+.icon-text-wrap:after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.icon-search {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 61px;
+  cursor: pointer;
+}
+@media screen and (min-width: 1068px) {
+  .icon-search {
+    height: 69px;
+    width: 54px;
+  }
+}
+.icon-search:after {
+  background: url(/images/search-gray.svg?c5c7a01d0dd6ebe7e325306d6ef0ba7a) no-repeat;
+  background-size: cover;
+  width: 20px;
+  height: 20px;
+  margin-top: 13px;
+}
+@media screen and (min-width: 1068px) {
+  .icon-search:after {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+.icon-calendar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 60px;
+  cursor: pointer;
+}
+@media screen and (min-width: 1068px) {
+  .icon-calendar {
+    height: 69px;
+    width: 58px;
+  }
+}
+.icon-calendar:after {
+  background: url(/images/calendar.svg?0d92b15ce0131234f89a2977b662a6c0) no-repeat;
+  background-size: cover;
+  width: 23px;
+  height: 25px;
+  margin-top: 15px;
+}
+
+/* アイコンのModifer */
+/* #Btn-icon
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: btn-icon
+name: btn-icon
+categories: [project]
+---
+
+ボタンコンポーネントです。
+
+Modifierは以下のとおりです。
+
+* 100%表示 `-full`
+* width指定 `-w`
+* height指定 `-h`
+* 真円 `-circle`
+* 楕円 `-r`
+
+```block
+```
+*/
+/* icon */
+.svg-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  color: inherit;
+  vertical-align: middle;
+  fill: none;
+  stroke: currentColor;
+}
+.svg-fill {
+  fill: currentColor;
+  stroke: none;
+}
+.svg-up {
+  transform: rotate(0deg);
+}
+.svg-y50 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media screen and (min-width: 1068px) {
+  .btn-meeting {
+    padding: 0 5px 0 8px;
+  }
+}
+.btn-meeting .icon {
+  width: 22px;
+  height: 22px;
+  position: relative;
+}
+@media screen and (min-width: 1068px) {
+  .btn-meeting .icon {
+    top: -1px;
+    padding-left: 11px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.btn {
+  /* font-size */
+  /* shadow */
+}
+.btn-default {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-size: 1.6rem;
+  font-weight: bold;
+  border: 1px solid transparent;
+  transition: all ease-out 0.2s;
+  cursor: pointer;
+  text-align: center;
+  line-height: 1;
+}
+.btn-default:hover {
+  opacity: 0.7;
+}
+.btn-yellow {
+  background: #F0DE00;
+  /* border: 1px solid #F0DE00; */
+  border: none;
+}
+.btn-fz14 {
+  font-size: 1.4rem;
+}
+.btn-shadow {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 
+.p-btn {
+  display: inline-block;
+  margin: 0;
+  padding: 0.75em;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  @include _on-event {
+    text-decoration: none;
+  }
+  &:disabled,
+  &.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  &--base{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &--inner{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1px;
+  }
+}
+*/
+.p-btn--full {
+  width: 100%;
+}
+
+.p-btn--circle {
+  border-radius: 50%;
+}
+
+/**
+ * 角丸
+ */
+.btn-r3 {
+  border-radius: 3px;
+}
+
+.btn-r5 {
+  border-radius: 5px;
+}
+
+.btn-r8 {
+  border-radius: 8px;
+}
+
+.btn-r10 {
+  border-radius: 10px;
+}
+
+.btn-r14 {
+  border-radius: 10px;
+}
+@media screen and (min-width: 1068px) {
+  .btn-r14 {
+    border-radius: 14px;
+  }
+}
+
+.btn-r15 {
+  border-radius: 15px;
+}
+
+.btn-r20 {
+  border-radius: 20px;
+}
+
+.btn-r24 {
+  border-radius: 24px;
+}
+
+.btn-r25 {
+  border-radius: 25px;
+}
+
+.btn-r30 {
+  border-radius: 5px;
+}
+
+.btn-r35 {
+  border-radius: 35px;
+}
+
+.btn-r40 {
+  border-radius: 40px;
+}
+
+.btn-r45 {
+  border-radius: 45px;
+}
+
+.btn-r50 {
+  border-radius: 50px;
+}
+
+/**
+ * width
+ */
+.btn-w100p {
+  max-width: 100%;
+}
+
+.btn-w56 {
+  max-width: 56px;
+}
+
+.btn-w130 {
+  max-width: 130px;
+}
+
+.btn-w150 {
+  max-width: 150px;
+}
+
+.btn-w170 {
+  max-width: 170px;
+}
+
+.btn-w200 {
+  max-width: 200px;
+}
+
+.btn-w230 {
+  max-width: 230px;
+}
+
+.btn-w250 {
+  max-width: 250px;
+}
+
+.btn-w300 {
+  max-width: 300px;
+}
+
+.btn-w320 {
+  max-width: 320px;
+}
+
+/**
+ * height
+ */
+.btn-h28 {
+  height: 28px;
+}
+
+.btn-h30 {
+  height: 30px;
+}
+
+.btn-h42 {
+  height: 42px;
+}
+
+.btn-h45 {
+  height: 45px;
+}
+
+.btn-h48 {
+  height: 48px;
+}
+
+.btn-h50 {
+  height: 50px;
+}
+
+.btn-h52 {
+  height: 52px;
+  line-height: 48px;
+}
+
+.btn-h55 {
+  height: 55px;
+}
+
+.btn-h60 {
+  height: 60px;
+  line-height: 56px;
+}
+
+.btn-h65 {
+  height: 65px;
+}
+
+.btn-h70 {
+  height: 66px;
+}
+@media screen and (min-width: 1068px) {
+  .btn-h70 {
+    height: 70px;
+  }
+}
+
+.btn-h75 {
+  height: 75px;
+}
+
+.btn-h80 {
+  height: 80px;
+}
+
+.btn-h85 {
+  height: 85px;
+}
+
+.btn-h90 {
+  height: 90px;
+}
+
+/* #Breadcrumb
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: breadcrumb
+name: breadcrumb
+categories: [project]
+---
+
+パンくずリストのコンポーネントです。横幅を超えると、折り返さず省略されます。
+
+```block
+<ol class="p-breadcrumb">
+  <li class="p-breadcrumb__item">
+    <a href="#" class="p-breadcrumb__link">home</a>
+  </li>
+  <li class="p-breadcrumb__item">
+    <a href="#" class="p-breadcrumb__link">page1</a>
+  </li>
+  <li class="p-breadcrumb__item">page2</li>
+</ol>
+```
+*/
+.p-breadcrumb {
+  overflow: hidden;
+  margin: 0;
+  padding-left: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  list-style-type: none;
+}
+
+.p-breadcrumb__item {
+  display: inline-block;
+}
+.p-breadcrumb__item:last-child {
+  display: inline;
+}
+
+.p-breadcrumb__link {
+  display: inline-block;
+}
+
+/* 2つ目以降のリストの前に`>`を表示する。 */
+.p-breadcrumb__item:not(:first-of-type):before {
+  content: ">";
+  margin: 0 0.5em;
+}
+
+/* #Label
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: label
+name: label
+categories: [project]
+---
+
+インラインでメッセージを表示するコンポーネントです。
+
+```block
+<p><span class="p-label">タグ名</span></p>
+```
+*/
+/* #Box
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: box
+name: box
+categories: [project]
+---
+
+画像やテキストなどを縦に並べるコンポーネントです。
+
+ラベルはデフォルトで右上に配置されます。Modifierで以下のように変更できます。
+
+- 右下 `.p-box__labels--right-bottom`
+- 左上 `.p-box__labels--left-top`
+- 左下 `.p-box__labels--left-bottom`
+
+```block
+<div class="p-box">
+  <div class="p-box__image">
+    <img src="http://lorempixel.com/600/400/" alt="">
+    <ul class="p-box__labels">
+      <li class="p-box__label p-label">ラベル1</li>
+      <li class="p-box__label p-label">ラベル2</li>
+    </ul>
+  </div>
+  <div class="p-box__content">
+    <h2>見出し</h2>
+    <p>文章</p>
+  </div>
+</div>
+```
+*/
+.p-box {
+  display: block;
+}
+.p-box:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.p-box__image {
+  position: relative;
+  display: block;
+}
+.p-box__image > img {
+  width: 100%;
+  max-width: none;
+}
+
+.p-box__labels {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding-left: 0;
+  list-style-type: none;
+}
+.p-box__labels:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.p-box__labels--right-bottom {
+  top: auto;
+  bottom: 0;
+}
+
+.p-box__labels--left-top {
+  right: auto;
+  left: 0;
+}
+
+.p-box__labels--left-bottom {
+  top: auto;
+  right: auto;
+  bottom: 0;
+  left: 0;
+}
+
+.p-box__label {
+  float: left;
+}
+
+.p-box__content {
+  display: block;
+  padding: 0;
+}
+.p-box__content > :first-child {
+  margin-top: 0;
+}
+.p-box__content > :last-child {
+  margin-bottom: 0;
+}
+
+/* #Card
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: card
+name: card
+categories: [project]
+---
+
+カードタイプのコンポーネントです。
+
+```block
+<div class="c-layout c-layout--small">
+  <div class="c-layout__item u-6of12-md">
+    <div class="p-card">
+      <img src="http://lorempixel.com/640/340/" class="p-card__image-top">
+      <div class="p-card__body">
+        <h2>Card Object</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quaerat illo autem, possimus obcaecati numquam sunt ut quas, repellat cum aspernatur voluptatem, a explicabo! Facilis sed quos, nisi rerum placeat ad?</p>
+      </div>
+      <ul class="p-card__list">
+        <li class="p-card__list-item">list1</li>
+        <li class="p-card__list-item">list2</li>
+      </ul>
+      <div class="p-card__foot">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Impedit, est.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="c-layout__item u-6of12-md">
+    <div class="p-card">
+      <div class="p-card__head">
+        <h2>Card Object</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quaerat illo autem, possimus obcaecati numquam sunt ut quas, repellat cum aspernatur voluptatem, a explicabo! Facilis sed quos, nisi rerum placeat ad?</p>
+      </div>
+      <ul class="p-card__list">
+        <li class="p-card__list-item">list1</li>
+        <li class="p-card__list-item">list2</li>
+      </ul>
+      <img src="http://lorempixel.com/640/340/" class="p-card__image-bottom">
+    </div>
+  </div>
+</div>
+```
+*/
+.p-card__image,
+.p-card__image-top,
+.p-card__image-bottom {
+  max-width: none;
+  width: 100%;
+}
+
+.p-card__list {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.p-card__list-link {
+  display: block;
+}
+
+/* #Form
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: form
+name: form
+categories: [project]
+---
+
+フォーム関係のコンポーネントです。
+
+```block
+```
+*/
+.control-label {
+  color: #989898;
+  line-height: 1;
+  padding: 0 8px;
+  margin-left: 12px;
+  background: #fff;
+  position: relative;
+  z-index: 1;
+}
+@media screen and (min-width: 1068px) {
+  .control-label {
+    padding: 0 11px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .control-label {
+    font-size: 1.4rem;
+  }
+}
+
+.edit-set-file-label {
+  color: #93A0A7;
+  background-color: #F2F5F7;
+  border: 1px dashed #B8C3C9;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+  transition: all 0.2s ease-out;
+  cursor: pointer;
+}
+@media screen and (min-width: 1068px) {
+  .edit-set-file-label:hover {
+    opacity: 0.7;
+  }
+}
+
+.input-default {
+  margin-top: -13px;
+}
+@media screen and (min-width: 1068px) {
+  .input-w380 {
+    max-width: 380px;
+  }
+}
+@media screen and (min-width: 1068px) {
+  .input-h56 {
+    height: 56px;
+  }
+}
+@media screen and (min-width: 1068px) {
+  .input-h60 {
+    height: 60px;
+  }
+}
+
+.textarea-default {
+  margin-top: -13px;
+  line-height: 1.7;
+  padding-top: 17px;
+}
+@media screen and (max-width: 1067px) {
+  .textarea-default {
+    height: 205px;
+  }
+}
+
+@media screen and (max-width: 1067px) {
+  .test {
+    display: none;
+  }
+}
+/* #Login
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: login
+name: login
+categories: [project]
+---
+
+ログイン関係のコンポーネントです。
+
+```block
+```
+*/
+.login-panel .links {
+  text-align: center;
+  padding: 28px 0 0;
+}
+@media screen and (min-width: 1068px) {
+  .login-panel .links {
+    padding: 32px 0 0;
+  }
+}
+.login-panel a:hover, .login-panel a:active, .login-panel a:focus {
+  text-decoration: underline;
+}
+.login-submit {
+  margin-top: 35px;
+}
+
+.user_remember_me + .login-submit {
+  margin-top: 30px;
+}
+
+/* #User
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: user
+name: user
+categories: [project]
+---
+
+ユーザー関係のコンポーネントです。
+
+```block
+```
+*/
+.user-advice-btn {
+  width: 142px;
+}
+.user-date {
+  display: flex;
+  align-items: center;
+}
+.user-date span {
+  color: #6f7372;
+  font-size: 1.24rem;
+  letter-spacing: 0.01em;
+}
+@media screen and (min-width: 1068px) {
+  .user-date span {
+    font-size: 1.4rem;
+  }
+}
+.user-date span .date {
+  letter-spacing: 0.06em;
+}
+.user-updated-time {
+  margin-right: 30px;
+}
+@media screen and (min-width: 1068px) {
+  .user-updated-time {
+    margin-right: 50px;
+  }
+}
+.user-sm {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.user-sm a {
+  display: flex;
+  align-items: center;
+}
+.user-sm .user-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 23px;
+  border: 1px solid #f0de00;
+  margin-right: 12px;
+}
+@media screen and (min-width: 1068px) {
+  .user-sm .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    margin-right: 15px;
+  }
+}
+
+/* #Notification
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: notification
+name: notification
+categories: [project]
+---
+
+お知らせアイコンのコンポーネントです。
+
+```block
+```
+*/
+.p-notification {
+  padding: 6px 6px 0 0;
+  display: block;
+}
+@media screen and (max-width: 1067px) {
+  .p-notification {
+    position: absolute;
+    right: 18px;
+    top: 18px;
+    z-index: 5;
+  }
+}
+.p-notification-icon {
+  width: 44px;
+  height: 44px;
+  position: relative;
+  cursor: pointer;
+  color: #333333;
+}
+@media screen and (min-width: 1068px) {
+  .p-notification-icon {
+    width: 48px;
+    height: 48px;
+  }
+}
+@media screen and (max-width: 374px) {
+  .p-notification-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+.p-notification-icon-wrap .count {
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  background-color: #D82828;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  border-radius: 200px;
+  min-width: 18px;
+  height: 18px;
+  padding: 2px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1;
+}
+@media screen and (min-width: 1068px) {
+  .p-notification-icon-wrap .count {
+    min-width: 20px;
+    height: 20px;
+  }
+}
+@media screen and (max-width: 374px) {
+  .p-notification-icon-wrap .count {
+    min-width: 14px;
+    height: 14px;
+    font-size: 1rem;
+    right: -5px;
+    top: -5px;
+  }
+}
+.p-notification-icon-wrap .icon {
+  width: 21px;
+  height: 18px;
+}
+@media screen and (max-width: 374px) {
+  .p-notification-icon-wrap .icon {
+    width: 18px;
+    height: 15px;
+  }
+}
+.p-notification-icon-bg {
+  width: 100%;
+  height: 100%;
+  background-color: #F0DE00;
+  border-radius: 500px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* #Meeting
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: meeting
+name: meeting
+categories: [project]
+---
+
+画像やテキストなどを縦に並べるコンポーネントです。
+
+ラベルはデフォルトで右上に配置されます。Modifierで以下のように変更できます。
+
+- 右下 `.p-box__labels--right-bottom`
+- 左上 `.p-box__labels--left-top`
+- 左下 `.p-box__labels--left-bottom`
+
+```block
+```
+*/
+@-webkit-keyframes show {
+  from {
+    opacity: 0.1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes show {
+  from {
+    opacity: 0.1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.meeting-content-wrap {
+  display: none;
+}
+.meeting-content-wrap.is-active {
+  display: block;
+  -webkit-animation: show 0.15s linear 0s;
+          animation: show 0.15s linear 0s;
+}
+.meeting-head {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 7px;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-head {
+    margin-bottom: 10px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .meeting-head {
+    width: 100%;
+  }
+}
+.meeting-form {
+  margin-right: 30px;
+  position: relative;
+  width: 100%;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-form {
+    width: 380px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .meeting-form {
+    margin-bottom: 23px;
+    margin-top: -13px;
+  }
+}
+.meeting-item {
+  border-bottom: 1px solid rgba(36, 77, 138, 0.1);
+  position: relative;
+}
+.meeting-item .like-icon {
+  position: absolute;
+  right: 0;
+  top: 55px;
+}
+.meeting-link {
+  padding: 18px 60px 22px 0;
+  display: block;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-link {
+    padding: 21px 80px 21px 0;
+  }
+}
+@media screen and (max-width: 430px) {
+  .meeting-link {
+    padding-right: 50px;
+  }
+}
+.meeting-ttl {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 7px;
+  line-height: 1.52;
+  max-height: 100%;
+}
+@media screen and (max-width: 1067px) {
+  .meeting-ttl {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    margin-bottom: 7px;
+  }
+}
+.meeting-txt {
+  font-size: 1.4rem;
+  color: #6f7372;
+  margin-bottom: 11px;
+  line-height: 1.4;
+  max-height: 100%;
+}
+@media screen and (max-width: 1067px) {
+  .meeting-txt {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    display: -webkit-box;
+  }
+}
+.meeting-time {
+  margin-bottom: 13px;
+  display: block;
+  line-height: 1;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-time {
+    margin-bottom: 16px;
+  }
+}
+.meeting-date {
+  font-size: 1.3rem;
+  color: #6f7372;
+  letter-spacing: 0.04em;
+}
+.meeting-member__read {
+  margin-left: auto;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-member__read {
+    display: none;
+  }
+}
+.meeting-member__read p {
+  color: #989898;
+  font-size: 1.4rem;
+}
+.meeting-member-link {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-member-link:hover {
+    opacity: 0.7;
+  }
+}
+.meeting-member-count {
+  display: table;
+  background: #F0DE00;
+  border-radius: 6px;
+  padding: 2px 11px;
+  margin-right: 13px;
+}
+.meeting-member-count li {
+  font-size: 1.4rem;
+  font-weight: bold;
+  display: table-cell;
+}
+.meeting-member-count .numerator {
+  position: relative;
+}
+.meeting-member-count .numerator:after {
+  display: inline-block;
+  content: "/";
+  font-size: 1.3rem;
+  position: relative;
+  bottom: 1px;
+  padding: 0 0.1rem;
+}
+.meeting-member-list {
+  display: flex;
+  align-items: center;
+}
+.meeting-member__item:not(:first-child) {
+  margin-left: -3px;
+}
+.meeting-member__item a {
+  display: block;
+  transition: all 0.2s ease-out;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-member__item a:hover {
+    opacity: 0.8;
+  }
+}
+.meeting-member__item .avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 23px;
+  border: 1px solid #F0DE00;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-member__item .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+  }
+}
+.meeting-tab {
+  background: #F5F7F8;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-tab {
+    border-radius: 20px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .meeting-tab {
+    width: 100%;
+  }
+}
+@media screen and (min-width: 1068px) {
+  .meeting-tab-container {
+    padding: 35px 35px 50px;
+  }
+}
+.meeting-tab-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+.meeting-tab-wrap .tab-switch {
+  display: none;
+}
+.meeting-tab-wrap .tab-label {
+  font-weight: 500;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 50%;
+  position: relative;
+  letter-spacing: 0.03em;
+  background: #f0f0f0;
+  cursor: pointer;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-tab-wrap .tab-label {
+    width: 190px;
+  }
+}
+.meeting-tab-wrap .tab-label.is-active span {
+  color: #fff;
+  font-weight: bold;
+}
+.meeting-tab-wrap .tab-label span {
+  position: relative;
+  z-index: 2;
+  color: #6f7372;
+  max-height: 100%;
+}
+.meeting-tab-wrap .tab-label:first-child:before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  z-index: 1;
+  transition: 0.3s ease all;
+  background: #000;
+  color: #fff;
+  border-radius: 16px;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-tab-wrap .tab-label:first-child:before {
+    width: 190px;
+    border-radius: 20px;
+    left: 190px;
+  }
+}
+.meeting-tab-wrap .tab-label:first-child.is-active:before {
+  left: 0px;
+}
+
+.p-meetingAdd-btn {
+  width: 64px;
+  display: flex;
+}
+@media screen and (min-width: 1068px) {
+  .p-meetingAdd-btn {
+    width: 181px;
+  }
+}
+@media screen and (max-width: 430px) {
+  .p-meetingAdd-btn {
+    width: 58px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .p-meetingAdd-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 76px;
+    z-index: 5;
+  }
+}
+@media screen and (max-width: 1067px) and (max-width: 430px) {
+  .p-meetingAdd-btn {
+    bottom: 74px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .p-meetingAdd-btn .btn-r8 {
+    border-radius: 35px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .p-meetingAdd-btn .btn-h48 {
+    height: 64px;
+  }
+}
+@media screen and (max-width: 1067px) and (max-width: 430px) {
+  .p-meetingAdd-btn .btn-h48 {
+    height: 58px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .p-meetingAdd-btn span {
+    display: none;
+  }
+}
+.p-consent-btn {
+  display: flex;
+  width: 64px;
+}
+@media screen and (max-width: 1067px) {
+  .p-consent-btn {
+    width: 62px;
+    position: fixed;
+    right: 20px;
+    bottom: 72px;
+    z-index: 5;
+  }
+  .p-consent-btn .btn-r8 {
+    border-radius: 35px;
+  }
+  .p-consent-btn .btn-h42 {
+    height: 62px;
+  }
+  .p-consent-btn span {
+    font-size: 1.6rem;
+  }
+}
+
+.meeting-consent .meeting-item {
+  padding: 17px 0 22px;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-consent .meeting-item {
+    padding: 19px 0 21px;
+  }
+}
+.meeting-consent .meeting-link {
+  padding: 9px 0 14px;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-consent .meeting-link {
+    padding: 10px 0 11px;
+  }
+}
+.meeting-consent .meeting-txt {
+  margin-bottom: 0;
+}
+.meeting-consent .meeting-label {
+  background: #EAEFF2;
+  width: 120px;
+  height: 34px;
+  border-radius: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+.meeting-consent .meeting-search .meeting-head {
+  margin-bottom: 14px;
+}
+.meeting-consent .p-article__content .meeting-time {
+  margin-bottom: 18px;
+}
+@media screen and (min-width: 1068px) {
+  .meeting-consent .p-article__content .meeting-time {
+    margin-bottom: 13px;
+  }
+}
+.meeting-consent .p-article__context {
+  margin-top: 21px;
+}
+.meeting-consent .p-article-single .meeting-ttl {
+  margin-bottom: 6px;
+}
+@media screen and (max-width: 1067px) {
+  .meeting-consent .p-article-single .meeting-ttl {
+    overflow: visible;
+    display: block;
+    -webkit-line-clamp: auto;
+  }
+}
+.meeting-consent .search-item .user-name {
+  margin-bottom: 0;
+  font-weight: normal;
+}
+
+/* meeting-consent */
+/*
+.meeting-consent{
+  .meeting-link{
+    padding-right: 0;
+  }
+  .like-icon{
+    display: none;
+  }
+}
+いらないかも */
+/* meeting-search */
+@media screen and (max-width: 1067px) {
+  .meeting-search .meeting-head {
+    display: block;
+  }
+}
+
+/* #Article
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: article
+name: article
+categories: [project]
+---
+
+記事に関するコンポーネントです。
+
+```block
+```
+*/
+@media screen and (min-width: 1068px) {
+  .p-article-wrap {
+    padding: 30px 35px 50px;
+  }
+}
+.p-article__content .meeting-member {
+  margin-bottom: 15px;
+}
+@media screen and (min-width: 1068px) {
+  .p-article__content .meeting-ttl {
+    margin-bottom: 3px;
+  }
+}
+.p-article__content .meeting-time {
+  margin-bottom: 25px;
+}
+.p-article__txt {
+  margin-bottom: 15px;
+  max-height: 100%;
+}
+.p-article__pdf {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+.p-article__pdf__btn {
+  width: 100%;
+  margin-right: 10px;
+}
+.p-article-btn-list {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 25px;
+}
+.p-article-btn__item {
+  width: 23.5%;
+}
+@media screen and (max-width: 1067px) {
+  .p-article-btn__item a {
+    font-size: 1.5rem;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .p-article .meeting-member-count {
+    display: none;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .p-article .meeting-member__item .avatar {
+    width: 38px;
+    height: 38px;
+  }
+}
+@media screen and (max-width: 374px) {
+  .p-article .meeting-member__item .avatar {
+    width: 30px;
+    height: 30px;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .p-article .meeting-member-link {
+    margin-bottom: 20px;
+  }
+}
+
+.p-article__context {
+  width: 100%;
+}
+
+.p-article__content {
+  width: 100%;
+}
+
+.p-file-list {
+  margin-bottom: 25px;
+  max-width: 700px;
+}
+.p-file-for {
+  padding: 50px 0;
+  border: 1px solid rgba(36, 77, 138, 0.1);
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+@media screen and (min-width: 1068px) {
+  .p-file-for {
+    padding: 80px 0;
+  }
+}
+.p-file-nav {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
+}
+@media screen and (min-width: 1068px) {
+  .p-file-nav {
+    max-width: 495px;
+  }
+}
+.p-file-nav figure {
+  width: calc((100% - 220px) / 3);
+  min-width: 54px;
+  margin-right: 10px;
+  border: 1px solid rgba(36, 77, 138, 0.1);
+  transition: all 0.2s ease-out;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+@media screen and (min-width: 1068px) {
+  .p-file-nav figure:hover {
+    opacity: 0.8;
+  }
+}
+.p-file-nav figure:before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+.p-file-nav figure img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  -o-object-fit: cover;
+  object-fit: cover;
+  font-family: "object-fit: cover;";
+}
+.p-file-image {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 8px -6px;
+  align-items: center;
+  justify-content: space-between;
+}
+.p-file-image figure {
+  width: calc(20% - 12px);
+  overflow: hidden;
+  margin: 10px 5px 0;
+  border: 1px solid rgba(36, 77, 138, 0.1);
+  transition: all 0.2s ease-out;
+  position: relative;
+}
+@media screen and (min-width: 1068px) {
+  .p-file-image figure:hover {
+    opacity: 0.8;
+  }
+}
+.p-file-image figure:before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+@media screen and (max-width: 1067px) {
+  .p-file-image figure:last-child {
+    margin-right: auto;
+  }
+}
+.p-file-image figure img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  -o-object-fit: cover;
+     object-fit: cover;
+  font-family: "object-fit: cover;";
+}
+.p-file-image figure.image-upload {
+  cursor: pointer;
+}
+.p-file-image figure.image-upload:after {
+  display: block;
+  content: "";
+  width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 21 21'%3E%3Ccircle cx='10.5' cy='10.5' r='10.5' style='fill:%23d82828'/%3E%3Cline x1='4' y1='10.5' x2='17' y2='10.5' style='fill:none;stroke:%23fff'/%3E%3C/svg%3E");
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.3);
+}
+@media screen and (max-width: 1067px) {
+  .p-file-image figure.image-upload:after {
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
+  }
+}
+
+/* #Modal
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: modal
+name: modal
+categories: [project]
+---
+
+モーダル関係のコンポーネントです。
+
+```block
+```
+*/
+@keyframes show {
+  from {
+    opacity: 0.1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.modal-area {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+}
+.modal-area.modal01 .modal-wrap {
+  padding-bottom: 9px;
+}
+.modal-pd .modal-ttl {
+  padding: 0;
+}
+.modal-pd .modal-wrap {
+  padding: 30px 20px;
+}
+.modal-bg {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(30, 30, 30, 0.5);
+}
+.modal-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  background-color: #fff;
+  border-radius: 20px;
+  max-width: 340px;
+  box-sizing: border-box;
+}
+@media screen and (max-width: 1067px) {
+  .modal-wrap {
+    width: 82%;
+  }
+}
+@media screen and (max-width: 374px) {
+  .modal-wrap {
+    width: 88%;
+  }
+}
+.modal-up65 .modal-wrap {
+  top: 0px;
+  transform: translate(-50%, 65px);
+}
+@media screen and (min-width: 1068px) {
+  .modal-up65 .modal-wrap {
+    top: 65px;
+  }
+}
+.modal-content {
+  display: none;
+}
+.modal-content.is-active {
+  display: block;
+  -webkit-animation: show 0.15s linear 0s;
+          animation: show 0.15s linear 0s;
+}
+.modal-content-area {
+  padding: 19px 25px 27px 20px;
+}
+@media screen and (min-width: 1068px) {
+  .modal-content-area {
+    padding: 24px 30px 33px 25px;
+  }
+}
+.modal-content-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-content-item:not(:first-child) {
+  margin-top: 23px;
+}
+.modal-content-item .user-wrap a {
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease-out;
+}
+.modal-content-item .user-avatar {
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border: 1px solid #f0de00;
+  margin-right: 15px;
+}
+.modal-ttl {
+  text-align: center;
+  padding: 30px 20px 0px;
+}
+@media screen and (max-width: 1067px) {
+  .modal-ttl {
+    padding-top: 28px;
+  }
+}
+.modal-answer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84%;
+  margin: 0 auto;
+}
+.modal-answer li {
+  width: 50%;
+}
+.modal-answer li p, .modal-answer li a {
+  font-weight: bold;
+  text-align: center;
+  display: block;
+  padding: 23px 0 30px;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+.modal-tab-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(36, 77, 138, 0.1);
+}
+.modal-tab-label {
+  width: 50%;
+  text-align: center;
+  cursor: pointer;
+  padding: 20px 0 18px;
+}
+.modal-tab-label span {
+  color: #6f7372;
+}
+.modal-tab-label.is-active span {
+  font-weight: 700;
+  color: #000;
+}
+.modal-close-btn {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  cursor: pointer;
+}
+
+.p-notification-btn {
+  width: 100%;
+  max-width: 62px;
+}
+
+/* #Search
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: search
+name: search
+categories: [project]
+---
+
+検索ページ関係のコンポーネントです。
+
+```block
+```
+*/
+@media screen and (min-width: 1068px) {
+  .search-container {
+    padding: 10px 32px;
+  }
+}
+.search-item:not(:last-child) {
+  border-bottom: 1px solid rgba(36, 77, 138, 0.1);
+}
+@media screen and (max-width: 1067px) {
+  .search-item:first-child {
+    border-top: 1px solid rgba(36, 77, 138, 0.1);
+  }
+}
+@media screen and (max-width: 1067px) {
+  .search-item:last-child {
+    border-bottom: 1px solid rgba(36, 77, 138, 0.1);
+  }
+}
+.search-item a {
+  display: block;
+  padding: 11px 0;
+  position: relative;
+}
+@media screen and (min-width: 1068px) {
+  .search-item a {
+    padding: 15px 0;
+  }
+}
+.search-item a:after {
+  display: block;
+  content: "";
+  position: absolute;
+  left: -32px;
+  top: 0;
+  width: calc(100% + 64px);
+  height: 100%;
+  opacity: 0;
+  background: #f8f8f8;
+  transition: 0.3s;
+  z-index: 1;
+}
+.search-item a:hover:after {
+  opacity: 1;
+}
+.search-item .user-wrap {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+.search-item .user-avatar {
+  min-width: 60px;
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  border: 1px solid #f0de00;
+  margin-right: 13px;
+}
+@media screen and (min-width: 1068px) {
+  .search-item .user-avatar {
+    margin-right: 15px;
+  }
+}
+.search-item .user-name {
+  font-weight: bold;
+  margin-bottom: 6px;
+  line-height: 1.3;
+  padding-right: 15px;
+}
+.search-item .user-tel {
+  font-size: 1.4rem;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+/* #Profile
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: profile
+name: profile
+categories: [project]
+---
+
+プロフィールページ関係のコンポーネントです。
+
+```block
+```
+*/
+.profile-wrap {
+  padding: 10px 0 40px;
+}
+@media screen and (min-width: 1068px) {
+  .profile-wrap {
+    padding: 45px 0 40px;
+  }
+}
+.profile-content {
+  max-width: 100%;
+  margin: 0 auto;
+}
+@media screen and (min-width: 1068px) {
+  .profile-content {
+    max-width: 380px;
+  }
+}
+.profile-thumb {
+  margin: 0 auto;
+  width: 220px;
+  height: 220px;
+  border-radius: 110px;
+  position: relative;
+}
+.profile-thumb label {
+  cursor: pointer;
+}
+.profile-thumb label, .profile-thumb figure {
+  display: flex;
+  vertical-align: middle;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  width: 220px;
+  height: 220px;
+}
+.profile-thumb__image {
+  width: 220px;
+  height: 220px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  font-family: "object-fit: cover;";
+}
+.profile-camera {
+  width: 52px;
+  height: 52px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+.profile-camera .btn-camera {
+  width: 52px;
+  height: 52px;
+  background-color: #f0de00;
+  border-radius: 26px;
+  position: relative;
+}
+.profile-camera .btn-camera:hover {
+  opacity: 1;
+}
+.profile-camera .btn-camera:hover .icon {
+  opacity: 0.6;
+}
+.profile-camera .btn-camera .icon {
+  transition: all 0.2s ease-out;
+}
+.profile-camera .btn-camera .icon:after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 22px;
+  height: 18px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% auto;
+  background-image: url(/images/camera.svg?3665dc7f7052cef25748da5a31a7f717);
+}
+.profile-name {
+  font-weight: bold;
+  font-size: 2.2rem;
+  text-align: center;
+  padding: 13px 0 30px;
+  letter-spacing: 0.06em;
+}
+@media screen and (min-width: 1068px) {
+  .profile-name {
+    font-size: 1.8rem;
+    padding: 17px 0 25px;
+  }
+}
+.profile-info {
+  background: #F5F7F8;
+  border-radius: 4px;
+  margin-bottom: 30px;
+}
+@media screen and (min-width: 1068px) {
+  .profile-info {
+    margin-bottom: 35px;
+  }
+}
+.profile-info__item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px 15px 15px;
+  position: relative;
+}
+@media screen and (min-width: 1068px) {
+  .profile-info__item {
+    padding: 15px 30px 15px 20px;
+  }
+}
+.profile-info__item:not(:first-child) {
+  border-top: 1px solid #EAEFF2;
+}
+.profile-info__item .txt {
+  margin-left: 35px;
+  max-height: 100%;
+}
+.profile-info__item.txt-long .txt {
+  padding-bottom: 10px;
+}
+.profile-info__icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+}
+@media screen and (min-width: 1068px) {
+  .profile-info__icon {
+    left: 20px;
+  }
+}
+
+.p-profile-btn + .p-profile-btn {
+  margin-top: 17px;
+}
+.p-profile-btn + .p-profile-txtLink {
+  margin-top: 43px;
+}
+@media screen and (min-width: 1068px) {
+  .p-profile-btn + .p-profile-txtLink {
+    margin-top: 37px;
+  }
+}
+
+.p-profile-txtLink {
+  text-align: center;
+}
+.p-profile-txtLink .a-icon {
+  width: auto;
+}
+.p-profile-txtLink + .p-profile-txtLink {
+  margin-top: 7px;
+}
+
+#profile-file-preview {
+  width: 220px;
+  height: 220px;
+  -o-object-fit: cover;
+  object-fit: cover;
+  border-radius: 110px;
+  overflow: hidden;
+  border: 1px solid #d0d0d0;
+  box-sizing: border-box;
+  font-family: "object-fit: cover;";
+}
+
+/* #Edit
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: edit
+name: edit
+categories: [project]
+---
+
+エディット関係のコンポーネントです。
+
+```block
+```
+*/
+@media screen and (min-width: 1068px) {
+  .edit-wrap {
+    padding: 38px 40px 55px;
+  }
+}
+.edit-content .btn-user-add {
+  margin: 19px auto 0;
+}
+.edit-bg {
+  background: #F5F7F8;
+  border-radius: 4px;
+  padding: 22px 26px 15px;
+  margin-top: 18px;
+}
+@media screen and (max-width: 1067px) {
+  .edit-bg {
+    margin-top: 23px;
+    padding: 25px 23px 15px;
+  }
+}
+.edit-bg .checkbox {
+  margin-bottom: 10px;
+}
+@media screen and (max-width: 1067px) {
+  .edit-bg .checkbox {
+    margin-bottom: 13px;
+  }
+}
+.edit-form .btn-edit {
+  margin-top: 40px;
+}
+@media screen and (max-width: 1067px) {
+  .edit-form .btn-edit {
+    margin-top: 30px;
+    font-size: 1.8rem;
+  }
+}
+.edit-set {
+  position: relative;
+}
+.edit-set:not(:first-child) {
+  margin-top: 25px;
+}
+@media screen and (min-width: 1068px) {
+  .edit-set:not(:first-child) {
+    margin-top: 30px;
+  }
+}
+.edit-set-mt5 {
+  margin-top: 5px !important;
+}
+@media screen and (max-width: 1067px) {
+  .edit-set-mt5 {
+    margin-top: 13px !important;
+  }
+}
+.edit-set-mt10 {
+  margin-top: 10px !important;
+}
+.edit-set-mt15 {
+  margin-top: 15px !important;
+}
+.edit-set-bg {
+  background: #F5F7F8;
+  border-radius: 3px;
+  padding: 18px 22px;
+}
+@media screen and (min-width: 1068px) {
+  .edit-set-bg {
+    padding: 17px 25px;
+  }
+}
+.edit-set-file__txt {
+  color: #93A0A7;
+  font-weight: bold;
+  font-size: 1.4rem;
+  text-align: center;
+}
+.edit-set.user_remember_me {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.edit-set.user_remember_me .checkbox {
+  text-align: center;
+}
+.edit-set.edit-set-send {
+  margin-top: 25px;
+}
+@media screen and (min-width: 1068px) {
+  .edit-set.edit-set-send {
+    margin-top: 22px;
+  }
+}
+.edit-user-wrap {
+  margin-top: 38px;
+}
+@media screen and (min-width: 1068px) {
+  .edit-user-wrap {
+    margin-top: 43px;
+  }
+}
+.edit-user-thumb {
+  margin: 0 auto;
+  width: 128px;
+  height: 128px;
+  border-radius: 110px;
+  position: relative;
+}
+.edit-user-thumb figure {
+  display: flex;
+  vertical-align: middle;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.edit-user-thumb__image {
+  width: 128px;
+  height: 128px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  font-family: "object-fit: cover;";
+}
+.edit-user-name {
+  font-weight: bold;
+  font-size: 1.8rem;
+  text-align: center;
+  padding: 11px 0 0;
+  letter-spacing: 0.07em;
+}
+@media screen and (min-width: 1068px) {
+  .edit-user-name {
+    font-size: 1.4rem;
+    padding: 13px 0 0;
+  }
+}
+.edit-user-txt {
+  text-align: center;
+  color: #989898;
+  margin-top: 15px;
+}
+@media screen and (min-width: 1068px) {
+  .edit-user-txt {
+    font-size: 1.4rem;
+  }
+}
+.edit-txtLink {
+  margin-top: 32px;
+  text-align: center;
+}
+.edit-txtLink .a-icon {
+  width: auto;
+}
+
+/* バリデーション関係 */
+.validation_error {
+  border: 1px solid #e71e14 !important;
+}
+
+.error_area {
+  background: #f2eaea;
+  border-radius: 4px;
+  margin-top: 12px;
+  padding: 12px 20px;
+}
+@media screen and (max-width: 1067px) {
+  .error_area {
+    padding: 12px 18px;
+  }
+}
+.error_area.area_top {
+  margin-bottom: 30px;
+  padding: 15px 20px;
+}
+@media screen and (max-width: 1067px) {
+  .error_area.area_top {
+    margin-bottom: 25px;
+  }
+}
+.error_area p {
+  color: #e71e14;
+  font-size: 1.5rem;
+}
+@media screen and (max-width: 1067px) {
+  .error_area p {
+    line-height: 1.5;
+  }
+}
+
+.checkbox label {
+  letter-spacing: 0.06em;
+}
+.checkbox .label-lsnone {
+  letter-spacing: 0;
+}
+
+/* -----------------------------------------------------------------------------
+   #Scope
+   -------------------------------------------------------------------------- */
+/**
+ * ComponentレイヤーやProjectレイヤーのようなコンポーネント単位ではなく、
+ * ページ単位や任意の範囲（スコープ）でのスタイルを定義します。1箇所でしか使わないような特異なスタイルや、
+ * ページ単位でComponentやProjectレイヤーのスタイルを微調整したい場合に使用してもかまいません。
+ * 例えばブログページのスタイルとして_blog.scssを作成します。
+ * このレイヤーでは`.s-blog p`のような要素セレクタとの結合子も使うこともできます。
+ * もし、このレイヤーで同じパターンが3箇所で使われていたら、
+ * ProjectレイヤーやUtilityレイヤーでまとめられないか検討しましょう。
+ * プレフィックス（接頭辞）として`s-`をつけます。
+ */
+/* #Blog
+  -------------------------------------------------------------------------- */
+/**
+ * ブログページのスタイルです。
+ */
+/* -----------------------------------------------------------------------------
+   #Utility
+   -------------------------------------------------------------------------- */
+/**
+ * Utilityレイヤーはいわゆる汎用クラスで、ほとんどの場合は単一のスタイルをもっています。
+ * コンポーネント間の間隔を調整したり、BEMのModifierが増えすぎるのを防ぎます。
+ * `.mb10`のような具体的な名前より`.mb-small`のような相対的な名前にしたり、
+ * pxよりもemや%で指定することを推奨します。
+ * 確実にスタイルを適応させるために`!important`を使用します。
+ * プレフィックス（接頭辞）として`u-`をつけます。
+ */
+/* -----------------------------------------------------------------------------
+   #Text
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: text
+name: text
+categories: [utility]
+---
+
+テキストのスタイルを指定する汎用クラスです。
+
+```block
+<p class="u-text-light">font-weight 300</p>
+<p class="u-text-normal">font-weight 400</p>
+<p class="u-text-bold">font-weight 600</p>
+<p class="u-text-indent">先頭の1文字目を1文字分字下げします。</p>
+<p class="u-text-note">2行目以降の1文字目を1文字分字下げします。<br>2行目以降の1文字目を1文字分字下げします。</p>
+<p class="u-text-nowrap">テキストを折り返させません。横幅を超えても、このテキストは折り返さずに表示されます。</p>
+<p class="u-text-breakword">テキストを折り返させます。長文になっても、このテキストは必ず折り返して表示されます。</p>
+<p class="u-text-justify">テキストを両端揃え（均等割り付け）させます。通常のテキストと文字間が違うのが分かると思います。</p>
+<p class="u-text-none">記述した通りに表示します。</p>
+<p class="u-text-lowercase">abcdEFGH すべての英単語を小文字で表示します。</p>
+<p class="u-text-uppercase">abcdEFGH すべての英単語を大文字で表示します。</p>
+<p class="u-text-capitalize">abcdEFGH 英単語の先頭を大文字で表示します。</p>
+<p class="u-text-smallcaps">abcdEFGH スモールキャップ（小文字と同じ高さで作られた大文字）で表示します。</p>
+<p class="u-text-vertical">abcdEFGH 縦書きで表示します。</p>
+<p class="u-text-vertical u-text-vertical--upright">abcdEFGH 英文も縦書きにする場合はModifierを指定します。</p>
+<p class="u-text-right">text-align right</p>
+<p class="u-text-center">text-align center</p>
+<p class="u-text-left">text-align left</p>
+<p class="u-text-top">vertical-align top</p>
+<p class="u-text-middle">vertical-align middle</p>
+<p class="u-text-bottom">vertical-align bottom</p>
+<p class="u-text-baseline">vertical-align baseline</p>
+```
+*/
+/* font-weightを指定します。 */
+.u-text-light {
+  font-weight: 300 !important;
+}
+
+.u-text-normal {
+  font-weight: 400 !important;
+}
+
+.u-text-bold {
+  font-weight: 700 !important;
+}
+
+/* 先頭の1文字目を1文字分字下げします。 */
+.u-text-indent {
+  text-indent: 1em !important;
+}
+
+/* 2行目以降の1文字目を1文字分字下げします。 */
+.u-text-note {
+  margin-left: 1em !important;
+  text-indent: -1em !important;
+}
+
+/* テキストを改行させません。 */
+.u-text-nowrap {
+  white-space: nowrap !important;
+}
+
+/* テキストを改行させます。 */
+.u-text-breakword {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* テキストを両端揃えさせます。 */
+.u-text-justify {
+  text-align: justify !important;
+  text-justify: inter-ideograph !important;
+}
+
+/* 記述した通りに表示します。 */
+.u-text-none {
+  text-transform: none !important;
+}
+
+/* すべての英単語を小文字にします。 */
+.u-text-lowercase {
+  text-transform: lowercase !important;
+}
+
+/* すべての英単語を大文字にします。 */
+.u-text-uppercase {
+  text-transform: uppercase !important;
+}
+
+/* 英単語の先頭を大文字にします。 */
+.u-text-capitalize {
+  text-transform: capitalize !important;
+}
+
+/* スモールキャップ（小文字と同じ高さで作られた大文字）にします。 */
+.u-text-smallcaps {
+  font-variant: small-caps !important;
+}
+
+/* 縦書きにします。 */
+.u-text-vertical {
+  -ms-writing-mode: tb-rl !important;
+      writing-mode: vertical-rl !important;
+  text-orientation: mixed !important;
+}
+
+/* 英文も縦書きにする場合はModifierを指定します。 */
+.u-text-vertical--upright {
+  text-orientation: upright !important;
+}
+
+.u-text-right {
+  text-align: right !important;
+}
+
+.u-text-center {
+  text-align: center !important;
+}
+
+.u-text-left {
+  text-align: left !important;
+}
+
+@media screen and (max-width: 1023px) {
+  .u-text_r-lg-c {
+    text-align: center !important;
+  }
+
+  .u-text_r-lg-l {
+    text-align: left !important;
+  }
+
+  .u-text_c-lg-r {
+    text-align: right !important;
+  }
+
+  .u-text_c-lg-l {
+    text-align: left !important;
+  }
+
+  .u-text_l-lg-c {
+    text-align: center !important;
+  }
+
+  .u-text_l-lg-r {
+    text-align: right !important;
+  }
+}
+@media print, screen and (min-width: 768px) {
+  .u-text_r-sm-c {
+    text-align: center !important;
+  }
+
+  .u-text_r-sm-l {
+    text-align: left !important;
+  }
+
+  .u-text_c-sm-r {
+    text-align: right !important;
+  }
+
+  .u-text_c-sm-l {
+    text-align: left !important;
+  }
+
+  .u-text_l-sm-c {
+    text-align: center !important;
+  }
+
+  .u-text_l-sm-r {
+    text-align: right !important;
+  }
+}
+.u-text-top {
+  vertical-align: top !important;
+}
+
+.u-text-middle {
+  vertical-align: middle !important;
+}
+
+.u-text-bottom {
+  vertical-align: bottom !important;
+}
+
+.u-text-baseline {
+  vertical-align: baseline !important;
+}
+
+/* #Align
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: align
+name: align
+categories: [utility]
+---
+
+画像などを左右や中央に配置します。
+
+```block
+<div class="c-wrapper">
+  <img src="http://lorempixel.com/150/150/">
+  <img src="http://lorempixel.com/150/150/" class="u-align-center">
+  <img src="http://lorempixel.com/150/150/" class="u-align-right">
+</div>
+```
+*/
+.u-align-left {
+  display: block !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.u-align-center {
+  display: block !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+}
+
+.u-align-right {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+/* #Margin
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: margin
+name: margin
+categories: [utility]
+---
+
+マージンで余白の管理をします。常に下方向にだけ余白をとります。
+`<section>`要素を使うようなセクションの余白はlayout/_section.scssで管理します。
+
+* `.u-mb`は常に余白をとります。
+* `.u-mb-gain`はあるブレイクポイント以上で余白を指定します。
+* `.u-mb-lose`はあるブレイクポイント以上で余白を無くします。
+
+
+```block
+```
+*/
+/* 常に余白を指定するクラス。 */
+.u-mb-auto {
+  margin-bottom: auto !important;
+}
+
+.u-mb0 {
+  margin-bottom: 0 !important;
+}
+
+.u-mb5 {
+  margin-bottom: 5px !important;
+}
+
+.u-mb10 {
+  margin-bottom: 10px !important;
+}
+
+.u-mb15 {
+  margin-bottom: 15px !important;
+}
+
+.u-mb20 {
+  margin-bottom: 20px !important;
+}
+
+.u-mb25 {
+  margin-bottom: 25px !important;
+}
+
+.u-mb30 {
+  margin-bottom: 30px !important;
+}
+
+.u-mb35 {
+  margin-bottom: 35px !important;
+}
+
+.u-mb40 {
+  margin-bottom: 40px !important;
+}
+
+.u-mb45 {
+  margin-bottom: 45px !important;
+}
+
+.u-mb50 {
+  margin-bottom: 50px !important;
+}
+
+.u-mb55 {
+  margin-bottom: 55px !important;
+}
+
+.u-mb60 {
+  margin-bottom: 60px !important;
+}
+
+.u-mb65 {
+  margin-bottom: 65px !important;
+}
+
+.u-mb70 {
+  margin-bottom: 70px !important;
+}
+
+.u-mb75 {
+  margin-bottom: 75px !important;
+}
+
+.u-mb80 {
+  margin-bottom: 80px !important;
+}
+
+.u-mb-small {
+  margin-bottom: 0.5em !important;
+}
+@media screen and (min-width: 1068px) {
+  .u-mb-small {
+    margin-bottom: 1em !important;
+  }
+}
+
+/* ブレイクポイント以上 */
+@media screen and (max-width: 1067px) {
+  .u-mb0-gain {
+    margin-bottom: 0 !important;
+  }
+
+  .u-mb5-gain {
+    margin-bottom: 5px !important;
+  }
+
+  .u-mb10-gain {
+    margin-bottom: 10px !important;
+  }
+
+  .u-mb15-gain {
+    margin-bottom: 15px !important;
+  }
+
+  .u-mb20-gain {
+    margin-bottom: 20px !important;
+  }
+
+  .u-mb25-gain {
+    margin-bottom: 25px !important;
+  }
+
+  .u-mb30-gain {
+    margin-bottom: 30px !important;
+  }
+
+  .u-mb35-gain {
+    margin-bottom: 35px !important;
+  }
+
+  .u-mb40-gain {
+    margin-bottom: 40px !important;
+  }
+
+  .u-mb45-gain {
+    margin-bottom: 45px !important;
+  }
+
+  .u-mb50-gain {
+    margin-bottom: 50px !important;
+  }
+
+  .u-mb55-gain {
+    margin-bottom: 55px !important;
+  }
+
+  .u-mb60-gain {
+    margin-bottom: 60px !important;
+  }
+
+  .u-mb65-gain {
+    margin-bottom: 65px !important;
+  }
+
+  .u-mb70-gain {
+    margin-bottom: 70px !important;
+  }
+
+  .u-mb75-gain {
+    margin-bottom: 75px !important;
+  }
+
+  .u-mb80-gain {
+    margin-bottom: 80px !important;
+  }
+}
+/* ブレイクポイント以上 */
+@media screen and (min-width: 1068px) {
+  .u-mb0-lose {
+    margin-bottom: 0 !important;
+  }
+
+  .u-mb5-lose {
+    margin-bottom: 5px !important;
+  }
+
+  .u-mb10-lose {
+    margin-bottom: 10px !important;
+  }
+
+  .u-mb15-lose {
+    margin-bottom: 15px !important;
+  }
+
+  .u-mb20-lose {
+    margin-bottom: 20px !important;
+  }
+
+  .u-mb25-lose {
+    margin-bottom: 25px !important;
+  }
+
+  .u-mb30-lose {
+    margin-bottom: 30px !important;
+  }
+
+  .u-mb35-lose {
+    margin-bottom: 35px !important;
+  }
+
+  .u-mb40-lose {
+    margin-bottom: 40px !important;
+  }
+
+  .u-mb45-lose {
+    margin-bottom: 45px !important;
+  }
+
+  .u-mb50-lose {
+    margin-bottom: 50px !important;
+  }
+
+  .u-mb55-lose {
+    margin-bottom: 55px !important;
+  }
+
+  .u-mb60-lose {
+    margin-bottom: 60px !important;
+  }
+
+  .u-mb65-lose {
+    margin-bottom: 65px !important;
+  }
+
+  .u-mb70-lose {
+    margin-bottom: 70px !important;
+  }
+
+  .u-mb75-lose {
+    margin-bottom: 75px !important;
+  }
+
+  .u-mb80-lose {
+    margin-bottom: 80px !important;
+  }
+}
+/* #Display
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: display
+name: display
+categories: [utility]
+---
+
+表示非表示を切り替えます。改行位置のコントロールもできます。
+
+```block
+<p class="u-dn-md"><code>$-md</code>以降は非表示になります。</p>
+<p class="u-dn u-db-md"><code>$-md</code>以降は表示されます。</p>
+<p>基本はなりゆきでウィンドウサイズが狭くなると、<span class="u-dib">ここから改行されます。</span></p>
+<p><code>$-md</code>以降になると、<span class="u-db-md">ここから改行されます。</span></p>
+```
+*/
+.u-dn {
+  display: none !important;
+}
+
+@media screen and (min-width: 400px) {
+  .u-dn-sm {
+    display: none !important;
+  }
+}
+@media screen and (min-width: 768px) {
+  .u-dn-md {
+    display: none !important;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .u-dn-lg {
+    display: none !important;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .u-dn-xl {
+    display: none !important;
+  }
+}
+.u-db {
+  display: block !important;
+}
+
+@media screen and (min-width: 400px) {
+  .u-db-sm {
+    display: block !important;
+  }
+}
+@media screen and (min-width: 768px) {
+  .u-db-md {
+    display: block !important;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .u-db-lg {
+    display: block !important;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .u-db-xl {
+    display: block !important;
+  }
+}
+.u-di {
+  display: inline !important;
+}
+
+@media screen and (min-width: 400px) {
+  .u-di-sm {
+    display: inline !important;
+  }
+}
+@media screen and (min-width: 768px) {
+  .u-di-md {
+    display: inline !important;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .u-di-lg {
+    display: inline !important;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .u-di-xl {
+    display: inline !important;
+  }
+}
+.u-dib {
+  display: inline-block !important;
+}
+
+@media screen and (min-width: 400px) {
+  .u-dib-sm {
+    display: inline-block !important;
+  }
+}
+@media screen and (min-width: 768px) {
+  .u-dib-md {
+    display: inline-block !important;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .u-dib-lg {
+    display: inline-block !important;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .u-dib-xl {
+    display: inline-block !important;
+  }
+}
+/* #Percent
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: percent
+name: percent
+categories: [utility]
+---
+
+`width`プロパティを5%刻みで指定する汎用クラスです。おもに`.c-table--fixed`と一緒に指定します。
+
+```block
+<div class="c-wrapper">
+  <table class="c-table c-table--medium c-table--fixed">
+    <tr>
+      <th class="u-percent50">th1</th>
+      <th>th2</th>
+      <th>th3</th>
+    </tr>
+    <tr>
+      <td>td1</td>
+      <td>td2</td>
+      <td>td3</td>
+    </tr>
+  </table>
+</div>
+```
+*/
+.u-percent5 {
+  width: 5% !important;
+}
+
+.u-percent10 {
+  width: 10% !important;
+}
+
+.u-percent15 {
+  width: 15% !important;
+}
+
+.u-percent20 {
+  width: 20% !important;
+}
+
+.u-percent25 {
+  width: 25% !important;
+}
+
+.u-percent30 {
+  width: 30% !important;
+}
+
+.u-percent35 {
+  width: 35% !important;
+}
+
+.u-percent40 {
+  width: 40% !important;
+}
+
+.u-percent45 {
+  width: 45% !important;
+}
+
+.u-percent50 {
+  width: 50% !important;
+}
+
+.u-percent55 {
+  width: 55% !important;
+}
+
+.u-percent60 {
+  width: 60% !important;
+}
+
+.u-percent65 {
+  width: 65% !important;
+}
+
+.u-percent70 {
+  width: 70% !important;
+}
+
+.u-percent75 {
+  width: 75% !important;
+}
+
+.u-percent80 {
+  width: 80% !important;
+}
+
+.u-percent85 {
+  width: 85% !important;
+}
+
+.u-percent90 {
+  width: 90% !important;
+}
+
+.u-percent95 {
+  width: 95% !important;
+}
+
+.u-percent100 {
+  width: 100% !important;
+}
+
+/* #Sr-only
+  -------------------------------------------------------------------------- */
+/*doc
+---
+title: sr-only
+name: sr-only
+categories: [utility]
+---
+
+要素を非表示にさせますが、スクリーンリーダーには読み上げられます。
+
+```block
+
+```
+*/
+@media screen and (min-width: 1068px) {
+  .v-sp,
+.h-pc {
+    display: none;
+  }
+}
+@media screen and (max-width: 1067px) {
+  .v-pc,
+.h-sp {
+    display: none;
+  }
+}
+@media screen and (min-width: 1024px) {
+  .h-md {
+    display: none;
+  }
+}
+@media screen and (max-width: 1023px) {
+  .v-md {
+    display: none;
+  }
+}
+@media screen and (min-width: 568px) {
+  .v-se {
+    display: none;
+  }
+}
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
@@ -10977,23 +16034,118 @@ input[type=number] {
   background-color: #a8bbbf;
 }
 
-input[type=checkbox] {
-  border-radius: 0px;
-  border-color: #707070;
-}
-input[type=checkbox]:checked {
-  border-color: #707070;
-  background-image: url(/images/icon-checked.svg);
-  background-color: white;
-  background-size: 14px;
-}
-input[type=checkbox]:focus {
-  box-shadow: none;
-}
-
 input[type=date].hide-calender::-webkit-inner-spin-button, input[type=date].hide-calender::-webkit-calendar-picker-indicator {
   display: none;
   -webkit-appearance: none;
+}
+
+input[type=checkbox],
+input[type=radio] {
+  opacity: 0;
+  position: absolute;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+}
+
+input[type=checkbox]:checked,
+input[type=radio]:checked,
+input[type=checkbox]:focus,
+input[type=radio]:focus {
+  outline: none !important;
+}
+
+input[type=checkbox] + .lbl,
+input[type=radio] + .lbl {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  margin: 0;
+  line-height: 20px;
+  min-height: 20px;
+  min-width: 20px;
+  font-weight: normal;
+}
+
+input[type=checkbox] + .lbl.padding-16::before,
+input[type=radio] + .lbl.padding-16::before {
+  margin-right: 16px;
+}
+
+input[type=checkbox] + .lbl.padding-12::before,
+input[type=radio] + .lbl.padding-12::before {
+  margin-right: 12px;
+}
+
+input[type=checkbox] + .lbl.padding-8::before,
+input[type=radio] + .lbl.padding-8::before {
+  margin-right: 8px;
+}
+
+input[type=checkbox] + .lbl.padding-4::before,
+input[type=radio] + .lbl.padding-4::before {
+  margin-right: 4px;
+}
+
+input[type=checkbox] + .lbl.padding-0::before,
+input[type=radio] + .lbl.padding-0::before {
+  margin-right: 0px;
+}
+
+input[type=checkbox] + .lbl::before,
+input[type=radio] + .lbl::before {
+  font-family: fontAwesome;
+  font-weight: normal;
+  font-size: 11px;
+  color: #2091cf;
+  content: " ";
+  background-color: #fff;
+  border: 1px solid #C3C3C3;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 7px;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 13px;
+  min-width: 13px;
+  margin-right: 1px;
+  margin-top: -5px;
+  width: 27px;
+  height: 27px;
+}
+
+input[type=checkbox]:checked + .lbl::before,
+input[type=radio]:checked + .lbl::before {
+  display: inline-block;
+  content: "";
+  background-color: #000;
+  border-color: #adb8c0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05), inset 15px 10px -12px rgba(255, 255, 255, 0.1);
+}
+
+input[type=checkbox]:checked + .lbl::after,
+input[type=radio]:checked + .lbl::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 1px;
+  width: 7px;
+  height: 14px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+input[type=checkbox]:disabled + .lbl::before,
+input[type=radio]:disabled + .lbl::before,
+input[type=checkbox][disabled] + .lbl::before,
+input[type=radio][disabled] + .lbl::before,
+input[type=checkbox].disabled + .lbl::before,
+input[type=radio].disabled + .lbl::before {
+  background-color: #DDD !important;
+  border-color: #CCC !important;
+  box-shadow: none !important;
+  color: #BBB;
 }
 
 .loader2-wrap {
@@ -12153,8 +17305,12 @@ a {
 
 .input-default {
   border-radius: 20px !important;
-  height: 55px;
   font-size: 18px;
+}
+@media screen and (max-width: 1067px) {
+  .input-default {
+    height: 55px;
+  }
 }
 
 .control-label {
@@ -12186,23 +17342,6 @@ a {
 .btn-disabled {
   background-color: #eaeff2;
   color: #6f7372;
-}
-
-.text-icon {
-  position: relative;
-}
-.text-icon:after {
-  background-size: 33px 30px;
-  width: 33px;
-  height: 32px;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-.icon-text:after {
-  background: url(/assets/img/icon/file-text.svg) no-repeat;
-  background-size: 35px 32px;
 }
 
 .meeting-item:last-child {

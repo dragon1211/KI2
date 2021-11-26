@@ -12,7 +12,7 @@ use App\Models\MeetingImage;
 
 class MeetingImagesController extends Controller {
     public function register (Request $r) {
-        if (!isset($r->meeting_id) || !isset($r->image)) {
+        if (!isset($r->meeting_id) || !isset($r->image) || empty(json_decode($r->image))) {
             return ['status_code' => 400];
         }
 
@@ -22,12 +22,12 @@ class MeetingImagesController extends Controller {
 
         // ファイルサイズは10MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
-            return $this->imagesize($value);
+            return $this->imagesizemulti($value);
         });
 
         // ミームタイプ
         Validator::extend('image_meme', function ($attribute, $value, $params, $validator) {
-            return $this->imagememe($value);
+            return $this->imagemememulti($value);
         });
 
         // バリデーションエラー
@@ -37,23 +37,29 @@ class MeetingImagesController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
-        $ext = explode('/', mime_content_type($r->image))[1];
-        $filename = $this->uuidv4() . '.'.$ext;
+        $fname = [];
 
         try {
-            $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
-            Storage::disk('public')->put($filename, $image);
+            foreach (json_decode($r->image) as $img) {
+                $ext = explode('/', mime_content_type($img))[1];
+                $filename = $this->uuidv4() . '.'.$ext;
+                $fname[] = $this->uuidv4() . '.'.$ext;
+                $image = base64_decode(substr($img, strpos($img, ',') + 1));
+                Storage::disk('public')->put($filename, $image);
 
-            $insert = [
-                'meeting_id' => (int)$r->meeting_id,
-                'image' => '/storage/'.$filename,
-            ];
+                $insert = [
+                    'meeting_id' => (int)$r->meeting_id,
+                    'image' => '/storage/'.$filename,
+                ];
 
-            MeetingImage::create($insert);
+                MeetingImage::create($insert);
+            }
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
-            Storage::disk('public')->delete($filename);
+            foreach ($fname as $filename) {
+                Storage::disk('public')->delete($filename);
+            }
             return ['status_code' => 400];
         }
 

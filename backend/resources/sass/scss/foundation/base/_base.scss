@@ -1,0 +1,159 @@
+/* #Base
+   -------------------------------------------------------------------------- */
+/**
+ * Baseレイヤーにはプロジェクトにおける、基本的なベーススタイルを定義します。
+ * 要素セレクタや属性セレクタなど、詳細度はできるかぎり低く保っておきます。
+ * 基本的にclass属性は使用しません。
+ */
+/**
+ * `padding`と`border`を`width`に含めます。
+ * https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+ */
+html {
+  overflow-x: hidden;
+  font-size: 62.5%;
+  min-height: 100%;
+}
+
+body {
+  min-width: 320px;
+  background: #fff;
+  font-family: "Open Sans", "Myriad", Helvetica, Arial, sans-serif;
+  @include pc{
+    background: #F7FAFC;
+  }
+}
+
+body, button, code, input, optgroup, pre, select, textarea {
+  color: #080808;
+  font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Segoe UI, Hiragino Kaku Gothic ProN, Hiragino Sans, ヒラギノ角ゴ ProN W3, Arial, メイリオ, Meiryo, sans-serif;
+  font-size: 1.6rem;
+  word-wrap: break-word;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  -webkit-font-feature-settings: "kern";
+  font-feature-settings: "kern";
+  -webkit-font-kerning: normal;
+  font-kerning: normal;
+  line-height: 1.6;
+}
+
+input[type=number], input[type=url], input[type=tel], input[type=text], input[type=email], input[type=password], select, textarea {
+  font-family: inherit;
+  -webkit-appearance: none; 
+}
+
+img[src$=".svg"]:not([width]), img[src*=".svg?"]:not([width]) {
+
+}
+
+img, legend {
+  max-width: 100%
+}
+
+progress, sub, sup {
+  vertical-align: baseline
+}
+
+body, svg:not(:root) {
+  overflow: hidden
+}
+
+a, legend {
+  color: inherit
+}
+
+a[href^="tel:"] {
+  cursor: text;
+  pointer-events: none;
+  text-decoration: none
+}
+
+[type=submit], a, button{
+  cursor: pointer;
+  text-decoration: none;
+}
+
+ol, ul{
+  list-style: none;
+}
+
+button{
+  padding: 0;
+}
+
+button:focus {
+  outline: 0
+}
+
+input[type="checkbox"], input[type="radio"]{
+  margin-right: 0.5em;
+  margin-top: -2px;
+}
+input[type=number], input[type=url], input[type=tel], input[type=text], input[type=email], input[type=password], input[type=search], select, textarea {
+  border: 1px solid #D0D0D0;
+  background-color: #fff;
+  outline: 0!important;
+  width: 100%;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-weight: 400;
+  color: #414141;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  @include pc{
+    padding: 15px 20px;
+    border-radius: 14px;
+  }
+}
+input[type=search]{
+  @include pc{
+    padding-right: 52px;
+  }
+  @include sp{
+    padding-right: 40px;
+  }
+}
+
+html:not(.sp) input[type=number]:focus, html:not(.sp) input[type=url]:focus, html:not(.sp) input[type=tel]:focus,  html:not(.sp) input[type=text]:focus, 
+html:not(.sp) input[type=email]:focus, html:not(.sp) input[type=password]:focus, html:not(.sp) select:focus, html:not(.sp) textarea:focus{
+  border-color: #00c4ac;
+  background-color: #fff;
+  -webkit-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+}
+
+html.sp input[type=number], html.sp input[type=url], html.sp input[type=tel], html.sp input[type=text], html.sp input[type=email], html.sp input[type=password], html.sp select, html.sp textarea {
+  font-size: 16px!important;
+  font-size: 1.6rem!important
+}
+
+input[type=file]{
+  display: none;
+}
+
+select {
+  -moz-appearance: none;
+  background-color: #fff
+}
+
+input[type=number]::-webkit-input-placeholder, input[type=url]::-webkit-input-placeholder, input[type=tel]::-webkit-input-placeholder, input[type=text]::-webkit-input-placeholder, input[type=email]::-webkit-input-placeholder, input[type=password]::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: #999;
+  font-size: 1.6rem;
+}
+
+input[type=number]:-ms-input-placeholder, input[type=url]:-ms-input-placeholder, input[type=tel]:-ms-input-placeholder, input[type=text]:-ms-input-placeholder, input[type=email]:-ms-input-placeholder, input[type=password]:-ms-input-placeholder, textarea:-ms-input-placeholder {
+  color: #999;
+  font-size: 1.6rem;
+}
+
+input[type=number]::-moz-placeholder, input[type=url]::-moz-placeholder, input[type=tel]::-moz-placeholder, input[type=text]::-moz-placeholder, input[type=email]::-moz-placeholder, input[type=password]::-moz-placeholder, textarea::-moz-placeholder {
+  color: #999;
+  font-size: 1.6rem;
+}
+
+h1,h2,h3,h4,h5{
+  font-weight: bold;
+}

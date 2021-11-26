@@ -1,0 +1,22 @@
+// アニメーションの管理
+
+@include mixin.pc{
+  .fade {
+    transition: opacity 0.3s ease;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    &:hover{
+      opacity: 0.7;
+      cursor: pointer;
+    }
+  }
+  .fade02 {
+    transition: opacity 0.3s ease;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    &:hover{
+      opacity: 0.5;
+      cursor: pointer;
+    }
+  }
+}

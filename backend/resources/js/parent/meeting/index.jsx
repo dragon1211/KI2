@@ -163,7 +163,7 @@ const Meeting = (props) => {
                     <div className="p-meetingAdd-btn">
                         <Link to = '/p-account/meeting/new' data-v-ade1d018="kikikanri" 
                           className="btn-default btn-yellow btn-meeting btn-shadow btn-r8 btn-h48 btn-fz14">
-                            <span>ミーティングを追加</span>
+                            <span className="ft-16">ミーティングを追加</span>
                             <svg version="1.1" viewBox="0 0 500 500" className="icon svg-icon svg-fill svg-up">
                               <path fill="#000" stroke="none" pid="0" d="M250 437.6c-16.5 0-30-13.5-30-30V280.1H92.5c-16.5 0-30-13.5-30-30s13.5-30 30-30H220V92.6c0-16.5 13.5-30 30-30s30 13.5 30 30v127.5h127.5c16.5 0 30 13.5 30 30s-13.5 30-30 30H280v127.5c0 16.5-13.5 30-30 30z"></path>
                             </svg>

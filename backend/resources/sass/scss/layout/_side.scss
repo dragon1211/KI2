@@ -1,0 +1,259 @@
+ /* #Side
+   -------------------------------------------------------------------------- */
+/*doc
+---
+title: side
+name: side
+categories: [layout]
+---
+
+`<aside>`タグが使われるようなサイドバーのスタイルです。
+ナビゲーションやバナーなどのレイアウトを含むことはできますが、
+コンポーネント自体はobject/projectレイヤーで定義します。
+
+```block
+<body>
+  <article class="l-content"></article>
+  <aside class="l-side">
+    <div class="l-side__item">
+       <ul class="p-side-nav"></ul>
+    </div>
+    <div class="l-side__item">
+       <div class="p-banner"></div>
+    </div>
+  </aside>
+</body>
+```
+*/
+
+.l-side {
+  position: fixed;
+  left: 0;
+  overflow-x: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  -webkit-overflow-scrolling: touch;
+  background: #000000;
+  z-index: 3;
+  width: calc(100% - 20px);
+  height: 54px;
+  @include pc{
+    height: 100vh;
+    width: 240px;
+  }
+  @include sp{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 7px;
+    right: 7px;
+    bottom: 7px;
+    border-radius: 12px;
+    width: calc(100% - 14px);
+  }
+  &-logo{
+    line-height: 1;
+    margin: 35px auto;
+    @include pc{
+      width: 38px;
+    }
+    @include sp{
+      display: none;
+    }
+    a{
+      display: block;
+      line-height: 1;
+    }
+  }
+}
+
+.mypage-nav{
+  @include sp{
+    width: 100%;
+    height: 100%;
+  }
+  &-list{
+    @include sp{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      padding: 0 7px;
+    }
+    &__item{
+      display: flex;
+      align-items: center;
+      &.nav-active{
+        @include pc{
+          a{
+            background: $_color-ui-yellow;
+            color: #000;
+            &:hover{
+              opacity: 1;
+            }
+          }
+        }
+        .prof-wrap{
+          border: 1px solid $_color-ui-yellow;
+        }
+        &.-profile{
+          .prof-wrap{
+            border: 1px solid #ccc;
+          }
+        }
+        .icon{
+          &.meeting{
+            &:before{
+              background-image: url(../../assets/img/icon/list-yellow.svg);
+              @include pc{
+                background-image: url(../../assets/img/icon/list-black.svg);
+              }
+            }
+          }
+          &.star{
+            &:before{
+              @include sp{
+                background-image: url(../../assets/img/icon/star-outline-yellow02.svg);
+              }
+            }
+          }
+          &.parents{
+            &:before{
+              background-image: url(../../assets/img/icon/people-yellow.svg);
+              @include pc{
+                background-image: url(../../assets/img/icon/people-black.svg);
+              }
+            }
+          }
+          &.search{
+            &:before{
+              background-image: url(../../assets/img/icon/search-yellow.svg);
+              @include pc{
+                background-image: url(../../assets/img/icon/search-black.svg);
+              }
+            }
+          }
+          &.log-out{
+            &:before{
+              background-image: url(../../assets/img/icon/log-out-yellow.svg);
+              @include pc{
+                background-image: url(../../assets/img/icon/log-out-black.svg);
+              }
+            }
+          }
+        }
+      }
+      @include sp{
+        width: 20%;
+        height: 100%;
+      }
+      &.-logout{
+        @include sp{
+          display: none;
+        }
+      }
+      &.-favorite{
+        @include pc{
+          display: none;
+        }
+      }
+      a{
+        display: flex;
+        align-items: center;
+        width: 100%;
+        color: #ccc;
+        line-height: 1.5;
+        font-weight: bold;
+        word-break: break-all;
+        transition: all .25s ease-out;
+        text-decoration: none;
+        @include pc{
+          padding: 13px 1.2em;
+          &:hover{
+            opacity: 0.6;
+          }
+        }
+        @include sp{
+          justify-content: center;
+          box-sizing: border-box;
+          height: 100%;
+        }
+        span{
+          @include sp{
+            display: none;
+          }
+        }
+      }
+      .icon{
+        width: 29px;
+        height: 29px;
+        position: relative;
+        @include pc{
+          margin-right: 13px;
+          transition: all .25s ease-out;
+          width: 24px;
+          height: 24px;
+        }
+        &:before{
+          content: "";
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          display: inline-block;
+          background-repeat: no-repeat;
+          background-position: 50%;
+          background-size: 100%;
+        }
+        &.meeting{
+          &:before{
+            background-image: url(../../assets/img/icon/list-gray.svg) ;
+          }
+        }
+        &.star{
+          &:before{
+            background-image: url(../../assets/img/icon/star-outline-gray02.svg);
+          }
+        }
+        &.search{
+          &:before{
+            background-image: url(../../assets/img/icon/search-gray.svg);
+          }
+        }
+        &.parents{
+          &:before{
+            background-image: url(../../assets/img/icon/people-gray.svg);
+          }
+        }
+        &.log-out{
+          &:before{
+            background-image: url(../../assets/img/icon/log-out-gray.svg);
+          }
+        }
+      }
+    }
+    &__link{
+      &.user-icon{
+        figure{
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          @include pc{
+            margin-right: 13px;
+            width: 24px;
+            height: 24px;
+          }
+          .prof-wrap{ 
+            width: 18px;
+            height: 18px;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            overflow: hidden;
+            @include sp{
+              width: 28px;
+              height: 28px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

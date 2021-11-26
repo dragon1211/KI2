@@ -180,7 +180,7 @@ const MeetingDetail = (props) => {
                                 handleClose={()=>setShowMemoModal(false)} />
                             <ModalPdf 
                                 show={show_pdf_modal}
-                                pdfPath={meeting.pdf ?? '/pdf/test.pdf'}
+                                pdfPath={meeting.pdf}
                                 handleClose={()=>setShowPDFMoal(false)} />
                         </div>
                     </div>

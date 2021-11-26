@@ -23,7 +23,7 @@ const ChildSignUpTemporary = () => {
         .then(response => {
             setSubmit(false);
             switch(response.data.status_code){
-                case 200: setSuccess(response.data.success_messages); break;
+                case 200: setSuccess("本登録用URLを送信に成功しました！"); break;
                 case 422: set422Errors(response.data.error_messages); break;
                 case 400: set400Error(response.data.error_messages); break;
             };

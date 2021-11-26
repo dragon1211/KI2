@@ -112,7 +112,7 @@ const ChildEdit = (props) => {
                         loading={submit}
                         className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
                         style={{marginTop:'50px'}}>
-                        <span className={`ft-20 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>変更内容を保存する</span>
+                        <span className={`ft-18 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>変更内容を保存する</span>
                     </LoadingButton>
                   </form>
                 </div>
