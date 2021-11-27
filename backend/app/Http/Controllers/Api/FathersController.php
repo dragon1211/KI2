@@ -55,7 +55,7 @@ class FathersController extends Controller {
             'father_id' => $result->id,
             'email' => $r->email,
             'token' => $token,
-            'ttl' => date('Y-m-d H:i:s', time()+env('TTL_SEC'))
+            'ttl' => date('Y-m-d H:i:s', time()+(int)env('TTL_SEC'))
         ];
 
         try {
@@ -103,7 +103,7 @@ class FathersController extends Controller {
         }
         else {
             $token = bin2hex(random_bytes(24));
-            $create = ['email' => $r->email, 'token' => $token, 'ttl' => date('Y-m-d H:i:s', time()+env('TTL_SEC'))];
+            $create = ['email' => $r->email, 'token' => $token, 'ttl' => date('Y-m-d H:i:s', time()+(int)env('TTL_SEC'))];
 
             try {
                 // DBに入ります。
@@ -124,6 +124,11 @@ class FathersController extends Controller {
 
     public function registerMain (Request $r) {
         if ($r->image == 'null') $r->image = null;
+
+        if (!is_null($r->image) && count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
+            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+            return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
+        }
 
         // 電話番号の文字数。
         Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
@@ -168,7 +173,7 @@ class FathersController extends Controller {
             $lastid = Father::select('id')->orderBy('id', 'desc')->first();
             $filename = $this->uuidv4() . '.'.$ext;
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
-            Storage::disk('public')->put($filename, $image);
+            Storage::disk('private')->put($filename, $image);
         }
 
         try {
@@ -179,7 +184,7 @@ class FathersController extends Controller {
                 'email' => $get->email,
                 'password' => $password,
                 'company' => $r->company,
-                'image' => !is_null($r->image) ? '/storage/'.$filename : '/assets/default/avatar.jpg',
+                'image' => !is_null($r->image) ? '/files/'.$filename : '/assets/default/avatar.jpg',
                 'profile' => $r->profile,
                 'tel' => $r->tel,
             ];
@@ -202,7 +207,7 @@ class FathersController extends Controller {
             // 本登録に失敗
             Log::critical($e->getMessage());
             DB::rollback();
-            if (!is_null($r->image)) Storage::disk('public')->delete($filename);
+            if (!is_null($r->image)) Storage::disk('private')->delete($filename);
             return ['status_code' => 400, 'error_messages' => ['本登録に失敗しました。']];
         }
 
@@ -296,6 +301,11 @@ class FathersController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
+        if (count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
+            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+            return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
+        }
+
         // ファイルサイズは10MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
             return $this->imagesize($value);
@@ -322,13 +332,17 @@ class FathersController extends Controller {
             DB::beginTransaction();
 
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
-            Storage::disk('public')->put($filename, $image);
+            Storage::disk('private')->put($filename, $image);
 
             $father = Father::find((int)$father_id);
-            if (!is_null($father->image)) {
-                $oldimg = $father->image;
+            if (!is_null($father->image) && $father->image != '/assets/default/avatar.jpg') {
+                $oldimg = str_replace('/files/', '', $father->image);
+                if (!Storage::disk('private')->exists($oldimg)) {
+                    Log::warning($oldimg.'というパスは不正です。');
+                    $oldimg = null;
+                }
             }
-            $father->image = '/storage/'.$filename;
+            $father->image = '/files/'.$filename;
             $father->save();
 
             $login_user_datum = $father->toArray();
@@ -342,12 +356,12 @@ class FathersController extends Controller {
             // 親プロフィール画像のアップロードに失敗
             Log::critical($e->getMessage());
             DB::rollback();
-            Storage::disk('public')->delete($filename);
+            Storage::disk('private')->delete($filename);
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
         if (!is_null($oldimg)) {
-            $stor = Storage::disk('public')->delete($oldimg);
+            Storage::disk('private')->delete($oldimg);
         }
 
         // 親プロフィール画像のアップロードに成功
@@ -483,7 +497,7 @@ class FathersController extends Controller {
             $father->delete();
 
             if (!is_null($img)) {
-                Storage::disk('public')->delete($img);
+                Storage::disk('private')->delete($img);
             }
             Session::forget($this->getGuard());
         } catch (\Throwable $e) {

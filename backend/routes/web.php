@@ -128,3 +128,5 @@ Route::group(['prefix' => 'admin'],                     function () {
         Route::get('/child/edit/password/{child_id}',   function () { return view('admin.index'); });
     });
 });
+
+Route::get('/files/{path}', \App\Http\Controllers\Api\FilesController::class);

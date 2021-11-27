@@ -42,7 +42,7 @@ class Controller extends BaseController
 
     public function imagesize ($value) {
         try {
-            return strlen($value) < env('PDF_MAX_SIZE');
+            return strlen($value) < (int)env('PDF_MAX_SIZE');
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
             return false;
@@ -123,7 +123,7 @@ class Controller extends BaseController
         try {
             $ok = true;
             foreach (json_decode($value) as $v) {
-                if (strlen(base64_decode($v)) > env('PDF_MAX_SIZE')) {
+                if (strlen(base64_decode($v)) > (int)env('PDF_MAX_SIZE')) {
                     $ok = false;
                 }
             }

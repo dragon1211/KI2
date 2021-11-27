@@ -16098,7 +16098,7 @@ input[type=radio] + .lbl::before {
   font-weight: normal;
   font-size: 11px;
   color: #2091cf;
-  content: " ";
+  content: "";
   background-color: #fff;
   border: 1px solid #C3C3C3;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -16134,6 +16134,13 @@ input[type=radio]:checked + .lbl::after {
   border: solid #fff;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+input[type=checkbox]:active + .lbl::before,
+input[type=radio]:active + .lbl::before,
+input[type=checkbox]:checked:active + .lbl::before,
+input[type=radio]:checked:active + .lbl::before {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 input[type=checkbox]:disabled + .lbl::before,

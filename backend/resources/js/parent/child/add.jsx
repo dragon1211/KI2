@@ -49,6 +49,7 @@ const ChildAdd = () => {
     "https://kikikan.xyz\n";
     copy(lineText);
     setSuccess('招待用URLをLINEで追信しました。');
+    window.open('http://line.me/R/msg/text/?'+lineText);
   }
 
 	return (

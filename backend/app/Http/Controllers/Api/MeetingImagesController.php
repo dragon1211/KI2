@@ -20,6 +20,11 @@ class MeetingImagesController extends Controller {
             return ['status_code' => 400, 'error_messages' => '画像は最大10個までです。'];
         }
 
+        if (count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
+            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+            return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
+        }
+
         // ファイルサイズは10MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
             return $this->imagesizemulti($value);
@@ -45,11 +50,11 @@ class MeetingImagesController extends Controller {
                 $filename = $this->uuidv4() . '.'.$ext;
                 $fname[] = $this->uuidv4() . '.'.$ext;
                 $image = base64_decode(substr($img, strpos($img, ',') + 1));
-                Storage::disk('public')->put($filename, $image);
+                Storage::disk('private')->put($filename, $image);
 
                 $insert = [
                     'meeting_id' => (int)$r->meeting_id,
-                    'image' => '/storage/'.$filename,
+                    'image' => '/files/'.$filename,
                 ];
 
                 MeetingImage::create($insert);
@@ -58,7 +63,7 @@ class MeetingImagesController extends Controller {
             // 失敗
             Log::critical($e->getMessage());
             foreach ($fname as $filename) {
-                Storage::disk('public')->delete($filename);
+                Storage::disk('private')->delete($filename);
             }
             return ['status_code' => 400];
         }
@@ -83,7 +88,7 @@ class MeetingImagesController extends Controller {
 
         try {
             MeetingImage::where('id', (int)$r->image_id)->delete();
-            Storage::disk('public')->delete($get->image);
+            Storage::disk('private')->delete($get->image);
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());

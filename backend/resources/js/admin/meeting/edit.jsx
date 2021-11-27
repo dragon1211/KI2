@@ -32,6 +32,7 @@ const MeetingEdit = (props) => {
 
     const [check_radio, setCheckRadio] = useState(null);
     const [children_temp, setChildrenTemp] = useState([]);
+    const [image_sending, setImageSending] = useState(false);
 
 
     useEffect(()=>{
@@ -146,13 +147,16 @@ const MeetingEdit = (props) => {
         });
 
         Promise.all(promises).then(images => {
+            set422Errors({image:''});
             const formdata = new FormData();
             formdata.append('image', JSON.stringify(images));
+            setImageSending(true);
             axios.post(`/api/admin/meeting/images/register`, formdata,  {params:{meeting_id: meeting_id}})
             .then(response => {
+                setImageSending(false);
                 switch(response.data.status_code){
                     case 200: setMeetingImages(response.data.params); break;
-                    case 400: set400Error(response.data.error_messages); break;
+                    case 400: set400Error("画像の登録に失敗しました。"); break;
                     case 422: set422Errors(response.data.error_messages); break;
                 } 
             });
@@ -207,7 +211,7 @@ const MeetingEdit = (props) => {
                     <div className="p-article">
                     <div className="p-article-wrap" style={{ minHeight:'500px'}}>
                     {
-                        !loaded &&
+                        (!loaded || image_sending) &&
                             <CircularProgress className="css-loader"/>
                     }
                     {

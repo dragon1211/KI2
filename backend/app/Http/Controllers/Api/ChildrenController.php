@@ -58,7 +58,7 @@ class ChildrenController extends Controller {
             'type' => 0,
             'tel' => $r->tel,
             'token' => $token,
-            'ttl' => date('Y-m-d H:i:s', time()+env('TTL_SEC')),
+            'ttl' => date('Y-m-d H:i:s', time()+(int)env('TTL_SEC')),
         ];
 
         try {
@@ -94,6 +94,11 @@ class ChildrenController extends Controller {
         // 有効期限が切れている場合
         if (time() > strtotime($get->ttl)) {
             return ['status_code' => 400, 'error_messages' => ['仮登録の有効期限が切れました。改めて親にお問い合わせいただき、再登録の手続きを行ってください。']];
+        }
+
+        if (!is_null($r->image) && count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
+            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+            return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
         // ファイルサイズは10MiB以内
@@ -143,8 +148,8 @@ class ChildrenController extends Controller {
             $telact = TelActivation::where('token', $r->token)->first();
 
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
-            Storage::disk('public')->put($filename, $image);
-            $insert['image'] = '/storage/'.$filename;
+            Storage::disk('private')->put($filename, $image);
+            $insert['image'] = '/files/'.$filename;
 
             $child->fill($insert);
             $child->push();
@@ -157,7 +162,7 @@ class ChildrenController extends Controller {
             // 失敗
             Log::critical($e->getMessage());
             DB::rollback();
-            Storage::disk('public')->delete($filename);
+            Storage::disk('private')->delete($filename);
             return ['status_code' => 400, 'error_messages' => ['登録に失敗しました。']];
         }
 
@@ -191,7 +196,7 @@ class ChildrenController extends Controller {
             'child_id' => $result->id,
             'tel' => $r->tel,
             'token' => $token,
-            'ttl' => date('Y-m-d H:i:s', time()+env('TTL_SEC'))
+            'ttl' => date('Y-m-d H:i:s', time()+(int)env('TTL_SEC'))
         ];
 
         try {
@@ -357,6 +362,11 @@ class ChildrenController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['画像の更新に失敗しました。']];
         }
 
+        if (count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
+            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+            return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
+        }
+
         // ファイルサイズは10MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
             return $this->imagesize($value);
@@ -376,16 +386,24 @@ class ChildrenController extends Controller {
 
         $ext = explode('/', mime_content_type($r->image))[1];
         $filename = $this->uuidv4() . '.'.$ext;
+        $oldimg = null;
 
         try {
+            DB::beginTransaction();
+
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
-            Storage::disk('public')->put($filename, $image);
+            Storage::disk('private')->put($filename, $image);
 
-            $update = [
-                'image' => '/storage/'.$filename,
-            ];
-
-            Child::where('id', (int)$child_id)->update($update);
+            $child = Child::find((int)$child_id);
+            if (!is_null($child->image) && $child->image != '/assets/default/avatar.jpg') {
+                $oldimg = str_replace('/files/', '', $child->image);
+                if (!Storage::disk('private')->exists($oldimg)) {
+                    Log::warning($oldimg.'というパスは不正です。');
+                    $oldimg = null;
+                }
+            }
+            $child->image = '/files/'.$filename;
+            $child->save();
 
             $get = Child::where('id', (int)$child_id)->first();
             $login_user_datum = $get->toArray();
@@ -395,8 +413,12 @@ class ChildrenController extends Controller {
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
-            Storage::disk('public')->delete($filename);
+            Storage::disk('private')->delete($filename);
             return ['status_code' => 400, 'error_messages' => ['画像の更新に失敗しました。']];
+        }
+
+        if (!is_null($oldimg)) {
+            Storage::disk('private')->delete($oldimg);
         }
 
         // 成功

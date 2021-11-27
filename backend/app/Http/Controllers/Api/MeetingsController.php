@@ -21,6 +21,11 @@ class MeetingsController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['ミーティングの登録に失敗しました。']];
         }
 
+        if (count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
+            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+            return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
+        }
+
         if (isset($r->image)) {
             $r->image = json_decode($r->image);
         }
@@ -67,12 +72,12 @@ class MeetingsController extends Controller {
         try {
             if (isset($r->pdf)) {
                 $filename = $this->uuidv4() . '.pdf';
-                $insert['pdf'] = '/storage/'.$filename;
+                $insert['pdf'] = '/files/'.$filename;
 
                 if (substr($r->pdf, -4) != '.pdf') {
                     $pdf = base64_decode(substr($r->pdf, strpos($r->pdf, ',') + 1));
 
-                    Storage::disk('public')->put($filename, $pdf);
+                    Storage::disk('private')->put($filename, $pdf);
                 }
                 else {
                     $insert['pdf'] = $r->pdf;
@@ -89,9 +94,9 @@ class MeetingsController extends Controller {
                         $fname = $this->uuidv4() . '.'.$ext;
                         $fnames[] = $fname;
                         $image = base64_decode(substr($img, strpos($img, ',') + 1));
-                        Storage::disk('public')->put($fname, $image);
+                        Storage::disk('private')->put($fname, $image);
 
-                        $imgname = '/storage/'.$fname;
+                        $imgname = '/files/'.$fname;
         
                     }
                     else {
@@ -123,11 +128,11 @@ class MeetingsController extends Controller {
             Log::critical($e->getMessage());
             if (!is_null($meeting) && $meeting != 0) {
                 if (isset($r->pdf)) {
-                    Storage::disk('public')->delete($filename);
+                    Storage::disk('private')->delete($filename);
                 }
                 if (isset($r->image)) {
                     foreach ($fnames as $f) {
-                        Storage::disk('public')->delete($f);
+                        Storage::disk('private')->delete($f);
                     }
                 }
             }
@@ -666,6 +671,11 @@ class MeetingsController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['ミーティングの登録に失敗しました。']];
         }
 
+        if (count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
+            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+            return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
+        }
+
         // ミームタイプ
         Validator::extend('pdf_meme', function ($attribute, $value, $params, $validator) {
             return $this->pdfmeme($value);
@@ -704,29 +714,29 @@ class MeetingsController extends Controller {
                 // DBにミーティングがある場合
                 if ($chk = Meeting::select('pdf')->where('id', (int)$meeting_id)->first()) {
                     // base64の場合（ファイルパスだったら、スキップ）
-                    if (!preg_match('/\/storage\/(.*).pdf/', $r->pdf)) {
+                    if (!preg_match('/\/files\/(.*).pdf/', $r->pdf)) {
                         // もう存在しているPDFのファイル名からパスを外します。
-                        $opdf = str_replace('/storage/', '', $chk->pdf);
+                        $opdf = str_replace('/files/', '', $chk->pdf);
 
                         // PDFのbase64をGETします。
                         $pdf = base64_decode(substr($r->pdf, strpos($r->pdf, ',') + 1));
 
                         // 既にPDFが存在する場合（なければ、スキップ）
-                        if (Storage::disk('public')->exists($opdf)) {
+                        if (Storage::disk('private')->exists($opdf)) {
                             // 既に存在しているPDFとアップロードしているPDFを比べてみます。異なる場合、存在しているPDFを削除します。
-                            if (strcmp(Storage::disk('public')->get($opdf), $pdf) !== 0) {
-                                Storage::disk('public')->delete($opdf);
+                            if (strcmp(Storage::disk('private')->get($opdf), $pdf) !== 0) {
+                                Storage::disk('private')->delete($opdf);
                             }
                         }
 
-                        $update['pdf'] = '/storage/'.$filename;
-                        Storage::disk('public')->put($filename, $pdf);
+                        $update['pdf'] = '/files/'.$filename;
+                        Storage::disk('private')->put($filename, $pdf);
                     }
                 }
                 // なければ、そのままストレージに保存します。
                 else {
-                    $update['pdf'] = '/storage/'.$filename;
-                    Storage::disk('public')->put($filename, $pdf);
+                    $update['pdf'] = '/files/'.$filename;
+                    Storage::disk('private')->put($filename, $pdf);
                 }
             }
 
@@ -735,7 +745,7 @@ class MeetingsController extends Controller {
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
             if (isset($r->pdf) && !is_null($r->pdf)) {
-                Storage::disk('public')->delete($filename);
+                Storage::disk('private')->delete($filename);
             }
             return ['status_code' => 400];
         }

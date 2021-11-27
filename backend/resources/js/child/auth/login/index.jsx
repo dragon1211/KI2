@@ -34,7 +34,7 @@ const ChildLogin = () => {
                     break;
                 }
                 case 422: set422Errors(response.data.error_messages); break;
-                case 400: set400Error(response.data.error_message[0]); break;
+                case 400: set400Error(response.data.error_message); break;
             }
         })
     }
