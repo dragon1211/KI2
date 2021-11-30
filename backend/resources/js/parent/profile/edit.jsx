@@ -19,6 +19,7 @@ const ProfileEdit = () => {
 
   const [_success, setSuccess] = useState('');
   const [_400error, set400Error] = useState('');
+  const [_404error, set404Error] = useState('');
   const [_422errors, set422Errors] = useState({
     company: '',
     email:'',
@@ -44,7 +45,14 @@ const ProfileEdit = () => {
       else {
         set400Error("失敗しました。");
       } 
-    });
+    })
+    .catch(err=>{
+      setLoaded(true);
+      setNotice(err.response.data.notice);
+      if(err.response.status==404){
+          set404Error(err.response.data.message);
+      }
+    })
   }, []);
 
   const handleSubmit = (e) => {
@@ -161,6 +169,16 @@ const ProfileEdit = () => {
           }
           { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
           { _success && <Alert type="success" hide={()=>setSuccess('') }>{_success}</Alert> }
+          { _404error && 
+              <Alert type="fail" hide={()=>{
+                  set404Error('');
+                  history.push({
+                      pathname: "/p-account/profile"
+                  });
+              }}>
+              {_404error}
+              </Alert>
+          }
           </section>
         </div>
       </div>

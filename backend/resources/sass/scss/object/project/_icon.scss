@@ -123,11 +123,11 @@ categories: [project]
 }
 .icon-star{
   &:after{
-    background: url(../../assets/img/icon/star-outline-gray.svg) no-repeat;
+    background: url(/assets/img/icon/star-outline-gray.svg) no-repeat;
   }
   &Fill{
     &:after{
-      background: url(../../assets/img/icon/star-outline-yellow.svg) no-repeat;
+      background: url(/assets/img/icon/star-outline-yellow.svg) no-repeat;
     }
     &-wrap{
       border: 1px solid #F0DE00;
@@ -158,11 +158,30 @@ categories: [project]
 
 .icon-text{
   &:after{
-    background: url(../../assets/img/icon/file-text.svg) no-repeat;
+    background: url(/assets/img/icon/file-text-gray.svg) no-repeat;
     background-size: 35px 32px;
   }
+  &Fill{
+    &:after{
+      background: url(/assets/img/icon/file-text-yellow.svg) no-repeat;
+      background-size: 35px 32px;
+    }
+    &-wrap{
+      border: 1px solid #F0DE00;
+      border-radius: 8px;
+      min-width: 52px;
+      height: 52px;
+      margin-right: 10px;
+      &:after{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+      }
+    }
+  }
   &-wrap{
-    border: 1px solid #F0DE00;
+    border: 1px solid #D0D0D0;
     border-radius: 8px;
     min-width: 52px;
     height: 52px;
@@ -192,7 +211,7 @@ categories: [project]
     width: 54px;
   }
   &:after{
-    background: url(../../assets/img/icon/search-gray.svg) no-repeat;
+    background: url(/assets/img/icon/search-gray.svg) no-repeat;
     background-size: cover;
     width: 20px;
     height: 20px;
@@ -218,7 +237,7 @@ categories: [project]
     width: 58px;
   }
   &:after{
-    background: url(../../assets/img/icon/calendar.svg) no-repeat;
+    background: url(/assets/img/icon/calendar.svg) no-repeat;
     background-size: cover;
     width: 23px;
     height: 25px;

@@ -30,6 +30,7 @@ const MeetingEdit = (props) => {
 
     const [_422errors, set422Errors] = useState({title:'', text:'', memo:'', pdf:'', image:''})
     const [_400error, set400Error] = useState('');
+    const [_404error, set404Error] = useState('');
     const [_success, setSuccess] = useState('');
 
     const [loaded, setLoaded] = useState(false);
@@ -63,11 +64,19 @@ const MeetingEdit = (props) => {
                     else arr.push({...list[i], checked: false});
                 }
                 setChildrenList(arr);
+                setCheckRadio("all_send");
             }
             else{
                 set400Error("失敗しました。");
             }
-        });
+        })
+        .catch(err=>{
+            setLoaded(true);
+            setNotice(err.response.data.notice);
+            if(err.response.status==404){
+                set404Error(err.response.data.message);
+            }
+        })
     }, []);
 
 //-------------------------------------------------------------
@@ -84,12 +93,12 @@ useEffect(()=>{
     useEffect(()=>{
         if(!loaded) return;      //if dont load data
         var list = [];
-        if(check_radio=="false"){        //send all children
+        if(check_radio=="all_send"){        //send all children
             list = [...children_list];
             for(var i=0; i<list.length; i++)
                 list[i].checked = true;
         }
-        else if(check_radio=="true"){                     //send pickup
+        else if(check_radio=="pickup_send"){                     //send pickup
             list = [...children_list];
             for(var i in list){
                 if(approval_list.findIndex(ele=>ele.child_id == list[i].id) >= 0)
@@ -333,13 +342,13 @@ useEffect(()=>{
                                         </div>
                 
                                         <div className="edit-set edit-set-send">
-                                            <label htmlFor="allmember_send">
+                                            <label htmlFor="all_send">
                                                 <input className="boolean optional" 
                                                     type="radio"
-                                                    id="allmember_send"
+                                                    id="all_send"
                                                     name="check_radio" 
-                                                    value={false}
-                                                    onClick={e=>setCheckRadio(e.target.value)}
+                                                    onClick={e=>setCheckRadio(e.target.id)}
+                                                    defaultChecked
                                                     />
                                                 <span className="lbl padding-16">全員に送信</span>
                                             </label>
@@ -351,14 +360,13 @@ useEffect(()=>{
                                                     type="radio"
                                                     id="pickup_send"
                                                     name="check_radio" 
-                                                    value={true}
-                                                    onClick={e=>setCheckRadio(e.target.value)}
+                                                    onClick={e=>setCheckRadio(e.target.id)}
                                                     />
                                                 <span className="lbl padding-16">選んで送信</span>
                                             </label>
                                         </div>
                                        
-                                        <div className={`checkbox-wrap edit-bg ${check_radio!="true" && 'd-none'}`}>
+                                        <div className={`checkbox-wrap edit-bg ${check_radio!="pickup_send" && 'd-none'}`}>
                                             {
                                                 children_list.length != 0 ?
                                                     children_list?.map((item, k)=>
@@ -370,7 +378,7 @@ useEffect(()=>{
                                                                     checked =  {item.checked}
                                                                     onChange={e=>handleCheck(e, k)}/>
                                                                 <span className="lbl padding-16">
-                                                                    {`${item.first_name} ${item.last_name}`}
+                                                                    {`${item.last_name} ${item.first_name}`}
                                                                 </span>
                                                             </label>
                                                         </div>
@@ -393,6 +401,16 @@ useEffect(()=>{
                         
                     { _400error && <Alert type="fail"  hide={()=>set400Error('')}>{_400error}</Alert> }
                     { _success && <Alert type="success"  hide={()=>setSuccess('')}>{_success}</Alert> }
+                    { _404error && 
+                        <Alert type="fail" hide={()=>{
+                            set404Error('');
+                            history.push({
+                                pathname: "/p-account/meeting"
+                            });
+                        }}>
+                        {_404error}
+                        </Alert>
+                    }
                     </div>
                     </div>
                 </div>

@@ -18,6 +18,7 @@ const ChildDetail = (props) => {
     const [image, setImage] = useState(''); 
     const [loaded, setLoaded] = useState(false);
     const [submit, setSubmit] = useState(false);
+    const [submit_image, setSubmitImage] = useState(false);
     const [child, setChild] = useState(null);
     
     const [_400error, set400Error] = useState('');
@@ -49,8 +50,10 @@ const ChildDetail = (props) => {
         reader.readAsDataURL(_file);
         reader.onloadend = () => {
             set422Errors({image: ''});
+            setSubmitImage(true);
             axios.put(`/api/admin/children/updateImage/${props.match.params?.child_id}`, {image: reader.result})
             .then(response => {
+                setSubmitImage(false);
                 switch(response.data.status_code){
                     case 200: {
                         setImage(reader.result);
@@ -96,7 +99,7 @@ const ChildDetail = (props) => {
                 <section className="profile-container">
                     <div className="profile-wrap" style={{ minHeight:'500px'}}>
                     {
-                        !loaded &&
+                        (!loaded || submit_image) &&
                             <CircularProgress className="css-loader"/>
                     }
                     { 
@@ -119,7 +122,7 @@ const ChildDetail = (props) => {
                                         </span> 
                                 }
                             </div>
-                            <p className="profile-name">{`${child.first_name}  ${child.last_name}`}</p>
+                            <p className="profile-name">{`${child.last_name}  ${child.first_name}`}</p>
                             <div className="profile-info">
                                 <div className="profile-info__item">
                                     <p className="profile-info__icon">
@@ -147,7 +150,7 @@ const ChildDetail = (props) => {
                                     <p className="profile-info__icon">
                                         <img src="/assets/img/icon/building.svg" alt="会社名"/>
                                     </p>
-                                    <p className="txt">{child.company}</p>
+                                    <p className="txt">{child.company ? child.company: '未入力'}</p>
                                 </div>
                             </div>
         

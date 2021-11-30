@@ -9,32 +9,41 @@ import Alert from '../../component/alert';
 import Notification from '../notification';
 
 const Profile = (props) => {
-
+    const history = useHistory();
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
 
     const [image, setImage] = useState(''); 
-    const [profile, setProfile] = useState({email:'', tel:'', first_name:'', last_name:'', identity:'', company:'', image:''})
+    const [profile, setProfile] = useState({company:'', email:'', tel:'', profile:''});
     const [loaded, setLoaded] = useState(false);
     const [_400error, set400Error] = useState('');
+    const [_404error, set404Error] = useState('');
     const [_422errors, set422Errors] = useState({ image: '' });
     const [_success, setSuccess] = useState(props.history.location.state);
+    const [submit_image, setSubmitImage] = useState(false);
 
     const father_id = document.getElementById('father_id').value;
 
     useEffect(() => {
-      setLoaded(false);
-      axios.get('/api/fathers/detail/'+father_id)
-      .then(response => {
-          setLoaded(true);
-          setNotice(response.data.notice);
-          if(response.data.status_code==200){
-              setProfile(response.data.params);
-              setImage(response.data.params.image);
-          }
-          else {
-            set400Error("失敗しました。");
-          } 
-      })
+        setLoaded(false);
+        axios.get('/api/fathers/detail/'+father_id)
+        .then(response => {
+            setLoaded(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code==200){
+                setProfile(response.data.params);
+                setImage(response.data.params.image);
+            }
+            else {
+                set400Error("失敗しました。");
+            } 
+        })
+        .catch(err=>{
+            setLoaded(true);
+            setNotice(err.response.data.notice);
+            if(err.response.status==404){
+                set404Error(err.response.data.message);
+            }
+        })
     },[]);
 
     useEffect(() => {
@@ -57,9 +66,11 @@ const Profile = (props) => {
         reader.readAsDataURL(_file);
         reader.onloadend = () => {
             set422Errors({image: ''});
+            setSubmitImage(true);
             axios.put(`/api/fathers/updateImage/${father_id}`, {image: reader.result})
             .then(response => {
                 setNotice(response.data.notice);
+                setSubmitImage(false);
                 switch(response.data.status_code){
                     case 200: {
                         localStorage.setItem('image_upload_success', response.data.success_messages);
@@ -86,7 +97,7 @@ const Profile = (props) => {
             <div className="l-content-wrap">
                 <section className="profile-container">
                     {
-                        !loaded &&
+                        (!loaded || submit_image) &&
                             <CircularProgress className="css-loader"/>
                     }
                     {
@@ -125,7 +136,7 @@ const Profile = (props) => {
                                             <p className="profile-info__icon">
                                                 <img src="/assets/img/icon/phone.svg" alt="電話" />
                                             </p>
-                                            <p className="txt">{profile.tel}</p>
+                                            <p className="txt">{profile?.tel}</p>
                                         </a>
                                     </div>
                                     <div className="profile-info__item">
@@ -166,6 +177,16 @@ const Profile = (props) => {
                     }
                     { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
                     { _success && <Alert type="success" hide={()=>setSuccess('') }>{_success}</Alert> }
+                    { _404error && 
+                        <Alert type="fail" hide={()=>{
+                            set404Error('');
+                            history.push({
+                                pathname: "/p-account/profile"
+                            });
+                        }}>
+                        {_404error}
+                        </Alert>
+                    }
                 </section>   
             </div>
         </div>

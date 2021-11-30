@@ -10968,12 +10968,12 @@ h3 {
 @font-face {
   font-family: GenJyuuGothic-P;
   font-weight: 400;
-  src: url(/fonts/GenJyuuGothic-P-Regular.woff2?0908714fff61a9145b5006671048da1d) format("woff2"), url(/fonts/GenJyuuGothic-P-Regular.woff?dc4d38bc6b04031d9dd7584d4ed3af1c) format("woff"), url(/fonts/GenJyuuGothic-P-Regular.ttf?ef31255ae22bf70d525f4180be990b8d) format("TrueType");
+  src: url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Regular.woff2) format("woff2"), url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Regular.woff) format("woff"), url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Regular.ttf) format("TrueType");
 }
 @font-face {
   font-family: GenJyuuGothic-P;
   font-weight: 700;
-  src: url(/fonts/GenJyuuGothic-P-Bold.woff2?53d44f132e835809b14f46f8bff65d2b) format("woff2"), url(/fonts/GenJyuuGothic-P-Bold.woff?9de1f8813ddd80f73fd30b54c4ed9e34) format("woff"), url(/fonts/GenJyuuGothic-P-Bold.ttf?927d59ad1b7feb82d0fdec9634a00a61) format("TrueType");
+  src: url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Bold.woff2) format("woff2"), url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Bold.woff) format("woff"), url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Bold.ttf) format("TrueType");
 }
 @font-face {
   font-family: AdobeBlank;
@@ -10982,37 +10982,37 @@ h3 {
 @font-face {
   font-family: YakuHanJP;
   font-weight: 100;
-  src: url(/fonts/YakuHanJP-Thin.woff2?f8706e5306d9a5252d75da086e8d122d) format("woff2"), url(/fonts/YakuHanJP-Thin.woff?c0a6b47f2e150fe2a9b904c1bf57f497) format("woff"), url(/fonts/YakuHanJP-Thin.eot?6ef81d2af5ed27fb99bd6b2d5ccd8041);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Thin.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Thin.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Thin.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 200;
-  src: url(/fonts/YakuHanJP-Light.woff2?0b8ababac4f383c6ad8a9ab02d6fbccc) format("woff2"), url(/fonts/YakuHanJP-Light.woff?98e377e2cd6bb0ab35291192249c9d7e) format("woff"), url(/fonts/YakuHanJP-Light.eot?48a86896772cb42ab312532e5fb1a6ef);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Light.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Light.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Light.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 300;
-  src: url(/fonts/YakuHanJP-DemiLight.woff2?401d79d02744136f1666b742d4133fbd) format("woff2"), url(/fonts/YakuHanJP-DemiLight.woff?c7edfa735d3d4b08bfc5c78189bc7b09) format("woff"), url(/fonts/YakuHanJP-DemiLight.eot?a569268c682e10874d839b9f5e043bab);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-DemiLight.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-DemiLight.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-DemiLight.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 400;
-  src: url(/fonts/YakuHanJP-Regular.woff2?fa89a6a409a61a7ca3f11ca630bd26ab) format("woff2"), url(/fonts/YakuHanJP-Regular.woff?3686af168611043094444da612d2014c) format("woff"), url(/fonts/YakuHanJP-Regular.eot?a5c871a280f58c01dedaa3396cc0410f);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Regular.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Regular.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Regular.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 500;
-  src: url(/fonts/YakuHanJP-Medium.woff2?921de89e5e14a069620bf7f0e34d0ecf) format("woff2"), url(/fonts/YakuHanJP-Medium.woff?f86078184a1d6a41418c31903ce09f93) format("woff"), url(/fonts/YakuHanJP-Medium.eot?0b3bec6520de5392d8fa9e3c040009c5);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Medium.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Medium.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Medium.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 700;
-  src: url(/fonts/YakuHanJP-Bold.woff2?4a19c01ca60630fe0e2e1403930874f7) format("woff2"), url(/fonts/YakuHanJP-Bold.woff?95eb71bf0690e78e09a1baf568a1738d) format("woff"), url(/fonts/YakuHanJP-Bold.eot?77e5e9f3a23cfcda7f67adb41a354ba7);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Bold.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Bold.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Bold.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 900;
-  src: url(/fonts/YakuHanJP-Black.woff2?c9a364c83a7aff52232f8fe87c8609ea) format("woff2"), url(/fonts/YakuHanJP-Black.woff?21712507fa10297fe63d07d5d7c5dac3) format("woff"), url(/fonts/YakuHanJP-Black.eot?9e46da322dfcf324fa76b5ac7a9e1cb0);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Black.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Black.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Black.eot);
 }
 /**
  * VARIABLE
@@ -11123,12 +11123,12 @@ h3 {
 @font-face {
   font-family: GenJyuuGothic-P;
   font-weight: 400;
-  src: url(/fonts/GenJyuuGothic-P-Regular.woff2?0908714fff61a9145b5006671048da1d) format("woff2"), url(/fonts/GenJyuuGothic-P-Regular.woff?dc4d38bc6b04031d9dd7584d4ed3af1c) format("woff"), url(/fonts/GenJyuuGothic-P-Regular.ttf?ef31255ae22bf70d525f4180be990b8d) format("TrueType");
+  src: url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Regular.woff2) format("woff2"), url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Regular.woff) format("woff"), url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Regular.ttf) format("TrueType");
 }
 @font-face {
   font-family: GenJyuuGothic-P;
   font-weight: 700;
-  src: url(/fonts/GenJyuuGothic-P-Bold.woff2?53d44f132e835809b14f46f8bff65d2b) format("woff2"), url(/fonts/GenJyuuGothic-P-Bold.woff?9de1f8813ddd80f73fd30b54c4ed9e34) format("woff"), url(/fonts/GenJyuuGothic-P-Bold.ttf?927d59ad1b7feb82d0fdec9634a00a61) format("TrueType");
+  src: url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Bold.woff2) format("woff2"), url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Bold.woff) format("woff"), url(/assets/fonts/GenJyuuGothic-P/GenJyuuGothic-P-Bold.ttf) format("TrueType");
 }
 @font-face {
   font-family: AdobeBlank;
@@ -11137,37 +11137,37 @@ h3 {
 @font-face {
   font-family: YakuHanJP;
   font-weight: 100;
-  src: url(/fonts/YakuHanJP-Thin.woff2?f8706e5306d9a5252d75da086e8d122d) format("woff2"), url(/fonts/YakuHanJP-Thin.woff?c0a6b47f2e150fe2a9b904c1bf57f497) format("woff"), url(/fonts/YakuHanJP-Thin.eot?6ef81d2af5ed27fb99bd6b2d5ccd8041);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Thin.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Thin.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Thin.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 200;
-  src: url(/fonts/YakuHanJP-Light.woff2?0b8ababac4f383c6ad8a9ab02d6fbccc) format("woff2"), url(/fonts/YakuHanJP-Light.woff?98e377e2cd6bb0ab35291192249c9d7e) format("woff"), url(/fonts/YakuHanJP-Light.eot?48a86896772cb42ab312532e5fb1a6ef);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Light.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Light.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Light.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 300;
-  src: url(/fonts/YakuHanJP-DemiLight.woff2?401d79d02744136f1666b742d4133fbd) format("woff2"), url(/fonts/YakuHanJP-DemiLight.woff?c7edfa735d3d4b08bfc5c78189bc7b09) format("woff"), url(/fonts/YakuHanJP-DemiLight.eot?a569268c682e10874d839b9f5e043bab);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-DemiLight.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-DemiLight.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-DemiLight.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 400;
-  src: url(/fonts/YakuHanJP-Regular.woff2?fa89a6a409a61a7ca3f11ca630bd26ab) format("woff2"), url(/fonts/YakuHanJP-Regular.woff?3686af168611043094444da612d2014c) format("woff"), url(/fonts/YakuHanJP-Regular.eot?a5c871a280f58c01dedaa3396cc0410f);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Regular.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Regular.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Regular.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 500;
-  src: url(/fonts/YakuHanJP-Medium.woff2?921de89e5e14a069620bf7f0e34d0ecf) format("woff2"), url(/fonts/YakuHanJP-Medium.woff?f86078184a1d6a41418c31903ce09f93) format("woff"), url(/fonts/YakuHanJP-Medium.eot?0b3bec6520de5392d8fa9e3c040009c5);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Medium.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Medium.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Medium.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 700;
-  src: url(/fonts/YakuHanJP-Bold.woff2?4a19c01ca60630fe0e2e1403930874f7) format("woff2"), url(/fonts/YakuHanJP-Bold.woff?95eb71bf0690e78e09a1baf568a1738d) format("woff"), url(/fonts/YakuHanJP-Bold.eot?77e5e9f3a23cfcda7f67adb41a354ba7);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Bold.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Bold.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Bold.eot);
 }
 @font-face {
   font-family: YakuHanJP;
   font-weight: 900;
-  src: url(/fonts/YakuHanJP-Black.woff2?c9a364c83a7aff52232f8fe87c8609ea) format("woff2"), url(/fonts/YakuHanJP-Black.woff?21712507fa10297fe63d07d5d7c5dac3) format("woff"), url(/fonts/YakuHanJP-Black.eot?9e46da322dfcf324fa76b5ac7a9e1cb0);
+  src: url(/assets/fonts/YakuHanJP/YakuHanJP-Black.woff2) format("woff2"), url(/assets/fonts/YakuHanJP/YakuHanJP-Black.woff) format("woff"), url(/assets/fonts/YakuHanJP/YakuHanJP-Black.eot);
 }
 /**
  * Foundationレイヤーでは`html`や`body`のような広範囲にわたるベーススタイル、
@@ -11739,8 +11739,7 @@ a, legend {
 }
 
 a[href^="tel:"] {
-  cursor: text;
-  pointer-events: none;
+  cursor: pointer;
   text-decoration: none;
 }
 
@@ -12248,40 +12247,40 @@ categories: [layout]
   border: 1px solid #ccc;
 }
 .mypage-nav-list__item.nav-active .icon.meeting:before {
-  background-image: url(/images/list-yellow.svg?58c753f895165d8b559b97118431078a);
+  background-image: url(/assets/img/icon/list-yellow.svg);
 }
 @media screen and (min-width: 1068px) {
   .mypage-nav-list__item.nav-active .icon.meeting:before {
-    background-image: url(/images/list-black.svg?bb77778dacd15a2e89c94df413b610b1);
+    background-image: url(/assets/img/icon/list-black.svg);
   }
 }
 @media screen and (max-width: 1067px) {
   .mypage-nav-list__item.nav-active .icon.star:before {
-    background-image: url(/images/star-outline-yellow02.svg?12419a0efb747f2bf657265d762cf945);
+    background-image: url(/assets/img/icon/star-outline-yellow02.svg);
   }
 }
 .mypage-nav-list__item.nav-active .icon.parents:before {
-  background-image: url(/images/people-yellow.svg?b09a58e795d7dae70bf454e2dd9c95dc);
+  background-image: url(/assets/img/icon/people-yellow.svg);
 }
 @media screen and (min-width: 1068px) {
   .mypage-nav-list__item.nav-active .icon.parents:before {
-    background-image: url(/images/people-black.svg?18cbc02573ca628a754516d565471689);
+    background-image: url(/assets/img/icon/people-black.svg);
   }
 }
 .mypage-nav-list__item.nav-active .icon.search:before {
-  background-image: url(/images/search-yellow.svg?0230b5a2addb282f90a11f03e1fa18b6);
+  background-image: url(/assets/img/icon/search-yellow.svg);
 }
 @media screen and (min-width: 1068px) {
   .mypage-nav-list__item.nav-active .icon.search:before {
-    background-image: url(/images/search-black.svg?720fc6249963ccfb199cad011367407b);
+    background-image: url(/assets/img/icon/search-black.svg);
   }
 }
 .mypage-nav-list__item.nav-active .icon.log-out:before {
-  background-image: url(/images/log-out-yellow.svg?1b68f7d254d3418c246ab6caf4df2a81);
+  background-image: url(/assets/img/icon/log-out-yellow.svg);
 }
 @media screen and (min-width: 1068px) {
   .mypage-nav-list__item.nav-active .icon.log-out:before {
-    background-image: url(/images/log-out-black.svg?84c65984fe1dc8214afbb0e6e42873c0);
+    background-image: url(/assets/img/icon/log-out-black.svg);
   }
 }
 @media screen and (max-width: 1067px) {
@@ -12355,19 +12354,19 @@ categories: [layout]
   background-size: 100%;
 }
 .mypage-nav-list__item .icon.meeting:before {
-  background-image: url(/images/list-gray.svg?dcc142fe211efe22393797a2c9e28bf1);
+  background-image: url(/assets/img/icon/list-gray.svg);
 }
 .mypage-nav-list__item .icon.star:before {
-  background-image: url(/images/star-outline-gray02.svg?df9815f0291c30e50a5cfd1c496e155b);
+  background-image: url(/assets/img/icon/star-outline-gray02.svg);
 }
 .mypage-nav-list__item .icon.search:before {
-  background-image: url(/images/search-gray.svg?c5c7a01d0dd6ebe7e325306d6ef0ba7a);
+  background-image: url(/assets/img/icon/search-gray.svg);
 }
 .mypage-nav-list__item .icon.parents:before {
-  background-image: url(/images/people-gray.svg?acfa94944f8df8a43eef099e3a77b2fb);
+  background-image: url(/assets/img/icon/people-gray.svg);
 }
 .mypage-nav-list__item .icon.log-out:before {
-  background-image: url(/images/log-out-gray.svg?861c1a3bffcbc6494ae12c18598d3b42);
+  background-image: url(/assets/img/icon/log-out-gray.svg);
 }
 .mypage-nav-list__link.user-icon figure {
   display: flex;
@@ -12991,10 +12990,10 @@ categories: [project]
 }
 
 .icon-star:after {
-  background: url(/images/star-outline-gray.svg?fb6de7c36be81c88a02cb11feadab076) no-repeat;
+  background: url(/assets/img/icon/star-outline-gray.svg) no-repeat;
 }
 .icon-starFill:after {
-  background: url(/images/star-outline-yellow.svg?61adcd7ba18d472270a83696daf142fd) no-repeat;
+  background: url(/assets/img/icon/star-outline-yellow.svg) no-repeat;
 }
 .icon-starFill-wrap {
   border: 1px solid #F0DE00;
@@ -13022,11 +13021,28 @@ categories: [project]
 }
 
 .icon-text:after {
-  background: url(/images/file-text.svg?eef62fb61b190a7078a1e41813859c13) no-repeat;
+  background: url(/assets/img/icon/file-text-gray.svg) no-repeat;
   background-size: 35px 32px;
 }
-.icon-text-wrap {
+.icon-textFill:after {
+  background: url(/assets/img/icon/file-text-yellow.svg) no-repeat;
+  background-size: 35px 32px;
+}
+.icon-textFill-wrap {
   border: 1px solid #F0DE00;
+  border-radius: 8px;
+  min-width: 52px;
+  height: 52px;
+  margin-right: 10px;
+}
+.icon-textFill-wrap:after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+.icon-text-wrap {
+  border: 1px solid #D0D0D0;
   border-radius: 8px;
   min-width: 52px;
   height: 52px;
@@ -13057,7 +13073,7 @@ categories: [project]
   }
 }
 .icon-search:after {
-  background: url(/images/search-gray.svg?c5c7a01d0dd6ebe7e325306d6ef0ba7a) no-repeat;
+  background: url(/assets/img/icon/search-gray.svg) no-repeat;
   background-size: cover;
   width: 20px;
   height: 20px;
@@ -13088,7 +13104,7 @@ categories: [project]
   }
 }
 .icon-calendar:after {
-  background: url(/images/calendar.svg?0d92b15ce0131234f89a2977b662a6c0) no-repeat;
+  background: url(/assets/img/icon/calendar.svg) no-repeat;
   background-size: cover;
   width: 23px;
   height: 25px;
@@ -14940,7 +14956,7 @@ categories: [project]
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 100% auto;
-  background-image: url(/images/camera.svg?3665dc7f7052cef25748da5a31a7f717);
+  background-image: url(/assets/img/icon/camera.svg);
 }
 .profile-name {
   font-weight: bold;
@@ -17402,14 +17418,34 @@ a {
   .css-loader {
     width: 40px !important;
     height: 40px !important;
-    top: calc(45vh - 22px);
-    left: calc(50vw + 120px - 22px);
+    top: calc(45vh - 20px);
+    left: calc(50vw + 120px - 20px);
   }
 }
 @media screen and (max-width: 1068px) {
   .css-loader {
     width: 30px !important;
     height: 30px !important;
+    top: calc(45vh - 15px);
+    left: calc(50vw - 15px);
+  }
+}
+
+.modal-css-loader {
+  color: green !important;
+  position: fixed;
+  z-index: 10;
+  width: 30px !important;
+  height: 30px !important;
+}
+@media screen and (min-width: 1068px) {
+  .modal-css-loader {
+    top: calc(45vh - 15px);
+    left: calc(50vw - 25px);
+  }
+}
+@media screen and (max-width: 1068px) {
+  .modal-css-loader {
     top: calc(45vh - 15px);
     left: calc(50vw - 15px);
   }

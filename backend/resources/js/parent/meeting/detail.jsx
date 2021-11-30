@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
 import { useHistory, Link } from 'react-router-dom';
 import { CircularProgress  } from '@material-ui/core';
 
@@ -22,12 +21,13 @@ const MeetingDetail = (props) => {
   const [notice, setNotice] = useState(localStorage.getItem('notice'));
   const [_success, setSuccess] = useState(props.history.location.state);
   const [_400error, set400Error] = useState('');
+  const [_404error, set404Error] = useState('');
   
-  const [showDelete, setShowDelete] = useState(false);
-  const [showSettingNotify, setShowSettingNotify] = useState(false);
-  const [showMemo, setShowMemo] = useState(false);
-  const [showNotify, setShowNotify] = useState(false);
-  const [showPdf, setShowPdf] = useState(false);
+  const [show_delete_modal, setShowDeleteModal] = useState(false);
+  const [show_notify_all_modal, setShowNotifyAllModal] = useState(false);
+  const [show_memo_modal, setShowMemoModal] = useState(false);
+  const [show_notify_pickup_modal, setShowNotifySelectModal] = useState(false);
+  const [show_pdf_modal, setShowPDFModal] = useState(false);
 
   const [meeting, setMeeting] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
@@ -53,7 +53,14 @@ const MeetingDetail = (props) => {
       else {
         set400Error("失敗しました。");
       } 
-    });
+    })
+    .catch(err=>{
+      setLoaded(true);
+      setNotice(err.response.data.notice);
+      if(err.response.status==404){
+        set404Error(err.response.data.message);
+      }
+    })
   }, []);
 
   //-------------------------------------------------------------
@@ -71,7 +78,7 @@ const MeetingDetail = (props) => {
     .then(response => {
       setNotice(response.data.notice);
       setSubmitDelete(false);
-      setShowDelete(false);
+      setShowDeleteModal(false);
       switch(response.data.status_code){
         case 200: {
           history.push({ pathname: "/p-account/meeting",
@@ -114,7 +121,7 @@ const MeetingDetail = (props) => {
           axios.post('/api/fathers/approvalNotification', formdata)
           .then(response=>{
             setSubmitNotify(false);
-            setShowNotify(false);
+            setShowNotifySelectModal(false);
             switch(response.data.status_code){
               case 200: setSuccess('SMSの送信に成功しました!'); break;
               case 400: set400Error('SMSの送信に失敗しました。'); break;
@@ -153,7 +160,7 @@ const MeetingDetail = (props) => {
                               <li className="denominator">{meeting?.denominator}</li>
                             </ul>
     
-                            <ul className="meeting-member-list" role="list" onClick={()=>setShowSettingNotify(true)} >
+                            <ul className="meeting-member-list" role="list" onClick={()=>setShowNotifyAllModal(true)} >
                               { 
                                 meeting.approval?.map((v, inx) =>
                                   <li className="meeting-member__item" role="listitem" key={inx}>
@@ -177,7 +184,7 @@ const MeetingDetail = (props) => {
                               className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">編集</Link>
                         </li>
                         <li className="p-article-btn__item">
-                          <a onClick={()=>setShowDelete(true)} className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">削除</a>
+                          <a onClick={()=>setShowDeleteModal(true)} className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">削除</a>
                         </li>
                         <li className="p-article-btn__item">
                           <a onClick={()=>
@@ -188,7 +195,7 @@ const MeetingDetail = (props) => {
                             className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">複製</a>
                         </li>
                         <li className="p-article-btn__item">
-                          <a onClick={()=>setShowNotify(true)} className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">再通知</a>
+                          <a onClick={()=>setShowNotifySelectModal(true)} className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">再通知</a>
                         </li>
                       </ul>
                     
@@ -213,16 +220,31 @@ const MeetingDetail = (props) => {
 
                         <div className="p-article__pdf">
                           <div className="p-article__pdf__btn">
-                            <a onClick={e => setShowPdf(true)}
-                                className="btn-default btn-yellow btn-pdf btn-r8 btn-h52">
+                          {
+                            meeting.pdf ?
+                            <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52" 
+                              onClick={e=>setShowPDFModal(true)}>
                               <span>PDFを確認する</span>
                             </a>
+                            :
+                            <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52 btn-disabled">
+                              <span>PDFを確認する</span>
+                            </a>
+                          }
                           </div>
-                          <button type="button" onClick={()=>setShowMemo(true)}  
-                            aria-label="メモ" 
-                            data-tooltip="メモ" 
-                            aria-pressed="false" 
-                            className="icon a-icon like-icon icon-text icon-text-wrap a-icon-size_medium"></button>
+                          {
+                            meeting.memo ?
+                            <button type="button" 
+                              aria-label="お気に入り" data-tooltip="お気に入り" 
+                              aria-pressed="false" 
+                              className="icon a-icon like-icon icon-textFill icon-textFill-wrap a-icon-size_medium"
+                              onClick = {()=>setShowMemoModal(true)} />
+                            :
+                            <button type="button" 
+                              aria-label="お気に入り" data-tooltip="お気に入り" 
+                              aria-pressed="false" 
+                              className="icon a-icon like-icon icon-text icon-text-wrap a-icon-size_medium"/>
+                          }
                           <button type="button" 
                             onClick={e => handleFavorite(meeting.id, meeting.is_favorite)} 
                             aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" className={`icon a-icon like-icon  ${meeting.is_favorite == 1 ? "icon-starFill icon-starFill-wrap" : "icon-star icon-star-wrap"} a-icon-size_medium`}></button>
@@ -234,40 +256,50 @@ const MeetingDetail = (props) => {
                 </div>
               </div>
               <ModalSettingNotify 
-                show={showSettingNotify}
+                show={show_notify_all_modal}
                 meetingId={meeting.id}
-                handleClose={()=>setShowSettingNotify(false)} 
+                handleClose={()=>setShowNotifyAllModal(false)} 
               />
               <ModalMemo 
-                show={showMemo}
+                show={show_memo_modal}
                 title={"メモ"}
                 content={meeting?.memo}
-                handleClose={()=>setShowMemo(false)} 
+                handleClose={()=>setShowMemoModal(false)} 
               />
               <ModalConfirm 
-                show={showDelete} 
+                show={show_delete_modal} 
                 message={"本当に削除しても\nよろしいでしょうか？"}
-                handleClose={()=>setShowDelete(false)} 
+                handleClose={()=>setShowDeleteModal(false)} 
                 handleAccept={handleAcceptDelete} 
                 loading={submit_delete}
               />
               <ModalConfirm 
-                show={showNotify}
+                show={show_notify_pickup_modal}
                 message={"未承知の方に再通知しますが\nよろしいでしょうか？"}
-                handleClose={()=>setShowNotify(false)} 
+                handleClose={()=>setShowNotifySelectModal(false)} 
                 handleAccept={handleNotifyAllChild} 
                 loading = {submit_notify}
               />
               <ModalPdf 
-                show={showPdf}
+                show={show_pdf_modal}
                 pdfPath={meeting.pdf}
-                handleClose={()=>setShowPdf(false)} 
+                handleClose={()=>setShowPDFModal(false)} 
               />
             </div>
           }
         </div>
         { _400error && <Alert type="fail"  hide={()=>set400Error('')}>{_400error}</Alert> }
         { _success && <Alert type="success"  hide={()=>setSuccess('')}>{_success}</Alert> }
+        { _404error && 
+            <Alert type="fail" hide={()=>{
+                set404Error('');
+                history.push({
+                    pathname: "/p-account/meeting"
+                });
+            }}>
+            {_404error}
+            </Alert>
+        }
       </div>  
 	)
 }

@@ -24,6 +24,7 @@ const ParentDetail = (props) => {
     const [image, setImage] = useState(''); 
     const [loaded, setLoaded] = useState(false);
     const [submit, setSubmit] = useState(false);
+    const [submit_image, setSubmitImage] = useState(false);
     const [parent, setParent] = useState(null);
     
     const [_400error, set400Error] = useState('');
@@ -54,8 +55,10 @@ const ParentDetail = (props) => {
         reader.readAsDataURL(_file);
         reader.onloadend = () => {
             set422Errors({image: ''});
+            setSubmitImage(true);
             axios.put(`/api/admin/fathers/updateImage/${props.match.params?.father_id}`, {image: reader.result})
             .then(response => {
+                setSubmitImage(false);
                 switch(response.data.status_code){
                     case 200: {
                         setImage(reader.result);
@@ -101,7 +104,7 @@ const ParentDetail = (props) => {
                 <section className="profile-container">
                     <div className="profile-wrap" style={{ minHeight:'500px'}}>
                     {
-                        !loaded &&
+                        (!loaded || submit_image) &&
                             <CircularProgress className="css-loader"/>
                     }
                     { 
@@ -143,7 +146,7 @@ const ParentDetail = (props) => {
                                     </a>
                                 </div>
                                 <div className="profile-info__item">
-                                    <p className="txt">{parent.profile}</p>
+                                    <p className="txt">{parent.profile ? parent.profile: '未入力'}</p>
                                 </div>
                             </div>
         

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+use Image;
+
 use App\Models\MeetingImage;
 
 class MeetingImagesController extends Controller {
@@ -20,8 +22,8 @@ class MeetingImagesController extends Controller {
             return ['status_code' => 400, 'error_messages' => '画像は最大10個までです。'];
         }
 
-        if (count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
-            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+        if (count(Storage::disk('private')->files('/')) >= 9999) {
+            Log::critical('ストレージの限界を超えています。9999個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
@@ -46,11 +48,13 @@ class MeetingImagesController extends Controller {
 
         try {
             foreach (json_decode($r->image) as $img) {
-                $ext = explode('/', mime_content_type($img))[1];
-                $filename = $this->uuidv4() . '.'.$ext;
-                $fname[] = $this->uuidv4() . '.'.$ext;
+                $filename = $this->uuidv4() . '.jpg';
+                $fname[] = $filename;
                 $image = base64_decode(substr($img, strpos($img, ',') + 1));
                 Storage::disk('private')->put($filename, $image);
+                $quality = 1;
+                $imag = Image::make('/work/storage/app/private/'.$filename)->encode('jpg', $quality);
+                $imag->save('/work/storage/app/private/'.$filename);
 
                 $insert = [
                     'meeting_id' => (int)$r->meeting_id,

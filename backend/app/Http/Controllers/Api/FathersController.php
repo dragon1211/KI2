@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
+use Image;
+
 use App\Models\Father;
 use App\Models\FatherRelation;
 use App\Models\EmailActivation;
@@ -50,12 +52,14 @@ class FathersController extends Controller {
         }
 
         $token = bin2hex(random_bytes(24));
+
         $create = [
             'type' => 1,
             'father_id' => $result->id,
             'email' => $r->email,
             'token' => $token,
-            'ttl' => date('Y-m-d H:i:s', time()+(int)env('TTL_SEC'))
+            'ttl' => date('Y-m-d H:i:s', strtotime("8 hour")),
+
         ];
 
         try {
@@ -101,21 +105,25 @@ class FathersController extends Controller {
                 return ['status_code' => 400, 'error_messages' => ['入力したメールアドレスは既に登録済みです。同じメールアドレスは使用できません。']];
             }
         }
-        else {
-            $token = bin2hex(random_bytes(24));
-            $create = ['email' => $r->email, 'token' => $token, 'ttl' => date('Y-m-d H:i:s', time()+(int)env('TTL_SEC'))];
 
-            try {
-                // DBに入ります。
-                EmailActivation::create($create);
+        $token = bin2hex(random_bytes(24));
 
-                // メールを送ります。
-                Mail::to($r->email)->send(new FathersRegistrationTemporaryMail($token));
-            } catch (\Throwable $e) {
-                // 失敗
-                Log::critical($e->getMessage());
-                return ['status_code' => 400, 'error_messages' => '登録に失敗しました。'];
-            }
+        $create = [
+            'email' => $r->email,
+            'token' => $token,
+            'ttl' => date('Y-m-d H:i:s', strtotime("8 hour")),
+        ];
+
+        try {
+            // DBに入ります。
+            EmailActivation::create($create);
+
+            // メールを送ります。
+            Mail::to($r->email)->send(new FathersRegistrationTemporaryMail($token));
+        } catch (\Throwable $e) {
+            // 失敗
+            Log::critical($e->getMessage());
+            return ['status_code' => 400, 'error_messages' => '登録に失敗しました。'];
         }
 
         // 仮登録に成功した場合
@@ -125,8 +133,8 @@ class FathersController extends Controller {
     public function registerMain (Request $r) {
         if ($r->image == 'null') $r->image = null;
 
-        if (!is_null($r->image) && count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
-            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+        if (!is_null($r->image) && count(Storage::disk('private')->files('/')) >= 9999) {
+            Log::critical('ストレージの限界を超えています。9999個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
@@ -169,11 +177,13 @@ class FathersController extends Controller {
         $password = Hash::make($r->password);
 
         if (!is_null($r->image)) {
-            $ext = explode('/', mime_content_type($r->image))[1];
-            $lastid = Father::select('id')->orderBy('id', 'desc')->first();
-            $filename = $this->uuidv4() . '.'.$ext;
+            $filename = $this->uuidv4() . '.jpg';
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
             Storage::disk('private')->put($filename, $image);
+
+            $quality = 1;
+            $img = Image::make('/work/storage/app/private/'.$filename)->encode('jpg', $quality);
+            $img->save('/work/storage/app/private/'.$filename);
         }
 
         try {
@@ -283,6 +293,17 @@ class FathersController extends Controller {
     public function detail ($father_id) {
         $father_select = ['image', 'email', 'tel', 'profile', 'company'];
 
+        // 親画面から他の親としてアクセスすれば、404となります。
+        $err = 'アクセスできません。';
+        if (request()->route()->action['as'] == 'pdp') {
+            abort_if(null === session()->get('fathers') || null === ($rel = Father::where('id', (int)session()->get('fathers')['id'])->first()), 404, $err);
+        }
+
+        // 同じく子画面から他の親の詳細ページをアクセスすれば、404となります。
+        if (request()->route()->action['as'] == 'mdc') {
+            abort_if(null === session()->get('children') || null === ($rel = FatherRelation::where('father_id', (int)$father_id)->where('child_id', (int)session()->get('children')['id'])->first()), 404, $err);
+        }
+
         if (null === ($result = Father::select($father_select)->where('id', (int)$father_id)->orderBy('created_at', 'desc')->first())) {
             // 親詳細の取得に失敗
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
@@ -301,8 +322,8 @@ class FathersController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
-        if (count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
-            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+        if (count(Storage::disk('private')->files('/')) >= 9999) {
+            Log::critical('ストレージの限界を超えています。9999個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
@@ -324,8 +345,7 @@ class FathersController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
-        $ext = explode('/', mime_content_type($r->image))[1];
-        $filename = $this->uuidv4() . '.'.$ext;
+        $filename = $this->uuidv4() . '.jpg';
         $oldimg = null;
 
         try {
@@ -333,6 +353,10 @@ class FathersController extends Controller {
 
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
             Storage::disk('private')->put($filename, $image);
+
+            $quality = 1;
+            $img = Image::make('/work/storage/app/private/'.$filename)->encode('jpg', $quality);
+            $img->save('/work/storage/app/private/'.$filename);
 
             $father = Father::find((int)$father_id);
             if (!is_null($father->image) && $father->image != '/assets/default/avatar.jpg') {
@@ -505,7 +529,7 @@ class FathersController extends Controller {
             Log::critical($e->getMessage());
             return ['status_code' => 400, 'error_messages' => ['親の削除に失敗しました。']];
         }
-        
+
         // 成功
         return ['status_code' => 200, 'success_messages' => ['親の削除に成功しました。']];
     }
@@ -518,7 +542,7 @@ class FathersController extends Controller {
             Log::critical($e->getMessage());
             return ['status_code' => 400, 'error_messages' => ['親の削除に失敗しました。']];
         }
-        
+
         // 成功
         return ['status_code' => 200, 'success_messages' => ['親の削除に成功しました。']];
     }

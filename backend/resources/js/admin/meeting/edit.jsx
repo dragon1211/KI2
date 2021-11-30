@@ -21,7 +21,7 @@ const MeetingEdit = (props) => {
     const [pdf, setPdf] = useState('');
     const [meeting_image, setMeetingImages] = useState([]);
     const [approval_list, setApproval] = useState([]);
-    const [children_list, setChildren] = useState([]);
+    const [children_list, setChildrenList] = useState([]);
 
     const [_422errors, set422Errors] = useState({title:'', text:'', memo:'', pdf:'', image:''})
     const [_400error, set400Error] = useState('');
@@ -31,30 +31,29 @@ const MeetingEdit = (props) => {
     const [submit, setSubmit] = useState(false);
 
     const [check_radio, setCheckRadio] = useState(null);
-    const [children_temp, setChildrenTemp] = useState([]);
     const [image_sending, setImageSending] = useState(false);
 
 
     useEffect(()=>{
         if(!loaded) return;      //if dont load data
         var list = [];
-        if(check_radio=="false"){        //send all children
-            list = [...children_temp];
+        if(check_radio=="all_send"){        //send all children
+            list = [...children_list];
             for(var i in list)
                 list[i].checked = true;
         }
-        else if(check_radio=="true"){                     //send pickup
-            list = [...children_temp];
+        else if(check_radio=="pickup_send"){                     //send pickup
+            list = [...children_list];
             for(var i in list){
                 if(approval_list.findIndex(ele=>ele.child_id == list[i].id) >= 0)
                     list[i].checked = true;
                 else list[i].checked = false;
             }
         }
-        setChildrenTemp(list);
+        setChildrenList(list);
     },[check_radio])
 
-
+    
     useEffect(() => {
         setLoaded(false);
         axios.get(`/api/admin/meetings/detail/${meeting_id}`)
@@ -68,7 +67,7 @@ const MeetingEdit = (props) => {
                 setMeetingImages(response.data.params?.meeting_image);
                 setApproval(response.data.params?.approval);
                 setPdf(response.data.params?.pdf);
-                setChildren(response.data.params?.children);
+                
                 var list = [...response.data.params?.children];
                 var approval = [...response.data.params?.approval];
                 var arr = [];
@@ -77,7 +76,8 @@ const MeetingEdit = (props) => {
                         arr.push({...list[i], checked: true});
                     else arr.push({...list[i], checked: false});
                 }
-                setChildrenTemp(arr);
+                setChildrenList(arr);
+                setCheckRadio("all_send");
             } 
             else {
                 set400Error("失敗しました。");
@@ -92,14 +92,14 @@ const MeetingEdit = (props) => {
 
         var approval_registerIndexes = [];
         var approval_deleteIndexes = [];
-        for(let i=0; i<children_temp.length; i++){
-            if(children_temp[i].checked){
-                if(approval_list.findIndex(ele=>ele.child_id == children_temp[i].id) < 0)
-                    approval_registerIndexes.push(children_temp[i].id);
+        for(let i=0; i<children_list.length; i++){
+            if(children_list[i].checked){
+                if(approval_list.findIndex(ele=>ele.child_id == children_list[i].id) < 0)
+                    approval_registerIndexes.push(children_list[i].id);
             }
         }
         for(let i=0; i<approval_list.length; i++){
-            if(children_temp.findIndex(ele=> ele.checked && ele.id == approval_list[i].child_id) < 0)
+            if(children_list.findIndex(ele=> ele.checked && ele.id == approval_list[i].child_id) < 0)
                 approval_deleteIndexes.push(approval_list[i].child_id);
         }
 
@@ -180,9 +180,9 @@ const MeetingEdit = (props) => {
 
 
     const handleCheck = (e, index) => {
-        var list = [...children_temp];
+        var list = [...children_list];
         list[index].checked = e.target.checked;
-        setChildrenTemp(list);
+        setChildrenList(list);
     }
 
     const handlePDFChange = (e) => {
@@ -316,13 +316,13 @@ const MeetingEdit = (props) => {
                                         </div>
                 
                                         <div className="edit-set edit-set-send">
-                                            <label htmlFor="allmember_send">
+                                            <label htmlFor="all_send">
                                                 <input className="boolean optional" 
                                                     type="radio"
-                                                    id="allmember_send"
+                                                    id="all_send"
                                                     name="check_radio" 
-                                                    value={false}
-                                                    onClick={e=>setCheckRadio(e.target.value)}
+                                                    onClick={e=>setCheckRadio(e.target.id)}
+                                                    defaultChecked
                                                     />
                                                 <span className="lbl padding-16">全員に送信</span>
                                             </label>
@@ -334,17 +334,16 @@ const MeetingEdit = (props) => {
                                                     type="radio"
                                                     id="pickup_send"
                                                     name="check_radio" 
-                                                    value={true}
-                                                    onClick={e=>setCheckRadio(e.target.value)}
+                                                    onClick={e=>setCheckRadio(e.target.id)}
                                                     />
                                                 <span className="lbl padding-16">選んで送信</span>
                                             </label>
                                         </div>
 
-                                        <div className={`checkbox-wrap edit-bg ${check_radio!="true" && 'd-none'}`}>
+                                        <div className={`checkbox-wrap edit-bg ${check_radio!="pickup_send" && 'd-none'}`}>
                                         {
                                             children_list.length != 0 ?
-                                                children_temp?.map((item, k)=>
+                                                children_list?.map((item, k)=>
                                                     <div className="checkbox" key={k}>
                                                         <label htmlFor={`user_name${k}`}>
                                                             <input className="boolean optional" 
@@ -352,7 +351,7 @@ const MeetingEdit = (props) => {
                                                                 id={`user_name${k}`}
                                                                 checked =  {item.checked}
                                                                 onChange={e=>handleCheck(e, k)}/>
-                                                            <span className="lbl padding-16">{`${item.first_name} ${item.last_name}`}</span>
+                                                            <span className="lbl padding-16">{`${item.last_name} ${item.first_name}`}</span>
                                                         </label>
                                                     </div>
                                                 )

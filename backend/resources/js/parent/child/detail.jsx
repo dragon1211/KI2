@@ -16,6 +16,7 @@ const ChildDetail = (props) => {
     const [submit, setSubmit] = useState(false);
     const [child, setChild] = useState(null);
     const [_400error, set400Error] = useState('');
+    const [_404error, set404Error] = useState('');
     const [_success, setSuccess] = useState(props.history.location.state);
     
     const father_id = document.getElementById('father_id').value;
@@ -25,14 +26,21 @@ const ChildDetail = (props) => {
       setLoaded(false);
       axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
       .then(response => {
-          setLoaded(true);
-          setNotice(response.data.notice);
-          if(response.data.status_code==200){
-              setChild(response.data.params);
-          }
-          else {
-              set400Error("失敗しました。");
-          }
+        setLoaded(true);
+        setNotice(response.data.notice);
+        if(response.data.status_code==200){
+          setChild(response.data.params);
+        }
+        else {
+          set400Error("失敗しました。");
+        }
+      })
+      .catch(err=>{
+        setLoaded(true);
+        setNotice(err.response.data.notice);
+        if(err.response.status==404){
+          set404Error(err.response.data.message);
+        }
       })
     },[]);
 
@@ -86,7 +94,7 @@ const ChildDetail = (props) => {
                       <div className="profile-thumb">
                           <img src={child.image} className="profile-image" alt="child-image" />                    
                       </div>
-                      <p className="profile-name ft-xs-16">{`${child.first_name} ${child.last_name}`}</p>
+                      <p className="profile-name ft-xs-16">{`${child.last_name} ${child.first_name}`}</p>
                       <div className="profile-info ft-xs-17">
                         <div className="profile-info__item">
                             <a href={`mailto:${child.email}`}>
@@ -108,7 +116,7 @@ const ChildDetail = (props) => {
                             <p className="profile-info__icon">
                                 <img src="/assets/img/icon/building.svg" alt="会社名"/>
                             </p>
-                            <p className="txt">{child.company}</p>
+                            <p className="txt">{child.company ? child.company: '未入力'}</p>
                         </div>
                         <div className="profile-info__item">
                             <p className="profile-info__icon">
@@ -144,6 +152,16 @@ const ChildDetail = (props) => {
             </div>
             { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
             { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+            { _404error && 
+                <Alert type="fail" hide={()=>{
+                    set404Error('');
+                    history.push({
+                        pathname: "/p-account/child"
+                    });
+                }}>
+                {_404error}
+                </Alert>
+            }
         </div>
     </div>
     )

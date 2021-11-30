@@ -120,12 +120,28 @@ a{
   @media screen and (min-width:1068px){
     width: 40px !important;
     height: 40px !important;
-    top: calc(45vh - 22px);
-    left: calc( 50vw + 240px / 2 - 22px);
+    top: calc(45vh - 20px);
+    left: calc( 50vw + 240px / 2 - 20px);
   }
   @media screen and (max-width:1068px){
     width: 30px !important;
     height: 30px !important;
+    top: calc(45vh - 15px);
+    left: calc(50vw - 15px);
+  }
+}
+
+.modal-css-loader{
+  color: green !important;
+  position: fixed;
+  z-index: 10;
+  width: 30px !important;
+  height: 30px !important;
+  @media screen and (min-width:1068px){
+    top: calc(45vh - 15px);
+    left: calc( 50vw - 25px);
+  }
+  @media screen and (max-width:1068px){
     top: calc(45vh - 15px);
     left: calc(50vw - 15px);
   }

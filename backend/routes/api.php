@@ -29,7 +29,7 @@ Route::group(['prefix' => 'admin'], function () {
             Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage');
             Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile');
             Route::put('/updatePassword/{father_id}', '\App\Http\Controllers\Api\FathersController@updatePassword');
-            Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail');
+            Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail')->name('pda');
             Route::delete('/delete/{father_id}', '\App\Http\Controllers\Api\FathersController@withdrawal');
             Route::post('/registerTemporary', '\App\Http\Controllers\Api\FathersController@registerTemporary');
         });
@@ -84,7 +84,7 @@ Route::group(['prefix' => 'fathers'], function () {
         Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage');
         Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile');
         Route::delete('/withdrawal', '\App\Http\Controllers\Api\FathersController@withdrawal');
-        Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail');
+        Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail')->name('pdp');
         Route::post('/approvalNotification', '\App\Http\Controllers\Api\FathersController@approvalNotification');
 
         // ChildrenController
@@ -155,7 +155,7 @@ Route::group(['prefix' => 'children'], function () {
         // FathersController
         Route::group(['prefix' => 'fathers'], function () {
             Route::get('/listOfChild', '\App\Http\Controllers\Api\FathersController@listOfChild');
-            Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail');
+            Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail')->name('pdc');
         });
 
         // MeetingsController

@@ -152,16 +152,31 @@ const MeetingDetail = (props) => {
   
                       <div className="p-article__pdf">
                         <div className="p-article__pdf__btn">
-                          <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52" 
-                            onClick={e=>setShowPDFModal(true)}>
-                            <span>PDFを確認する</span>
-                          </a>
+                          {
+                            meeting.pdf ?
+                            <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52" 
+                              onClick={e=>setShowPDFModal(true)}>
+                              <span>PDFを確認する</span>
+                            </a>
+                            :
+                            <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52 btn-disabled">
+                              <span>PDFを確認する</span>
+                            </a>
+                          }
                         </div>
-                        <button type="button" 
-                          aria-label="お気に入り" data-tooltip="お気に入り" 
-                          aria-pressed="false" 
-                          className="icon a-icon like-icon icon-text icon-text-wrap a-icon-size_medium mr-0"
-                          onClick = {()=>setShowMemoModal(true)} />
+                        {
+                          meeting.memo ?
+                          <button type="button" 
+                            aria-label="お気に入り" data-tooltip="お気に入り" 
+                            aria-pressed="false" 
+                            className="icon a-icon like-icon icon-textFill icon-textFill-wrap a-icon-size_medium mr-0"
+                            onClick = {()=>setShowMemoModal(true)} />
+                          :
+                          <button type="button" 
+                            aria-label="お気に入り" data-tooltip="お気に入り" 
+                            aria-pressed="false" 
+                            className="icon a-icon like-icon icon-text icon-text-wrap a-icon-size_medium mr-0"/>
+                        }
                       </div>
                   
                       <p className="p-article__txt">{ meeting.text }</p>

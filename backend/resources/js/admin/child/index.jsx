@@ -132,7 +132,7 @@ const Child = (props) => {
                                 <img alt="name" className="avatar-img" src={ child.image } />
                               </div>
                               <div className="user-info">
-                                <p className="user-name mb-1 font-weight-bold">{`${child.first_name} ${child.last_name}`}</p>
+                                <p className="user-name mb-1 font-weight-bold">{`${child.last_name} ${child.first_name}`}</p>
                                 <p className="user-tel">{ child.tel }</p>
                               </div>
                             </div>

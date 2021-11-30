@@ -66,8 +66,9 @@ a, legend {
 }
 
 a[href^="tel:"] {
-  cursor: text;
-  pointer-events: none;
+  // cursor: text;
+  cursor: pointer;
+  // pointer-events: none;
   text-decoration: none
 }
 

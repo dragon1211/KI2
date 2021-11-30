@@ -20,6 +20,7 @@ const MeetingAdd = (props) => {
     const [text, setText] = useState('');
     const [pdf, setPdf] = useState('');
     const [meeting_image, setMeetingImages] = useState([]);
+    const [approval_list, setApprovalList] = useState([]);
     const [children_list, setChildrenList] = useState([]);
     
     const [_422errors, set422Errors] = useState({title:'', text:'', memo:'', pdf:'', image:''})
@@ -44,11 +45,13 @@ const MeetingAdd = (props) => {
                 images.push(state.meeting_image[i].image);
             }
             setMeetingImages(images);
+            setApprovalList(state.approval);
             var arr = [];
             for(let i in state.children){
                 arr.push({...state.children[i], checked: false})
             }
             setChildrenList(arr);
+            setCheckRadio("all_send");
         }
         else{
             axios.get('/api/fathers/children/listOfFather', {params:{father_id: father_id}})
@@ -61,6 +64,7 @@ const MeetingAdd = (props) => {
                     for(var i in list)
                         arr.push({...list[i], checked: false})
                     setChildrenList(arr);
+                    setCheckRadio("all_send");
                 }
                 else {
                     set400Error("失敗しました。");
@@ -79,21 +83,28 @@ const MeetingAdd = (props) => {
 
 //--------------------------------------------------------
     useEffect(()=>{
-      if(!loaded) return;      //if dont load data
-      var list = [...children_list];
-      for(var i in list){
-        if(check_radio == 'false')
-          list[i].checked = true;
-        else list[i].checked = false;
-      }
-      setChildrenList(list);
+        if(!loaded) return;      //if dont load data
+        var list = [];
+        if(check_radio=="all_send"){        //send all children
+            list = [...children_list];
+            for(var i=0; i<list.length; i++) 
+                list[i].checked = true;
+        }
+        else if(check_radio=="pickup_send"){                     //send pickup
+            list = [...children_list];
+            for(var i in list){
+                if(approval_list.findIndex(ele=>ele.child_id == list[i].id) >= 0)
+                    list[i].checked = true;
+                else list[i].checked = false;
+            }
+        }
+        setChildrenList(list);
     },[check_radio])
 
 //----------------------------------------------------------------------
     const handleSubmit = (e) => {
         e.preventDefault();
         set422Errors({title:'',memo:'',text:'',pdf:'',image:''});
-        const request = { title: title, text: text, memo: memo, pdf: pdf };
 
         const formdata = new FormData();
         formdata.append('father_id', father_id);
@@ -295,13 +306,14 @@ const MeetingAdd = (props) => {
                                         </div>
                 
                                         <div className="edit-set edit-set-send">
-                                            <label htmlFor="allmember_send">
+                                            <label htmlFor="all_send">
                                                 <input className="boolean optional" 
                                                     type="radio"
-                                                    id="allmember_send"
+                                                    id="all_send"
                                                     name="check_radio" 
                                                     value={false}
-                                                    onClick={e=>setCheckRadio(e.target.value)}
+                                                    onClick={e=>setCheckRadio(e.target.id)}
+                                                    defaultChecked
                                                     />
                                                 <span className="lbl padding-16">全員に送信</span>
                                             </label>
@@ -313,14 +325,13 @@ const MeetingAdd = (props) => {
                                                     type="radio"
                                                     id="pickup_send"
                                                     name="check_radio" 
-                                                    value={true}
-                                                    onClick={e=>setCheckRadio(e.target.value)}
+                                                    onClick={e=>setCheckRadio(e.target.id)}
                                                     />
                                                 <span className="lbl padding-16">選んで送信</span>
                                             </label>
                                         </div>
                                     
-                                        <div className={`checkbox-wrap edit-bg ${check_radio!="true" && 'd-none'}`}>
+                                        <div className={`checkbox-wrap edit-bg ${check_radio!="pickup_send" && 'd-none'}`}>
                                             {
                                                 children_list.length != 0 ?
                                                 children_list?.map((item, k)=>
@@ -332,7 +343,7 @@ const MeetingAdd = (props) => {
                                                                     checked =  {item.checked}
                                                                     onChange={e=>handleCheck(e, k)}/>
                                                                 <span className="lbl padding-16">
-                                                                    {`${item.first_name} ${item.last_name}`}
+                                                                    {`${item.last_name} ${item.first_name}`}
                                                                 </span>
                                                             </label>
                                                         </div>

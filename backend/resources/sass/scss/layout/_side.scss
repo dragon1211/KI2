@@ -103,40 +103,40 @@ categories: [layout]
         .icon{
           &.meeting{
             &:before{
-              background-image: url(../../assets/img/icon/list-yellow.svg);
+              background-image: url(/assets/img/icon/list-yellow.svg);
               @include pc{
-                background-image: url(../../assets/img/icon/list-black.svg);
+                background-image: url(/assets/img/icon/list-black.svg);
               }
             }
           }
           &.star{
             &:before{
               @include sp{
-                background-image: url(../../assets/img/icon/star-outline-yellow02.svg);
+                background-image: url(/assets/img/icon/star-outline-yellow02.svg);
               }
             }
           }
           &.parents{
             &:before{
-              background-image: url(../../assets/img/icon/people-yellow.svg);
+              background-image: url(/assets/img/icon/people-yellow.svg);
               @include pc{
-                background-image: url(../../assets/img/icon/people-black.svg);
+                background-image: url(/assets/img/icon/people-black.svg);
               }
             }
           }
           &.search{
             &:before{
-              background-image: url(../../assets/img/icon/search-yellow.svg);
+              background-image: url(/assets/img/icon/search-yellow.svg);
               @include pc{
-                background-image: url(../../assets/img/icon/search-black.svg);
+                background-image: url(/assets/img/icon/search-black.svg);
               }
             }
           }
           &.log-out{
             &:before{
-              background-image: url(../../assets/img/icon/log-out-yellow.svg);
+              background-image: url(/assets/img/icon/log-out-yellow.svg);
               @include pc{
-                background-image: url(../../assets/img/icon/log-out-black.svg);
+                background-image: url(/assets/img/icon/log-out-black.svg);
               }
             }
           }
@@ -205,27 +205,27 @@ categories: [layout]
         }
         &.meeting{
           &:before{
-            background-image: url(../../assets/img/icon/list-gray.svg) ;
+            background-image: url(/assets/img/icon/list-gray.svg) ;
           }
         }
         &.star{
           &:before{
-            background-image: url(../../assets/img/icon/star-outline-gray02.svg);
+            background-image: url(/assets/img/icon/star-outline-gray02.svg);
           }
         }
         &.search{
           &:before{
-            background-image: url(../../assets/img/icon/search-gray.svg);
+            background-image: url(/assets/img/icon/search-gray.svg);
           }
         }
         &.parents{
           &:before{
-            background-image: url(../../assets/img/icon/people-gray.svg);
+            background-image: url(/assets/img/icon/people-gray.svg);
           }
         }
         &.log-out{
           &:before{
-            background-image: url(../../assets/img/icon/log-out-gray.svg);
+            background-image: url(/assets/img/icon/log-out-gray.svg);
           }
         }
       }

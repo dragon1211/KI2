@@ -34,11 +34,11 @@ class NoticeIncomplete
 
                 $cnt = MeetingApprovals::select('id')->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count();
                 $apr = count($apr);
-    
-                if ($apr != 0 && $apr == $cnt) {
+
+                if ($apr == $cnt) {
                     continue;
                 }
-    
+
                 $count++;
             }
         }

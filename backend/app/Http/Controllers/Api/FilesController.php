@@ -11,7 +11,7 @@ use App\Models\Meeting;
 use App\Models\MeetingImage;
 use App\Models\Child;
 use App\Models\Father;
-use App\Models\FatherRelations;
+use App\Models\FatherRelation;
 
 class FilesController extends Controller {
     public function __invoke (Request $request, $path) {
@@ -21,7 +21,7 @@ class FilesController extends Controller {
 
         if (substr($path, -4) == '.pdf') {
             if (session()->has('children')) {
-                abort_if(null === ($rel = FatherRelations::where('child_id', (int)session()->get('children')['id'])->first()), 404, $err);
+                abort_if(null === ($rel = FatherRelation::where('child_id', (int)session()->get('children')['id'])->first()), 404, $err);
                 abort_if(null === (Meeting::where('father_id', $rel->father_id)->where('pdf', '/files/'.$path)->first()), 404, $err);
             }
             else if (session()->has('fathers')) {
@@ -31,7 +31,7 @@ class FilesController extends Controller {
         else {
             if (null !== ($meetimg = MeetingImage::where('image', '/files/'.$path)->first())) {
                 if (session()->has('children')) {
-                    abort_if(null === ($rel = FatherRelations::where('child_id', (int)session()->get('children')['id'])->first()), 404, $err);
+                    abort_if(null === ($rel = FatherRelation::where('child_id', (int)session()->get('children')['id'])->first()), 404, $err);
                     abort_if(null === (Meeting::where('id', $meetimg->meeting_id)->where('father_id', $rel->father_id)->first()), 404, $err);
                 }
                 if (session()->has('fathers')) {

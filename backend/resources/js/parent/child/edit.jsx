@@ -17,6 +17,7 @@ const ChildEdit = (props) => {
   const [notice, setNotice] = useState(localStorage.getItem('notice'));
   const [_success, setSuccess] = useState('');
   const [_400error, set400Error] = useState('');
+  const [_404error, set404Error] = useState('');
   const [_422errors, set422Errors] = useState({hire_at: ''});
 
   const [hire_at, setHireAt] = useState(null);
@@ -35,10 +36,16 @@ const ChildEdit = (props) => {
         if(response.data.status_code==200){
           let hire_at = moment(response.data.params.father_relations?.hire_at).toDate();
           setHireAt(hire_at);
-        }
-        else {
+        } else {
           set400Error("失敗しました。");
         }
+    })
+    .catch(err=>{
+      setLoaded(true);
+      setNotice(err.response.data.notice);
+      if(err.response.status==404){
+        set404Error(err.response.data.message);
+      }
     })
   },[]);
 
@@ -123,6 +130,16 @@ const ChildEdit = (props) => {
       </div>
       { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
       { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
+      { _404error && 
+        <Alert type="fail" hide={()=>{
+            set404Error('');
+            history.push({
+                pathname: "/p-account/child"
+            });
+        }}>
+        {_404error}
+        </Alert>
+      }
     </div>
 	)
 }

@@ -10,15 +10,18 @@ import Notification from '../notification';
 
 const Profile = (props) => {
 
+    const history = useHistory();
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
-
+    
     const [image, setImage] = useState(''); 
     const [profile, setProfile] = useState(null)
     const [loaded, setLoaded] = useState(false);
     const [_400error, set400Error] = useState('');
+    const [_404error, set404Error] = useState('');
     const [_422errors, set422Errors] = useState({ image: '' });
     const [_success, setSuccess] = useState(props.history.location.state);
-
+    const [submit_image, setSubmitImage] = useState(false);
+    
 
     useEffect(() => {
         setLoaded(false);
@@ -30,9 +33,15 @@ const Profile = (props) => {
             if(response.data.status_code==200){
                 setProfile(response.data.params);
                 setImage(response.data.params.image);
-            }
-            else {
+            } else {
                 set400Error("失敗しました。");
+            }
+        })
+        .catch(err=>{
+            setLoaded(true);
+            setNotice(err.response.data.notice);
+            if(err.response.status==404){
+                set404Error(err.response.data.message);
             }
         })
     },[]);
@@ -57,9 +66,11 @@ const Profile = (props) => {
         reader.readAsDataURL(_file);
         reader.onloadend = () => {
             set422Errors({image: ''});
+            setSubmitImage(true);
             axios.put(`/api/children/updateImage/${document.getElementById('child_id').value}`, {image: reader.result})
             .then(response => {
                 setNotice(response.data.notice);
+                setSubmitImage(false);
                 switch(response.data.status_code){
                     case 200: {
                         localStorage.setItem('image_upload_success', response.data.success_messages);
@@ -86,7 +97,7 @@ const Profile = (props) => {
             <div className="l-content-wrap">
                 <section className="profile-container">
                     {
-                        !loaded &&
+                        (!loaded || submit_image) &&
                             <CircularProgress className="css-loader"/>
                     }
                     {
@@ -110,7 +121,7 @@ const Profile = (props) => {
                                             </span> 
                                     }
                                 </div>
-                                <p className="profile-name">{`${profile.first_name} ${profile.last_name}`}</p>
+                                <p className="profile-name">{`${profile.last_name} ${profile.first_name}`}</p>
                                 <div className="profile-info">
                                     <div className="profile-info__item">
                                         <p className="profile-info__icon">
@@ -173,8 +184,17 @@ const Profile = (props) => {
                             </div>
                         </div>
                     }
-                    { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
                     { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+                    { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
+                    { _404error && 
+                        <Alert type="fail" hide={()=>{
+                            history.push({
+                                pathname: "/c-account/profile"
+                            });
+                        }}>
+                        {_404error}
+                        </Alert>
+                    }
                 </section>   
             </div>
         </div>

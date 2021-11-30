@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { CircularProgress  } from '@material-ui/core';
 
 import Notification from '../notification';
@@ -12,17 +12,19 @@ import ModalConfirm from '../../component/modal_confirm';
 
 const MeetingDetail = (props) => {
 
+    const history = useHistory();
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const [loaded, setLoaded] = useState(false);
     const [meeting, setMeeting] = useState(null);
     const [thumbnail, setThumbnail] = useState('');
     const [_approval_register, setApprovalRegister] = useState(false);
 
-    const [show_pdf_modal, setShowPDFMoal] = useState(false);
+    const [show_pdf_modal, setShowPDFModal] = useState(false);
     const [show_memo_modal, setShowMemoModal] = useState(false);
     const [show_confirm_modal, setShowConfirmMoal] = useState(false);
     const [submit, setSubmit] = useState(false);
     const [_400error, set400Error] = useState('');
+    const [_404error, set404Error] = useState('');
     const [_success, setSuccess] = useState('');
 
     useEffect(() => {
@@ -43,6 +45,13 @@ const MeetingDetail = (props) => {
             }
             else {
                 set400Error("失敗しました。");
+            }
+        })
+        .catch(err=>{
+            setLoaded(true);
+            setNotice(err.response.data.notice);
+            if(err.response.status==404){
+                set404Error(err.response.data.message);
             }
         })
     },[]);
@@ -145,24 +154,24 @@ const MeetingDetail = (props) => {
                                         <div className="p-article__pdf">
                                             <div className="p-article__pdf__btn mr-3">
                                                 {
-                                                    _approval_register == false ?
-                                                    <a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled"> 
+                                                    meeting.pdf ?
+                                                    <a className="btn-default btn-pdf btn-r8 btn-h50 btn-yellow" 
+                                                        onClick={()=>setShowPDFModal(true)}>
                                                         <span>PDFを確認する</span>
                                                     </a>
-                                                    :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-yellow" 
-                                                        onClick={()=>setShowPDFMoal(true)}>
+                                                    :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled"> 
                                                         <span>PDFを確認する</span>
                                                     </a>
                                                 }
                                             </div>
                                             <div className="p-article__pdf__btn mr-0">
                                                 {
-                                                    _approval_register == true ?
-                                                    <a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled"> 
+                                                    meeting.memo ?
+                                                    <a className="btn-default btn-pdf btn-r8 btn-h50 btn-yellow" 
+                                                        onClick={()=>setShowMemoModal(true)}>
                                                         <span>メモを確認する</span>
                                                     </a>
-                                                    :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-yellow" 
-                                                        onClick={()=>setShowMemoModal(true)}>
+                                                    :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled"> 
                                                         <span>メモを確認する</span>
                                                     </a>
                                                 }
@@ -181,7 +190,7 @@ const MeetingDetail = (props) => {
                             <ModalPdf 
                                 show={show_pdf_modal}
                                 pdfPath={meeting.pdf}
-                                handleClose={()=>setShowPDFMoal(false)} />
+                                handleClose={()=>setShowPDFModal(false)} />
                         </div>
                     </div>
                 </div>
@@ -192,8 +201,18 @@ const MeetingDetail = (props) => {
             handleClose={()=>setShowConfirmMoal(false)} 
             handleAccept={handleApprovalRegister} 
             loading={submit}/>
-            {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
             {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+            {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+            {  _404error && 
+                <Alert type="fail" hide={()=>{
+                    set404Error('');
+                    history.push({
+                        pathname: "/c-account/meeting"
+                    });
+                }}>
+                {_404error}
+                </Alert>
+            }
         </div>
     </div>
     )

@@ -85,7 +85,7 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
         </DialogTitle>
         <DialogContent className="position-relative">
           {
-            !loaded && <CircularProgress className="css-loader"/>
+            !loaded && <CircularProgress className="modal-css-loader"/>
           }
           {
             loaded &&
@@ -100,7 +100,7 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
                           <div className="user-avatar">
                             <img alt="name" className="avatar-img" src={item.child.image} />
                           </div>
-                          <p className="user-name">{item.child.first_name}　{item.child.last_name}</p>
+                          <p className="user-name">{item.child.last_name}　{item.child.first_name}</p>
                         </Link>
                       </div>
                       <div className="p-notification-btn">

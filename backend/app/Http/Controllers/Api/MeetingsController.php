@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+use Image;
+
 use App\Models\Meeting;
 use App\Models\MeetingImage;
 use App\Models\MeetingApprovals;
@@ -21,8 +23,8 @@ class MeetingsController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['ミーティングの登録に失敗しました。']];
         }
 
-        if (count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
-            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+        if (count(Storage::disk('private')->files('/')) >= 9999) {
+            Log::critical('ストレージの限界を超えています。9999個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
@@ -46,6 +48,18 @@ class MeetingsController extends Controller {
             return $this->pdfmeme($value);
         });
 
+        // 子供を選択しない場合、「全員に送信」となります。
+        if (empty(json_decode($r->children))) {
+            $chi = [];
+            $rel = FatherRelation::select('child_id')->where('father_id', (int)$r->father_id)->get();
+
+            foreach ($rel as $e) {
+                $chi[] = $e->child_id;
+            }
+
+            $r->children = json_encode($chi);
+        }
+
         $validate = Validator::make($r->all(), [
             'title' => 'required|max:100',
             'text' => 'required|max:2000',
@@ -56,6 +70,13 @@ class MeetingsController extends Controller {
 
         if ($validate->fails()) {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
+        }
+
+        if ($r->pdf == 'null') {
+            $r->pdf = null;
+        }
+        if ($r->pdf == '/assets/default/default.pdf') {
+            $r->pdf = null;
         }
 
         $insert = [
@@ -90,11 +111,13 @@ class MeetingsController extends Controller {
             if (isset($r->image)) {
                 foreach ($r->image as $img) {
                     if (substr($img, -5) != '.jpeg' && substr($img, -4) != '.jpg' && substr($img, -4) != '.png' && substr($img, -4) != '.gif') {
-                        $ext = explode('/', mime_content_type($img))[1];
-                        $fname = $this->uuidv4() . '.'.$ext;
+                        $fname = $this->uuidv4() . '.jpg';
                         $fnames[] = $fname;
                         $image = base64_decode(substr($img, strpos($img, ',') + 1));
                         Storage::disk('private')->put($fname, $image);
+                        $quality = 1;
+                        $imag = Image::make('/work/storage/app/private/'.$fname)->encode('jpg', $quality);
+                        $imag->save('/work/storage/app/private/'.$fname);
 
                         $imgname = '/files/'.$fname;
         
@@ -315,8 +338,17 @@ class MeetingsController extends Controller {
                 continue;
             }
 
-            if (count($l->approvals->toArray()) != MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->count()) {
+            $cnt = MeetingApprovals::select('id')->where('meeting_id', (int)$l->id)->count();
+            $acnt = count($l->approvals->toArray());
+
+            if ($acnt != $cnt) {
                 continue;
+            }
+
+            if ($acnt == 0 && $cnt == 0) {
+                if (!in_array($l, $result)) {
+                    $result[] = $l;
+                }
             }
 
             foreach ($l->approvals as $ii => $ll) {
@@ -353,17 +385,11 @@ class MeetingsController extends Controller {
                 continue;
             }
 
-            $cnt = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count();
+            $cnt = MeetingApprovals::select('id')->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count();
             $acnt = count($l->approvals);
 
             if ($acnt != 0 && $acnt == $cnt) {
                 continue;
-            }
-
-            if ($acnt == 0 && $cnt == 0) {
-                if (!in_array($l, $result)) {
-                    $result[] = $l;
-                }
             }
 
             foreach ($l->approvals as $ii => $ll) {
@@ -536,8 +562,17 @@ class MeetingsController extends Controller {
                 continue;
             }
 
-            if (count($l->approvals->toArray()) != MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$l->id)->count()) {
+            $cnt = MeetingApprovals::select('id')->where('meeting_id', (int)$l->id)->count();
+            $acnt = count($l->approvals->toArray());
+
+            if ($acnt != $cnt) {
                 continue;
+            }
+
+            if ($acnt == 0 && $cnt == 0) {
+                if (!in_array($l, $result)) {
+                    $result[] = $l;
+                }
             }
 
             foreach ($l->approvals as $ii => $ll) {
@@ -574,17 +609,11 @@ class MeetingsController extends Controller {
                 continue;
             }
 
-            $cnt = MeetingApprovals::select($meeting_approvals_select)->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count();
+            $cnt = MeetingApprovals::select('id')->whereNotNull('approval_at')->where('meeting_id', (int)$l->id)->count();
             $acnt = count($l->approvals);
 
             if ($acnt != 0 && $acnt == $cnt) {
                 continue;
-            }
-
-            if ($acnt == 0 && $cnt == 0) {
-                if (!in_array($l, $result)) {
-                    $result[] = $l;
-                }
             }
 
             foreach ($l->approvals as $ii => $ll) {
@@ -617,6 +646,17 @@ class MeetingsController extends Controller {
         // 取得に成功
         if (null === ($result = Meeting::select($meeting_select)->where('id', (int)$meeting_id)->first())) {
             return ['status_code' => 400];
+        }
+
+        // 親画面から他の親としてアクセスすれば、404となります。
+        $err = 'アクセスできません。';
+        if (request()->route()->action['as'] == 'mdp') {
+            abort_if(null === session()->get('fathers') || (int)session()->get('fathers')['id'] != $result->father_id, 404, $err);
+        }
+
+        // 同じく子画面から他の親の詳細ページをアクセスすれば、404となります。
+        if (request()->route()->action['as'] == 'mdc') {
+            abort_if(null === session()->get('children') || null === ($rel = FatherRelation::where('father_id', $result->father_id)->where('child_id', (int)session()->get('children')['id'])->first()), 404, $err);
         }
 
         if (null === ($result->meeting_image = MeetingImage::select($meeting_images_select)->where('meeting_id', (int)$result->id)->get())) {
@@ -671,8 +711,8 @@ class MeetingsController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['ミーティングの登録に失敗しました。']];
         }
 
-        if (count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
-            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+        if (count(Storage::disk('private')->files('/')) >= 9999) {
+            Log::critical('ストレージの限界を超えています。9999個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
@@ -692,6 +732,9 @@ class MeetingsController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
+        if ($r->pdf == 'null') {
+            $r->pdf = null;
+        }
         if ($r->pdf == '/assets/default/default.pdf') {
             $r->pdf = null;
         }

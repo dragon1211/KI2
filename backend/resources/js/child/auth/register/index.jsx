@@ -104,23 +104,23 @@ const ChildSignUp = (props) => {
             </div>
             
             <div className="edit-set">
-                <label htmlFor="first_name"  className="control-label"> 姓 </label>
-                <input type="text" name="first_name" id="first_name"  className={`input-default input-nameSei input-h60 input-w480 ${ _422errors.first_name && "is-invalid c-input__target" }`}  value={first_name} onChange={e=>setFirstName(e.target.value)}/>
+                <label htmlFor="last_name"  className="control-label ft-12"> 姓 </label>
+                <input type="text" name="last_name" id="last_name"  className={`input-default input-nameSei input-h60 ${ _422errors.last_name && "is-invalid c-input__target" }`}  value={last_name} onChange={e=>setLastName(e.target.value)}/>
                 {
-                    _422errors.first_name &&
+                    _422errors.last_name &&
                         <span className="l-alert__text--error ft-16 ft-md-14">
-                            { _422errors.first_name }
+                            { _422errors.last_name }
                         </span>
                 }
             </div>
 
             <div className="edit-set">
-                <label htmlFor="last_name" className="control-label"> 名 </label>
-                <input type="text" name="last_name" id="last_name"  className={`input-default input-nameSei input-h60 input-w480 ${ _422errors.last_name && "is-invalid c-input__target" }`} value={last_name} onChange={e=>setLastName(e.target.value)}/>
+                <label htmlFor="first_name" className="control-label ft-12"> 名 </label>
+                <input type="text" name="first_name" id="first_name"  className={`input-default input-nameSei input-h60 ${ _422errors.first_name && "is-invalid c-input__target" }`} value={first_name} onChange={e=>setFirstName(e.target.value)}/>
                 {
-                    _422errors.last_name &&
+                    _422errors.first_name &&
                         <span className="l-alert__text--error ft-16 ft-md-14">
-                            { _422errors.last_name }
+                            { _422errors.first_name }
                         </span>
                 }
             </div>

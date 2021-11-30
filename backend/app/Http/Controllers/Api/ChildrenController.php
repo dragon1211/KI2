@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+use Image;
+
 use App\Models\Child;
 use App\Models\FatherRelation;
 use App\Models\MeetingApprovals;
@@ -54,11 +56,13 @@ class ChildrenController extends Controller {
         }
 
         $token = bin2hex(random_bytes(24));
+
         $create = [
             'type' => 0,
             'tel' => $r->tel,
             'token' => $token,
-            'ttl' => date('Y-m-d H:i:s', time()+(int)env('TTL_SEC')),
+            'ttl' => date('Y-m-d H:i:s', strtotime("8 hour")),
+
         ];
 
         try {
@@ -96,8 +100,8 @@ class ChildrenController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['仮登録の有効期限が切れました。改めて親にお問い合わせいただき、再登録の手続きを行ってください。']];
         }
 
-        if (!is_null($r->image) && count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
-            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+        if (!is_null($r->image) && count(Storage::disk('private')->files('/')) >= 9999) {
+            Log::critical('ストレージの限界を超えています。9999個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
@@ -126,11 +130,15 @@ class ChildrenController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
+        if ($r->image == 'null') {
+            $r->image = null;
+        }
+
         $password = Hash::make($r->password);
 
-        $ext = explode('/', mime_content_type($r->image))[1];
-        $lastid = Child::select('id')->orderBy('id', 'desc')->first();
-        $filename = $this->uuidv4() . '.'.$ext;
+        if (!is_null($r->image)) {
+            $filename = $this->uuidv4() . '.jpg';
+        }
 
         $insert = [
             'identity' => $r->identity,
@@ -139,6 +147,7 @@ class ChildrenController extends Controller {
             'password' => $password,
             'last_name' => $r->last_name,
             'first_name' => $r->first_name,
+            'image' => !is_null($r->image) ? '/files/'.$filename : '/assets/default/avatar.jpg',
             'company' => $r->company,
         ];
 
@@ -147,9 +156,14 @@ class ChildrenController extends Controller {
             $child = new Child;
             $telact = TelActivation::where('token', $r->token)->first();
 
-            $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
-            Storage::disk('private')->put($filename, $image);
-            $insert['image'] = '/files/'.$filename;
+            if (!is_null($r->image)) {
+                $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
+                Storage::disk('private')->put($filename, $image);
+
+                $quality = 1;
+                $img = Image::make('/work/storage/app/private/'.$filename)->encode('jpg', $quality);
+                $img->save('/work/storage/app/private/'.$filename);
+            }
 
             $child->fill($insert);
             $child->push();
@@ -191,12 +205,13 @@ class ChildrenController extends Controller {
         }
 
         $token = bin2hex(random_bytes(24));
+
         $create = [
             'type' => 1,
             'child_id' => $result->id,
             'tel' => $r->tel,
             'token' => $token,
-            'ttl' => date('Y-m-d H:i:s', time()+(int)env('TTL_SEC'))
+            'ttl' => date('Y-m-d H:i:s', strtotime("8 hour")),
         ];
 
         try {
@@ -344,6 +359,17 @@ class ChildrenController extends Controller {
             return ['status_code' => 400];
         }
 
+        // 親画面から他の親としてアクセスすれば、404となります。
+        $err = 'アクセスできません。';
+        if (request()->route()->action['as'] == 'cdp') {
+            abort_if(null === session()->get('fathers') || null === ($rel = FatherRelation::where('child_id', (int)$child_id)->where('father_id', (int)session()->get('fathers')['id'])->first()), 404, $err);
+        }
+
+        // 同じく子画面から他の親の詳細ページをアクセスすれば、404となります。
+        if (request()->route()->action['as'] == 'cdc') {
+            abort_if(null === session()->get('children') || (int)session()->get('children')['id'] != (int)$child_id, 404, $err);
+        }
+
         if (request()->route()->action['as'] == 'cdp') {
             if (null === ($params->father_relations = FatherRelation::select($father_relations_select)->where('child_id', (int)$child_id)->where('father_id', (int)$r->father_id)->first())) {
                 $params->father_relations = new \stdClass();
@@ -362,8 +388,8 @@ class ChildrenController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['画像の更新に失敗しました。']];
         }
 
-        if (count(Storage::disk('private')->files('/')) >= (int)env('MAX_FILES')) {
-            Log::critical('ストレージの限界を超えています。'.env('MAX_FILES').'個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
+        if (count(Storage::disk('private')->files('/')) >= 9999) {
+            Log::critical('ストレージの限界を超えています。9999個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
@@ -384,8 +410,7 @@ class ChildrenController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
-        $ext = explode('/', mime_content_type($r->image))[1];
-        $filename = $this->uuidv4() . '.'.$ext;
+        $filename = $this->uuidv4() . '.jpg';
         $oldimg = null;
 
         try {
@@ -393,6 +418,10 @@ class ChildrenController extends Controller {
 
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
             Storage::disk('private')->put($filename, $image);
+
+            $quality = 1;
+            $img = Image::make('/work/storage/app/private/'.$filename)->encode('jpg', $quality);
+            $img->save('/work/storage/app/private/'.$filename);
 
             $child = Child::find((int)$child_id);
             if (!is_null($child->image) && $child->image != '/assets/default/avatar.jpg') {

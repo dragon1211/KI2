@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\FatherRelations;
+use App\Models\FatherRelation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FatherRelationsFactory extends Factory
@@ -12,7 +12,7 @@ class FatherRelationsFactory extends Factory
      *
      * @var string
      */
-    protected $model = FatherRelations::class;
+    protected $model = FatherRelation::class;
 
     /**
      * Define the model's default state.

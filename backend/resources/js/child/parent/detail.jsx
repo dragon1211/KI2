@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useHistory, Link } from 'react-router-dom';
 import { CircularProgress  } from '@material-ui/core';
 
 import Notification from '../notification';
@@ -7,11 +8,13 @@ import Alert from '../../component/alert';
 
 const ParentDetail = (props) => {
 
+    const history = useHistory();
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const [loaded, setLoaded] = useState(false);
     const [parent, setParent] = useState(null);
 
     const [_400error, set400Error] = useState('');
+    const [_404error, set404Error] = useState('');
     const [_success, setSuccess] = useState('');
 
     useEffect(
@@ -26,6 +29,13 @@ const ParentDetail = (props) => {
                 }
                 else {
                     set400Error("失敗しました。");
+                }
+            })
+            .catch(err=>{
+                setLoaded(true);
+                setNotice(err.response.data.notice);
+                if(err.response.status==404){
+                    set404Error(err.response.data.message);
                 }
             })
         },[]
@@ -80,7 +90,7 @@ const ParentDetail = (props) => {
                                     </a>
                                 </div>
                                 <div className="profile-info__item txt-long">
-                                    <p className="txt">{parent.profile}</p>
+                                    <p className="txt">{parent.profile ? parent.profile: '未入力'}</p>
                                 </div>
                             </div>
                         </div>
@@ -88,6 +98,15 @@ const ParentDetail = (props) => {
                 }
                 {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
                 {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+                {  _404error && 
+                    <Alert type="fail" hide={()=>{
+                        history.push({
+                            pathname: "/c-account/parent"
+                        });
+                    }}>
+                    {_404error}
+                    </Alert>
+                }
                 </section>
             </div>
         </div>

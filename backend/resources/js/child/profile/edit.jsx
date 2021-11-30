@@ -29,8 +29,9 @@ const ProfileEdit = () => {
         tel:'',
         company:''
     })
-    const [_400error, set400Error] = useState('');
     const [_success, setSuccess] = useState('');
+    const [_400error, set400Error] = useState('');
+    const [_404error, set404Error] = useState('');
 
     const [submit, setSubmit] = useState(false);
     const [loaded, setLoaded] = useState(false);
@@ -54,6 +55,13 @@ const ProfileEdit = () => {
                 if(params.company)setCompany(params.company);
             }else {
                 set400Error("失敗しました。");
+            }
+        })
+        .catch(err=>{
+            setLoaded(true);
+            setNotice(err.response.data.notice);
+            if(err.response.status==404){
+                set404Error(err.response.data.message);
             }
         })
     },[]);
@@ -130,23 +138,23 @@ const ProfileEdit = () => {
                             <form onSubmit={handleSubmit} className="edit-form">
 
                                 <div className="edit-set">
-                                    <label htmlFor="first_name"  className="control-label ft-12"> 姓 </label>
-                                    <input type="text" name="first_name" id="first_name"  className={`input-default input-nameSei ${ _422errors.first_name && "is-invalid c-input__target" }`}  value={first_name} onChange={e=>setFirstName(e.target.value)}/>
+                                    <label htmlFor="last_name"  className="control-label ft-12"> 姓 </label>
+                                    <input type="text" name="last_name" id="last_name"  className={`input-default input-nameSei input-h60 ${ _422errors.last_name && "is-invalid c-input__target" }`}  value={last_name} onChange={e=>setLastName(e.target.value)}/>
                                     {
-                                        _422errors.first_name &&
+                                        _422errors.last_name &&
                                             <span className="l-alert__text--error ft-16 ft-md-14">
-                                                { _422errors.first_name }
+                                                { _422errors.last_name }
                                             </span>
                                     }
                                 </div>
 
                                 <div className="edit-set">
-                                    <label htmlFor="last_name" className="control-label ft-12"> 名 </label>
-                                    <input type="text" name="last_name" id="last_name"  className={`input-default input-nameSei ${ _422errors.last_name && "is-invalid c-input__target" }`} value={last_name} onChange={e=>setLastName(e.target.value)}/>
+                                    <label htmlFor="first_name" className="control-label ft-12"> 名 </label>
+                                    <input type="text" name="first_name" id="first_name"  className={`input-default input-nameSei input-h60 ${ _422errors.first_name && "is-invalid c-input__target" }`} value={first_name} onChange={e=>setFirstName(e.target.value)}/>
                                     {
-                                        _422errors.last_name &&
+                                        _422errors.first_name &&
                                             <span className="l-alert__text--error ft-16 ft-md-14">
-                                                { _422errors.last_name }
+                                                { _422errors.first_name }
                                             </span>
                                     }
                                 </div>
@@ -209,6 +217,15 @@ const ProfileEdit = () => {
                 }
                 {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
                 {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+                {  _404error && 
+                    <Alert type="fail" hide={()=>{
+                        history.push({
+                            pathname: "/c-account/profile"
+                        });
+                    }}>
+                    {_404error}
+                    </Alert>
+                }
                 </section>   
             </div>
         </div>
