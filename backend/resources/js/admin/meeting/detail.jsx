@@ -99,12 +99,15 @@ const MeetingDetail = (props) => {
                           <ul className="meeting-member-list" role="list">
                             {
                               meeting.approval?.map((x, k)=>
+                              {
+                                if(x.approval_at)
+                                return(
                                 <li className="meeting-member__item" role="listitem" key={k}>
                                   <div className="avatar">
                                     <img alt="name" className="avatar-img" src={x.child.image} />
                                   </div>
-                                </li>
-                              )
+                                </li>)
+                              })
                             }
                           </ul>
                         </div>

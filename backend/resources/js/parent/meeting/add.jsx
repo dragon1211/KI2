@@ -30,14 +30,14 @@ const MeetingAdd = (props) => {
     const [submit, setSubmit] = useState(false);
     const [check_radio, setCheckRadio] = useState('');
 
+    const state = props.history.location.state;
     
     useEffect(()=>{
         setLoaded(false);
-        const state = props.history.location.state;
         if(state){
             setLoaded(true);
             setTitle(state?.title);
-            setMemo(state?.memo);
+            setMemo(state.memo ? state.memo: '');
             setText(state?.text);
             setPdf(state?.pdf);
             let images = [];
@@ -51,7 +51,7 @@ const MeetingAdd = (props) => {
                 arr.push({...state.children[i], checked: false})
             }
             setChildrenList(arr);
-            setCheckRadio("all_send");
+            (state.children.length == state.approval.length) ? setCheckRadio("all_send") : setCheckRadio("pickup_send");
         }
         else{
             axios.get('/api/fathers/children/listOfFather', {params:{father_id: father_id}})
@@ -313,7 +313,8 @@ const MeetingAdd = (props) => {
                                                     name="check_radio" 
                                                     value={false}
                                                     onClick={e=>setCheckRadio(e.target.id)}
-                                                    defaultChecked
+                                                    defaultChecked = {(state?.children.length == state?.approval.length)? true:false}
+                                                    disabled = {children_list.length == 0 ? true:false}
                                                     />
                                                 <span className="lbl padding-16">全員に送信</span>
                                             </label>
@@ -326,12 +327,14 @@ const MeetingAdd = (props) => {
                                                     id="pickup_send"
                                                     name="check_radio" 
                                                     onClick={e=>setCheckRadio(e.target.id)}
+                                                    defaultChecked = {(state?.children.length != state?.approval.length)? true:false}
+                                                    disabled = {children_list.length == 0 ? true:false}
                                                     />
                                                 <span className="lbl padding-16">選んで送信</span>
                                             </label>
                                         </div>
                                     
-                                        <div className={`checkbox-wrap edit-bg ${check_radio!="pickup_send" && 'd-none'}`}>
+                                        <div className={`checkbox-wrap edit-bg ${(check_radio == "all_send" && children_list.length > 0) && 'd-none'}`}>
                                             {
                                                 children_list.length != 0 ?
                                                 children_list?.map((item, k)=>

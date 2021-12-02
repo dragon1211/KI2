@@ -5,10 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-
-use Image;
 
 use App\Models\Meeting;
 use App\Models\MeetingImage;
@@ -32,9 +31,15 @@ class MeetingsController extends Controller {
             $r->image = json_decode($r->image);
         }
 
-        // ファイルサイズは10MiB以内
+        // 画像サイズは各5MiB以内、PDFサイズは50MiB以内
+        //// 画像
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
             return $this->imagesizemulti($value);
+        });
+
+        //// PDF
+        Validator::extend('pdf_size', function ($attribute, $value, $params, $validator) {
+            return $this->pdfsize($value);
         });
 
         // ミームタイプ
@@ -64,7 +69,7 @@ class MeetingsController extends Controller {
             'title' => 'required|max:100',
             'text' => 'required|max:2000',
             'memo' => 'max:2000',
-            'pdf' => 'pdf_meme',
+            'pdf' => 'pdf_size|pdf_meme',
             'image' => 'image_size|image_meme',
         ]);
 
@@ -92,7 +97,7 @@ class MeetingsController extends Controller {
 
         try {
             if (isset($r->pdf)) {
-                $filename = $this->uuidv4() . '.pdf';
+                $filename = $this->uuidv4().'.pdf';
                 $insert['pdf'] = '/files/'.$filename;
 
                 if (substr($r->pdf, -4) != '.pdf') {
@@ -115,9 +120,7 @@ class MeetingsController extends Controller {
                         $fnames[] = $fname;
                         $image = base64_decode(substr($img, strpos($img, ',') + 1));
                         Storage::disk('private')->put($fname, $image);
-                        $quality = 1;
-                        $imag = Image::make('/work/storage/app/private/'.$fname)->encode('jpg', $quality);
-                        $imag->save('/work/storage/app/private/'.$fname);
+                        $this->fiximg($filename);
 
                         $imgname = '/files/'.$fname;
         
@@ -716,6 +719,11 @@ class MeetingsController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
+        // ファイルサイズは50MiB以内
+        Validator::extend('pdf_size', function ($attribute, $value, $params, $validator) {
+            return $this->pdfsize($value);
+        });
+
         // ミームタイプ
         Validator::extend('pdf_meme', function ($attribute, $value, $params, $validator) {
             return $this->pdfmeme($value);
@@ -725,7 +733,7 @@ class MeetingsController extends Controller {
             'title' => 'required|max:100',
             'text' => 'required|max:2000',
             'memo' => 'nullable|max:2000',
-            'pdf' => 'pdf_meme',
+            'pdf' => 'pdf_size|pdf_meme',
         ]);
 
         if ($validate->fails()) {
@@ -752,7 +760,7 @@ class MeetingsController extends Controller {
         try {
             // リクエストでPDFがある場合
             if (isset($r->pdf) && !is_null($r->pdf)) {
-                $filename = $this->uuidv4() . '.pdf';
+                $filename = $this->uuidv4().'.pdf';
 
                 // DBにミーティングがある場合
                 if ($chk = Meeting::select('pdf')->where('id', (int)$meeting_id)->first()) {
@@ -797,10 +805,54 @@ class MeetingsController extends Controller {
     }
 
     public function delete ($meeting_id) {
+        $delimg = false;
+        if (!isset($meeting_id)) {
+            return ['status_code' => 400];
+        }
+
+        if (null === (Meeting::select('id')->where('id', (int)$meeting_id)->get())) {
+            return ['status_code' => 400];
+        }
+
+        if (null !== ($img = MeetingImage::select('image')->where('meeting_id', (int)$meeting_id)->get())) {
+            $delimg = true;
+        }
+
         try {
-            Meeting::where('id', (int)$meeting_id)->delete();
+            // DBに入ります。
+            DB::beginTransaction();
+
+            $meeting = Meeting::find((int)$meeting_id);
+            $pdf = $meeting->pdf;
+            $meeting->delete();
+
+            if (!is_null($img)) {
+                $pdf = str_replace('/files/', '', $pdf);
+                if (!Storage::disk('private')->exists($pdf)) {
+                    Log::warning($pdf.'というパスは不正です。');
+                }
+                else {
+                    Storage::disk('private')->delete($pdf);
+                }
+            }
+
+            Storage::disk('private')->delete($pdf);
+            if ($delimg) {
+                foreach ($img as $m) {
+                    $image = str_replace('/files/', '', $m->image);
+                    if (!Storage::disk('private')->exists($image)) {
+                        Log::warning($image.'というパスは不正です。');
+                    }
+                    else {
+                        Storage::disk('private')->delete($image);
+                    }
+                }
+            }
+
+            DB::commit();
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
+            DB::rollback();
             return ['status_code' => 400];
         }
 

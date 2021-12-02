@@ -52,7 +52,7 @@ const ProfileEdit = () => {
                 setEmail(params.email);
                 setTel(params.tel);
                 setIdentity(params.identity);
-                if(params.company)setCompany(params.company);
+                setCompany(params.company? params.company: '');
             }else {
                 set400Error("失敗しました。");
             }

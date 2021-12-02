@@ -224,12 +224,15 @@ const Favorite = (props) => {
                                                     <ul className="meeting-member-list" role="list">
                                                       { 
                                                         item.approvals?.map((v, inx1) =>
+                                                        {
+                                                          if(v.approval_at)
+                                                          return(
                                                           <li className="meeting-member__item" role="listitem" key={inx1}>
                                                             <div className="avatar">
                                                               <img alt="name" className="avatar-img" src={v?.child.image} />
                                                             </div>
-                                                          </li>
-                                                        )
+                                                          </li>)
+                                                        })
                                                       }
                                                     </ul>
                                                   </div>
@@ -285,12 +288,15 @@ const Favorite = (props) => {
                                                           <ul className="meeting-member-list" role="list">
                                                             { 
                                                               item.approvals?.map((v, inx1) =>
+                                                              {
+                                                                if(v.approval_at)
+                                                                return(
                                                                 <li className="meeting-member__item" role="listitem" key={inx1}>
                                                                   <div className="avatar">
                                                                     <img alt="name" className="avatar-img" src={v?.child.image} />
                                                                   </div>
-                                                                </li>
-                                                              )
+                                                                </li>)
+                                                              })
                                                             }
                                                           </ul>
                                                       </div>

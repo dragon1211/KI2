@@ -48,7 +48,7 @@ export default class ParentAuth extends Component {
 // ----------------------------------------------------------------------
 
 if(document.getElementById('p-auth')){
-    console.log("v1: 2021/11/30")
+    console.log("v1: 2021/11/30 21h")
 	ReactDOM.render(
 		<ParentAuth />,
 		document.getElementById('p-auth')

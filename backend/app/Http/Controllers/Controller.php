@@ -7,6 +7,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Log;
+use Image;
 
 class Controller extends BaseController
 {
@@ -42,7 +43,7 @@ class Controller extends BaseController
 
     public function imagesize ($value) {
         try {
-            return strlen($value) < 10485760;
+            return strlen($value) < 5242880; // 5 MiB（メビバイト） / 5.24288 MB（メガバイト）
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
             return false;
@@ -123,7 +124,7 @@ class Controller extends BaseController
         try {
             $ok = true;
             foreach (json_decode($value) as $v) {
-                if (strlen(base64_decode($v)) > 10485760) {
+                if (strlen(base64_decode($v)) > 5242880) { // 5 MiB（メビバイト） / 5.24288 MB（メガバイト）
                     $ok = false;
                 }
             }
@@ -134,6 +135,14 @@ class Controller extends BaseController
         }
     }
 
+    public function pdfsize ($value) {
+        try {
+            return strlen($value) < 52428800; // 50 MiB（メビバイト） / 52.4288 MB（メガバイト）
+        } catch (\Throwable $e) {
+            Log::critical($e->getMessage());
+            return false;
+        }
+    }
 
     public function pdfmeme ($value) {
         try {
@@ -151,5 +160,25 @@ class Controller extends BaseController
             Log::critical($e->getMessage());
             return false;
         }
+    }
+
+    public function fiximg ($filename, $quality=1) {
+        $img = Image::make('/work/storage/app/private/'.$filename)->encode('jpg', $quality);
+        $img->orientate();
+        if ($img->width() < $img->height() && $img->width() > 400) {
+            $img->resize(400, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+        }
+        else if ($img->height() < $img->width() && $img->height() > 400) {
+            $img->resize(400, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+        }
+        $img->save('/work/storage/app/private/'.$filename);
+
+        return $filename;
     }
 }

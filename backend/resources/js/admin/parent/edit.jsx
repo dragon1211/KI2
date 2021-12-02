@@ -39,8 +39,8 @@ const ParentEdit = (props) => {
                 if(parent){
                     setCompany(parent?.company);
                     setEmail(parent.email);
-                    setTelephone(parent.tel)
-                    setProfile(parent.profile);  
+                    setTelephone(parent.tel);
+                    setProfile(parent.profile ? parent.profile: '');  
                 }
             }
             else{

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Log;
 
 use App\Models\Child;
 use App\Models\FatherRelation;
+use App\Models\Meeting;
+use App\Models\MeetingApprovals;
 
 class FatherRelationsController extends Controller {
     public function register (Request $r) {
@@ -37,6 +39,19 @@ class FatherRelationsController extends Controller {
         try {
             if (null === ($fr = FatherRelation::where('child_id', $child->id)->where('father_id', (int)$r->father_id)->first())) {
                 FatherRelation::create($create);
+                if (null !== ($meet = Meeting::select('id', 'is_favorite')->where('father_id', (int)$r->father_id)->get())) {
+                    foreach ($meet as $m) {
+                        if ($m->is_favorite) {
+                            $addapprove = [
+                                'meeting_id' => $m->id,
+                                'child_id' => $child->id,
+                                'approval_at' => null,
+                            ];
+
+                            MeetingApprovals::create($addapprove);
+                        }
+                    }
+                }
             }
             else {
                 return ['status_code' => 400, 'error_messages' => ['すでに追加されました']];

@@ -50,6 +50,7 @@ const MeetingEdit = (props) => {
                 else list[i].checked = false;
             }
         }
+        console.log('sd')
         setChildrenList(list);
     },[check_radio])
 
@@ -62,8 +63,8 @@ const MeetingEdit = (props) => {
             if(response.data.status_code==200){
                 setMeeting(response.data.params);         //Success
                 setTitle(response.data.params?.title);
-                setMemo(response.data.params?.memo);
-                setText(response.data.params?.text);
+                setMemo(response.data.params.memo ? response.data.params.memo: '');
+                setText(response.data.params.text ? response.data.params.text: '');
                 setMeetingImages(response.data.params?.meeting_image);
                 setApproval(response.data.params?.approval);
                 setPdf(response.data.params?.pdf);
@@ -77,7 +78,7 @@ const MeetingEdit = (props) => {
                     else arr.push({...list[i], checked: false});
                 }
                 setChildrenList(arr);
-                setCheckRadio("all_send");
+                (approval.length == list.length) && (list.length > 0) ? setCheckRadio("all_send") : setCheckRadio("pickup_send");
             } 
             else {
                 set400Error("失敗しました。");
@@ -322,7 +323,8 @@ const MeetingEdit = (props) => {
                                                     id="all_send"
                                                     name="check_radio" 
                                                     onClick={e=>setCheckRadio(e.target.id)}
-                                                    defaultChecked
+                                                    defaultChecked = {(meeting.approval.length == meeting.children.length) && meeting.children.length > 0 ? true : false}
+                                                    disabled = {meeting.children.length == 0 ? true:false}
                                                     />
                                                 <span className="lbl padding-16">全員に送信</span>
                                             </label>
@@ -335,12 +337,14 @@ const MeetingEdit = (props) => {
                                                     id="pickup_send"
                                                     name="check_radio" 
                                                     onClick={e=>setCheckRadio(e.target.id)}
+                                                    defaultChecked = {(meeting.approval.length != meeting.children.length) && meeting.children.length > 0  ? true : false}
+                                                    disabled = {meeting.children.length == 0 ? true:false}
                                                     />
                                                 <span className="lbl padding-16">選んで送信</span>
                                             </label>
                                         </div>
 
-                                        <div className={`checkbox-wrap edit-bg ${check_radio!="pickup_send" && 'd-none'}`}>
+                                        <div className={`checkbox-wrap edit-bg ${(check_radio == "all_send" && meeting.children.length > 0) && 'd-none'}`}>
                                         {
                                             children_list.length != 0 ?
                                                 children_list?.map((item, k)=>

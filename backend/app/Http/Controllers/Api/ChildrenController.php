@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-use Image;
-
 use App\Models\Child;
 use App\Models\FatherRelation;
 use App\Models\MeetingApprovals;
@@ -105,7 +103,7 @@ class ChildrenController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
-        // ファイルサイズは10MiB以内
+        // ファイルサイズは5MiB以内又はnull
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
             return $this->imagesizecannull($value);
         });
@@ -137,7 +135,7 @@ class ChildrenController extends Controller {
         $password = Hash::make($r->password);
 
         if (!is_null($r->image)) {
-            $filename = $this->uuidv4() . '.jpg';
+            $filename = $this->uuidv4().'.jpg';
         }
 
         $insert = [
@@ -159,10 +157,7 @@ class ChildrenController extends Controller {
             if (!is_null($r->image)) {
                 $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
                 Storage::disk('private')->put($filename, $image);
-
-                $quality = 1;
-                $img = Image::make('/work/storage/app/private/'.$filename)->encode('jpg', $quality);
-                $img->save('/work/storage/app/private/'.$filename);
+                $this->fiximg($filename);
             }
 
             $child->fill($insert);
@@ -176,7 +171,7 @@ class ChildrenController extends Controller {
             // 失敗
             Log::critical($e->getMessage());
             DB::rollback();
-            Storage::disk('private')->delete($filename);
+            if (!is_null($r->image)) Storage::disk('private')->delete($filename);
             return ['status_code' => 400, 'error_messages' => ['登録に失敗しました。']];
         }
 
@@ -393,7 +388,7 @@ class ChildrenController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
-        // ファイルサイズは10MiB以内
+        // ファイルサイズは5MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
             return $this->imagesize($value);
         });
@@ -410,7 +405,7 @@ class ChildrenController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
-        $filename = $this->uuidv4() . '.jpg';
+        $filename = $this->uuidv4().'.jpg';
         $oldimg = null;
 
         try {
@@ -418,10 +413,7 @@ class ChildrenController extends Controller {
 
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
             Storage::disk('private')->put($filename, $image);
-
-            $quality = 1;
-            $img = Image::make('/work/storage/app/private/'.$filename)->encode('jpg', $quality);
-            $img->save('/work/storage/app/private/'.$filename);
+            $this->fiximg($filename);
 
             $child = Child::find((int)$child_id);
             if (!is_null($child->image) && $child->image != '/assets/default/avatar.jpg') {
@@ -439,6 +431,8 @@ class ChildrenController extends Controller {
             unset($login_user_datum['password']);
             // セッションに保存する
             session()->put('children', $login_user_datum);
+
+            DB::commit();
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
@@ -548,10 +542,28 @@ class ChildrenController extends Controller {
     public function withdrawal (Request $r) {
         // 削除成功
         try {
-            Child::where('id', (int)$r->child_id)->delete();
+            // DBに入ります。
+            DB::beginTransaction();
+
+            $child = Child::find((int)$r->child_id);
+            $img = $child->image;
+            $child->delete();
+
+            if (!is_null($img)) {
+                $img = str_replace('/files/', '', $child->image);
+                if (!Storage::disk('private')->exists($img)) {
+                    Log::warning($img.'というパスは不正です。');
+                }
+                else {
+                    Storage::disk('private')->delete($img);
+                }
+            }
+
             Session::forget($this->getGuard());
+            DB::commit();
          } catch (\Throwable $e) {
             Log::critical($e->getMessage());
+            DB::rollback();
             return ['status_code' => 400];
         }
 

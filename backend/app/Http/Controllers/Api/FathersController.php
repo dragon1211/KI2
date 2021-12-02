@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
-use Image;
-
 use App\Models\Father;
 use App\Models\FatherRelation;
 use App\Models\EmailActivation;
+use App\Models\Meeting;
+use App\Models\MeetingImage;
 use App\Models\MeetingApprovals;
 
 use App\Mail\FathersForgetPasswordMail;
@@ -143,7 +143,7 @@ class FathersController extends Controller {
             return $this->telsize($value);
         });
 
-        // ファイルサイズは10MiB以内
+        // ファイルサイズは5MiB以内又はnull
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
             return $this->imagesizecannull($value);
         });
@@ -156,7 +156,7 @@ class FathersController extends Controller {
         $validate = Validator::make($r->all(), [
             'token' => 'required',
             'password' => 'required|min:8|max:72|confirmed',
-            'company' => 'max:100',
+            'company' => 'required|max:100',
             'image' => 'image_size|image_meme',
             'profile' => 'max:1000',
             'tel' => 'required|unique:fathers|numeric|starts_with:0|tel_size',
@@ -177,13 +177,10 @@ class FathersController extends Controller {
         $password = Hash::make($r->password);
 
         if (!is_null($r->image)) {
-            $filename = $this->uuidv4() . '.jpg';
+            $filename = $this->uuidv4().'.jpg';
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
             Storage::disk('private')->put($filename, $image);
-
-            $quality = 1;
-            $img = Image::make('/work/storage/app/private/'.$filename)->encode('jpg', $quality);
-            $img->save('/work/storage/app/private/'.$filename);
+            $this->fiximg($filename);
         }
 
         try {
@@ -300,7 +297,7 @@ class FathersController extends Controller {
         }
 
         // 同じく子画面から他の親の詳細ページをアクセスすれば、404となります。
-        if (request()->route()->action['as'] == 'mdc') {
+        if (request()->route()->action['as'] == 'pdc') {
             abort_if(null === session()->get('children') || null === ($rel = FatherRelation::where('father_id', (int)$father_id)->where('child_id', (int)session()->get('children')['id'])->first()), 404, $err);
         }
 
@@ -327,7 +324,7 @@ class FathersController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }
 
-        // ファイルサイズは10MiB以内
+        // ファイルサイズは5MiB以内
         Validator::extend('image_size', function ($attribute, $value, $params, $validator) {
             return $this->imagesize($value);
         });
@@ -345,7 +342,7 @@ class FathersController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
-        $filename = $this->uuidv4() . '.jpg';
+        $filename = $this->uuidv4().'.jpg';
         $oldimg = null;
 
         try {
@@ -353,10 +350,7 @@ class FathersController extends Controller {
 
             $image = base64_decode(substr($r->image, strpos($r->image, ',') + 1));
             Storage::disk('private')->put($filename, $image);
-
-            $quality = 1;
-            $img = Image::make('/work/storage/app/private/'.$filename)->encode('jpg', $quality);
-            $img->save('/work/storage/app/private/'.$filename);
+            $this->fiximg($filename);
 
             $father = Father::find((int)$father_id);
             if (!is_null($father->image) && $father->image != '/assets/default/avatar.jpg') {
@@ -515,31 +509,77 @@ class FathersController extends Controller {
     }
 
     public function withdrawal (Request $r) {
+        $images = [];
+        $pdfs = [];
+
         try {
+            // DBに入ります。
+            DB::beginTransaction();
+
             $father = Father::find((int)$r->father_id);
+            $rel = FatherRelation::where('father_id', (int)$r->father_id);
+            $meet = Meeting::where('father_id', (int)$r->father_id);
+
+            if ($meet->count() > 0) {
+                foreach ($meet->get() as $n) {
+                    $meim = MeetingImage::where('meeting_id', (int)$n->id);
+                    $oldpdf = str_replace('/files/', '', $n->pdf);
+                    $pdfs[] = $oldpdf;
+
+                    if ($meim->count() > 0) {
+                        foreach ($meim->get() as $m) {
+                            $oldimg = str_replace('/files/', '', $m->image);
+                            $images[] = $oldimg;
+                        }
+                    }
+                }
+            }
+
             $img = $father->image;
+
             $father->delete();
+            $rel->delete();
+            $meet->delete();
+            $meim->delete();
 
             if (!is_null($img)) {
-                Storage::disk('private')->delete($img);
+                $img = str_replace('/files/', '', $father->image);
+                if (!Storage::disk('private')->exists($img)) {
+                    Log::warning($img.'というパスは不正です。');
+                }
+                else {
+                    Storage::disk('private')->delete($img);
+                }
             }
-            Session::forget($this->getGuard());
+
+            if (!empty($pdfs)) {
+                foreach ($pdfs as $p) {
+                    if (!Storage::disk('private')->exists($p)) {
+                        Log::warning($p.'というパスは不正です。');
+                    }
+                    else {
+                        Storage::disk('private')->delete($p);
+                    }
+                }
+            }
+
+            if (!empty($images)) {
+                foreach ($images as $g) {
+                    if (!Storage::disk('private')->exists($g)) {
+                        Log::warning($g.'というパスは不正です。');
+                    }
+                    else {
+                        Storage::disk('private')->delete($g);
+                    }
+                }
+            }
+
+            Session::forget('fathers');
+            DB::commit();
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
-            return ['status_code' => 400, 'error_messages' => ['親の削除に失敗しました。']];
-        }
-
-        // 成功
-        return ['status_code' => 200, 'success_messages' => ['親の削除に成功しました。']];
-    }
-
-    public function delete ($father_id) {
-        try {
-            Father::where('id', (int)$father_id)->delete();
-        } catch (\Throwable $e) {
-            // 失敗
-            Log::critical($e->getMessage());
+            DB::rollback();
             return ['status_code' => 400, 'error_messages' => ['親の削除に失敗しました。']];
         }
 

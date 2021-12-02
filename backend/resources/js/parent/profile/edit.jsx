@@ -40,7 +40,7 @@ const ProfileEdit = () => {
         setCompany(response.data.params?.company);
         setEmail(response.data.params?.email);
         setTel(response.data.params?.tel);
-        setProfile(response.data.params?.profile);
+        setProfile(response.data.params.profile ? response.data.params.profile: '');
       }
       else {
         set400Error("失敗しました。");

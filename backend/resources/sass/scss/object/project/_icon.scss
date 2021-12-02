@@ -186,6 +186,7 @@ categories: [project]
     min-width: 52px;
     height: 52px;
     margin-right: 10px;
+    pointer-events: none;
     &:after{
       position: absolute;
       top: 50%;

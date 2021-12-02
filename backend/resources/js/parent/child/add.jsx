@@ -42,11 +42,7 @@ const ChildAdd = () => {
   }
 
   const copyLineText = () => {
-    const lineText = "「KIKI」の招待が届いています。\n"+
-    "まずは以下より仮登録を行なってください。\n"+
-    "https://kikikan.xyz/c-account/register-temporary\n"+
-    "▼ 公式サイトはこちら\n"+
-    "https://kikikan.xyz\n";
+    const lineText = "「KIKI」の招待が届いています。%0Aまずは以下より仮登録を行ってください。%0Ahttps%3A%2F%2Fkikikan.jp%2Fregister-temporary%2Fc-account%0A%0A▼公式サイトはこちら%0Ahttps%3A%2F%2Fkikikan.jp";
     copy(lineText);
     setSuccess('招待用URLをLINEで追信しました。');
     window.open('http://line.me/R/msg/text/?'+lineText);

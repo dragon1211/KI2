@@ -154,21 +154,24 @@ const MeetingDetail = (props) => {
                     <div className="p-article__content">       
                       <div className="meeting-member">
                         <div className="meeting-member-wrap">
-                          <div className="meeting-member-link">
+                          <div className="meeting-member-link" onClick={()=>setShowNotifyAllModal(true)} >
                             <ul className="meeting-member-count">
                               <li className="numerator">{meeting?.numerator}</li>
                               <li className="denominator">{meeting?.denominator}</li>
                             </ul>
     
-                            <ul className="meeting-member-list" role="list" onClick={()=>setShowNotifyAllModal(true)} >
+                            <ul className="meeting-member-list" role="list">
                               { 
                                 meeting.approval?.map((v, inx) =>
+                                {
+                                  if(v.approval_at)
+                                  return(
                                   <li className="meeting-member__item" role="listitem" key={inx}>
                                     <div className="avatar">
                                       <img alt="name" className="avatar-img" src={v?.child.image} />
                                     </div>
-                                  </li>
-                                ) 
+                                  </li>)
+                                }) 
                               }
                             </ul>
                           </div>

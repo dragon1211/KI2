@@ -60,6 +60,11 @@ trait AuthenticationTrait {
             return ['status_code' => 400, 'error_message' => ['ログインに失敗しました。10回連続で失敗すると、一定期間ログインできなくなります。']];
         }
 
+        // 既にセッションがあれば、ログアウトします。
+        if (Session::has('children')) Session::forget('children');
+        if (Session::has('fathers'))  Session::forget('fathers');
+        if (Session::has('admins'))   Session::forget('admins');
+
         // セッションを想像する
         $guard = $this->getGuard();
         if (!$r->session()->has($guard)) {

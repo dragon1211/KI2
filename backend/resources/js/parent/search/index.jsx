@@ -233,13 +233,16 @@ const Search = (props) => {
                                   
                                                           <ul className="meeting-member-list" role="list">
                                                             { 
-                                                              item.approvals?.map((v, inx1) =>
-                                                                <li className="meeting-member__item" role="listitem" key={inx1}>
-                                                                  <div className="avatar">
-                                                                    <img alt="name" className="avatar-img" src={v?.child.image} />
-                                                                  </div>
-                                                                </li>
-                                                              )
+                                                             item.approvals?.map((v, inx1) =>
+                                                             {
+                                                               if(v.approval_at)
+                                                               return(
+                                                               <li className="meeting-member__item" role="listitem" key={inx1}>
+                                                                 <div className="avatar">
+                                                                   <img alt="name" className="avatar-img" src={v?.child.image} />
+                                                                 </div>
+                                                               </li>)
+                                                             })
                                                             }
                                                           </ul>
                                                       </div>
@@ -297,12 +300,15 @@ const Search = (props) => {
                                                     <ul className="meeting-member-list" role="list">
                                                       { 
                                                         item.approvals?.map((v, inx1) =>
+                                                        {
+                                                          if(v.approval_at)
+                                                          return(
                                                           <li className="meeting-member__item" role="listitem" key={inx1}>
                                                             <div className="avatar">
                                                               <img alt="name" className="avatar-img" src={v?.child.image} />
                                                             </div>
-                                                          </li>
-                                                        )
+                                                          </li>)
+                                                        })
                                                       }
                                                     </ul>
                                                   </div>

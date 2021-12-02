@@ -28,7 +28,7 @@ RUN apt-get update && \
     rm -rf *.deb && \
     rm -rf /var/lib/apt/lists/* && \
 	docker-php-ext-configure gd --with-jpeg && \
-	docker-php-ext-install intl pdo_mysql zip bcmath gd
+	docker-php-ext-install -j$(nproc) intl pdo_mysql zip bcmath gd exif
 
 COPY ./php.ini /usr/local/etc/php/php.ini
 

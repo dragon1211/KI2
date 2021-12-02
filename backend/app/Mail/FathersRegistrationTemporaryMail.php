@@ -16,7 +16,7 @@ class FathersRegistrationTemporaryMail extends Mailable {
     }
 
     public function build () {
-        return $this->subject('仮登録が完了しました。')->markdown('emails.fathers.registration.temporary', [
+        return $this->subject('【KIKIkan】会員登録のご案内')->markdown('emails.fathers.registration.temporary', [
             'token' => $this->token
         ]);
     }
