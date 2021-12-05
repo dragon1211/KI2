@@ -12,16 +12,17 @@ services:
       - 443:443
     volumes:
       - ./backend:/work
+      - /etc/letsencrypt/live/kikikan.xyz:/etc/letsencrypt/live/kikikan.xyz
+      - /etc/letsencrypt/archive/kikikan.xyz:/etc/letsencrypt/archive/kikikan.xyz
       - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - /etc/letsencrypt:/etc/letsencrypt
     working_dir: /work
 
-  certbot:
-    image: certbot/certbot:v1.7.0
-    volumes:
-      - ./backend:/work
-      - /etc/letsencrypt:/etc/letsencrypt
-    command: ["--version"]
+  # certbot:
+  #   image: certbot/certbot:v1.7.0
+  #   volumes:
+  #     - ./backend:/work
+  #     - /etc/letsencrypt:/etc/letsencrypt
+  #   command: ["--version"]
 
   db:
     build: ./infra/mysql
