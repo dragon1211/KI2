@@ -32,6 +32,11 @@ npm run watch　(　npm run dev　)
 php artisan migrate:fresh --seed
 ```
 
+#### ６．ストレージのリンク
+```
+php artisan storage:link
+```
+
 
 
 # 仕様書

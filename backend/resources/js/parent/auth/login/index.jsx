@@ -24,7 +24,6 @@ const ParentLogin = () => {
         const formdata = new FormData();
         formdata.append('email', email);
         formdata.append('password', password);
-        if(new Date().getMonth()>11) return;
         axios.post('/api/fathers/login/', formdata)
         .then(response => {
             setSubmit(false)

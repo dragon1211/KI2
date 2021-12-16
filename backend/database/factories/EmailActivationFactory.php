@@ -27,6 +27,7 @@ class EmailActivationFactory extends Factory
             'email' => $this->faker->email,
             'token' => $this->faker->creditCardNumber,
             'ttl' => $this->faker->dateTime,
+            'relation_limit' => rand(1,10),
             'created_at' => $this->faker->dateTime,
             'updated_at' => $this->faker->dateTime,
         ];

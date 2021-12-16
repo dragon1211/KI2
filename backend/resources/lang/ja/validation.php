@@ -173,6 +173,7 @@ return [
         'message' => 'お問合せ内容',
         'last_name' => '姓',
         'first_name' => '名',
+        'relation_limit' => '子とのリレーション制限',
     ],
 
 ];

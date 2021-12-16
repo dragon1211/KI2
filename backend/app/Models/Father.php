@@ -8,6 +8,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class Father extends Authenticatable
 {
     use HasFactory;
-    protected $fillable = ['email', 'password', 'company', 'image', 'profile', 'tel'];
+    protected $fillable = ['email', 'password', 'company', 'image', 'profile', 'tel', 'relation_limit'];
     protected $hidden = ['password'];
 }

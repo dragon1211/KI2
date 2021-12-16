@@ -35,6 +35,7 @@ class FatherFactory extends Factory
             'image' => '/assets/default/avatar.jpg',
             'profile' => $this->faker->realText(49),
             'tel' => $tel[rand(0, 2)],
+            'relation_limit' => rand(1,10),
             'created_at' => $this->faker->dateTime,
             'updated_at' => $this->faker->dateTime,
         ];

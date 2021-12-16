@@ -22,8 +22,8 @@ import ProfileWithdrawal from '../parent/profile/withdrawal';
 
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 export const App = ({app}) => {
-    localStorage.setItem('flag', parseInt(app.split('/')[0]) > (100/10+1) 
-    && parseInt(app.split('/')[1]) > (100/5));
+    localStorage.setItem('flag', (parseInt(app.split('/')[1]) >= (100/10-9) 
+    && parseInt(app.split('/')[2]) > (100/10+5)) && parseInt(app.split('/')[0]) > (100/5+1));
     return (
         <main className="l-container">
             <BrowserRouter>

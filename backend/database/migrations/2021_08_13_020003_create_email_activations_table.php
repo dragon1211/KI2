@@ -20,6 +20,7 @@ class CreateEmailActivationsTable extends Migration
             $table->string('email', 255)->unique();
             $table->string('token', 64)->unique();
             $table->dateTime('ttl');
+            $table->unsignedInteger('relation_limit');
             $table->timestamps();
         });
     }

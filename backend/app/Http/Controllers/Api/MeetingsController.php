@@ -53,18 +53,6 @@ class MeetingsController extends Controller {
             return $this->pdfmeme($value);
         });
 
-        // 子供を選択しない場合、「全員に送信」となります。
-        if (empty(json_decode($r->children))) {
-            $chi = [];
-            $rel = FatherRelation::select('child_id')->where('father_id', (int)$r->father_id)->get();
-
-            foreach ($rel as $e) {
-                $chi[] = $e->child_id;
-            }
-
-            $r->children = json_encode($chi);
-        }
-
         $validate = Validator::make($r->all(), [
             'title' => 'required|max:100',
             'text' => 'required|max:2000',
@@ -120,10 +108,9 @@ class MeetingsController extends Controller {
                         $fnames[] = $fname;
                         $image = base64_decode(substr($img, strpos($img, ',') + 1));
                         Storage::disk('private')->put($fname, $image);
-                        $this->fiximg($filename);
+                        $this->fiximg($fname);
 
                         $imgname = '/files/'.$fname;
-        
                     }
                     else {
                         $imgname = $img;
@@ -332,7 +319,7 @@ class MeetingsController extends Controller {
         $child_select = ['image'];
 
         // 取得に成功
-        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->get())) {
+        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->orderBy('created_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -379,7 +366,7 @@ class MeetingsController extends Controller {
         $child_select = ['image'];
 
         // 取得に成功
-        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->get())) {
+        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->orderBy('created_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -420,7 +407,7 @@ class MeetingsController extends Controller {
         $child_select = ['image'];
 
         // 取得に成功
-        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('is_favorite', 1)->get())) {
+        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('is_favorite', 1)->orderBy('created_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -454,7 +441,7 @@ class MeetingsController extends Controller {
         $child_select = ['image'];
 
         // 取得に成功
-        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('is_favorite', 0)->get())) {
+        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('is_favorite', 0)->orderBy('created_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -556,7 +543,7 @@ class MeetingsController extends Controller {
         $child_select = ['image'];
 
         // 取得に成功
-        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('title', 'LIKE', '%'.$r->keyword.'%')->orWhere('text', 'LIKE', '%'.$r->keyword.'%')->get())) {
+        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('title', 'LIKE', '%'.$r->keyword.'%')->orWhere('text', 'LIKE', '%'.$r->keyword.'%')->orderBy('created_at', 'desc')->get())) {
             $list = [];
         }
 
@@ -603,7 +590,7 @@ class MeetingsController extends Controller {
         $child_select = ['image'];
 
         // 取得に成功
-        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('title', 'LIKE', '%'.$r->keyword.'%')->orWhere('text', 'LIKE', '%'.$r->keyword.'%')->get())) {
+        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('title', 'LIKE', '%'.$r->keyword.'%')->orWhere('text', 'LIKE', '%'.$r->keyword.'%')->orderBy('created_at', 'desc')->get())) {
             $list = [];
         }
 
@@ -716,7 +703,7 @@ class MeetingsController extends Controller {
 
         if (count(Storage::disk('private')->files('/')) >= 9999) {
             Log::critical('ストレージの限界を超えています。9999個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
-            return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
+            return ['status_code' => 400, 'error_messages' => ['ミーティングの更新に失敗しました。']];
         }
 
         // ファイルサイズは50MiB以内
@@ -857,5 +844,29 @@ class MeetingsController extends Controller {
         }
 
         return ['status_code' => 200];
+    }
+
+    public function updateMemo (Request $r) {
+        if (!isset($r->meeting_id)) {
+            return ['status_code' => 400, 'error_messages' => ['ミーティングの登録に失敗しました。']];
+        }
+
+        $validate = Validator::make($r->all(), ['memo' => 'required|max:2000']);
+
+        if ($validate->fails()) {
+            return ['status_code' => 422, 'error_messages' => $validate->errors()];
+        }
+
+        $update = ['memo' => $r->memo];
+
+        try {
+            // データベースに保存します。
+            Meeting::where('id', (int)$r->meeting_id)->update($update);
+        } catch (\Throwable $e) {
+            Log::critical($e->getMessage());
+            return ['status_code' => 400, 'error_messages' => 'メモの更新に失敗しました。'];
+        }
+
+        return ['status_code' => 200, 'success_messages' => 'メモを更新しました。'];
     }
 }

@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Alert from '../../component/alert';
 import Notification from '../notification';
+import { Document, Page} from "react-pdf";
 
 
 const MeetingAdd = (props) => {
@@ -19,6 +20,7 @@ const MeetingAdd = (props) => {
     const [memo, setMemo] = useState('');
     const [text, setText] = useState('');
     const [pdf, setPdf] = useState('');
+    const [pdf_url, setPDFURL] = useState('');
     const [meeting_image, setMeetingImages] = useState([]);
     const [approval_list, setApprovalList] = useState([]);
     const [children_list, setChildrenList] = useState([]);
@@ -40,6 +42,7 @@ const MeetingAdd = (props) => {
             setMemo(state.memo ? state.memo: '');
             setText(state?.text);
             setPdf(state?.pdf);
+            setPDFURL(state?.pdf);
             let images = [];
             for(let i in state.meeting_image){
                 images.push(state.meeting_image[i].image);
@@ -51,7 +54,11 @@ const MeetingAdd = (props) => {
                 arr.push({...state.children[i], checked: false})
             }
             setChildrenList(arr);
-            (state.children.length == state.approval.length) ? setCheckRadio("all_send") : setCheckRadio("pickup_send");
+            if((state.children.length == state.approval.length) && state.approval.length > 0 )
+                setCheckRadio('all_send');
+            else if((state.children.length != state.approval.length) && state.approval.length > 0)
+                setCheckRadio('pickup_send');
+            else setCheckRadio('');
         }
         else{
             axios.get('/api/fathers/children/listOfFather', {params:{father_id: father_id}})
@@ -64,7 +71,9 @@ const MeetingAdd = (props) => {
                     for(var i in list)
                         arr.push({...list[i], checked: false})
                     setChildrenList(arr);
-                    setCheckRadio("all_send");
+                    if(list.length > 0) 
+                        setCheckRadio("all_send");
+                    else setCheckRadio('');
                 }
                 else {
                     set400Error("失敗しました。");
@@ -84,14 +93,12 @@ const MeetingAdd = (props) => {
 //--------------------------------------------------------
     useEffect(()=>{
         if(!loaded) return;      //if dont load data
-        var list = [];
+        var list = [...children_list];
         if(check_radio=="all_send"){        //send all children
-            list = [...children_list];
             for(var i=0; i<list.length; i++) 
                 list[i].checked = true;
         }
         else if(check_radio=="pickup_send"){                     //send pickup
-            list = [...children_list];
             for(var i in list){
                 if(approval_list.findIndex(ele=>ele.child_id == list[i].id) >= 0)
                     list[i].checked = true;
@@ -168,6 +175,7 @@ const MeetingAdd = (props) => {
         let reader = new FileReader();
         let _file = e.target.files[0];
         if(!_file) return;
+        setPDFURL(URL.createObjectURL(_file))
         reader.readAsDataURL(_file);
         reader.onloadend = () => {
             setPdf(reader.result);
@@ -185,7 +193,7 @@ const MeetingAdd = (props) => {
         list[index].checked = e.target.checked;
         setChildrenList(list);
     }
-
+    
 
 	return (
     <div className="l-content">
@@ -222,7 +230,7 @@ const MeetingAdd = (props) => {
                                         </div>
                                         <div className="edit-set">
                                             <label className="control-label" htmlFor="meeting_textarea">本文</label>
-                                            <textarea value={ text } onChange={e=>setText(e.target.value)} rows="8" className={`textarea-default  ${  _422errors.text && 'is-invalid c-input__target'} `}  id="meeting_textarea" />
+                                            <textarea value={ text ? text:'' } onChange={e=>setText(e.target.value)} rows="8" className={`textarea-default  ${  _422errors.text && 'is-invalid c-input__target'} `}  id="meeting_textarea" />
                                             {
                                                 _422errors.text &&
                                                     <span className="l-alert__text--error ft-16 ft-md-14">
@@ -232,7 +240,7 @@ const MeetingAdd = (props) => {
                                         </div>
                                         <div className="edit-set">
                                             <label className="control-label" htmlFor="meeting_textarea">メモ</label>
-                                            <textarea value={ memo } onChange={e=>setMemo(e.target.value)}  rows="8" className={`textarea-default  ${  _422errors.memo && 'is-invalid c-input__target'} `} id="meeting_textarea" />
+                                            <textarea value={ memo ? memo:'' } onChange={e=>setMemo(e.target.value)}  rows="8" className={`textarea-default  ${  _422errors.memo && 'is-invalid c-input__target'} `} id="meeting_textarea" />
                                             {
                                                 _422errors.memo &&
                                                     <span className="l-alert__text--error ft-16 ft-md-14">
@@ -248,7 +256,7 @@ const MeetingAdd = (props) => {
                                             {
                                                 pdf && 
                                                 <IconButton
-                                                    onClick={()=>setPdf('')}
+                                                    onClick={()=>{setPdf(''); setPDFURL('');}}
                                                     style={{position: 'absolute',
                                                         top: '-6px',
                                                         right: '-6px'}}>
@@ -265,6 +273,14 @@ const MeetingAdd = (props) => {
                                                     {_422errors.pdf}
                                                 </span> 
                                             }
+                                            <div style={{ width: '100%', height:'300px', border:'1px solid rgba(36, 77, 138, 0.1)', margin:'15px 0'}}>
+                                                {
+                                                    pdf_url &&
+                                                    <Document file={pdf_url} loading={<></>}>
+                                                        <Page pageNumber={1} loading={<></>} height={300}/>
+                                                    </Document>
+                                                }
+                                            </div>
                                         </div>
                                         <div className="edit-set edit-set-mt15">
                                             <label className="edit-set-file-label" htmlFor={meeting_image.length < 10 ? 'file_image': ''}>
@@ -312,10 +328,10 @@ const MeetingAdd = (props) => {
                                                     id="all_send"
                                                     name="check_radio" 
                                                     value={false}
-                                                    onClick={e=>setCheckRadio(e.target.id)}
-                                                    defaultChecked = {(state?.children.length == state?.approval.length)? true:false}
-                                                    disabled = {children_list.length == 0 ? true:false}
-                                                    />
+                                                    onChange={e=>setCheckRadio(e.target.id)}
+                                                    checked = {(check_radio == 'all_send')? true : false}
+                                                    disabled = {children_list.length == 0 ? true : false}
+                                                />
                                                 <span className="lbl padding-16">全員に送信</span>
                                             </label>
                                         </div>
@@ -326,17 +342,17 @@ const MeetingAdd = (props) => {
                                                     type="radio"
                                                     id="pickup_send"
                                                     name="check_radio" 
-                                                    onClick={e=>setCheckRadio(e.target.id)}
-                                                    defaultChecked = {(state?.children.length != state?.approval.length)? true:false}
+                                                    onChange={e=>setCheckRadio(e.target.id)}
+                                                    checked = {(check_radio == 'pickup_send') ? true : false}
                                                     disabled = {children_list.length == 0 ? true:false}
-                                                    />
+                                                />
                                                 <span className="lbl padding-16">選んで送信</span>
                                             </label>
                                         </div>
                                     
-                                        <div className={`checkbox-wrap edit-bg ${(check_radio == "all_send" && children_list.length > 0) && 'd-none'}`}>
+                                        <div className={`checkbox-wrap edit-bg d-none ${(check_radio == "pickup_send") && 'd-block'}`}>
                                             {
-                                                children_list.length != 0 ?
+                                                children_list.length > 0 ?
                                                 children_list?.map((item, k)=>
                                                         <div className="checkbox" key={k}>
                                                             <label htmlFor={`user_name${k}`}>

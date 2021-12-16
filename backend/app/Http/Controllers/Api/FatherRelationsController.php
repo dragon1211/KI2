@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\Child;
+use App\Models\Father;
 use App\Models\FatherRelation;
 use App\Models\Meeting;
 use App\Models\MeetingApprovals;
@@ -30,6 +32,14 @@ class FatherRelationsController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['子の追加に失敗しました。']];
         }
 
+        if (null === ($father = Father::select('relation_limit')->where('id', (int)$r->father_id)->first())) {
+            return ['status_code' => 400, 'error_messages' => ['子の追加に失敗しました。']];
+        }
+
+        if ($father->relation_limit <= FatherRelation::select('id')->where('father_id', (int)$r->father_id)->count()) {
+            return ['status_code' => 401, 'error_messages' => ['契約上限数に達した為(改行)メンバー追加できません。']];
+        }
+
         $create = [
             'father_id' => $r->father_id,
             'child_id' => $child->id,
@@ -37,8 +47,12 @@ class FatherRelationsController extends Controller {
         ];
 
         try {
+            DB::beginTransaction();
             if (null === ($fr = FatherRelation::where('child_id', $child->id)->where('father_id', (int)$r->father_id)->first())) {
-                FatherRelation::create($create);
+                $rel = new FatherRelation;
+                $rel->fill($create);
+                $rel->push();
+
                 if (null !== ($meet = Meeting::select('id', 'is_favorite')->where('father_id', (int)$r->father_id)->get())) {
                     foreach ($meet as $m) {
                         if ($m->is_favorite) {
@@ -48,21 +62,27 @@ class FatherRelationsController extends Controller {
                                 'approval_at' => null,
                             ];
 
-                            MeetingApprovals::create($addapprove);
+                            $apr = new MeetingApprovals;
+                            $apr->fill($addapprove);
+                            $apr->push();
                         }
                     }
                 }
+
+                DB::commit();
             }
             else {
+                DB::rollback();
                 return ['status_code' => 400, 'error_messages' => ['すでに追加されました']];
             }
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
+            DB::rollback();
             return ['status_code' => 400, 'error_messages' => ['子の追加に失敗しました。']];
         }
 
-        return ['status_code' => 200, 'success_messages' => ['子の追加に成功しました。'], 'params' => ['child_id' => $child->id]];
+        return ['status_code' => 200, 'success_messages' => ['子の追加に成功しました。'], 'params' => ['child_id' => $child->id, 'limit' => $father->relation_limit]];
     }
 
     public function updateHireDate (Request $r, $child_id) {
@@ -99,10 +119,22 @@ class FatherRelationsController extends Controller {
         }
 
         try {
-            FatherRelation::where('father_id', session()->get('fathers')['id'])->where('child_id', $child_id)->delete();
+            DB::beginTransaction();
+
+            $rel = FatherRelation::where('father_id', session()->get('fathers')['id'])->where('child_id', (int)$child_id);
+
+            foreach (Meeting::where('father_id', session()->get('fathers')['id'])->get() as $m) {
+                $apr = MeetingApprovals::where('child_id', (int)$child_id)->where('meeting_id', $m->id);
+                $apr->delete();
+            }
+
+            $rel->delete();
+
+            DB::commit();
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
+            DB::rollback();
             return ['status_code' => 400, 'error_messages' => ['子の削除に失敗しました。']];
         }
 

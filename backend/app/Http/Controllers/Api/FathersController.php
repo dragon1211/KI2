@@ -21,8 +21,8 @@ use App\Models\MeetingApprovals;
 use App\Mail\FathersForgetPasswordMail;
 use App\Mail\FathersRegistrationTemporaryMail;
 use App\Mail\FathersRegistrationMainMail;
-
-use App\Notifications\SmsNotification;
+use App\Mail\FathersApprovalMail;
+use App\Mail\FathersApprovalAgainMail;
 
 class FathersController extends Controller {
     use AuthenticationTrait;
@@ -46,7 +46,7 @@ class FathersController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
-        if (null === ($result = Father::select('id')->where('email', $r->email)->first())) {
+        if (null === ($result = Father::select('id', 'relation_limit')->where('email', $r->email)->first())) {
             // メールアドレス照合に失敗
             return ['status_code' => 400, 'error_messages' => ['メールアドレスが未登録です。入力した情報を確認してください。']];
         }
@@ -59,7 +59,7 @@ class FathersController extends Controller {
             'email' => $r->email,
             'token' => $token,
             'ttl' => date('Y-m-d H:i:s', strtotime("8 hour")),
-
+            'relation_limit' => $result->relation_limit,
         ];
 
         try {
@@ -85,7 +85,8 @@ class FathersController extends Controller {
 
     public function registerTemporary (Request $r) {
         $validate = Validator::make($r->all(), [
-            'email' => 'required|unique:fathers|unique:email_activations|max:255|email'
+            'email' => 'required|unique:fathers|unique:email_activations|max:255|email',
+            'relation_limit' => 'required|numeric',
         ]);
 
         if ($validate->fails()) {
@@ -110,6 +111,7 @@ class FathersController extends Controller {
 
         $create = [
             'email' => $r->email,
+            'relation_limit' => (int)$r->relation_limit,
             'token' => $token,
             'ttl' => date('Y-m-d H:i:s', strtotime("8 hour")),
         ];
@@ -167,7 +169,7 @@ class FathersController extends Controller {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
         }
 
-        if ($get = EmailActivation::select('email', 'ttl')->where('token', $r->token)->first()) {
+        if ($get = EmailActivation::select('email', 'ttl', 'relation_limit')->where('token', $r->token)->first()) {
             if (time() > strtotime($get->ttl)) {
                 // 有効期限が切れている場合
                 return['status_code' => 401, 'error_messages' => ['仮登録の有効期限が切れました。改めて管理者にお問い合わせいただき、再登録を行ってください。']];
@@ -194,6 +196,7 @@ class FathersController extends Controller {
                 'image' => !is_null($r->image) ? '/files/'.$filename : '/assets/default/avatar.jpg',
                 'profile' => $r->profile,
                 'tel' => $r->tel,
+                'relation_limit' => $get->relation_limit,
             ];
 
             // DBに入ります。
@@ -289,6 +292,9 @@ class FathersController extends Controller {
 
     public function detail ($father_id) {
         $father_select = ['image', 'email', 'tel', 'profile', 'company'];
+        if (request()->route()->action['as'] == 'pda') {
+            $father_select[] = 'relation_limit as limit';
+        }
 
         // 親画面から他の親としてアクセスすれば、404となります。
         $err = 'アクセスできません。';
@@ -405,7 +411,8 @@ class FathersController extends Controller {
             'email' => 'required|max:255|email',
             'company' => 'max:100',
             'profile' => 'max:1000',
-            'tel' => 'required|numeric|starts_with:0|tel_size'
+            'tel' => 'required|numeric|starts_with:0|tel_size',
+            'relation_limit' => 'required|numeric',
         ]);
 
         if ($validate->fails()) {
@@ -417,6 +424,7 @@ class FathersController extends Controller {
             'company' => $r->company,
             'profile' => $r->profile,
             'tel' => $r->tel,
+            'relation_limit' => (int)$r->relation_limit,
         ];
 
         try {
@@ -481,22 +489,26 @@ class FathersController extends Controller {
     }
 
     public function approvalNotification (Request $r) {
-        if (!isset($r->meeting_id) || !isset($r->tel) || empty(json_decode($r->tel))) {
+        if (!isset($r->meeting_id) || !isset($r->email) || empty(json_decode($r->email))) {
             return ['status_code' => 400];
         }
 
         $meeting_approvals_select = ['child_id'];
-        $children_select = ['tel'];
+        $children_select = ['email'];
 
         if (null === ($ma = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$r->meeting_id)->get())) {
             return ['status_code' => 400];
         }
 
         try {
-            foreach (json_decode($r->tel) as $tel) {
-                // SMSを送ります。
-                $message = view('sms.fathers.approval', ['meeting_id' => $r->meeting_id]);
-                \Notification::route('nexmo', '81'.substr($tel, 1))->notify(new SmsNotification($message));
+            foreach (json_decode($r->email) as $email) {
+                // メールを送ります。
+                if (request()->route()->action['as'] == 'cmnotifynew') {
+                    Mail::to($email)->send(new FathersApprovalMail(session()->get('fathers')['company'], $r->meeting_id));
+                }
+                else if (request()->route()->action['as'] == 'cmnotifyedit') {
+                    Mail::to($email)->send(new FathersApprovalAgainMail(session()->get('fathers')['company'], $r->meeting_id));
+                }
             }
         }
         catch (\Throwable $e) {
@@ -523,15 +535,22 @@ class FathersController extends Controller {
             if ($meet->count() > 0) {
                 foreach ($meet->get() as $n) {
                     $meim = MeetingImage::where('meeting_id', (int)$n->id);
-                    $oldpdf = str_replace('/files/', '', $n->pdf);
-                    $pdfs[] = $oldpdf;
+                    if (!is_null($n->pdf) && $n->pdf != '/assets/default/default.pdf') {
+                        $oldpdf = str_replace('/files/', '', $n->pdf);
+                        $pdfs[] = $oldpdf;
+                    }
 
                     if ($meim->count() > 0) {
                         foreach ($meim->get() as $m) {
+                            if (is_null($n->pdf) || $m->image == '/assets/img/dummy/post-dummy01.jpg') {
+                                continue;
+                            }
                             $oldimg = str_replace('/files/', '', $m->image);
                             $images[] = $oldimg;
                         }
                     }
+
+                    $meim->delete();
                 }
             }
 
@@ -540,9 +559,8 @@ class FathersController extends Controller {
             $father->delete();
             $rel->delete();
             $meet->delete();
-            $meim->delete();
 
-            if (!is_null($img)) {
+            if (!is_null($img) && $img != '/assets/default/avatar.jpg') {
                 $img = str_replace('/files/', '', $father->image);
                 if (!Storage::disk('private')->exists($img)) {
                     Log::warning($img.'というパスは不正です。');

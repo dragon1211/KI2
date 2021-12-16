@@ -12,7 +12,8 @@ const ParentRegister = () => {
     const history = useHistory();
 
     const [email, setEmail] = useState('');
-    const [_422errors, set422Errors] = useState({ email: '' });
+    const [limit, setLimit] = useState('');
+    const [_422errors, set422Errors] = useState({ email: '', relation_limit: '' });
     const [_400error, set400Error] = useState('');
     const [_success, setSuccess] = useState('');
     const [submit, setSubmit] = useState(false);
@@ -24,6 +25,7 @@ const ParentRegister = () => {
         setSubmit(true);
         const formdata = new FormData();
         formdata.append('email', email);
+        formdata.append('relation_limit', limit);
         axios.post('/api/admin/fathers/registerTemporary', formdata)
         .then(response => {
             setSubmit(false);
@@ -57,6 +59,17 @@ const ParentRegister = () => {
                                         _422errors.email && 
                                             <span className="l-alert__text--error ft-16 ft-md-14">
                                                 { _422errors.email }
+                                            </span>
+                                    }
+                                </div>
+
+                                <div className="edit-set">
+                                    <label htmlFor="relation_limit"   className="control-label ft-12"> 子の人数制限 </label>
+                                    <input type="number" min="0" step="1" name="relation_limit" id="relation_limit"  className = {`input-default input-nameSei input-h60 ${ _422errors.relation_limit && "is-invalid c-input__target" }`}  value={limit} onChange={e=>setLimit(e.target.value)}/>
+                                    {
+                                        _422errors.relation_limit && 
+                                            <span className="l-alert__text--error ft-16 ft-md-14">
+                                                { _422errors.relation_limit }
                                             </span>
                                     }
                                 </div>

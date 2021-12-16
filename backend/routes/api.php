@@ -85,7 +85,8 @@ Route::group(['prefix' => 'fathers'], function () {
         Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile');
         Route::delete('/withdrawal', '\App\Http\Controllers\Api\FathersController@withdrawal');
         Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail')->name('pdp');
-        Route::post('/approvalNotification', '\App\Http\Controllers\Api\FathersController@approvalNotification');
+        Route::post('/meetingNotification', '\App\Http\Controllers\Api\FathersController@approvalNotification')->name('cmnotifynew');
+        Route::post('/meetingEditNotification', '\App\Http\Controllers\Api\FathersController@approvalNotification')->name('cmnotifyedit');
 
         // ChildrenController
         Route::group(['prefix' => 'children'], function () {
@@ -109,6 +110,7 @@ Route::group(['prefix' => 'fathers'], function () {
             Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail')->name('mdp');
             Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update');
             Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete');
+            Route::put('/updateMemo', '\App\Http\Controllers\Api\MeetingsController@updateMemo');
         });
 
         Route::group(['prefix' => 'meeting'], function () {

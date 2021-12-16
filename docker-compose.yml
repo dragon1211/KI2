@@ -14,15 +14,18 @@ services:
       - ./backend:/work
       - /etc/letsencrypt/live/kikikan.xyz:/etc/letsencrypt/live/kikikan.xyz
       - /etc/letsencrypt/archive/kikikan.xyz:/etc/letsencrypt/archive/kikikan.xyz
-      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      # 本番環境
+      # - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      # 開発環境
+      - ./infra/nginx/default.dev.conf:/etc/nginx/conf.d/default.conf
     working_dir: /work
 
-  # certbot:
-  #   image: certbot/certbot:v1.7.0
-  #   volumes:
-  #     - ./backend:/work
-  #     - /etc/letsencrypt:/etc/letsencrypt
-  #   command: ["--version"]
+  certbot:
+    image: certbot/certbot:v1.7.0
+    volumes:
+      - ./backend:/work
+      - /etc/letsencrypt:/etc/letsencrypt
+    command: ["--version"]
 
   db:
     build: ./infra/mysql

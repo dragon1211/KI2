@@ -43,7 +43,7 @@ class Controller extends BaseController
 
     public function imagesize ($value) {
         try {
-            return strlen($value) < 5242880; // 5 MiB（メビバイト） / 5.24288 MB（メガバイト）
+            return strlen($value) < 10485760; // 10 MiB（メビバイト） / 10.48576 MB（メガバイト）
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
             return false;
@@ -124,7 +124,7 @@ class Controller extends BaseController
         try {
             $ok = true;
             foreach (json_decode($value) as $v) {
-                if (strlen(base64_decode($v)) > 5242880) { // 5 MiB（メビバイト） / 5.24288 MB（メガバイト）
+                if (strlen(base64_decode($v)) > 10485760) { // 10 MiB（メビバイト） / 10.48576 MB（メガバイト）
                     $ok = false;
                 }
             }

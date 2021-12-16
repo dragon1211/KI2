@@ -4,12 +4,13 @@ import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
 import { CircularProgress  } from '@material-ui/core';
 
-import ModalMemo from '../../component/modal_memo';
+import ModalEditMemo from '../../component/modal_edit_memo';
 import ModalConfirm from '../../component/modal_confirm';
 import ModalPdf from '../../component/pdf/modal_pdf';
 import Notification from '../notification';
 import ModalSettingNotify from '../../component/modal_setting_notify';
 import Alert from '../../component/alert';
+import { memo } from 'react';
 
 
 const MeetingDetail = (props) => {
@@ -111,24 +112,36 @@ const MeetingDetail = (props) => {
         setNotice(response.data.notice);
         if(response.data.status_code == 200){
           var list = response.data.params;
-          const tel_list = [];
+          const email_list = [];
           for(var i in list){
-            tel_list.push(list[i].child.tel);
+            email_list.push(list[i].child.email);
           }
           const formdata = new FormData();
-          formdata.append('tel', JSON.stringify(tel_list));
+          formdata.append('email', JSON.stringify(email_list));
           formdata.append('meeting_id', props.match.params.meeting_id);
-          axios.post('/api/fathers/approvalNotification', formdata)
+          axios.post('/api/fathers/meetingEditNotification', formdata)
           .then(response=>{
             setSubmitNotify(false);
             setShowNotifySelectModal(false);
             switch(response.data.status_code){
-              case 200: setSuccess('SMSの送信に成功しました!'); break;
-              case 400: set400Error('SMSの送信に失敗しました。'); break;
+              case 200: setSuccess('通知に成功しました!'); break;
+              case 400: set400Error('通知に失敗しました。'); break;
             }
           })
         }
       });
+  }
+
+  
+  const handleUpdateMemo = (modal_memo) => {
+    let _tmp = meeting;
+    _tmp.memo = modal_memo;
+    setMeeting(_tmp);
+    const post = {
+      meeting_id: meeting.id,
+      memo: modal_memo
+    }
+    axios.put('/api/fathers/meetings/updateMemo', post)
   }
 
 
@@ -226,7 +239,7 @@ const MeetingDetail = (props) => {
                           {
                             meeting.pdf ?
                             <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52" 
-                              onClick={e=>setShowPDFModal(true)}>
+                              href={meeting.pdf} target='_blank'>
                               <span>PDFを確認する</span>
                             </a>
                             :
@@ -235,19 +248,11 @@ const MeetingDetail = (props) => {
                             </a>
                           }
                           </div>
-                          {
-                            meeting.memo ?
-                            <button type="button" 
+                          <button type="button" 
                               aria-label="お気に入り" data-tooltip="お気に入り" 
                               aria-pressed="false" 
                               className="icon a-icon like-icon icon-textFill icon-textFill-wrap a-icon-size_medium"
                               onClick = {()=>setShowMemoModal(true)} />
-                            :
-                            <button type="button" 
-                              aria-label="お気に入り" data-tooltip="お気に入り" 
-                              aria-pressed="false" 
-                              className="icon a-icon like-icon icon-text icon-text-wrap a-icon-size_medium"/>
-                          }
                           <button type="button" 
                             onClick={e => handleFavorite(meeting.id, meeting.is_favorite)} 
                             aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" className={`icon a-icon like-icon  ${meeting.is_favorite == 1 ? "icon-starFill icon-starFill-wrap" : "icon-star icon-star-wrap"} a-icon-size_medium`}></button>
@@ -263,11 +268,12 @@ const MeetingDetail = (props) => {
                 meetingId={meeting.id}
                 handleClose={()=>setShowNotifyAllModal(false)} 
               />
-              <ModalMemo 
+              <ModalEditMemo 
                 show={show_memo_modal}
                 title={"メモ"}
-                content={meeting?.memo}
+                content={meeting.memo}
                 handleClose={()=>setShowMemoModal(false)} 
+                handleUpdateMemo = {handleUpdateMemo}
               />
               <ModalConfirm 
                 show={show_delete_modal} 

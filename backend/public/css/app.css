@@ -12195,11 +12195,12 @@ categories: [layout]
 }
 .l-side-logo {
   line-height: 1;
-  margin: 35px auto;
+  margin: 35px;
+  margin-left: 50px;
 }
 @media screen and (min-width: 1068px) {
   .l-side-logo {
-    width: 38px;
+    width: 120px;
   }
 }
 @media screen and (max-width: 1067px) {
@@ -17595,6 +17596,10 @@ a {
     font-size: 16px !important;
   }
 }
+.react-pdf__Page__canvas {
+  margin: auto;
+}
+
 .react-datepicker__month-container {
   width: 250px;
   font-size: 13px;

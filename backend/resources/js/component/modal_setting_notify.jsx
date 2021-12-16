@@ -54,15 +54,15 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
     setLoaded(loaded1 && loaded2);
   },[loaded1, loaded2]);
 
-  const settingNotify = (tel) => {
+  const settingNotify = (email) => {
     const formdata = new FormData();
-    formdata.append('tel', JSON.stringify(new Array(tel)));
+    formdata.append('email', JSON.stringify(new Array(email)));
     formdata.append('meeting_id', meetingId);
-    axios.post('/api/fathers/approvalNotification', formdata)
+    axios.post('/api/fathers/meetingNotification ', formdata)
     .then(response=>{
       switch(response.data.status_code){
-        case 200: setSuccess('SMSの送信に成功しました!'); break;
-        case 400: set400Error('SMSの送信に失敗しました。'); break;
+        case 200: setSuccess('通知に成功しました!'); break;
+        case 400: set400Error('通知に失敗しました。'); break;
       }
     })
   }
@@ -104,7 +104,7 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
                         </Link>
                       </div>
                       <div className="p-notification-btn">
-                        <a onClick={e => settingNotify(item.child.tel)} className="btn-default btn-yellow btn-notification btn-r3 btn-h30 btn-w100p btn-fz14">
+                        <a onClick={e => settingNotify(item.child.email)} className="btn-default btn-yellow btn-notification btn-r3 btn-h30 btn-w100p btn-fz14">
                           <span>通知</span>
                         </a>
                       </div>

@@ -130,6 +130,12 @@ const ParentDetail = (props) => {
                             <p className="profile-name">{parent.company}</p>
                             <div className="profile-info">
                                 <div className="profile-info__item">
+                                    <p className="profile-info__icon">
+                                        <img src="/assets/img/icon/people-gray.svg" alt="People"/>
+                                    </p>
+                                    <p className="txt">{`${parent.limit}人`}</p>
+                                </div>
+                                <div className="profile-info__item">
                                     <a href={`mailto:${parent.email}`}>
                                         <p className="profile-info__icon">
                                             <img src="/assets/img/icon/mail.svg" alt="メール"/>

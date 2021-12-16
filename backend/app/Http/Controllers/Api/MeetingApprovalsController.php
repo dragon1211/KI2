@@ -5,12 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
+use App\Models\Father;
 use App\Models\Child;
 use App\Models\Meeting;
 use App\Models\MeetingApprovals;
 use App\Models\FatherRelation;
+
+use App\Mail\MeetingEditNotification;
+use App\Mail\MeetingEditAwareness;
 
 class MeetingApprovalsController extends Controller {
     public function countNonApproval (Request $r) {
@@ -49,8 +54,13 @@ class MeetingApprovalsController extends Controller {
 
         try {
             foreach (json_decode($r->children) as $child) {
+                if (null === ($c = Child::where('id', (int)$child)->first())) {
+                    return ['status_code' => 400];
+                }
+
                 $create['child_id'] = $child;
                 MeetingApprovals::create($create);
+                Mail::to($c->email)->send(new MeetingEditNotification(session()->get('fathers')['company'], $r->meeting_id));
             }
         } catch (\Throwable $e) {
             Log::critical($e->getMessage());
@@ -93,11 +103,20 @@ class MeetingApprovalsController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['承認に失敗しました。']];
         }
 
+        if (null === ($meet = Meeting::where('id', (int)$r->meeting_id)->first())) {
+            return ['status_code' => 400, 'error_messages' => ['承認に失敗しました。']];
+        }
+
+        if (null === ($father = Father::where('id', (int)$meet->father_id)->first())) {
+            return ['status_code' => 400, 'error_messages' => ['承認に失敗しました。']];
+        }
+
         // $update = ['approval_at' => null];
         $update = ['approval_at' => date('Y-m-d H:i:s')];
 
         try {
             MeetingApprovals::where('meeting_id', (int)$r->meeting_id)->where('child_id', (int)$r->child_id)->update($update);
+            Mail::to($father->email)->send(new MeetingEditAwareness(session()->get('children')['last_name'], session()->get('children')['first_name'], $r->meeting_id));
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
@@ -137,7 +156,7 @@ class MeetingApprovalsController extends Controller {
         }
 
         $meeting_approvals_select = ['id', 'child_id', 'approval_at'];
-        $child_select = ['id', 'image', 'last_name', 'first_name', 'tel'];
+        $child_select = ['id', 'image', 'last_name', 'first_name', 'tel', 'email'];
 
         if (null === ($params = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$r->meeting_id)->whereNotNull('approval_at')->get())) {
             // エラーの場合
@@ -159,7 +178,7 @@ class MeetingApprovalsController extends Controller {
         }
 
         $meeting_select = ['id', 'child_id', 'approval_at'];
-        $child_select = ['id', 'image', 'last_name', 'first_name', 'tel'];
+        $child_select = ['id', 'image', 'last_name', 'first_name', 'tel', 'email'];
 
         if (null === ($params = MeetingApprovals::select($meeting_select)->where('meeting_id', (int)$r->meeting_id)->whereNull('approval_at')->get())) {
             // エラーの場合

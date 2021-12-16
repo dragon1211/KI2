@@ -30,6 +30,7 @@ const ChildAdd = () => {
         switch(response.data.status_code){
           case 200: setSuccess(response.data.success_messages); break;
           case 400: set400Error(response.data.error_messages);  break;
+          case 401: set400Error(response.data.error_messages);  break;
           case 422: set422Errors(response.data.error_messages);  break;
         }
       });
@@ -42,7 +43,7 @@ const ChildAdd = () => {
   }
 
   const copyLineText = () => {
-    const lineText = "「KIKI」の招待が届いています。%0Aまずは以下より仮登録を行ってください。%0Ahttps%3A%2F%2Fkikikan.jp%2Fregister-temporary%2Fc-account%0A%0A▼公式サイトはこちら%0Ahttps%3A%2F%2Fkikikan.jp";
+    const lineText = "「KIKI」の招待が届いています。%0Aまずは以下より仮登録を行ってください。%0Ahttps%3A%2F%2Fkikikan.xyz%2Fc-account%2Fregister-temporary%0A%0A▼公式サイトはこちら%0Ahttps%3A%2F%2Fkikikan.xyz";
     copy(lineText);
     setSuccess('招待用URLをLINEで追信しました。');
     window.open('http://line.me/R/msg/text/?'+lineText);

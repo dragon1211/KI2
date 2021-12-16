@@ -1,9 +1,9 @@
 @component('mail::message')
-# 【KIKIkan】会員登録のご案内
+# 【KIKI】会員登録のご案内
 
-KIKIkanサービスの会員登録のご案内です。
+KIKIサービスの会員登録のご案内です。
 
-KIKIkanシステムのご利用ありがとうございます。
+KIKIシステムのご利用ありがとうございます。
 
 ※本登録完了後にホーム画面もしくはブックマークに登録してください。<br />
 ログインする際に利用します。
@@ -11,9 +11,9 @@ KIKIkanシステムのご利用ありがとうございます。
 下記URLにアクセスし、必要情報をご入力頂き<br />
 ユーザー登録を完了してください。
 
-@component('mail::button', ['url' => url('/').'/p-account/register/'.$token])
-{{ url('/') }}/p-account/register/{{ $token }}
-@endcomponent
+<a href="{{ $url }}" class="button button-primary" target="_blank" rel="noopener" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -webkit-text-size-adjust: none; border-radius: 4px; color: #fff; display: inline-block; overflow: hidden; text-decoration: none; background-color: #2d3748; border-bottom: 8px solid #2d3748; border-left: 18px solid #2d3748; border-right: 18px solid #2d3748; border-top: 8px solid #2d3748;">
+    {{ $url }}
+</a>
 
 なお、URLの有効期限は8時間となります。<br />
 URLの有効期限を過ぎると、再登録が必要になりますので、ご注意ください。
@@ -22,7 +22,7 @@ URLの有効期限を過ぎると、再登録が必要になりますので、�
 
 ■□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□■
 
-KIKIkan運営事務局<br />
+KIKI運営事務局<br />
 56@zotman.jp<br />
 {{ url('/') }}/
 

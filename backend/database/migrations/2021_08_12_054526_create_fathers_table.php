@@ -21,6 +21,7 @@ class CreateFathersTable extends Migration
             $table->string('image', 100)->nullable();
             $table->string('profile', 1000)->nullable();
             $table->string('tel', 11)->unique();
+            $table->unsignedInteger('relation_limit');
             $table->timestamps();
         });
     }

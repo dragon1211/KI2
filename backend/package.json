@@ -22,7 +22,7 @@
         "@material-ui/lab": "^5.0.0-alpha.40",
         "@material-ui/styles": "^5.0.0-beta.1",
         "@material-ui/utils": "^5.0.0-beta.0",
-        "@mui/icons-material": "^5.0.4",
+        "@mui/icons-material": "^5.2.4",
         "@mui/material": "^5.0.4",
         "@react-pdf-viewer/core": "^2.10.1",
         "@react-pdf-viewer/default-layout": "^2.10.1",

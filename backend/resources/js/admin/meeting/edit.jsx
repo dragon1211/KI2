@@ -6,7 +6,7 @@ import { LoadingButton } from '@material-ui/lab';
 import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Alert from '../../component/alert';
-
+import { Document, Page} from "react-pdf";
 
 const REGISTED_IMAGE_ID = -100;            //登録された画像を区別するために導入されます。
 
@@ -19,6 +19,7 @@ const MeetingEdit = (props) => {
     const [memo, setMemo] = useState('');
     const [text, setText] = useState('');
     const [pdf, setPdf] = useState('');
+    const [pdf_url, setPDFURL] = useState('');
     const [meeting_image, setMeetingImages] = useState([]);
     const [approval_list, setApproval] = useState([]);
     const [children_list, setChildrenList] = useState([]);
@@ -36,21 +37,18 @@ const MeetingEdit = (props) => {
 
     useEffect(()=>{
         if(!loaded) return;      //if dont load data
-        var list = [];
+        var list = [...children_list];
         if(check_radio=="all_send"){        //send all children
-            list = [...children_list];
             for(var i in list)
                 list[i].checked = true;
         }
         else if(check_radio=="pickup_send"){                     //send pickup
-            list = [...children_list];
             for(var i in list){
                 if(approval_list.findIndex(ele=>ele.child_id == list[i].id) >= 0)
                     list[i].checked = true;
                 else list[i].checked = false;
             }
         }
-        console.log('sd')
         setChildrenList(list);
     },[check_radio])
 
@@ -68,6 +66,7 @@ const MeetingEdit = (props) => {
                 setMeetingImages(response.data.params?.meeting_image);
                 setApproval(response.data.params?.approval);
                 setPdf(response.data.params?.pdf);
+                setPDFURL(response.data.params?.pdf);
                 
                 var list = [...response.data.params?.children];
                 var approval = [...response.data.params?.approval];
@@ -78,7 +77,11 @@ const MeetingEdit = (props) => {
                     else arr.push({...list[i], checked: false});
                 }
                 setChildrenList(arr);
-                (approval.length == list.length) && (list.length > 0) ? setCheckRadio("all_send") : setCheckRadio("pickup_send");
+                if((approval.length == list.length) && (approval.length > 0))
+                    setCheckRadio('all_send');
+                else if((approval.length != list.length) && (approval.length > 0))
+                    setCheckRadio('pickup_send');
+                else setCheckRadio('');
             } 
             else {
                 set400Error("失敗しました。");
@@ -191,13 +194,12 @@ const MeetingEdit = (props) => {
         let reader = new FileReader();
         let _file = e.target.files[0];
         if(!_file) return;
+        setPDFURL(URL.createObjectURL(_file))
         reader.readAsDataURL(_file);
         reader.onloadend = () => {
             setPdf(reader.result);
         }
     }
-
-
 
 	return (
         <div className="l-content">
@@ -259,7 +261,7 @@ const MeetingEdit = (props) => {
                                             {
                                                 pdf && 
                                                 <IconButton
-                                                    onClick={()=>setPdf('')}
+                                                    onClick={()=>{setPdf(''); setPDFURL('');}}
                                                     style={{position: 'absolute',
                                                         top: '-6px',
                                                         right: '-6px'}}>
@@ -276,6 +278,14 @@ const MeetingEdit = (props) => {
                                                       {_422errors.pdf}
                                                   </span> 
                                             }
+                                            <div style={{ width: '100%', height:'300px', border:'1px solid rgba(36, 77, 138, 0.1)', margin:'15px 0'}}>
+                                                {
+                                                    pdf_url &&
+                                                    <Document file={pdf_url} loading={<></>}>
+                                                        <Page pageNumber={1} loading={<></>} height={300}/>
+                                                    </Document>
+                                                }
+                                            </div>
                                         </div>
                                         <div className="edit-set edit-set-mt15">
                                             <label className="edit-set-file-label" htmlFor={meeting_image.length < 10 ? 'file_image': ''}>
@@ -322,8 +332,8 @@ const MeetingEdit = (props) => {
                                                     type="radio"
                                                     id="all_send"
                                                     name="check_radio" 
-                                                    onClick={e=>setCheckRadio(e.target.id)}
-                                                    defaultChecked = {(meeting.approval.length == meeting.children.length) && meeting.children.length > 0 ? true : false}
+                                                    onChange={e=>setCheckRadio(e.target.id)}
+                                                    checked = {(check_radio == 'all_send') ? true : false}
                                                     disabled = {meeting.children.length == 0 ? true:false}
                                                     />
                                                 <span className="lbl padding-16">全員に送信</span>
@@ -336,15 +346,15 @@ const MeetingEdit = (props) => {
                                                     type="radio"
                                                     id="pickup_send"
                                                     name="check_radio" 
-                                                    onClick={e=>setCheckRadio(e.target.id)}
-                                                    defaultChecked = {(meeting.approval.length != meeting.children.length) && meeting.children.length > 0  ? true : false}
+                                                    onChange={e=>setCheckRadio(e.target.id)}
+                                                    checked = {(check_radio == 'pickup_send')  ? true : false}
                                                     disabled = {meeting.children.length == 0 ? true:false}
                                                     />
                                                 <span className="lbl padding-16">選んで送信</span>
                                             </label>
                                         </div>
 
-                                        <div className={`checkbox-wrap edit-bg ${(check_radio == "all_send" && meeting.children.length > 0) && 'd-none'}`}>
+                                        <div className={`checkbox-wrap edit-bg d-none ${(check_radio == 'pickup_send') && 'd-block'}`}>
                                         {
                                             children_list.length != 0 ?
                                                 children_list?.map((item, k)=>

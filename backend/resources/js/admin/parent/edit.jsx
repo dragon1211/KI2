@@ -13,6 +13,7 @@ const ParentEdit = (props) => {
     const [email, setEmail] = useState('');
     const [tel, setTelephone] = useState('');
     const [profile, setProfile] = useState('');  
+    const [limit, setLimit] = useState('');
     const [parent, setParent] = useState(null);
 
     const [_422errors, set422Errors] = useState({
@@ -20,6 +21,7 @@ const ParentEdit = (props) => {
         email:'',
         tel:'',
         profile:'',
+        relation_limit:''
     });
     const [_400error, set400Error] = useState('');
     const [_success, setSuccess] = useState('');
@@ -41,6 +43,7 @@ const ParentEdit = (props) => {
                     setEmail(parent.email);
                     setTelephone(parent.tel);
                     setProfile(parent.profile ? parent.profile: '');  
+                    setLimit(parent.limit);
                 }
             }
             else{
@@ -57,9 +60,11 @@ const ParentEdit = (props) => {
             email:'',
             tel:'',
             profile:'',
+            relation_limit:''
         });
         setSubmit(true);
         var request = {
+            relation_limit: limit,
             company: company,
             email: email,
             tel: tel,
@@ -101,6 +106,18 @@ const ParentEdit = (props) => {
                         <div className="edit-wrap">
                             <div className="edit-content">
                                 <form onSubmit={handleSubmit} className="edit-form">
+
+                                    <div className="edit-set">
+                                        <label htmlFor="relation_limit"   className="control-label ft-12"> 子の人数制限 </label>
+                                        <input type="number" min="0" step="1" name="relation_limit" id="relation_limit"  className = {`input-default input-nameSei input-h60 ${ _422errors.relation_limit && "is-invalid c-input__target" }`}  value={limit} onChange={e=>setLimit(e.target.value)}/>
+                                        {
+                                            _422errors.relation_limit && 
+                                                <span className="l-alert__text--error ft-16 ft-md-14">
+                                                    { _422errors.relation_limit }
+                                                </span>
+                                        }
+                                    </div>
+
                                     <div className="edit-set">
                                         <label htmlFor="company"   className="control-label ft-12"> 会社名</label>
                                         <input type="text" name="company" id="company"  className = {`input-default input-nameSei input-h60 ${ _422errors.company && "is-invalid c-input__target" }`}  value={company} onChange={e=>setCompany(e.target.value)}/>

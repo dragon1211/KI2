@@ -157,8 +157,8 @@ const MeetingDetail = (props) => {
                         <div className="p-article__pdf__btn">
                           {
                             meeting.pdf ?
-                            <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52" 
-                              onClick={e=>setShowPDFModal(true)}>
+                            <a className="btn-default btn-yellow btn-pdf btn-r8 btn-h52" 
+                              href={meeting.pdf} target='_blank'>
                               <span>PDFを確認する</span>
                             </a>
                             :

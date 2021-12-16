@@ -72,7 +72,7 @@ class ChildrenController extends Controller {
             $telact->push();
 
             // SMSを送ります。
-            $message = view('sms.children.register', ['token' => $token]);
+            $message = view('sms.children.register.temporary', ['token' => $token]);
             \Notification::route('nexmo', '81'.substr($r->tel, 1))->notify(new SmsNotification($message));
 
             DB::commit();
@@ -165,6 +165,10 @@ class ChildrenController extends Controller {
 
             $telact->child_id = $child->id;
             $telact->save();
+
+            // SMSを送ります。
+            $message = view('sms.children.register.main', ['tel' => $r->tel, 'password' => $r->password]);
+            \Notification::route('nexmo', '81'.substr($r->tel, 1))->notify(new SmsNotification($message));
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -263,7 +267,7 @@ class ChildrenController extends Controller {
             return ['status_code' => 400];
         }
         $result = [];
-        $child_select = ['id', 'image', 'first_name', 'last_name', 'company', 'tel'];
+        $child_select = ['id', 'image', 'first_name', 'last_name', 'company', 'tel', 'email'];
 
         if (null === ($list = FatherRelation::select('child_id')->where('father_id', (int)$r->father_id)->orderBy('created_at', 'desc')->get())) {
             return ['status_code' => 400];
@@ -549,7 +553,7 @@ class ChildrenController extends Controller {
             $img = $child->image;
             $child->delete();
 
-            if (!is_null($img)) {
+            if (!is_null($img) && $img != '/assets/default/avatar.jpg') {
                 $img = str_replace('/files/', '', $child->image);
                 if (!Storage::disk('private')->exists($img)) {
                     Log::warning($img.'というパスは不正です。');

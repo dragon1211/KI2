@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class EmailActivation extends Model
 {
     use HasFactory;
-    protected $fillable = ['type', 'father_id', 'email', 'token', 'ttl'];
+    protected $fillable = ['type', 'father_id', 'email', 'token', 'ttl', 'relation_limit'];
     protected $attributes = ['type' => 0];
 }
