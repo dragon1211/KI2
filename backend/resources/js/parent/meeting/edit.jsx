@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-import { CircularProgress  } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
 import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -9,7 +8,10 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import Alert from '../../component/alert';
 import Notification from '../notification';
-import { Document, Page} from "react-pdf";
+import PreviewPDF from '../../component/preview_pdf';
+import PageLoader from '../../component/page_loader';
+
+
 
 const REGISTED_IMAGE_ID = -100;            //登録された画像を区別するために導入されます。
 
@@ -41,8 +43,10 @@ const MeetingEdit = (props) => {
     const [check_radio, setCheckRadio] = useState(null);
     const [image_sending, setImageSending] = useState(false);
 
+    const isMountedRef = useRef(true);
 
     useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         axios.get(`/api/fathers/meetings/detail/${meeting_id}`, {params: { father_id: father_id}})
         .then(response => {
@@ -152,7 +156,7 @@ useEffect(()=>{
                     break;
                 }
                 case 400: set400Error("編集が失敗しました。"); break;
-                case 422: set422Errors(response.data.error_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
             }
         });
     }
@@ -189,7 +193,7 @@ useEffect(()=>{
                 switch(response.data.status_code){
                     case 200: setMeetingImages(response.data.params); break;
                     case 400: set400Error("画像の登録に失敗しました。"); break;
-                    case 422: set422Errors(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                 }
             })
         }, 
@@ -244,7 +248,7 @@ useEffect(()=>{
                     <div className="p-article-wrap position-relative" style={{ minHeight:'500px'}}>
                     {
                         (!loaded || image_sending) &&
-                            <CircularProgress className="css-loader"/>
+                            <PageLoader/>
                     }
                     {
                         loaded && meeting &&
@@ -307,14 +311,7 @@ useEffect(()=>{
                                                       {_422errors.pdf}
                                                   </span> 
                                             }
-                                            <div style={{ width: '100%', height:'300px', border:'1px solid rgba(36, 77, 138, 0.1)', margin:'15px 0'}}>
-                                                {
-                                                    pdf_url &&
-                                                    <Document file={pdf_url} loading={<></>}>
-                                                        <Page pageNumber={1} loading={<></>} height={300}/>
-                                                    </Document>
-                                                }
-                                            </div>
+                                            <PreviewPDF pdf_url={pdf_url}></PreviewPDF>
                                         </div>
                                         <div className="edit-set edit-set-mt15">
                                             <label className="edit-set-file-label" htmlFor={meeting_image.length < 10 ? 'file_image': ''}>

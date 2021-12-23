@@ -10,6 +10,7 @@ import ParentSignUpComplete from './register/complete';
 import ParentSignUpError from './register/error';
 import ParentWithdrawalComplete from './withdrawal_complete';
 
+import ScrollToTop from '../../component/scroll_top';
 
 export default class ParentAuth extends Component {
     render() {
@@ -17,26 +18,21 @@ export default class ParentAuth extends Component {
         <main className="l-single-main">
             <div className="l-centeringbox">
                 <div className="l-centeringbox-wrap">
-                    <div className="l-single-container">
-                        <div className="l-single-inner">
+                    <BrowserRouter>
+                        <ScrollToTop/>
+                        <Switch>
+                            <Route exact path='/p-account/register/:token' component={ParentSignUp} />
+                            <Route exact path='/p-account/register/complete/:token' component={ParentSignUpComplete} />
+                            <Route exact path='/p-account/register/error/:token' component={ParentSignUpError} />
 
-                            <BrowserRouter>
-                                <Switch>
-                                    <Route exact path='/p-account/register/:token' component={ParentSignUp} />
-                                    <Route exact path='/p-account/register/complete/:token' component={ParentSignUpComplete} />
-                                    <Route exact path='/p-account/register/error/:token' component={ParentSignUpError} />
-
-                                    <Route exact path="/p-account/forgot-password" component = {ParentForgotPassword} />
-                                    <Route exact path="/p-account/forgot-password/reset/:token" component = {ParentForgotPasswordReset} />
-                                    <Route exact path="/p-account/forgot-password/complete" component = {ParentForgotPasswordComplete} />
-                                    
-                                    <Route exact path="/p-account/login" component = {ParentLogin} />
-                                    <Route exact path="/p-account/withdrawal/complete" component = {ParentWithdrawalComplete} />
-                                </Switch>
-                            </BrowserRouter>
-
-                        </div>
-                    </div>
+                            <Route exact path="/p-account/forgot-password" component = {ParentForgotPassword} />
+                            <Route exact path="/p-account/forgot-password/reset/:token" component = {ParentForgotPasswordReset} />
+                            <Route exact path="/p-account/forgot-password/complete" component = {ParentForgotPasswordComplete} />
+                            
+                            <Route exact path="/p-account/login" component = {ParentLogin} />
+                            <Route exact path="/p-account/withdrawal/complete" component = {ParentWithdrawalComplete} />
+                        </Switch>
+                    </BrowserRouter>
                 </div>
             </div>
         </main>
@@ -48,7 +44,7 @@ export default class ParentAuth extends Component {
 // ----------------------------------------------------------------------
 
 if(document.getElementById('p-auth')){
-    console.log("v1: 2021/12/15")
+    console.log("v1: 2021/12/21")
 	ReactDOM.render(
 		<ParentAuth />,
 		document.getElementById('p-auth')

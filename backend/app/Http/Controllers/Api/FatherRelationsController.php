@@ -15,6 +15,14 @@ use App\Models\Meeting;
 use App\Models\MeetingApprovals;
 
 class FatherRelationsController extends Controller {
+    public function check () {
+        if (FatherRelation::select('id')->where('father_id', (int)session()->get('fathers')['id'])->count() == 0) {
+            return ['status_code' => 401, 'error_messages' => ['契約上限数に達した為、メンバー追加できません。']];
+        }
+
+        return ['status_code' => 200];
+    }
+
     public function register (Request $r) {
         if (!isset($r->father_id)) {
             return ['status_code' => 400, 'error_messages' => ['子の追加に失敗しました。']];
@@ -37,7 +45,7 @@ class FatherRelationsController extends Controller {
         }
 
         if ($father->relation_limit <= FatherRelation::select('id')->where('father_id', (int)$r->father_id)->count()) {
-            return ['status_code' => 401, 'error_messages' => ['契約上限数に達した為(改行)メンバー追加できません。']];
+            return ['status_code' => 401, 'error_messages' => ['契約上限数に達した為、メンバー追加できません。']];
         }
 
         $create = [

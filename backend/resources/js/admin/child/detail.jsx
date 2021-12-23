@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
 
-import { CircularProgress  } from '@material-ui/core';
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 import ModalConfirm from '../../component/modal_confirm';
  
 
@@ -25,8 +25,11 @@ const ChildDetail = (props) => {
     const [_422errors, set422Errors] = useState({ image: '' });
     const [_success, setSuccess] = useState(props.history.location.state);
     const [show_confirm_modal, setShowConfirmModal] = useState(false);
+
+    const isMountedRef = useRef(true);
     
     useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         axios.get(`/api/admin/children/detail/${props.match.params?.child_id}`)
         .then(response => {
@@ -61,7 +64,7 @@ const ChildDetail = (props) => {
                         break;
                     }
                     case 400: set400Error(response.data.error_messages); break;
-                    case 422: set422Errors(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                 } 
             });
         };
@@ -100,7 +103,7 @@ const ChildDetail = (props) => {
                     <div className="profile-wrap" style={{ minHeight:'500px'}}>
                     {
                         (!loaded || submit_image) &&
-                            <CircularProgress className="css-loader"/>
+                            <PageLoader />
                     }
                     { 
                         loaded && child &&

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
 import moment from 'moment';
-import { CircularProgress  } from '@material-ui/core';
 import IconButton from '@mui/material/IconButton';
 
 import Notification from '../notification';
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 import InfiniteScroll from "react-infinite-scroll-component";
 import { isObject } from 'lodash';
 
@@ -26,13 +26,16 @@ const Favorite = (props) => {
     const [fetch_meeting_list_favorite, setFetchMeetingListOfFavorite] = useState([]);
     const [_success, setSuccess] = useState(props.history.location.state);
     const [_400error, set400Error] = useState('');
-   
+
+    const isMountedRef = useRef(true);
+    
     useEffect(()=>{
-        setLoaded(loaded1 && loaded2);
+      setLoaded(loaded1 && loaded2);
     },[loaded1, loaded2])
-
-
+    
+    
     useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         let father_id = document.getElementById('father_id').value;
         axios.get('/api/fathers/meetings/listOfNonFavoriteOfFather', {params:{father_id: father_id}})
@@ -181,8 +184,7 @@ const Favorite = (props) => {
                         </div>
                     </div>
                     {
-                        !loaded &&
-                          <CircularProgress className="css-loader"/>
+                        !loaded && <PageLoader/>
                     }
                     {
                         loaded &&

@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { CircularProgress  } from '@material-ui/core';
+import React, { useRef, useEffect, useState } from 'react';
 import moment from 'moment';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
@@ -7,6 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
@@ -22,16 +22,19 @@ const Meeting = (props) => {
   const [_422errors, set422errors] = useState({keyword:''});
   const [_success, setSuccess] = useState(props.history.location.state);
 
-
+  const isMountedRef = useRef(true);
+  
+  
   useEffect(()=>{
-      if(localStorage.getItem("from_login")){
-        setSuccess("ログインに成功しました!");
-        localStorage.removeItem("from_login");
-      }
+    if(localStorage.getItem("from_login")){
+      setSuccess("ログインに成功しました!");
+      localStorage.removeItem("from_login");
+    }
   },[]);
-
-
+  
+  
   useEffect(() => {
+    isMountedRef.current = false;
     setLoaded(false);
     axios.get('/api/admin/meetings/list').then(response => {
       setLoaded(true);
@@ -123,7 +126,7 @@ const Meeting = (props) => {
                 <form className="position-relative"  onSubmit={handleSearch}>
                     <label className="control-label" htmlFor="keyword">キーワード</label>
                     <input type="search" name="keyword" 
-                        className="input-default input-keyword input-w380 input-h60"
+                        className="input-default input-keyword input-h60"
                         id="keyword"  value={keyword} 
                         onChange={e=> setKeyword(e.target.value)}
                     />
@@ -135,8 +138,7 @@ const Meeting = (props) => {
             <div className="search-wrap">
               <div className="search-content">
                 {
-                  !loaded &&
-                    <CircularProgress className="css-loader"/>
+                  !loaded && <PageLoader />
                 }
                 { 
                   loaded && 

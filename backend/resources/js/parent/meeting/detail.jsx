@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import moment from 'moment';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
-import { CircularProgress  } from '@material-ui/core';
 
 import ModalEditMemo from '../../component/modal_edit_memo';
 import ModalConfirm from '../../component/modal_confirm';
@@ -10,8 +9,8 @@ import ModalPdf from '../../component/pdf/modal_pdf';
 import Notification from '../notification';
 import ModalSettingNotify from '../../component/modal_setting_notify';
 import Alert from '../../component/alert';
-import { memo } from 'react';
-
+import Thumbnail from '../../component/thumbnail';
+import PageLoader from '../../component/page_loader';
 
 const MeetingDetail = (props) => {
 
@@ -32,8 +31,10 @@ const MeetingDetail = (props) => {
 
   const [meeting, setMeeting] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
+    isMountedRef.current = false;
     let father_id = document.getElementById('father_id').value;
     setLoaded(false);
     axios.get(`/api/fathers/meetings/detail/${props.match.params?.meeting_id}`, {params: { father_id: father_id}})
@@ -145,6 +146,13 @@ const MeetingDetail = (props) => {
   }
 
 
+  const handlePDFOpen = (pdf) => {
+    var pieces = pdf.split('/');
+    var file_name = pieces[pieces.length-1];
+    window.open(`/pdf/${file_name}`, '_blank');
+  }
+
+
   return (
       <div className="l-content">
         <div className="l-content-w560">
@@ -155,8 +163,7 @@ const MeetingDetail = (props) => {
             <Notification notice={notice}/>
           </div>
           {
-            !loaded && 
-              <CircularProgress className="css-loader"/>
+            !loaded && <PageLoader />
           }
           {
             loaded && meeting &&
@@ -218,11 +225,7 @@ const MeetingDetail = (props) => {
                       <div className="p-article__context">
     
                         <div className="p-file-list">
-                          <div className="p-file-for">
-                              <figure>
-                              {  thumbnail &&  <img src={thumbnail} alt="thumbnail"/>  }
-                              </figure>
-                          </div>
+                          <Thumbnail image={thumbnail}/>
                           <div className="p-file-nav">
                           { 
                             meeting.meeting_image.map((v, inx) => 
@@ -239,7 +242,7 @@ const MeetingDetail = (props) => {
                           {
                             meeting.pdf ?
                             <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52" 
-                              href={meeting.pdf} target='_blank'>
+                              onClick={()=>handlePDFOpen(meeting.pdf)}>
                               <span>PDFを確認する</span>
                             </a>
                             :

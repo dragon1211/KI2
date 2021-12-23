@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
 import Dialog from '@mui/material/Dialog';
@@ -28,7 +28,10 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
   const [loaded2, setLoaded2] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
+  const isMountedRef = useRef(true);
+  
   useEffect(() => {
+    isMountedRef.current = false;
     setLoaded1(false);
     axios.get('/api/fathers/meeting/approvals/listChildrenOfApprovel', {params: { meeting_id: meetingId }})
     .then((response) => {
@@ -37,9 +40,6 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
         setApproval(response.data.params);
       } 
     });
-  }, []);
-
-  useEffect(() => {
     setLoaded2(false);
     axios.get('/api/fathers/meeting/approvals/listChildrenOfUnapprovel', {params: { meeting_id: meetingId }})
     .then((response) => {
@@ -50,15 +50,17 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
     });
   }, []);
 
+
   useEffect(()=>{
     setLoaded(loaded1 && loaded2);
   },[loaded1, loaded2]);
 
+  
   const settingNotify = (email) => {
     const formdata = new FormData();
     formdata.append('email', JSON.stringify(new Array(email)));
     formdata.append('meeting_id', meetingId);
-    axios.post('/api/fathers/meetingNotification ', formdata)
+    axios.post('/api/fathers/meetingNotification', formdata)
     .then(response=>{
       switch(response.data.status_code){
         case 200: setSuccess('通知に成功しました!'); break;
@@ -85,7 +87,14 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
         </DialogTitle>
         <DialogContent className="position-relative">
           {
-            !loaded && <CircularProgress className="modal-css-loader"/>
+            !loaded && 
+              <CircularProgress 
+                className="modal-css-loader"
+                sx={{ 
+                  animationDuration: '600ms',
+                }}
+                thickness={2}
+              />
           }
           {
             loaded &&

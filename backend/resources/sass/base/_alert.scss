@@ -15,6 +15,9 @@
     z-index: 1000;
     // duration | timing-function | delay | iteration-count | direction | fill-mode | play-state | name
     animation: 1s ease-out 2s 1 normal forwards running fadeOut;
+    -moz-animation: 1s ease-out 2s 1 normal forwards running fadeOut;
+    -webkit-animation: 1s ease-out 2s 1 normal forwards running fadeOut;
+    -o-animation: 1s ease-out 2s 1 normal forwards running fadeOut;
 
 }
 .alert-fail {
@@ -52,10 +55,17 @@
 @keyframes fadeOut {
     0% {
         transform: translateY(0%);
+        -moz-transform: translateY(0%);
+        -webkit-transform: translateY(0%);
+        -o-transform: translateY(0%);
+        
     }
     100% {
         opacity: 0;
         display: none;
         transform: translateY(-100%);
+        -moz-transform: translateY(-100%);
+        -webkit-transform: translateY(-100%);
+        -o-transform: translateY(-100%);
     }
 }

@@ -18,7 +18,7 @@ export default function Side() {
         document.getElementsByClassName(id)[0].classList.add('nav-active');
         setSelected(id);
     }
-    
+
     return (
         <div className="l-side">
             <div className="l-side-logo">

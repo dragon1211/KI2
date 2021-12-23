@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { CircularProgress  } from '@material-ui/core';
+import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
@@ -21,7 +21,10 @@ const Parent = (props) => {
   const [_400error, set400Error] = useState('');
   const [_success, setSuccess] = useState(props.history.location.state);
 
+  const isMountedRef = useRef(true);
+    
   useEffect(() => {
+    isMountedRef.current = false;
     setLoaded(false);
     axios.get('/api/admin/fathers/list')
     .then((response) => {
@@ -97,7 +100,7 @@ const Parent = (props) => {
               <form className="position-relative"  onSubmit={handleSearch}>
                   <label className="control-label" htmlFor="keyword">キーワード</label>
                   <input type="search" name="keyword" 
-                      className="input-default input-keyword input-w380 input-h60"
+                      className="input-default input-keyword input-h60"
                       id="keyword"  value={keyword} 
                       onChange={e=> setKeyword(e.target.value)}
                   />
@@ -110,8 +113,7 @@ const Parent = (props) => {
           <div className="search-wrap">
             <div className="search-content">
               {
-                !loaded &&
-                  <CircularProgress className="css-loader"/>
+                !loaded && <PageLoader />
               }
               { 
                 loaded && 

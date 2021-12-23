@@ -166,6 +166,14 @@ categories: [project]
     &-list{
       display: flex;
       align-items: center;
+      @include pc{
+        overflow: hidden;
+      }
+      @include sp{
+        overflow-x: scroll;
+        overflow-y: hidden;
+        overflow-y: -moz-hidden-unscrollable;
+      }
     }
     &__item{
       &:not(:first-child){

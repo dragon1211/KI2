@@ -18,12 +18,14 @@ import ParentPasswordEdit from './parent/password_edit';
 import ParentRegister from './parent/register';
 
 import Side from './side';
+import ScrollToTop from '../component/scroll_top';
 
 export default class AdminApp extends Component {
     render() {
         return (
             <main className="l-container meeting-consent">
             <BrowserRouter>
+                <ScrollToTop />
                 <Switch>
                     <Route exact path='/admin/meeting' component={Meeting} />    
                     <Route exact path='/admin/meeting/detail/:meeting_id' component={MeetingDetail} />    

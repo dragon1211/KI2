@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { LoadingButton } from '@material-ui/lab';
-import { CircularProgress  } from '@material-ui/core';
 
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 
 
 const ChildEdit = (props) => {
@@ -33,8 +33,10 @@ const ChildEdit = (props) => {
     const [submit, setSubmit] = useState(false);
     const [loaded, setLoaded] = useState(false);
 
-
+    const isMountedRef = useRef(true);
+    
     useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         axios.get(`/api/admin/children/detail/${props.match.params?.child_id}`)
         .then(response => {
@@ -89,7 +91,7 @@ const ChildEdit = (props) => {
                     break;
                 }
                 case 400: set400Error(response.data.error_messages); break;
-                case 422: set422Errors(response.data.error_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
             }
         })
     }
@@ -108,8 +110,7 @@ const ChildEdit = (props) => {
             <div className="l-content-wrap">
                 <section className="edit-container">
                     {
-                        !loaded &&
-                            <CircularProgress className="css-loader"/>
+                        !loaded && <PageLoader />
                     }
                     {
                         loaded && child &&

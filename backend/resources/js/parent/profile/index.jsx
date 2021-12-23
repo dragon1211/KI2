@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import IconButton from "@material-ui/core/IconButton";
 import axios from 'axios';
-import { CircularProgress  } from '@material-ui/core';
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 import Notification from '../notification';
 
 const Profile = (props) => {
@@ -22,8 +22,10 @@ const Profile = (props) => {
     const [submit_image, setSubmitImage] = useState(false);
 
     const father_id = document.getElementById('father_id').value;
-
+    const isMountedRef = useRef(true);
+    
     useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         axios.get('/api/fathers/detail/'+father_id)
         .then(response => {
@@ -78,7 +80,7 @@ const Profile = (props) => {
                         break;
                     }
                     case 400: set400Error(response.data.error_messages); break;
-                    case 422: set422Errors(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                 } 
             });
         };
@@ -98,7 +100,7 @@ const Profile = (props) => {
                 <section className="profile-container">
                     {
                         (!loaded || submit_image) &&
-                            <CircularProgress className="css-loader"/>
+                            <PageLoader/>
                     }
                     {
                         loaded &&

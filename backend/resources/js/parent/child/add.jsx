@@ -12,6 +12,7 @@ const ChildAdd = () => {
 
   const [_success, setSuccess] = useState('');
   const [_400error, set400Error] = useState('');
+  const [_401error, set401Error] = useState('');
   const [_422errors, set422Errors] = useState({identity: ''});
   const [submit, setSubmit] = useState(false);
   const father_id = document.getElementById('father_id').value;
@@ -19,6 +20,7 @@ const ChildAdd = () => {
   const handleSubmit = (e) => {
       e.preventDefault();
       set422Errors({identity: ''});
+      set401Error('');
       const formdata = new FormData();
       formdata.append('identity', identity);
       formdata.append('father_id', father_id);
@@ -30,8 +32,8 @@ const ChildAdd = () => {
         switch(response.data.status_code){
           case 200: setSuccess(response.data.success_messages); break;
           case 400: set400Error(response.data.error_messages);  break;
-          case 401: set400Error(response.data.error_messages);  break;
-          case 422: set422Errors(response.data.error_messages);  break;
+          case 401: set401Error(response.data.error_messages); set400Error(response.data.error_messages);  break;
+          case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages);  break;
         }
       });
   }
@@ -49,6 +51,9 @@ const ChildAdd = () => {
     window.open('http://line.me/R/msg/text/?'+lineText);
   }
 
+  const contactMailText = 'mailto:56@zotman.jp?subject=&amp;body='+
+                          '▼%20件名%0AKIKIメンバー追加の件%0A▼%20本文%0Aこの度はKIKIシステムをご利用いただきありがとうございます。%0A会社名などを記載の上送信してください。担当者より直接メール又は電話にてご連絡いたします。%0A%0A会社名%0A担当者名%0A電話番号%0Aメールアドレス%0A%0A※3営業日までに折り返しがない場合はお手数ですが再度メールにてお問い合わせください。%0A%0AKIKI運営事務局%0A56%40zotman.jp'
+
 	return (
     <div className="l-content">
       <div className="l-content-w560">
@@ -63,7 +68,12 @@ const ChildAdd = () => {
           <section className="edit-container">
             <div className="edit-wrap">
               <div className="edit-content">
-
+                {
+                  _401error &&
+                  <span className="mb-40-px l-alert__text--error ft-18 ft-md-16 ">
+                      追加する場合は<a href={contactMailText} target='_blank' style={{ color:'#4CA6FF', textDecoration:'initial !important' }}>こちらよりお問い合わせ</a>お願いします。
+                  </span> 
+                }
                 <form className="edit-form" onSubmit={handleSubmit}>
                   <div className="edit-set">
                     <label className="control-label" htmlFor="identify">追加する子のIDを入力</label>

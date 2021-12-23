@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
-import { CircularProgress  } from '@material-ui/core';
 
 import Notification from '../notification';
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 
 const ParentDetail = (props) => {
 
@@ -16,30 +16,31 @@ const ParentDetail = (props) => {
     const [_400error, set400Error] = useState('');
     const [_404error, set404Error] = useState('');
     const [_success, setSuccess] = useState('');
-
-    useEffect(
-        () => {
-            setLoaded(false);
-            axios.get('/api/children/fathers/detail/'+props.match.params.father_id)
-            .then(response => {
-                setLoaded(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code==200){
-                    setParent(response.data.params);
-                }
-                else {
-                    set400Error("失敗しました。");
-                }
-            })
-            .catch(err=>{
-                setLoaded(true);
-                setNotice(err.response.data.notice);
-                if(err.response.status==404){
-                    set404Error(err.response.data.message);
-                }
-            })
-        },[]
-    );
+    
+    const isMountedRef = useRef(true);
+    
+    useEffect(() => {
+        isMountedRef.current = false;
+        setLoaded(false);
+        axios.get('/api/children/fathers/detail/'+props.match.params.father_id)
+        .then(response => {
+            setLoaded(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code==200){
+                setParent(response.data.params);
+            }
+            else {
+                set400Error("失敗しました。");
+            }
+        })
+        .catch(err=>{
+            setLoaded(true);
+            setNotice(err.response.data.notice);
+            if(err.response.status==404){
+                set404Error(err.response.data.message);
+            }
+        })
+    },[]);
 
     useEffect(()=>{
         var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
@@ -61,8 +62,7 @@ const ParentDetail = (props) => {
             <div className="l-content-wrap">
                 <section className="profile-container">
                 {
-                    !loaded &&
-                        <CircularProgress className="css-loader"/>
+                    !loaded && <PageLoader/>
                 }
                 {
                     loaded && parent &&

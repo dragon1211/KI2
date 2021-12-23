@@ -1,6 +1,6 @@
-@extends('c_account.layout')
+@extends('common.layout')
 
-@section('title', '子')
+@section('title', 'KIKI｜子')
 
 @php 
     $routers = ['meeting', 'parent', 'search', 'profile'];

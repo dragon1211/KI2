@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
-import { CircularProgress  } from '@material-ui/core';
 
 import Notification from '../notification';
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const INFINITE = 10;
@@ -20,8 +20,10 @@ const Parent = () => {
     const [_400error, set400Error] = useState('');
     const [_success, setSuccess] = useState('');
 
-
+    const isMountedRef = useRef(true);
+    
     useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         let child_id = document.getElementById('child_id').value;
         axios.get('/api/children/fathers/listOfChild', {params: {child_id: child_id}})
@@ -65,8 +67,7 @@ const Parent = () => {
 
             <div className="l-content-wrap">
             {
-                !loaded &&
-                    <CircularProgress className="css-loader"/>
+                !loaded && <PageLoader />
             }
             {
                 loaded && 

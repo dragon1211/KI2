@@ -1,6 +1,6 @@
-@extends('admin.layout')
+@extends('common.layout')
 
-@section('title', '管理者ログイン')
+@section('title', 'KIKI｜管理者')
 
 @section('content')
 <div id="admin-login"></div>

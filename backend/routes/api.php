@@ -26,9 +26,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::group(['prefix' => 'fathers'], function () {
             Route::get('/list', '\App\Http\Controllers\Api\FathersController@list');
             Route::get('/search', '\App\Http\Controllers\Api\FathersController@search');
-            Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage');
-            Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile');
-            Route::put('/updatePassword/{father_id}', '\App\Http\Controllers\Api\FathersController@updatePassword');
+            Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage')->name('pia');
+            Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile')->name('pua');
+            Route::put('/updatePassword/{father_id}', '\App\Http\Controllers\Api\FathersController@updatePassword')->name('ppa');
             Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail')->name('pda');
             Route::delete('/delete/{father_id}', '\App\Http\Controllers\Api\FathersController@withdrawal');
             Route::post('/registerTemporary', '\App\Http\Controllers\Api\FathersController@registerTemporary');
@@ -38,9 +38,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::group(['prefix' => 'children'], function () {
             Route::get('/list', '\App\Http\Controllers\Api\ChildrenController@list');
             Route::get('/search', '\App\Http\Controllers\Api\ChildrenController@search');
-            Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile');
-            Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage');
-            Route::put('/updatePassword/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updatePassword');
+            Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile')->name('cua');
+            Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage')->name('cia');
+            Route::put('/updatePassword/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updatePassword')->name('cpa');
             Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail')->name('cda');
             Route::delete('/delete/{child_id}', '\App\Http\Controllers\Api\ChildrenController@withdrawal');
         });
@@ -75,14 +75,15 @@ Route::post('/contacts/register', '\App\Http\Controllers\Api\ContactsController@
 
 Route::group(['prefix' => 'fathers'], function () {
     // FathersController
+    Route::get('/checkRegisterMain', '\App\Http\Controllers\Api\FathersController@checkRegisterMain');
     Route::post('/registerMain', '\App\Http\Controllers\Api\FathersController@registerMain');
     Route::post('/requestPassword', '\App\Http\Controllers\Api\FathersController@requestPassword');
     Route::post('/login', '\App\Http\Controllers\Api\FathersController@login');
-    Route::put('/updatePassword/{father_id?}', '\App\Http\Controllers\Api\FathersController@updatePassword');
+    Route::put('/updatePassword/{father_id?}', '\App\Http\Controllers\Api\FathersController@updatePassword')->name('ppp');
 
     Route::group(['middleware' => ['auth:fathers', 'notice.incomplete']], function () {
-        Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage');
-        Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile');
+        Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage')->name('pip');
+        Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile')->name('pup');
         Route::delete('/withdrawal', '\App\Http\Controllers\Api\FathersController@withdrawal');
         Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail')->name('pdp');
         Route::post('/meetingNotification', '\App\Http\Controllers\Api\FathersController@approvalNotification')->name('cmnotifynew');
@@ -133,6 +134,7 @@ Route::group(['prefix' => 'fathers'], function () {
 
         // FatherRelationsController
         Route::group(['prefix' => 'relations'], function () {
+            Route::get('/check', '\App\Http\Controllers\Api\FatherRelationsController@check');
             Route::post('/register', '\App\Http\Controllers\Api\FatherRelationsController@register');
             Route::put('/updateHireDate/{child_id}', '\App\Http\Controllers\Api\FatherRelationsController@updateHireDate');
             Route::delete('/deleteRelationChild/{child_id}', '\App\Http\Controllers\Api\FatherRelationsController@deleteRelationChild');
@@ -143,15 +145,16 @@ Route::group(['prefix' => 'fathers'], function () {
 // ChildrenController
 Route::group(['prefix' => 'children'], function () {
     Route::post('/registerTemporary', '\App\Http\Controllers\Api\ChildrenController@registerTemporary');
+    Route::get('/checkRegisterMain', '\App\Http\Controllers\Api\ChildrenController@checkRegisterMain');
     Route::post('/registerMain', '\App\Http\Controllers\Api\ChildrenController@registerMain');
     Route::post('/requestPassword', '\App\Http\Controllers\Api\ChildrenController@requestPassword');
     Route::post('/login', '\App\Http\Controllers\Api\ChildrenController@login');
-    Route::put('/updatePassword/{child_id?}', '\App\Http\Controllers\Api\ChildrenController@updatePassword');
+    Route::put('/updatePassword/{child_id?}', '\App\Http\Controllers\Api\ChildrenController@updatePassword')->name('cpc');
 
     Route::group(['middleware' => ['auth:children', 'notice.nonapproval']], function () {
         Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail')->name('cdc');
-        Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage');
-        Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile');
+        Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage')->name('cuc');
+        Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile')->name('cpc');
         Route::delete('/withdrawal', '\App\Http\Controllers\Api\ChildrenController@withdrawal');
 
         // FathersController

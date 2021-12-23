@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useHistory } from 'react-router-dom';
-import { CircularProgress  } from '@material-ui/core';
 
 import Notification from '../notification';
 import moment from 'moment';
@@ -9,6 +8,8 @@ import Alert from '../../component/alert';
 import ModalPdf from '../../component/pdf/modal_pdf';
 import ModalMemo from '../../component/modal_memo';
 import ModalConfirm from '../../component/modal_confirm';
+import Thumbnail from '../../component/thumbnail';
+import PageLoader from '../../component/page_loader';
 
 const MeetingDetail = (props) => {
 
@@ -27,7 +28,11 @@ const MeetingDetail = (props) => {
     const [_404error, set404Error] = useState('');
     const [_success, setSuccess] = useState('');
 
+    const isMountedRef = useRef(true);
+    
+    
     useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         let child_id = document.getElementById('child_id').value;
         axios.get(`/api/children/meetings/detail/${props.match.params?.meeting_id}`, {params:{child_id: child_id}})
@@ -40,7 +45,7 @@ const MeetingDetail = (props) => {
                 setMeeting(meeting);
                 if(meeting.meeting_image.length > 0) setThumbnail(meeting.meeting_image[0].image);
                 if(meeting.approval.approval_at != null){
-                    setApprovalRegister(true); 
+                    setApprovalRegister(true);
                 }
             }
             else {
@@ -78,7 +83,13 @@ const MeetingDetail = (props) => {
         })
     }
 
-    
+    const handlePDFOpen = (pdf) => {
+        var pieces = pdf.split('/');
+        var file_name = pieces[pieces.length-1];
+        window.open(`/pdf/${file_name}`, '_blank');
+    }
+
+
 	return (
     <div className="l-content">
 
@@ -99,8 +110,7 @@ const MeetingDetail = (props) => {
                 <Notification notice={notice}/>
             </div>
             {
-                !loaded &&
-                    <CircularProgress className="css-loader"/>
+                !loaded && <PageLoader />
             }
             {
                 loaded && meeting &&
@@ -117,7 +127,7 @@ const MeetingDetail = (props) => {
                                     <div className="user-wrap user-sm">
                                         <Link to = {`/c-account/parent/detail/${meeting?.father_id}`}>
                                             <div className="user-avatar">
-                                                <img alt="name" className="avatar-img" 
+                                                <img alt="name" className="avatar-img"
                                                     src={meeting.father.image}
                                                 />
                                             </div>
@@ -131,17 +141,10 @@ const MeetingDetail = (props) => {
                                             </a>
                                         </div>
                                     </div>
-                            
+
                                     <div className="p-article__context">
                                         <div className="p-file-list">
-                                            <div className="p-file-for">
-                                                <figure>
-                                                    {
-                                                        thumbnail && 
-                                                        <img src={thumbnail} alt="thumbnail"/>
-                                                    }
-                                                </figure>
-                                            </div>
+                                            <Thumbnail image={thumbnail}/>
                                             <div className="p-file-nav">
                                             {
                                                 meeting.meeting_image.map((item, k)=>
@@ -155,39 +158,27 @@ const MeetingDetail = (props) => {
                                             <div className="p-article__pdf__btn mr-3">
                                                 {
                                                     meeting.pdf ?
-                                                    <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52" 
-                                                        href={meeting.pdf} target='_blank'>
+                                                    <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52"
+                                                        onClick={()=>handlePDFOpen(meeting.pdf)}>
                                                         <span>PDFを確認する</span>
                                                     </a>
-                                                    :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled"> 
+                                                    :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled">
                                                         <span>PDFを確認する</span>
-                                                    </a>
-                                                }
-                                            </div>
-                                            <div className="p-article__pdf__btn mr-0">
-                                                {
-                                                    meeting.memo ?
-                                                    <a className="btn-default btn-pdf btn-r8 btn-h50 btn-yellow" 
-                                                        onClick={()=>setShowMemoModal(true)}>
-                                                        <span>メモを確認する</span>
-                                                    </a>
-                                                    :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled"> 
-                                                        <span>メモを確認する</span>
                                                     </a>
                                                 }
                                             </div>
                                         </div>
-                                
+
                                         <p className="p-article__txt">{meeting.text}</p>
                                     </div>
                                 </div>
                             </article>
-                            <ModalMemo 
+                            <ModalMemo
                                 show={show_memo_modal}
                                 title={"メモ"}
                                 content={meeting?.memo}
                                 handleClose={()=>setShowMemoModal(false)} />
-                            <ModalPdf 
+                            <ModalPdf
                                 show={show_pdf_modal}
                                 pdfPath={meeting.pdf}
                                 handleClose={()=>setShowPDFModal(false)} />
@@ -195,15 +186,15 @@ const MeetingDetail = (props) => {
                     </div>
                 </div>
             }
-            <ModalConfirm 
-            show={show_confirm_modal} 
+            <ModalConfirm
+            show={show_confirm_modal}
             message={"一度承知したら元に戻せません。\nよろしいでしょうか。"}
-            handleClose={()=>setShowConfirmMoal(false)} 
-            handleAccept={handleApprovalRegister} 
+            handleClose={()=>setShowConfirmMoal(false)}
+            handleAccept={handleApprovalRegister}
             loading={submit}/>
             {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
-            {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
-            {  _404error && 
+            {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
+            {  _404error &&
                 <Alert type="fail" hide={()=>{
                     set404Error('');
                     history.push({

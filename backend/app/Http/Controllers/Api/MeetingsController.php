@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 use App\Models\Meeting;
@@ -15,6 +16,8 @@ use App\Models\MeetingApprovals;
 use App\Models\Child;
 use App\Models\Father;
 use App\Models\FatherRelation;
+
+use App\Mail\FathersApprovalMail;
 
 class MeetingsController extends Controller {
     public function register (Request $r) {
@@ -133,6 +136,9 @@ class MeetingsController extends Controller {
                 ];
 
                 MeetingApprovals::create($insert_approval);
+
+                $c = Child::select('email')->where('id', $child)->first();
+                Mail::to($c->email)->send(new FathersApprovalMail(session()->get('fathers')['company'], (int)$meeting));
             }
 
             $params = ['meeting_id' => $meeting];
@@ -848,7 +854,7 @@ class MeetingsController extends Controller {
 
     public function updateMemo (Request $r) {
         if (!isset($r->meeting_id)) {
-            return ['status_code' => 400, 'error_messages' => ['ミーティングの登録に失敗しました。']];
+            return ['status_code' => 400, 'error_messages' => ['メモの更新に失敗しました。']];
         }
 
         $validate = Validator::make($r->all(), ['memo' => 'required|max:2000']);

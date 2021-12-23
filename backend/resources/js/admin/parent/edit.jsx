@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { LoadingButton } from '@material-ui/lab';
-import { CircularProgress  } from '@material-ui/core';
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 
 const ParentEdit = (props) => {
 
@@ -24,13 +24,16 @@ const ParentEdit = (props) => {
         relation_limit:''
     });
     const [_400error, set400Error] = useState('');
+    const [_401error, set401Error] = useState('');
     const [_success, setSuccess] = useState('');
 
     const [submit, setSubmit] = useState(false);
     const [loaded, setLoaded] = useState(false);
 
-
+    const isMountedRef = useRef(true);
+    
     useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         axios.get(`/api/admin/fathers/detail/${props.match.params?.father_id}`)
         .then(response => {
@@ -55,6 +58,7 @@ const ParentEdit = (props) => {
     
     const handleSubmit = (e) => {
         e.preventDefault();
+        set401Error('');
         set422Errors({
             company:'',
             email:'',
@@ -81,7 +85,8 @@ const ParentEdit = (props) => {
                     break;
                 }
                 case 400: set400Error(response.data.error_messages); break;
-                case 422: set422Errors(response.data.error_messages); break;
+                case 401: set401Error(response.data.error_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
             }
         })
     }
@@ -98,8 +103,7 @@ const ParentEdit = (props) => {
             <div className="l-content-wrap">
                 <section className="edit-container">
                     {
-                        !loaded &&
-                            <CircularProgress className="css-loader"/>
+                        !loaded && <PageLoader />
                     }
                     {
                         loaded && parent &&
@@ -111,9 +115,9 @@ const ParentEdit = (props) => {
                                         <label htmlFor="relation_limit"   className="control-label ft-12"> 子の人数制限 </label>
                                         <input type="number" min="0" step="1" name="relation_limit" id="relation_limit"  className = {`input-default input-nameSei input-h60 ${ _422errors.relation_limit && "is-invalid c-input__target" }`}  value={limit} onChange={e=>setLimit(e.target.value)}/>
                                         {
-                                            _422errors.relation_limit && 
+                                            (_422errors.relation_limit || _401error) && 
                                                 <span className="l-alert__text--error ft-16 ft-md-14">
-                                                    { _422errors.relation_limit }
+                                                    { _422errors.relation_limit || _401error}
                                                 </span>
                                         }
                                     </div>

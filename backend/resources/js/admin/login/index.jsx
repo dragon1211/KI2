@@ -37,6 +37,7 @@ const AdminLogin = () => {
                 window.location.href = "/admin/meeting";
             }
             else if(response.data.status_code == 422){
+                window.scrollTo(0, 0);
                 set422Errors(response.data.error_messages);
             }
             else if(response.data.status_code == 400){

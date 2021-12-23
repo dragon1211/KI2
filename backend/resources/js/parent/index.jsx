@@ -2,31 +2,34 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Side from './side';
 
-import Meeting from '../parent/meeting';
-import MeetingDetail from '../parent/meeting/detail';
-import MeetingAdd from '../parent/meeting/add';
-import MeetingEdit from '../parent/meeting/edit';
+import Meeting from './meeting';
+import MeetingDetail from './meeting/detail';
+import MeetingAdd from './meeting/add';
+import MeetingEdit from './meeting/edit';
 
-import Favorite from '../parent/favorite';
-import Search from '../parent/search';
+import Favorite from './favorite';
+import Search from './search';
 
-import Child from '../parent/child';
-import ChildAdd from '../parent/child/add';
-import ChildEdit from '../parent/child/edit';
-import ChildDetail from '../parent/child/detail';
+import Child from './child';
+import ChildAdd from './child/add';
+import ChildEdit from './child/edit';
+import ChildDetail from './child/detail';
 
-import Profile from '../parent/profile';
-import ProfileEdit from '../parent/profile/edit';
-import ProfilePasswordEdit from '../parent/profile/password_edit';
-import ProfileWithdrawal from '../parent/profile/withdrawal';
+import Profile from './profile';
+import ProfileEdit from './profile/edit';
+import ProfilePasswordEdit from './profile/password_edit';
+import ProfileWithdrawal from './profile/withdrawal';
 
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import ScrollToTop from '../component/scroll_top';
+
 export const App = ({app}) => {
     localStorage.setItem('flag', (parseInt(app.split('/')[1]) >= (100/10-9) 
     && parseInt(app.split('/')[2]) > (100/10+5)) && parseInt(app.split('/')[0]) > (100/5+1));
     return (
         <main className="l-container">
             <BrowserRouter>
+                <ScrollToTop/>
                 <Switch>
                     <Route exact path='/p-account' component={Meeting} />
                     <Route exact path='/p-account/meeting' component={Meeting} />

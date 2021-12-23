@@ -1,5 +1,5 @@
-@extends('p_account.layout')
-@section('title', '親')
+@extends('common.layout')
+@section('title', 'KIKI | 親')
 @php 
     $routers = ['child', 'favorite', 'search', 'profile', 'meeting'];
     foreach ($routers as $router) {

@@ -16,7 +16,7 @@ export default function Side() {
             </div>
             <nav className="mypage-nav">
                 <ul className="mypage-nav-list">
-                    <li 
+                    <li
                         className={`mypage-nav-list__item  ${(selected == 'meeting' || (selected == '' && document.getElementById('admin_router').value == 'meeting')) && "nav-active"}`}
                         onClick={e => {
                             e.preventDefault();
@@ -27,7 +27,7 @@ export default function Side() {
                             <span>ミーティング</span>
                         </Link>
                     </li>
-                    
+
                     <li className={`mypage-nav-list__item  ${ (selected == 'child' || (selected == '' && document.getElementById('admin_router').value == 'child')) && "nav-active"}`}
                         onClick={e => {
                             e.preventDefault();
@@ -49,7 +49,7 @@ export default function Side() {
                             <span>親情報</span>
                         </Link>
                     </li>
-                    
+
                     <li className={`mypage-nav-list__item  ${(selected == 'logout') && "nav-active"}`}
                         onClick={e => {
                             e.preventDefault();
@@ -60,7 +60,7 @@ export default function Side() {
                             <i className="icon log-out"></i><span>ログアウト</span>
                         </a>
                     </li>
-                   
+
                 </ul>
             </nav>
         </div>

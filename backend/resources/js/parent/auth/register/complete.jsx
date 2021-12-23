@@ -11,7 +11,8 @@ const ParentSignUpComplete = () => {
     }
 
 	return (
-        <div>
+    <div className="l-single-container">
+        <div className="l-single-inner">
             <p className="text-center font-weight-bold ft-25">本登録完了</p>
             <span className="mt-80-px ft-18 ft-md-16 l-alert__text--success">
                 本登録が完了しました。<br/>
@@ -25,6 +26,7 @@ const ParentSignUpComplete = () => {
                 </Button>
             </div>
         </div>
+    </div>
 	)
 }
 

@@ -5,12 +5,14 @@ import Contact from './contact/index';
 import ContactComplete from './contact/complete';
 import UnknownError from './contact/unknown';
 
+import ScrollToTop from '../component/scroll_top';
 
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 export default class Pages extends Component {
     render() {
         return (
             <BrowserRouter>
+                <ScrollToTop/>
                 <Switch>
                     <Route exact path='/contact-us' component={Contact} />
                     <Route exact path='/contact-us/complete' component={ContactComplete} />

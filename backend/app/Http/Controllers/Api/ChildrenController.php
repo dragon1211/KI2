@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 use App\Models\Child;
@@ -16,6 +17,7 @@ use App\Models\MeetingApprovals;
 use App\Models\TelActivation;
 
 use App\Notifications\SmsNotification;
+use App\Mail\ChildrenMainRegistrationMail;
 
 class ChildrenController extends Controller {
     use AuthenticationTrait;
@@ -60,7 +62,6 @@ class ChildrenController extends Controller {
             'tel' => $r->tel,
             'token' => $token,
             'ttl' => date('Y-m-d H:i:s', strtotime("8 hour")),
-
         ];
 
         try {
@@ -87,6 +88,16 @@ class ChildrenController extends Controller {
         return ['status_code' => 200, 'params' => ['tel' => $r->tel]];
     }
 
+    public function checkRegisterMain (Request $r) {
+        // トークンの確認
+        if (null === ($get = TelActivation::where('token', $r->token)->first())) {
+            return ['status_code' => 400, 'error_messages' => ['不正な登録トークン。']];
+        }
+
+        // 本登録に成功
+        return ['status_code' => 200];
+    }
+
     public function registerMain (Request $r) {
         // トークンの確認
         if (null === ($get = TelActivation::where('token', $r->token)->first())) {
@@ -100,7 +111,7 @@ class ChildrenController extends Controller {
 
         if (!is_null($r->image) && count(Storage::disk('private')->files('/')) >= 9999) {
             Log::critical('ストレージの限界を超えています。9999個ファイルまで保存可能ですので、不要なファイルを削除して下さい。');
-            return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
+            return ['status_code' => 400, 'error_messages' => ['登録に失敗しました。']];
         }
 
         // ファイルサイズは5MiB以内又はnull
@@ -116,7 +127,7 @@ class ChildrenController extends Controller {
         $validate = Validator::make($r->all(), [
             'identity' => 'required|max:20|alpha_num',
             'email' => 'required|unique:children|max:255|email',
-            'password' => 'required|min:8|max:72|confirmed',
+            'password' => ['required', 'min:8', 'max:72', 'confirmed', new \App\Rules\Hankaku],
             'last_name' => 'required|max:100',
             'first_name' => 'required|max:100',
             'image' => 'image_size|image_meme',
@@ -163,12 +174,10 @@ class ChildrenController extends Controller {
             $child->fill($insert);
             $child->push();
 
-            $telact->child_id = $child->id;
-            $telact->save();
+            $telact->delete();
 
-            // SMSを送ります。
-            $message = view('sms.children.register.main', ['tel' => $r->tel, 'password' => $r->password]);
-            \Notification::route('nexmo', '81'.substr($r->tel, 1))->notify(new SmsNotification($message));
+            // メールを送ります。
+            Mail::to($r->email)->send(new ChildrenMainRegistrationMail());
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -430,11 +439,13 @@ class ChildrenController extends Controller {
             $child->image = '/files/'.$filename;
             $child->save();
 
-            $get = Child::where('id', (int)$child_id)->first();
-            $login_user_datum = $get->toArray();
-            unset($login_user_datum['password']);
-            // セッションに保存する
-            session()->put('children', $login_user_datum);
+            if (request()->route()->action['as'] == 'cic') {
+                $login_user_datum = $child->toArray();
+                unset($login_user_datum['password']);
+
+                // セッションに保存する
+                session()->put('children', $login_user_datum);
+            }
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -520,7 +531,7 @@ class ChildrenController extends Controller {
 
         // バリデーションエラー
         $validate = Validator::make($r->all(), [
-            'password' => 'required|min:8|max:72|confirmed',
+            'password' => ['required', 'min:8', 'max:72', 'confirmed', new \App\Rules\Hankaku],
         ]);
 
         if ($validate->fails()) {

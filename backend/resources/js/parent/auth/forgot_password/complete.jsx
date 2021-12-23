@@ -11,7 +11,8 @@ const ParentForgotPasswordComplete = () => {
     }
 
 	return (
-        <div>
+    <div className="l-single-container">
+        <div className="l-single-inner">
             <p className="text-center font-weight-bold ft-25">登録完了</p>
             <span className="mt-80-px ft-18 ft-xs-16 l-alert__text--success">
                 パスワードの更新が完了しました。<br/>
@@ -25,6 +26,7 @@ const ParentForgotPasswordComplete = () => {
                 </Button>
             </div>
         </div>
+    </div>
 	)
 }
 

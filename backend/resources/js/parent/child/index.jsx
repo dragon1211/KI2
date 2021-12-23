@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
-import { CircularProgress  } from '@material-ui/core';
 
 import Notification from '../notification';
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
 const Child = (props) => {
-    
+
     const history = useHistory();
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const [children_list, setChildrenList] = useState([]);
@@ -20,7 +20,10 @@ const Child = (props) => {
     const [_success, setSuccess] = useState(props.history.location.state);
     const [_400error, set400Error] = useState('');
 
+    const isMountedRef = useRef(true);
+
     useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         let father_id = document.getElementById('father_id').value;
         axios.get('/api/fathers/children/listOfFather', {params: {father_id: father_id}})
@@ -52,14 +55,14 @@ const Child = (props) => {
         }, SCROLL_DELAY_TIME);
     };
 
-    
+
 	return (
         <div className="l-content">
             <div className="l-content__ttl">
                 <div className="l-content__ttl__left">
                     <h2>子一覧</h2>
                     <div className="p-meetingAdd-btn">
-                        <Link to = '/p-account/child/add' data-v-ade1d018="kikikanri" 
+                        <Link to = '/p-account/child/add' data-v-ade1d018="kikikanri"
                           className="btn-default btn-yellow btn-meeting btn-shadow btn-r8 btn-h48 btn-fz14">
                             <span className="ft-16">子追加</span>
                             <svg version="1.1" viewBox="0 0 500 500" className="icon svg-icon svg-fill svg-up">
@@ -73,11 +76,10 @@ const Child = (props) => {
 
             <div className="l-content-wrap">
             {
-                !loaded &&
-                    <CircularProgress className="css-loader"/>
+                !loaded && <PageLoader/>
             }
             {
-                loaded && 
+                loaded &&
                 <section className="search-container">
                     <div className="search-wrap">
                         <div className="search-content">
@@ -112,7 +114,7 @@ const Child = (props) => {
                                         </Link>
                                     </div>
                                     )
-                                :<p className="text-center py-5 ft-xs-17">子はありません。</p>
+                                :<p className="text-center py-5 ft-xs-17">メンバーがいません</p>
                             }
                             </InfiniteScroll>
                         </div>

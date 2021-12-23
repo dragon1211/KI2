@@ -6,7 +6,7 @@ import Alert from '../../component/alert';
 
 
 const ProfilePasswordEdit = () => {
-    const history = useHistory(); 
+    const history = useHistory();
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const father_id = document.getElementById('father_id').value;
     const [password, setPassword] = useState('');
@@ -43,9 +43,9 @@ const ProfilePasswordEdit = () => {
                         state: response.data.success_messages
                     });
                     break;
-                } 
+                }
                 case 400: set400Error(response.data.error_messages); break;
-                case 422: set422Errors(response.data.error_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
             }
         })
     }
@@ -65,49 +65,49 @@ const ProfilePasswordEdit = () => {
                         <div className="profile-wrap">
                             <div className="profile-content">
                                 <form onSubmit={handleSubmit} noValidate>
-                                                            
+
                                     <div className="edit-set">
-                                        <label htmlFor="password"   className="control-label ft-14 ft-md-12"> 
-                                            新しいパスワード 
+                                        <label htmlFor="password"   className="control-label ft-14 ft-md-12">
+                                            新しいパスワード
                                         </label>
-                                        <input type="password" name="password" id="password" className={`input-default input-h60 ${ _422errors.password && "is-invalid  c-input__target" }`}
+                                        <input type="password" name="password" id="password" placeholder='半角英数字8文字以上' className={`input-default input-h60 ${ _422errors.password && "is-invalid  c-input__target" }`}
                                             value={password} onChange={e=>setPassword(e.target.value)} autoFocus/>
-                                        {   
-                                            _422errors.password && 
+                                        {
+                                            _422errors.password &&
                                                 <span className="l-alert__text--error ft-16 ft-md-14">
                                                     { _422errors.password }
-                                                </span> 
+                                                </span>
                                         }
                                     </div>
 
                                     <div className="edit-set">
-                                        <label htmlFor="password_confirmation"   className="control-label ft-14 ft-md-12"> 
+                                        <label htmlFor="password_confirmation"   className="control-label ft-14 ft-md-12">
                                             確認用新しいパスワード
                                         </label>
-                                        <input type="password" name="password_confirmation" id="password_confirmation" className={`input-default input-h60 ${ _422errors.password_confirmation && "is-invalid  c-input__target" }`}  
+                                        <input type="password" name="password_confirmation" id="password_confirmation" className={`input-default input-h60 ${ _422errors.password_confirmation && "is-invalid  c-input__target" }`}
                                             value={password_confirmation} onChange={e=>setConfirmPassword(e.target.value)}/>
-                                        {   
-                                            _422errors.password_confirmation && 
+                                        {
+                                            _422errors.password_confirmation &&
                                                 <span className="l-alert__text--error ft-16 ft-md-14">
                                                     { _422errors.password_confirmation }
-                                                </span> 
+                                                </span>
                                         }
                                     </div>
-                                    
+
                                     <div className="mt-5">
-                                        <LoadingButton type="submit" fullWidth 
+                                        <LoadingButton type="submit" fullWidth
                                             loading = {submit}
                                             className="btn-edit btn-default btn-h75 bg-yellow rounded-20">
                                             <span className={`ft-16 font-weight-bold ${!submit && 'text-black'}`}>パスワードを更新</span>
                                         </LoadingButton>
                                     </div>
-                                    { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
+                                    { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
                                     { _success && <Alert type="success" hide={()=>setSuccess('') }>{_success}</Alert> }
                                 </form>
-            
+
                             </div>
                         </div>
-                    </section>   
+                    </section>
                 </div>
             </div>
         </div>

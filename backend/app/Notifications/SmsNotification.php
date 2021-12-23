@@ -43,6 +43,7 @@ class SmsNotification extends Notification
     {
         return (new NexmoMessage())
             ->content($this->message)
+            ->from('KIKI')
             ->unicode();
     }
 

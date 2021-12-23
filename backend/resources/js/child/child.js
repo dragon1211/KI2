@@ -15,13 +15,14 @@ import ProfileWithdrawal from './profile/withdrawal';
 import Search from './search';
 
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-
+import ScrollToTop from '../component/scroll_top';
 
 export default class ChildApp extends Component {
     render() {
         return (
         <main className="l-container meeting-consent">
             <BrowserRouter>
+                <ScrollToTop/>
                 <Switch>
                     <Route exact path="/c-account/meeting" component = {Meeting} />
                     <Route exact path="/c-account/meeting/detail/:meeting_id" component = {MeetingDetail} />

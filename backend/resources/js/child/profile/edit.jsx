@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { LoadingButton } from '@material-ui/lab';
 
 import Notification from '../notification';
 import Alert from '../../component/alert';
-import { CircularProgress  } from '@material-ui/core';
+import PageLoader from '../../component/page_loader';
 
 
 const ProfileEdit = () => {
@@ -36,8 +36,10 @@ const ProfileEdit = () => {
     const [submit, setSubmit] = useState(false);
     const [loaded, setLoaded] = useState(false);
 
+    const isMountedRef = useRef(true);
     
     useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         let child_id = document.getElementById('child_id').value;
         axios.get('/api/children/detail/'+child_id)
@@ -108,7 +110,7 @@ const ProfileEdit = () => {
                     break;
                 }
                 case 400: set400Error(response.data.error_messages); break;
-                case 422: set422Errors(response.data.error_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
             }
         })
     }
@@ -128,8 +130,7 @@ const ProfileEdit = () => {
             <div className="l-content-wrap">
                 <section className="edit-container">
                 {
-                    !loaded &&
-                        <CircularProgress className="css-loader"/>
+                    !loaded && <PageLoader />
                 }
                 {
                     loaded && profile &&

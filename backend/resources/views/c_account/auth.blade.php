@@ -1,6 +1,6 @@
-@extends('c_account.layout')
+@extends('common.layout')
 
-@section('title', '子ログイン')
+@section('title', 'KIKI｜子')
 
 @section('content')
 <div id="c-auth"></div>

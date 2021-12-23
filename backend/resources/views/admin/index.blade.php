@@ -1,6 +1,6 @@
-@extends('admin.layout')
+@extends('common.layout')
 
-@section('title', '管理者')
+@section('title', 'KIKI｜管理者')
 
 @php 
     $routers = ['meeting', 'child', 'parent'];

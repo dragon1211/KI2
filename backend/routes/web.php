@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,10 +63,10 @@ Route::group(['prefix' => 'p-account'],                 function () {
 });
 
 Route::group(['prefix' => 'contact-us'],                function () {
-    Route::get('/',                                     function () { return view('pages.contact.index'); });
-    Route::get('/complete',                             function () { return view('pages.contact.index'); });
+    Route::get('/',                                     function () { return view('pages.contact'); });
+    Route::get('/complete',                             function () { return view('pages.contact'); });
 });
-Route::get('/unknown-error ',                           function () { return view('pages.contact.index'); });
+Route::get('/unknown-error ',                           function () { return view('pages.contact'); });
 
 // ---------------------------------------- Child Account ------------------------------------------- //
 Route::group(['prefix' => 'c-account'],                 function () {
@@ -130,3 +131,4 @@ Route::group(['prefix' => 'admin'],                     function () {
 });
 
 Route::get('/files/{path}', \App\Http\Controllers\Api\FilesController::class);
+Route::get('/pdf/{path}', function(Request $r){ return view('pages.pdf', ['path'=>$r->path]);});

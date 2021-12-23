@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useHistory } from 'react-router-dom';
-import { CircularProgress  } from '@material-ui/core';
+
 import moment from 'moment';
 import Notification from '../notification';
 import ModalConfirm from '../../component/modal_confirm';
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 
 const ChildDetail = (props) => {
 
@@ -21,8 +22,10 @@ const ChildDetail = (props) => {
     
     const father_id = document.getElementById('father_id').value;
     const child_id = props.match.params.child_id;
-
+    const isMountedRef = useRef(true);
+    
     useEffect(() => {
+      isMountedRef.current = false;
       setLoaded(false);
       axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
       .then(response => {
@@ -83,8 +86,7 @@ const ChildDetail = (props) => {
 
             <div className="l-content-wrap">
               {
-                !loaded &&
-                    <CircularProgress className="css-loader"/>
+                !loaded && <PageLoader/>
               }
               {
                 loaded && child &&

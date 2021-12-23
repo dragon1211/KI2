@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-import { CircularProgress  } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
 import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Alert from '../../component/alert';
 import Notification from '../notification';
-import { Document, Page} from "react-pdf";
+import PreviewPDF from '../../component/preview_pdf';
+import PageLoader from '../../component/page_loader';
 
 
 const MeetingAdd = (props) => {
@@ -33,8 +33,10 @@ const MeetingAdd = (props) => {
     const [check_radio, setCheckRadio] = useState('');
 
     const state = props.history.location.state;
-    
-    useEffect(()=>{
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         if(state){
             setLoaded(true);
@@ -129,17 +131,18 @@ const MeetingAdd = (props) => {
         setSubmit(true);
         axios.post('/api/fathers/meetings/register', formdata)
         .then(response => {
-            setSubmit(false);
             setNotice(response.data.notice);
+            setSubmit(false);
             switch(response.data.status_code){
                 case 200: {
+                    const meeting_id = response.data.params.meeting_id;
                     history.push({
-                    pathname: `/p-account/meeting/detail/${response.data.params.meeting_id}`,
+                    pathname: `/p-account/meeting/detail/${meeting_id}`,
                     state: "登録成功しました"});
                     break;
                 }
                 case 400: set400Error("登録失敗しました。"); break;
-                case 422: set422Errors(response.data.error_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
             }
         });
     }
@@ -209,8 +212,7 @@ const MeetingAdd = (props) => {
                 <div className="p-article">
                     <div className="p-article-wrap position-relative" style={{ minHeight:'500px'}}>
                     {
-                        !loaded &&
-                        <CircularProgress className="css-loader"/>
+                        !loaded && <PageLoader />
                     }
                     {
                         loaded && 
@@ -273,14 +275,7 @@ const MeetingAdd = (props) => {
                                                     {_422errors.pdf}
                                                 </span> 
                                             }
-                                            <div style={{ width: '100%', height:'300px', border:'1px solid rgba(36, 77, 138, 0.1)', margin:'15px 0'}}>
-                                                {
-                                                    pdf_url &&
-                                                    <Document file={pdf_url} loading={<></>}>
-                                                        <Page pageNumber={1} loading={<></>} height={300}/>
-                                                    </Document>
-                                                }
-                                            </div>
+                                            <PreviewPDF pdf_url={pdf_url}></PreviewPDF>
                                         </div>
                                         <div className="edit-set edit-set-mt15">
                                             <label className="edit-set-file-label" htmlFor={meeting_image.length < 10 ? 'file_image': ''}>

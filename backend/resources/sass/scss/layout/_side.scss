@@ -112,6 +112,9 @@ categories: [layout]
           }
           &.star{
             &:before{
+              @include pc{
+                background-image: url(/assets/img/icon/star-outline-black.svg);
+              }
               @include sp{
                 background-image: url(/assets/img/icon/star-outline-yellow02.svg);
               }
@@ -153,9 +156,9 @@ categories: [layout]
         }
       }
       &.-favorite{
-        @include pc{
-          display: none;
-        }
+        // @include pc{
+        //   display: none;
+        // }
       }
       a{
         display: flex;

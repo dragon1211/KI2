@@ -10,33 +10,31 @@ import ChildSignUp from './register';
 import ChildSignUpComplete from './register/complete';
 import ChildSignUpError from './register/error';
 import ChildWithdrawal from './withdrawal_complete';
+
+import ScrollToTop from '../../component/scroll_top';
+
 export default class ChildAuth extends Component {
     render() {
         return (
         <main className="l-single-main">
             <div className="l-centeringbox">
                 <div className="l-centeringbox-wrap">
-                    <div className="l-single-container">
-                        <div className="l-single-inner">
+                    <BrowserRouter>
+                        <ScrollToTop/>
+                        <Switch>
+                            <Route exact path='/c-account/register-temporary' component={ChildSignUpTemporary} />
+                            <Route exact path='/c-account/register/:token' component={ChildSignUp} />
+                            <Route exact path='/c-account/register/complete/:token' component={ChildSignUpComplete} />
+                            <Route exact path='/c-account/register/error/:token' component={ChildSignUpError} />
 
-                            <BrowserRouter>
-                                <Switch>
-                                    <Route exact path='/c-account/register-temporary' component={ChildSignUpTemporary} />
-                                    <Route exact path='/c-account/register/:token' component={ChildSignUp} />
-                                    <Route exact path='/c-account/register/complete/:token' component={ChildSignUpComplete} />
-                                    <Route exact path='/c-account/register/error/:token' component={ChildSignUpError} />
-
-                                    <Route exact path="/c-account/forgot-password" component = {ChildForgotPassword} />
-                                    <Route exact path="/c-account/forgot-password/reset/:token" component = {ChildForgotPasswordReset} />
-                                    <Route exact path="/c-account/forgot-password/complete" component = {ChildForgotPasswordComplete} />
-                                    
-                                    <Route exact path="/c-account/login" component = {ChildLogin} />
-                                    <Route exact path="/c-account/withdrawal/complete" component = {ChildWithdrawal} />
-                                </Switch>
-                            </BrowserRouter>
-
-                        </div>
-                    </div>
+                            <Route exact path="/c-account/forgot-password" component = {ChildForgotPassword} />
+                            <Route exact path="/c-account/forgot-password/reset/:token" component = {ChildForgotPasswordReset} />
+                            <Route exact path="/c-account/forgot-password/complete" component = {ChildForgotPasswordComplete} />
+                            
+                            <Route exact path="/c-account/login" component = {ChildLogin} />
+                            <Route exact path="/c-account/withdrawal/complete" component = {ChildWithdrawal} />
+                        </Switch>
+                    </BrowserRouter>
                 </div>
             </div>
         </main>

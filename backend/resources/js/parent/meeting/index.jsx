@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
 import moment from 'moment';
-import { CircularProgress  } from '@material-ui/core';
-import IconButton from '@mui/material/IconButton';
 
 import Notification from '../notification';
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 import InfiniteScroll from "react-infinite-scroll-component";
-import { isObject } from 'lodash';
+
 
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
@@ -27,6 +26,9 @@ const Meeting = (props) => {
     const [_success, setSuccess] = useState(props.history.location?.state);
     const [_400error, set400Error] = useState('');
 
+    const isMountedRef = useRef(true);
+
+
     useEffect(()=>{
       if(localStorage.getItem("from_login")){
         setSuccess("ログインに成功しました!");
@@ -44,6 +46,7 @@ const Meeting = (props) => {
 
 
     useEffect(() => {
+        isMountedRef.current = false;
         setLoaded(false);
         let father_id = document.getElementById('father_id').value;
         if(localStorage.getItem('flag')=="true") return;
@@ -187,8 +190,7 @@ const Meeting = (props) => {
                         </div>
                     </div>
                     {
-                        !loaded &&
-                            <CircularProgress className="css-loader"/>
+                        !loaded && <PageLoader/>
                     }
                     {
                         loaded &&

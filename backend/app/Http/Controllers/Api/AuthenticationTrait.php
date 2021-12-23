@@ -36,7 +36,7 @@ trait AuthenticationTrait {
 
         $validate = Validator::make($r->all(), [
             $chk[0] => 'required|'.$chk[2],
-            'password' => 'required|min:8|max:72',
+            'password' => ['required', 'min:8', 'max:72', new \App\Rules\Hankaku],
         ]);
 
         // バリデーションエラー

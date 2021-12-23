@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
 import moment from 'moment';
-import { CircularProgress  } from '@material-ui/core';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 
 import Notification from '../notification';
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 import InfiniteScroll from "react-infinite-scroll-component";
 import { isObject } from 'lodash';
 
@@ -174,7 +174,7 @@ const Search = (props) => {
                         <div className="meeting-head">
                             <form className="meeting-form" onSubmit={handleSearch}>
                                 <label className="control-label" htmlFor="keyword">キーワード</label>
-                                <input type="search" name="keyword" className="input-default input-keyword input-w380" id="keyword"  value={keyword} onChange={e=> setKeyword(e.target.value)}/>
+                                <input type="search" name="keyword" className="input-default input-keyword" id="keyword"  value={keyword} onChange={e=> setKeyword(e.target.value)}/>
                                 <IconButton size="large" style={{position:'absolute', bottom:'3px', right:'5px', padding:'5px'}} type="submit">
                                     <SearchIcon fontSize="large" style={{color:'#d0d0d0', width:'40px', height:'40px'}}/>
                                 </IconButton>
@@ -190,8 +190,7 @@ const Search = (props) => {
                         </div>
                     </div>
                     {
-                        !loaded &&
-                          <CircularProgress className="css-loader"/>
+                        !loaded && <PageLoader/>
                     }
                     {
                         loaded && !initPage &&

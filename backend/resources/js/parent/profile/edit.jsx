@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { CircularProgress  } from '@material-ui/core';
+import { useRef, useEffect, useState } from 'react';
 import { LoadingButton } from '@material-ui/lab';
 import Notification from '../notification';
 import Alert from '../../component/alert';
+import PageLoader from '../../component/page_loader';
 import { useHistory } from 'react-router';
 
 const ProfileEdit = () => {
@@ -29,7 +29,10 @@ const ProfileEdit = () => {
   const [loaded, setLoaded] = useState(false);
   const [submit, setSubmit] = useState(false);
 
+  const isMountedRef = useRef(true);
+
   useEffect(() => {
+    isMountedRef.current = false;
     setLoaded(false);
     axios.get(`/api/fathers/detail/${father_id}`)
     .then(response => {
@@ -78,7 +81,7 @@ const ProfileEdit = () => {
           break;
         } 
         case 400: set400Error(response.data.error_messages); break;
-        case 422: set422Errors(response.data.error_messages); break;
+        case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
       }
     });
   }
@@ -97,8 +100,7 @@ const ProfileEdit = () => {
         <div className="l-content-wrap">
           <section className="edit-container">
           {
-            !loaded && 
-            <CircularProgress className="css-loader"/>
+            !loaded && <PageLoader/>
           }
           {
             loaded && params &&

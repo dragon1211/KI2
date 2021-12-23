@@ -132,6 +132,16 @@ class FathersController extends Controller {
         return ['status_code' => 200, 'token' => $token, 'success_messages' => ['親の仮登録に成功しました。8時間以内に本登録を完了させてください。']];
     }
 
+    public function checkRegisterMain (Request $r) {
+        // トークンの確認
+        if (null === ($get = EmailActivation::where('token', $r->token)->first())) {
+            return ['status_code' => 400, 'error_messages' => ['不正な登録トークン。']];
+        }
+
+        // 本登録に成功
+        return ['status_code' => 200];
+    }
+
     public function registerMain (Request $r) {
         if ($r->image == 'null') $r->image = null;
 
@@ -157,7 +167,7 @@ class FathersController extends Controller {
 
         $validate = Validator::make($r->all(), [
             'token' => 'required',
-            'password' => 'required|min:8|max:72|confirmed',
+            'password' => ['required', 'min:8', 'max:72', 'confirmed', new \App\Rules\Hankaku],
             'company' => 'required|max:100',
             'image' => 'image_size|image_meme',
             'profile' => 'max:1000',
@@ -369,11 +379,13 @@ class FathersController extends Controller {
             $father->image = '/files/'.$filename;
             $father->save();
 
-            $login_user_datum = $father->toArray();
-            unset($login_user_datum['password']);
-
-            // セッションに保存する
-            session()->put('fathers', $login_user_datum);
+            if (request()->route()->action['as'] == 'pip') {
+                $login_user_datum = $father->toArray();
+                unset($login_user_datum['password']);
+    
+                // セッションに保存する
+                session()->put('fathers', $login_user_datum);
+            }
 
             DB::commit();
         } catch (\Throwable $e) {
@@ -407,16 +419,28 @@ class FathersController extends Controller {
         });
 
         // バリデーションエラー
-        $validate = Validator::make($r->all(), [
+        $vali = [
             'email' => 'required|max:255|email',
+            'tel' => 'required|numeric|starts_with:0|tel_size',
             'company' => 'max:100',
             'profile' => 'max:1000',
-            'tel' => 'required|numeric|starts_with:0|tel_size',
-            'relation_limit' => 'required|numeric',
-        ]);
+        ];
+
+        if (request()->route()->action['as'] == 'pua') {
+            $vali['relation_limit'] = 'required|numeric';
+        }
+
+        $validate = Validator::make($r->all(), $vali);
 
         if ($validate->fails()) {
             return ['status_code' => 422, 'error_messages' => $validate->errors()];
+        }
+
+        if (request()->route()->action['as'] == 'pua') {
+            $rel = FatherRelation::select('id')->where('father_id', (int)$father_id)->count();
+            if ($rel > (int)$r->relation_limit) {
+                return ['status_code' => 401, 'error_messages' => '既に設定しているリレーション以下には変更できません。'];
+            }
         }
 
         $update = [
@@ -457,7 +481,7 @@ class FathersController extends Controller {
 
         // バリデーションエラー
         $validate = Validator::make($r->all(), [
-            'password' => 'required|min:8|max:72|confirmed',
+            'password' => ['required', 'min:8', 'max:72', 'confirmed', new \App\Rules\Hankaku],
         ]);
 
         if ($validate->fails()) {
