@@ -26,23 +26,23 @@ categories: [utility]
 </div>
 ```
 */
-.u-percent5 { width: percentage(5 / 100) !important; }
-.u-percent10 { width: percentage(10 / 100) !important; }
-.u-percent15 { width: percentage(15 / 100) !important; }
-.u-percent20 { width: percentage(20 / 100) !important; }
-.u-percent25 { width: percentage(25 / 100) !important; }
-.u-percent30 { width: percentage(30 / 100) !important; }
-.u-percent35 { width: percentage(35 / 100) !important; }
-.u-percent40 { width: percentage(40 / 100) !important; }
-.u-percent45 { width: percentage(45 / 100) !important; }
-.u-percent50 { width: percentage(50 / 100) !important; }
-.u-percent55 { width: percentage(55 / 100) !important; }
-.u-percent60 { width: percentage(60 / 100) !important; }
-.u-percent65 { width: percentage(65 / 100) !important; }
-.u-percent70 { width: percentage(70 / 100) !important; }
-.u-percent75 { width: percentage(75 / 100) !important; }
-.u-percent80 { width: percentage(80 / 100) !important; }
-.u-percent85 { width: percentage(85 / 100) !important; }
-.u-percent90 { width: percentage(90 / 100) !important; }
-.u-percent95 { width: percentage(95 / 100) !important; }
-.u-percent100 { width: percentage(100 / 100) !important; }
+.u-percent5 { width: percentage(math.div(5, 100)) !important; }
+.u-percent10 { width: percentage(math.div(10, 100)) !important; }
+.u-percent15 { width: percentage(math.div(15, 100)) !important; }
+.u-percent20 { width: percentage(math.div(20, 100)) !important; }
+.u-percent25 { width: percentage(math.div(25, 100)) !important; }
+.u-percent30 { width: percentage(math.div(30, 100)) !important; }
+.u-percent35 { width: percentage(math.div(35, 100)) !important; }
+.u-percent40 { width: percentage(math.div(40, 100)) !important; }
+.u-percent45 { width: percentage(math.div(45, 100)) !important; }
+.u-percent50 { width: percentage(math.div(50, 100)) !important; }
+.u-percent55 { width: percentage(math.div(55, 100)) !important; }
+.u-percent60 { width: percentage(math.div(60, 100)) !important; }
+.u-percent65 { width: percentage(math.div(65, 100)) !important; }
+.u-percent70 { width: percentage(math.div(70, 100)) !important; }
+.u-percent75 { width: percentage(math.div(75, 100)) !important; }
+.u-percent80 { width: percentage(math.div(80, 100)) !important; }
+.u-percent85 { width: percentage(math.div(85, 100)) !important; }
+.u-percent90 { width: percentage(math.div(90, 100)) !important; }
+.u-percent95 { width: percentage(math.div(95, 100)) !important; }
+.u-percent100 { width: percentage(math.div(100, 100)) !important; }

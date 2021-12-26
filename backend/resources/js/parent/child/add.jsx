@@ -39,13 +39,13 @@ const ChildAdd = () => {
   }
 
   const copyInviteURL = () => {
-    const inviteText = "https://kikikan.xyz/c-account/register-temporary";
+    const inviteText = `https://kikikan.xyz/c-account/register-temporary?father_id=${father_id}`;
     copy(inviteText);
     setSuccess('招待用URLをコピーしました。');
   }
 
   const copyLineText = () => {
-    const lineText = "「KIKI」の招待が届いています。%0Aまずは以下より仮登録を行ってください。%0Ahttps%3A%2F%2Fkikikan.xyz%2Fc-account%2Fregister-temporary%0A%0A▼公式サイトはこちら%0Ahttps%3A%2F%2Fkikikan.xyz";
+    const lineText = `「KIKI」の招待が届いています。%0Aまずは以下より仮登録を行ってください。%0Ahttps%3A%2F%2Fkikikan.xyz%2Fc-account%2Fregister-temporary%3Ffather_id%3D${father_id}%0A%0A▼公式サイトはこちら%0Ahttps%3A%2F%2Fkikikan.jp`;
     copy(lineText);
     setSuccess('招待用URLをLINEで追信しました。');
     window.open('http://line.me/R/msg/text/?'+lineText);
@@ -72,25 +72,25 @@ const ChildAdd = () => {
                   _401error &&
                   <span className="mb-40-px l-alert__text--error ft-18 ft-md-16 ">
                       追加する場合は<a href={contactMailText} target='_blank' style={{ color:'#4CA6FF', textDecoration:'initial !important' }}>こちらよりお問い合わせ</a>お願いします。
-                  </span> 
+                  </span>
                 }
                 <form className="edit-form" onSubmit={handleSubmit}>
                   <div className="edit-set">
                     <label className="control-label" htmlFor="identify">追加する子のIDを入力</label>
-                    <input type="text" 
+                    <input type="text"
                       name="identity"
-                      id="identity" 
-                      value={identity} 
-                      onChange={e=>setIdentity(e.target.value)} 
+                      id="identity"
+                      value={identity}
+                      onChange={e=>setIdentity(e.target.value)}
                       className={`input-default input-title input-h60 input-w480 ${  _422errors.identity && 'is-invalid c-input__target'} `} />
                     {
                       _422errors.identity &&
                         <span className="l-alert__text--error ft-16 ft-md-14">
                             {_422errors.identity}
-                        </span> 
+                        </span>
                     }
                   </div>
-                  <LoadingButton 
+                  <LoadingButton
                       type="submit" fullWidth
                       loading={submit}
                       className="btn-edit btn-default btn-h75 bg-yellow rounded-20"

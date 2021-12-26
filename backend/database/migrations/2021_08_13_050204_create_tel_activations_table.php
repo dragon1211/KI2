@@ -18,6 +18,8 @@ class CreateTelActivationsTable extends Migration
             $table->unsignedTinyInteger('type');
             $table->unsignedBigInteger('child_id')->nullable();
             $table->foreign('child_id')->references('id')->on('children')->onDelete('cascade');
+            $table->unsignedBigInteger('father_id')->nullable();
+            $table->foreign('father_id')->references('id')->on('fathers')->onDelete('cascade');
             $table->string('tel', 11)->unique();
             $table->string('token', 100)->unique();
             $table->dateTime('ttl');

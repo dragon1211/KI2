@@ -129,7 +129,7 @@ const ChildDetail = (props) => {
                             <div className="profile-info">
                                 <div className="profile-info__item">
                                     <p className="profile-info__icon">
-                                        <img src="/assets/img/icon/person-pin.svg" alt="Person"/>
+                                        <img src="/assets/img/icon/ID.svg" alt="ID"/>
                                     </p>
                                     <p className="txt">{child.identity}</p>
                                 </div>

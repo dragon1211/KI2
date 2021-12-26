@@ -12,6 +12,15 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
+|--------------------------------------------------------------------------
+| ルート名（->name()）の説明
+|--------------------------------------------------------------------------
+|
+| コードは 1 2 3
+| 1 = コントローラー（p = Fathers、c = Children、m = Meetings等）
+| 2 = 関数（updateImage = i、updatePassword = p、detail = d等）
+| 3 = 画面（a = 管理者、p = 親、c = 子、n = なし）
+|
 */
 
 Route::group(['prefix' => 'admin'], function () {
@@ -153,8 +162,8 @@ Route::group(['prefix' => 'children'], function () {
 
     Route::group(['middleware' => ['auth:children', 'notice.nonapproval']], function () {
         Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail')->name('cdc');
-        Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage')->name('cuc');
-        Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile')->name('cpc');
+        Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage')->name('cic');
+        Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile')->name('cuc');
         Route::delete('/withdrawal', '\App\Http\Controllers\Api\ChildrenController@withdrawal');
 
         // FathersController

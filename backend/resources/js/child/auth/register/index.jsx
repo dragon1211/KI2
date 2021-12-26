@@ -37,7 +37,7 @@ const ChildSignUp = (props) => {
         axios.get('/api/children/checkRegisterMain', {params:{token: props.match.params.token}})
         .then(response=>{
             switch(response.data.status_code){
-                case 200: setLoaded(true); break;
+                case 200: setLoaded(true); setIdentity(response.data.params.tel); break;
                 case 400: history.push({pathname: '/c-account/login',  state: ''}); break;
             };
         })

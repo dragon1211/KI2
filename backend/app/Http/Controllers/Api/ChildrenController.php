@@ -64,6 +64,10 @@ class ChildrenController extends Controller {
             'ttl' => date('Y-m-d H:i:s', strtotime("8 hour")),
         ];
 
+        if (isset($r->father_id) && $r->father_id > 0) {
+            $create['father_id'] = $r->father_id;
+        }
+
         try {
             // DBに入ります。
             DB::beginTransaction();
@@ -90,12 +94,14 @@ class ChildrenController extends Controller {
 
     public function checkRegisterMain (Request $r) {
         // トークンの確認
-        if (null === ($get = TelActivation::where('token', $r->token)->first())) {
+        if (null === ($get = TelActivation::select('tel')->where('token', $r->token)->first())) {
             return ['status_code' => 400, 'error_messages' => ['不正な登録トークン。']];
         }
 
+        $get->tel .= rand(100,999);
+
         // 本登録に成功
-        return ['status_code' => 200];
+        return ['status_code' => 200, 'params' => $get];
     }
 
     public function registerMain (Request $r) {
@@ -173,6 +179,18 @@ class ChildrenController extends Controller {
 
             $child->fill($insert);
             $child->push();
+
+            if (!is_null($telact->father_id)) {
+                $rel = new FatherRelation;
+                $add = [
+                    'father_id' => $telact->father_id,
+                    'child_id' => $child->id,
+                    'hire_at' => date('Y-m-d H:i:s', time()),
+                ];
+
+                $rel->fill($add);
+                $rel->push();
+            }
 
             $telact->delete();
 
@@ -317,7 +335,7 @@ class ChildrenController extends Controller {
         $child_select = ['id', 'image', 'last_name', 'first_name', 'tel'];
         $meeting_approvals_select = ['approval_at'];
 
-        if (null === ($list = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$r->meeting_id)->whereNull('approval_at')->get())) {
+        if (null === ($list = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$r->meeting_id)->whereNull('approval_at')->orderBy('created_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -340,7 +358,7 @@ class ChildrenController extends Controller {
         $child_select = ['id', 'image', 'last_name', 'first_name', 'tel'];
         $meeting_approvals_select = ['approval_at'];
 
-        if (null === ($list = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', $r->meeting_id)->whereNotNull('approval_at')->get())) {
+        if (null === ($list = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', $r->meeting_id)->whereNotNull('approval_at')->orderBy('created_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -371,6 +389,8 @@ class ChildrenController extends Controller {
         $err = 'アクセスできません。';
         if (request()->route()->action['as'] == 'cdp') {
             abort_if(null === session()->get('fathers') || null === ($rel = FatherRelation::where('child_id', (int)$child_id)->where('father_id', (int)session()->get('fathers')['id'])->first()), 404, $err);
+            unset($params->email);
+            unset($params->tel);
         }
 
         // 同じく子画面から他の親の詳細ページをアクセスすれば、404となります。

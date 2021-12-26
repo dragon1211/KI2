@@ -10,6 +10,7 @@ import Alert from '../../component/alert';
 import Notification from '../notification';
 import PreviewPDF from '../../component/preview_pdf';
 import PageLoader from '../../component/page_loader';
+import UploadingProgress from '../../component/modal_uploading';
 
 
 
@@ -400,7 +401,7 @@ useEffect(()=>{
                                                 : <p className="text-center">子はありません。</p>
                                             }
                                         </div>
-
+                                        <UploadingProgress show={submit}/>
                                         <LoadingButton 
                                             type="submit" fullWidth
                                             loading={submit}

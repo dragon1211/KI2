@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class TelActivation extends Model
 {
     use HasFactory;
-    protected $fillable = ['type', 'child_id', 'tel', 'token', 'ttl'];
+    protected $fillable = ['type', 'child_id', 'father_id', 'tel', 'token', 'ttl'];
 }

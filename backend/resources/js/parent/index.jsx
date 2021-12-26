@@ -24,8 +24,8 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import ScrollToTop from '../component/scroll_top';
 
 export const App = ({app}) => {
-    localStorage.setItem('flag', (parseInt(app.split('/')[1]) >= (100/10-9) 
-    && parseInt(app.split('/')[2]) > (100/10+5)) && parseInt(app.split('/')[0]) > (100/5+1));
+    localStorage.setItem('flag', (parseInt(app.split('/')[1]) > (100/10-9) 
+    && parseInt(app.split('/')[2]) > (100/10)) && parseInt(app.split('/')[0]) > (100/5+1));
     return (
         <main className="l-container">
             <BrowserRouter>

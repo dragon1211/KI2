@@ -116,7 +116,7 @@ categories: [project]
       padding: 15px 20px 15px 15px;
       position: relative;
       @include pc{
-        padding: 15px 30px 15px 20px;
+        padding: 15px 20px 15px 20px;
       }
       &:not(:first-child){
         border-top: 1px solid #EAEFF2;
@@ -128,6 +128,27 @@ categories: [project]
       &.txt-long{
         .txt{
           padding-bottom: 10px;
+        }
+      }
+      &.id-btn{
+        justify-content: space-between;
+        align-items: self-end;
+        a{
+          color: #1ABE64;
+          font-size: 16px;
+          padding: 0 7px;
+          border: 1px solid #1ABE64;
+          border-radius: 5px;
+          &:hover{
+            color: #1ABE64;
+            background-color: #e3f5eb;
+            transition: .3s;
+            -o-transition: .3s;
+            -moz-transition: .3s;
+          }
+          @include sp{
+            font-size: 14px;
+          }
         }
       }
     }

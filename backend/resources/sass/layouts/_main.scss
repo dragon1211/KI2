@@ -121,6 +121,24 @@ a{
   }
 }
 
+.uploading-css-loader{
+  color: rgb(221, 221, 221) !important;
+  position: fixed;
+  z-index: 10;
+  @media screen and (min-width:1068px){
+    width: 80px !important;
+    height: 80px !important;
+    top: calc(45vh - 40px);
+    left: calc( 50vw - 40px);
+  }
+  @media screen and (max-width:1068px){
+    width: 50px !important;
+    height: 50px !important;
+    top: calc(45vh - 25px);
+    left: calc(50vw - 25px);
+  }
+}
+
 .modal-css-loader{
   color: rgb(178, 180, 178) !important;
   position: fixed;
@@ -150,6 +168,9 @@ a{
   min-height: 70%;
 }
 
+.meeting-member-list{
+  overflow-y: hidden;
+}
 
 .icon-calendar{
   z-index: 2 !important;

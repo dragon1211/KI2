@@ -1,7 +1,10 @@
-// Fonts
 @charset "UTF-8";
 
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+// Module
+@use 'sass:math';
+
+// Fonts
+@import '~@fontsource/nunito/scss/mixins';
 
 // Variables
 @import 'variables';

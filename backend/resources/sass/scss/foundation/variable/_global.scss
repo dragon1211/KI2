@@ -34,5 +34,5 @@ $_duration: 0.3s !default;
 
 // base spacing
 $_white-space: 1.7rem !default;
-$_white-space--small: ($_white-space / 2) !default;
+$_white-space--small: math.div($_white-space, 2) !default;
 $_white-space--large: ($_white-space * 2) !default;

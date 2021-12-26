@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
-import { MobilePDFReader, PDFReader } from 'react-read-pdf';
 
 import { SpecialZoomLevel, Viewer, Worker } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
@@ -8,6 +7,7 @@ import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { ScrollMode } from '@react-pdf-viewer/scroll-mode';
+import { ProgressBar } from '@react-pdf-viewer/core';
 
 const PDFViewer = () => {
 
@@ -41,7 +41,7 @@ const PDFViewer = () => {
     }, []);
 
     return (
-        <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.11.338/build/pdf.worker.js">
+        <Worker workerUrl="/js/pdf.worker.js">
             <div
                 style={{
                     height: '100vh',
@@ -49,9 +49,14 @@ const PDFViewer = () => {
             >
                 { 
                     url && 
-                        <Viewer fileUrl={url} 
-                            plugins={[defaultLayoutPluginInstance]} 
-                        /> 
+                    <Viewer fileUrl={url} 
+                        plugins={[defaultLayoutPluginInstance]} 
+                        renderLoader={(percentages) => (
+                            <div style={{ width: '240px' }}>
+                                <ProgressBar progress={Math.round(percentages)} />
+                            </div>
+                        )}
+                    /> 
                 }
             </div>
         </Worker>

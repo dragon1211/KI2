@@ -317,7 +317,7 @@ class FathersController extends Controller {
             abort_if(null === session()->get('children') || null === ($rel = FatherRelation::where('father_id', (int)$father_id)->where('child_id', (int)session()->get('children')['id'])->first()), 404, $err);
         }
 
-        if (null === ($result = Father::select($father_select)->where('id', (int)$father_id)->orderBy('created_at', 'desc')->first())) {
+        if (null === ($result = Father::select($father_select)->where('id', (int)$father_id)->first())) {
             // 親詳細の取得に失敗
             return ['status_code' => 400, 'error_messages' => ['親の更新に失敗しました。']];
         }

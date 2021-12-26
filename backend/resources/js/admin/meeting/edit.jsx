@@ -7,6 +7,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import Alert from '../../component/alert';
 import PreviewPDF from '../../component/preview_pdf';
 import PageLoader from '../../component/page_loader';
+import UploadingProgress from '../../component/modal_uploading';
 
 const REGISTED_IMAGE_ID = -100;            //登録された画像を区別するために導入されます。
 
@@ -368,7 +369,8 @@ const MeetingEdit = (props) => {
                                             : <p className="text-center">子はありません。</p>
                                         }
                                         </div>
-
+                                        
+                                        <UploadingProgress show={submit}/>
                                         <LoadingButton 
                                             type="submit" fullWidth
                                             loading={submit}

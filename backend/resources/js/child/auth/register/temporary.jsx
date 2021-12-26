@@ -18,6 +18,7 @@ const ChildSignUpTemporary = () => {
 
         const formdata = new FormData();
         formdata.append('tel', tel);
+        formdata.append('father_id', document.getElementById('father_token').value);
         setSubmit(true);
         axios.post('/api/children/registerTemporary', formdata)
         .then(response => {

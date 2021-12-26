@@ -98,22 +98,22 @@ const ChildDetail = (props) => {
                       </div>
                       <p className="profile-name ft-xs-16">{`${child.last_name} ${child.first_name}`}</p>
                       <div className="profile-info ft-xs-17">
-                        <div className="profile-info__item">
+                        {/* <div className="profile-info__item">
                             <a href={`mailto:${child.email}`}>
                                 <p className="profile-info__icon">
                                     <img src="/assets/img/icon/mail.svg" alt="メール"/>
                                 </p>
                                 <p className="txt">{child.email}</p>
                             </a>
-                        </div>
-                        <div className="profile-info__item">
+                        </div> */}
+                        {/* <div className="profile-info__item">
                             <a href={`tel:${child.tel}`}>
                                 <p className="profile-info__icon">
                                     <img src="/assets/img/icon/phone.svg" alt="電話" />
                                 </p>
                                 <p className="txt">{child.tel}</p>
                             </a>
-                        </div>
+                        </div> */}
                         <div className="profile-info__item">
                             <p className="profile-info__icon">
                                 <img src="/assets/img/icon/building.svg" alt="会社名"/>

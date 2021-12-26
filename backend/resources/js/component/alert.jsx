@@ -10,7 +10,7 @@ const Alert = (props) => {
         let timer = setTimeout(()=>{
             clearTimeout(timer);
             if(props.hide)  props.hide();
-        }, 3000)
+        }, 5000)
     },[]);
 
 	return (

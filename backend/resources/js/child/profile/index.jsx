@@ -7,6 +7,8 @@ import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 import Notification from '../notification';
+import copy from 'clipboard-copy';
+
 
 const Profile = (props) => {
 
@@ -86,6 +88,12 @@ const Profile = (props) => {
         };
     };
 
+    const handleID = () => {
+        const lineText = `${profile.last_name}%20${profile.first_name}さんがIDを共有しました。%0AIDはこちら%0A%0A${profile.identity}%0A%0AIDをコピーしてメンバー追加してください。%0A%0AKIKI運営事務局`;
+        copy(lineText);
+        window.open('http://line.me/R/msg/text/?'+lineText);
+    }
+
     
 	return (
     <div className="l-content">
@@ -125,11 +133,12 @@ const Profile = (props) => {
                                 </div>
                                 <p className="profile-name">{`${profile.last_name} ${profile.first_name}`}</p>
                                 <div className="profile-info">
-                                    <div className="profile-info__item">
+                                    <div className="profile-info__item id-btn">
                                         <p className="profile-info__icon">
-                                            <img src="/assets/img/icon/person-pin.svg" alt="person"/>
+                                            <img src="/assets/img/icon/ID.svg" alt="ID"/>
                                         </p>
                                         <p className="txt">{profile.identity}</p>
+                                        <a onClick={handleID}>IDを教える</a>
                                     </div>
                                     <div className="profile-info__item">
                                         <a href={`mailto:${profile.email}`}>

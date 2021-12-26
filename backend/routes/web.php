@@ -70,7 +70,7 @@ Route::get('/unknown-error ',                           function () { return vie
 
 // ---------------------------------------- Child Account ------------------------------------------- //
 Route::group(['prefix' => 'c-account'],                 function () {
-    Route::get('/register-temporary',                   function () { return view('c_account.auth'); });
+    Route::get('/register-temporary',                   function (Request $r) { return view('c_account.auth', [ 'father_id' => $r->father_id ]); });
     Route::get('/login',                                '\App\Http\Controllers\Api\ChildrenController@checkLogin')->name('childrenlogin');
     Route::get('/logout',                               '\App\Http\Controllers\Api\ChildrenController@logout');
     Route::get('/withdrawal/complete',                  function () { return view('c_account.auth'); });
