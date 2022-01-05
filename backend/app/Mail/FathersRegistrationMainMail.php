@@ -11,8 +11,8 @@ class FathersRegistrationMainMail extends Mailable {
     use Queueable, SerializesModels;
 
     public function build () {
-        return $this->subject('本登録が完了しました。')->markdown('emails.fathers.registration.main', [
-            'url' => url('/p-account/login'),
+        return $this->subject('本登録が完了しました。')->text('emails.fathers.registration.main', [
+            'url' => '/p-account/login',
         ]);
     }
 }

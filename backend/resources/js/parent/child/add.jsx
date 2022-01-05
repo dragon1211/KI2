@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { LoadingButton } from '@material-ui/lab';
-import axios from 'axios';
 import Alert from '../../component/alert';
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import copy from 'clipboard-copy';
 
 
-const ChildAdd = () => {
+const ParentChildAdd = () => {
   const [notice, setNotice] = useState(localStorage.getItem('notice'));
+  const father_id = localStorage.getItem('kiki_acc_id');
+  
   const [identity, setIdentity] = useState('');
 
   const [_success, setSuccess] = useState('');
@@ -15,9 +16,8 @@ const ChildAdd = () => {
   const [_401error, set401Error] = useState('');
   const [_422errors, set422Errors] = useState({identity: ''});
   const [submit, setSubmit] = useState(false);
-  const father_id = document.getElementById('father_id').value;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
       e.preventDefault();
       set422Errors({identity: ''});
       set401Error('');
@@ -25,34 +25,36 @@ const ChildAdd = () => {
       formdata.append('identity', identity);
       formdata.append('father_id', father_id);
       setSubmit(true);
-      axios.post('/api/fathers/relations/register', formdata)
-      .then(response => {
-        setSubmit(false);
-        setNotice(response.data.notice);
-        switch(response.data.status_code){
-          case 200: setSuccess(response.data.success_messages); break;
-          case 400: set400Error(response.data.error_messages);  break;
-          case 401: set401Error(response.data.error_messages); set400Error(response.data.error_messages);  break;
-          case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages);  break;
-        }
-      });
+
+      await axios.post('/api/fathers/relations/register', formdata)
+        .then(response => {
+          setSubmit(false);
+          setNotice(response.data.notice);
+          switch(response.data.status_code){
+            case 200: setSuccess(response.data.success_messages); break;
+            case 400: set400Error(response.data.error_messages);  break;
+            case 401: set401Error(response.data.error_messages); set400Error(response.data.error_messages);  break;
+            case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages);  break;
+          }
+        });
   }
 
   const copyInviteURL = () => {
-    const inviteText = `https://kikikan.xyz/c-account/register-temporary?father_id=${father_id}`;
+    const inviteText = document.getElementById('inviteurl').value;
     copy(inviteText);
     setSuccess('招待用URLをコピーしました。');
   }
 
   const copyLineText = () => {
-    const lineText = `「KIKI」の招待が届いています。%0Aまずは以下より仮登録を行ってください。%0Ahttps%3A%2F%2Fkikikan.xyz%2Fc-account%2Fregister-temporary%3Ffather_id%3D${father_id}%0A%0A▼公式サイトはこちら%0Ahttps%3A%2F%2Fkikikan.jp`;
-    copy(lineText);
+    const inviteUrl = document.getElementById('inviteurl_html').value;
+    const siteUrl = document.getElementById('siteurl').value;
+    const lineText = `「KIKI」の招待が届いています。%0Aまずは以下より仮登録を行ってください。%0A%0A※スマホ本体を最新の状態にアップデートしてからURLをクリックしてください。%0A%0A${inviteUrl}%0A%0A▼公式サイトはこちら%0A${siteUrl}`;
     setSuccess('招待用URLをLINEで追信しました。');
-    window.open('http://line.me/R/msg/text/?'+lineText);
+    location.href = 'http://line.me/R/msg/text/?'+lineText;
   }
 
-  const contactMailText = 'mailto:56@zotman.jp?subject=&amp;body='+
-                          '▼%20件名%0AKIKIメンバー追加の件%0A▼%20本文%0Aこの度はKIKIシステムをご利用いただきありがとうございます。%0A会社名などを記載の上送信してください。担当者より直接メール又は電話にてご連絡いたします。%0A%0A会社名%0A担当者名%0A電話番号%0Aメールアドレス%0A%0A※3営業日までに折り返しがない場合はお手数ですが再度メールにてお問い合わせください。%0A%0AKIKI運営事務局%0A56%40zotman.jp'
+  const contactMailText = 'mailto:56@zotman.jp?subject=KIKIメンバー追加について&body='+
+                          '名前%3A%0A電話番号%3A%0AログインID%3A%0Aログインパスワード%3A%0A追加したいメンバー数%3A%0A「その他お問合せ内容」'
 
 	return (
     <div className="l-content">
@@ -115,4 +117,4 @@ const ChildAdd = () => {
 	)
 }
 
-export default ChildAdd;
+export default ParentChildAdd;

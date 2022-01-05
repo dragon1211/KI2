@@ -88,4 +88,16 @@ categories: [layout]
       max-width: 560px;
     }
   }
+
+  &-w1024{
+    margin: 0 auto;
+    max-width: 1024px;
+    width: 100%;
+  }
+
+  &-w786{
+    margin: 0 auto;
+    max-width: 786px;
+    width: 100%;
+  }
 }

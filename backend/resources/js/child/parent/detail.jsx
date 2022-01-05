@@ -1,14 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
-import axios from 'axios';
-import { useHistory, Link } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 
-const ParentDetail = (props) => {
+const ChildParentDetail = () => {
 
-    const history = useHistory();
+    const navigator = useNavigate();
+    const params = useParams();
+
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const [loaded, setLoaded] = useState(false);
     const [parent, setParent] = useState(null);
@@ -19,27 +20,27 @@ const ParentDetail = (props) => {
     
     const isMountedRef = useRef(true);
     
-    useEffect(() => {
+    useEffect( async () => {
         isMountedRef.current = false;
         setLoaded(false);
-        axios.get('/api/children/fathers/detail/'+props.match.params.father_id)
-        .then(response => {
-            setLoaded(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                setParent(response.data.params);
-            }
-            else {
-                set400Error("失敗しました。");
-            }
-        })
-        .catch(err=>{
-            setLoaded(true);
-            setNotice(err.response.data.notice);
-            if(err.response.status==404){
-                set404Error(err.response.data.message);
-            }
-        })
+        await axios.get('/api/children/fathers/detail/'+ params?.father_id)
+            .then(response => {
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    setParent(response.data.params);
+                }
+                else {
+                    set400Error("失敗しました。");
+                }
+            })
+            .catch(err=>{
+                setLoaded(true);
+                setNotice(err.response.data.notice);
+                if(err.response.status==404){
+                    set404Error(err.response.data.message);
+                }
+            })
     },[]);
 
     useEffect(()=>{
@@ -100,9 +101,7 @@ const ParentDetail = (props) => {
                 {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
                 {  _404error && 
                     <Alert type="fail" hide={()=>{
-                        history.push({
-                            pathname: "/c-account/parent"
-                        });
+                        navigator('/c-account/parent');
                     }}>
                     {_404error}
                     </Alert>
@@ -116,4 +115,4 @@ const ParentDetail = (props) => {
 
 
 
-export default ParentDetail;
+export default ChildParentDetail;

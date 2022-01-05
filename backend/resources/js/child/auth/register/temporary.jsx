@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { LoadingButton } from '@material-ui/lab';
 import Alert from '../../../component/alert';
 
@@ -11,24 +10,27 @@ const ChildSignUpTemporary = () => {
     const [_422errors, set422Errors] = useState({tel:''});
     const [_success, setSuccess] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
         set422Errors({tel:''});
 
         const formdata = new FormData();
         formdata.append('tel', tel);
-        formdata.append('father_id', document.getElementById('father_token').value);
+        if(document.getElementById('father_token')){
+            formdata.append('father_id', document.getElementById('father_token').value);
+        }
         setSubmit(true);
-        axios.post('/api/children/registerTemporary', formdata)
-        .then(response => {
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: setSuccess("SMSに本登録案内のメッセージを送信しました。本登録を行ってください。"); break;
-                case 400: set400Error(response.data.error_messages); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-            };
-        })
+
+        await axios.post('/api/children/registerTemporary', formdata)
+            .then(response => {
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200: setSuccess("SMSに本登録案内のメッセージを送信しました。本登録を行ってください。"); break;
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                };
+            })
     }
 
 

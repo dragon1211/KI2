@@ -52,7 +52,8 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://127.0.0.1'),
+    'url' => env('APP_URL', 'https://kikikan.xyz'),
+    'site_url' => env('SITE_URL', 'https://kikikan.jp'),
 
     'asset_url' => env('ASSET_URL', null),
 

@@ -1,7 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
-const ParentWithdrawalComplete = () => {
+const WithdrawalComplete = () => {
+    const { pathname } = useLocation();
+    var url;
+
+    if(pathname.includes('c-account')) url = '/c-account/login';
+    else if(pathname.includes('p-account')) url = '/p-account/login';
+    
 	return (
     <div className="l-single-container">
         <div className="l-single-inner">
@@ -11,11 +17,11 @@ const ParentWithdrawalComplete = () => {
                 今後とも、KIKI管理をよろしくお願いいたします。
             </div>
             <div className="text-center">
-                <Link to="/p-account/login" className="ft-xs-16">トップページへ戻る</Link>
+                <Link to={url} className="ft-xs-16">トップページへ戻る</Link>
             </div>
         </div>
     </div>
 	)
 }
 
-export default ParentWithdrawalComplete;
+export default WithdrawalComplete;

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { LoadingButton } from '@material-ui/lab';
-import axios from 'axios';
 import Alert from '../../../component/alert';
 
 const ParentForgotPassword = () => {
@@ -12,22 +11,23 @@ const ParentForgotPassword = () => {
     const [_400error, set400Error] = useState('')
     const [_success, setSuccess] = useState('')
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         set422Errors({email: ''});
         setSubmit(true);
 
         const formdata = new FormData();
         formdata.append('email', email);
-        axios.post('/api/fathers/requestPassword', formdata)
-        .then(response => {
-            setSubmit(false)
-            switch(response.data.status_code){
-                case 200: setSuccess(response.data.success_messages); break;
-                case 400: set400Error(response.data.error_messages); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-            }
-        })        
+
+        await axios.post('/api/fathers/requestPassword', formdata)
+            .then(response => {
+                setSubmit(false)
+                switch(response.data.status_code){
+                    case 200: setSuccess(response.data.success_messages); break;
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                }
+            })        
     }
 
 

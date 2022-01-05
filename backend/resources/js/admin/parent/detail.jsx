@@ -1,8 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
 
-import { LoadingButton } from '@material-ui/lab';
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
@@ -14,31 +12,33 @@ import ModalConfirm from '../../component/modal_confirm';
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
   });
-  
 
 
-const ParentDetail = (props) => {
 
-    const history = useHistory();
+const AdminParentDetail = () => {
 
-    const [image, setImage] = useState(''); 
+    const navigator = useNavigate();
+    const location = useLocation();
+    const params = useParams();
+
+    const [image, setImage] = useState('');
     const [loaded, setLoaded] = useState(false);
     const [submit, setSubmit] = useState(false);
     const [submit_image, setSubmitImage] = useState(false);
     const [parent, setParent] = useState(null);
-    
+
     const [_400error, set400Error] = useState('');
     const [_422errors, set422Errors] = useState({image: ''});
-    const [_success, setSuccess] = useState(props.history.location.state);
+    const [_success, setSuccess] = useState(location.state);
     const [show_confirm_modal, setShowConfirmModal] = useState(false);
 
     const isMountedRef = useRef(true);
-    
-    
+
+
     useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
-        axios.get(`/api/admin/fathers/detail/${props.match.params?.father_id}`)
+        axios.get(`/api/admin/fathers/detail/${params?.father_id}`)
         .then(response => {
             setLoaded(true);
             if(response.data.status_code==200){
@@ -57,43 +57,41 @@ const ParentDetail = (props) => {
         let reader = new FileReader();
         let _file = e.target.files[0];
         reader.readAsDataURL(_file);
-        reader.onloadend = () => {
+        reader.onloadend = async () => {
             set422Errors({image: ''});
             setSubmitImage(true);
-            axios.put(`/api/admin/fathers/updateImage/${props.match.params?.father_id}`, {image: reader.result})
-            .then(response => {
-                setSubmitImage(false);
-                switch(response.data.status_code){
-                    case 200: {
-                        setImage(reader.result);
-                        setSuccess(response.data.success_messages);
-                        break;
+            await axios.put(`/api/admin/fathers/updateImage/${params?.father_id}`, {image: reader.result})
+                .then(response => {
+                    setSubmitImage(false);
+                    switch(response.data.status_code){
+                        case 200: {
+                            setImage(reader.result);
+                            setSuccess(response.data.success_messages);
+                            break;
+                        }
+                        case 400: set400Error(response.data.error_messages); break;
+                        case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                     }
-                    case 400: set400Error(response.data.error_messages); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-                } 
-            });
+                });
         };
     };
 
-    
+
     async function handleAcceptDelete() {
         setSubmit(true);
-        axios.delete(`/api/admin/fathers/delete/${props.match.params?.father_id}`)
-        .then(response => {
-            setShowConfirmModal(false);
-            setSubmit(false);
-            if(response.data.status_code == 200){
-                history.push({
-                pathname: "/admin/parent",
-                state: '削除に成功しました！'});
-            } else {
-                set400Error("削除に失敗しました。");
-            }
-        });
+        await axios.delete(`/api/admin/fathers/delete/${params?.father_id}`)
+            .then(response => {
+                setShowConfirmModal(false);
+                setSubmit(false);
+                if(response.data.status_code == 200){
+                    navigator('/admin/parent', { state: '削除に成功しました！' });
+                } else {
+                    set400Error("削除に失敗しました。");
+                }
+            });
     };
 
-    
+
 	return (
     <div className="l-content">
 
@@ -111,7 +109,7 @@ const ParentDetail = (props) => {
                         (!loaded || submit_image) &&
                             <PageLoader />
                     }
-                    { 
+                    {
                         loaded && parent &&
                         <div className="profile-content">
                             <div>
@@ -121,14 +119,14 @@ const ParentDetail = (props) => {
                                         <IconButton color="primary" aria-label="upload picture" component="span" className="bg-yellow shadow-sm w-50-px h-50-px">
                                             <PhotoCameraOutlinedIcon style={{width:'25px', height:'25px', color:'black'}}/>
                                         </IconButton>
-                                    </label> 
-                                    <img src={image} className="avatar-img" alt="avatar-img"/>  
+                                    </label>
+                                    <img src={image} className="avatar-img" alt="avatar-img"/>
                                 </div>
                                 {
                                     _422errors.image &&
                                         <span className="l-alert__text--error ft-16 ft-md-14">
                                             {_422errors.image}
-                                        </span> 
+                                        </span>
                                 }
                             </div>
                             <p className="profile-name">{parent.company}</p>
@@ -159,23 +157,23 @@ const ParentDetail = (props) => {
                                     <p className="txt">{parent.profile ? parent.profile: '未入力'}</p>
                                 </div>
                             </div>
-        
+
                             <div className="p-profile-btn">
                                 <Link className="btn-default btn-yellow btn-profile btn-r8 btn-h52"
-                                    to = {`/admin/parent/edit/${props.match.params?.father_id}`}
+                                    to = {`/admin/parent/edit/${params?.father_id}`}
                                 >
                                     <span className="ft-18 ft-xs-16">プロフィールを変更する</span>
                                 </Link>
                             </div>
-        
+
                             <div className="p-profile-btn">
                                 <Link className="btn-default btn-yellow btn-password btn-r8 btn-h52"
-                                    to = {`/admin/parent/edit/password/${props.match.params?.father_id}`}
+                                    to = {`/admin/parent/edit/password/${params?.father_id}`}
                                 >
                                     <span className="ft-18 ft-xs-16">パスワードを変更する</span>
                                 </Link>
                             </div>
-        
+
                             <div className="p-profile-txtLink">
                                 <a className="btn-default btn-password btn-r8 btn-h52"
                                     onClick={()=>setShowConfirmModal(true)}
@@ -186,21 +184,21 @@ const ParentDetail = (props) => {
                         </div>
                     }
                     </div>
-                </section>   
+                </section>
             </div>
         </div>
-        <ModalConfirm 
-          show={show_confirm_modal} 
-          message={"本当に削除しても\nよろしいでしょうか？"}
-          handleClose={()=>setShowConfirmModal(false)} 
-          handleAccept={handleAcceptDelete} 
-          loading={submit}
+        <ModalConfirm
+            show={show_confirm_modal}
+            message={"本当に削除しても\nよろしいでしょうか？"}
+            handleClose={()=>setShowConfirmModal(false)}
+            handleAccept={handleAcceptDelete}
+            loading={submit}
         />
-        { _400error && <Alert type="fail" hide={()=>set400Error('')}> {_400error} </Alert> } 
+        { _400error && <Alert type="fail" hide={()=>set400Error('')}> {_400error} </Alert> }
         { _success && <Alert type="success" hide={()=>setSuccess('')}> {_success} </Alert> }
-    </div>    
+    </div>
     )
 }
 
 
-export default ParentDetail;
+export default AdminParentDetail;

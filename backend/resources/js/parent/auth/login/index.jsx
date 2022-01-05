@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
-import axios from 'axios';
 import Alert from '../../../component/alert';
 
 
-const ParentLogin = (props) => {
+const ParentLogin = () => {
+
+    const location = useLocation();
 
     const [submit, setSubmit] = useState(false);
 
@@ -13,10 +14,10 @@ const ParentLogin = (props) => {
     const [password, setPassword] = useState('');
 
     const [_422errors, set422Errors] = useState({email: '', password: ''});
-    const [_400error, set400Error] = useState(props.history.location.state);
+    const [_400error, set400Error] = useState(location.state);
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmit(true);
         set422Errors({email:'', password:''});
@@ -24,19 +25,29 @@ const ParentLogin = (props) => {
         const formdata = new FormData();
         formdata.append('email', email);
         formdata.append('password', password);
-        axios.post('/api/fathers/login/', formdata)
-        .then(response => {
-            setSubmit(false)
-            switch(response.data.status_code){
-                case 200:{
-                    localStorage.setItem("from_login", true);
-                    window.location.href = '/p-account/meeting';
-                    break;
+
+        await axios.post('/api/fathers/login/', formdata)
+            .then(response => {
+                setSubmit(false)
+                switch(response.data.status_code){
+                    case 200:{
+                        localStorage.setItem('kiki_login_flag', true);
+                        localStorage.setItem('kiki_acc_type', 'p-account');
+                        localStorage.setItem('kiki_acc_id', response.data.params.id);
+                        window.location.href = '/p-account/meeting';
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_message); break;
+                    case 422: {
+                        window.scrollTo(0, 0); 
+                        set422Errors(response.data.error_messages);
+                        break;
+                    }
                 }
-                case 400: set400Error(response.data.error_message); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-            }
-        })
+                if(response.data.status_code != 200){
+                    setPassword('');
+                }
+            })
     }
 
 	return (

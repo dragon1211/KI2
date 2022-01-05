@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
-import axios from 'axios';
-import { useHistory, Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -10,37 +9,40 @@ import InfiniteScroll from "react-infinite-scroll-component";
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
-const Child = (props) => {
+const ParentChilds = () => {
 
-    const history = useHistory();
+    const location = useLocation();
+
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const father_id = localStorage.getItem('kiki_acc_id');
+    
     const [children_list, setChildrenList] = useState([]);
     const [fetch_children_list, setFetchChildrenList] = useState([]);
     const [loaded, setLoaded] = useState(false);
-    const [_success, setSuccess] = useState(props.history.location.state);
+    const [_success, setSuccess] = useState(location.state);
     const [_400error, set400Error] = useState('');
 
     const isMountedRef = useRef(true);
 
-    useEffect(() => {
+    useEffect( async () => {
         isMountedRef.current = false;
         setLoaded(false);
-        let father_id = document.getElementById('father_id').value;
-        axios.get('/api/fathers/children/listOfFather', {params: {father_id: father_id}})
-        .then(response => {
-            setLoaded(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                setChildrenList(response.data.params);
-                var len = response.data.params.length;
-                if(len > INFINITE)
-                    setFetchChildrenList(response.data.params.slice(0, INFINITE));
-                else setFetchChildrenList(response.data.params.slice(0, len));
-            }
-            else {
-                set400Error("失敗しました。");
-            }
-        })
+        
+        await axios.get('/api/fathers/children/listOfFather', {params: {father_id: father_id}})
+            .then(response => {
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    setChildrenList(response.data.params);
+                    var len = response.data.params.length;
+                    if(len > INFINITE)
+                        setFetchChildrenList(response.data.params.slice(0, INFINITE));
+                    else setFetchChildrenList(response.data.params.slice(0, len));
+                }
+                else {
+                    set400Error("失敗しました。");
+                }
+            })
     }, []);
 
 
@@ -130,4 +132,4 @@ const Child = (props) => {
 
 
 
-export default Child;
+export default ParentChilds;

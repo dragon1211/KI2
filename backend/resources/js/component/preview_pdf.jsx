@@ -18,7 +18,16 @@ const PreviewPDF = ({pdf_url}) => {
 
 
 	return (
-    <div className="p-file-for" style={{ height: height, marginTop:'15px', display:'flex', alignItems:'center', justifyContent:'center' }}>
+    <div className="p-file-for" 
+        style={{ 
+            height: height, 
+            marginTop:'15px', 
+            display:'flex', 
+            alignItems:'center', 
+            justifyContent:'center', 
+            position:'relative',
+            overflow: 'hidden'
+    }}>
         {
             pdf_url &&
             <Document file={pdf_url} loading={<></>}>

@@ -3,17 +3,18 @@ import ja from "date-fns/locale/ja";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 registerLocale("ja", ja);
-import axios from 'axios';
 import moment from 'moment';
 import { LoadingButton } from '@material-ui/lab';
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
-import { useHistory } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const ChildEdit = (props) => {
+const ParentChildEdit = () => {
 
-  const history = useHistory();
+  const navigator = useNavigate();
+  const params = useParams();
+
   const [notice, setNotice] = useState(localStorage.getItem('notice'));
   const [_success, setSuccess] = useState('');
   const [_400error, set400Error] = useState('');
@@ -24,35 +25,35 @@ const ChildEdit = (props) => {
   const [submit, setSubmit] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const father_id = document.getElementById('father_id').value;
-  const child_id = props.match.params.child_id;
+  const father_id = localStorage.getItem('kiki_acc_id');
+  const child_id = params?.child_id;
 
   const isMountedRef = useRef(true);
   
-  useEffect(() => {
+  useEffect( async () => {
     isMountedRef.current = false;
     setLoaded(false);
-    axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
-    .then(response => {
-        setNotice(response.data.notice);
+    await axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
+      .then(response => {
+          setNotice(response.data.notice);
+          setLoaded(true);
+          if(response.data.status_code==200){
+            let hire_at = moment(response.data.params.father_relations?.hire_at).toDate();
+            setHireAt(hire_at);
+          } else {
+            set400Error("失敗しました。");
+          }
+      })
+      .catch(err=>{
         setLoaded(true);
-        if(response.data.status_code==200){
-          let hire_at = moment(response.data.params.father_relations?.hire_at).toDate();
-          setHireAt(hire_at);
-        } else {
-          set400Error("失敗しました。");
+        setNotice(err.response.data.notice);
+        if(err.response.status==404){
+          set404Error(err.response.data.message);
         }
-    })
-    .catch(err=>{
-      setLoaded(true);
-      setNotice(err.response.data.notice);
-      if(err.response.status==404){
-        set404Error(err.response.data.message);
-      }
-    })
+      })
   },[]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
       e.preventDefault();
       set422Errors({hire_at: ''});
       const request = {
@@ -60,22 +61,19 @@ const ChildEdit = (props) => {
         hire_at: hire_at
       }
       setSubmit(true);
-      axios.put(`/api/fathers/relations/updateHireDate/${child_id}`, request)
-      .then(response => {
-        setSubmit(false);
-        setNotice(response.data.notice);
-        switch(response.data.status_code){
-          case 200:{
-            history.push({
-                pathname: '/p-account/child/detail/'+child_id,
-                state: response.data.success_messages
-            });
-            break;
-          } 
-          case 400: set400Error(response.data.error_messages); break;
-          case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-        }
-      });
+      await axios.put(`/api/fathers/relations/updateHireDate/${child_id}`, request)
+        .then(response => {
+          setSubmit(false);
+          setNotice(response.data.notice);
+          switch(response.data.status_code){
+            case 200:{
+              navigator('/p-account/child/detail/'+child_id,  { state: response.data.success_messages });
+              break;
+            } 
+            case 400: set400Error(response.data.error_messages); break;
+            case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+          }
+        });
   }
   
 	return (
@@ -137,9 +135,7 @@ const ChildEdit = (props) => {
       { _404error && 
         <Alert type="fail" hide={()=>{
             set404Error('');
-            history.push({
-                pathname: "/p-account/child"
-            });
+            navigator('/p-account/child', {state: ''})
         }}>
         {_404error}
         </Alert>
@@ -148,4 +144,4 @@ const ChildEdit = (props) => {
 	)
 }
 
-export default ChildEdit;
+export default ParentChildEdit;

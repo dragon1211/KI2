@@ -85,7 +85,7 @@ class FathersController extends Controller {
 
     public function registerTemporary (Request $r) {
         $validate = Validator::make($r->all(), [
-            'email' => 'required|unique:fathers|unique:email_activations|max:255|email',
+            'email' => 'required|unique:fathers|max:255|email',
             'relation_limit' => 'required|numeric',
         ]);
 
@@ -165,6 +165,11 @@ class FathersController extends Controller {
             return $this->imagememecannull($value);
         });
 
+        // 規約に同意する
+        Validator::extend('agreed', function ($attribute, $value, $params, $validator) {
+            return $value == 'true';
+        });
+
         $validate = Validator::make($r->all(), [
             'token' => 'required',
             'password' => ['required', 'min:8', 'max:72', 'confirmed', new \App\Rules\Hankaku],
@@ -172,6 +177,7 @@ class FathersController extends Controller {
             'image' => 'image_size|image_meme',
             'profile' => 'max:1000',
             'tel' => 'required|unique:fathers|numeric|starts_with:0|tel_size',
+            'terms' => 'agreed',
         ]);
 
         if ($validate->fails()) {
@@ -232,7 +238,7 @@ class FathersController extends Controller {
         }
 
         // 本登録に成功
-        return ['status_code' => 200];
+        return ['status_code' => 200, 'success_messages' => ['本登録に成功しました。']];
     }
 
     public function search (Request $r) {
@@ -448,8 +454,11 @@ class FathersController extends Controller {
             'company' => $r->company,
             'profile' => $r->profile,
             'tel' => $r->tel,
-            'relation_limit' => (int)$r->relation_limit,
         ];
+
+        if (request()->route()->action['as'] == 'pua') {
+            $update['relation_limit'] = (int)$r->relation_limit;
+        }
 
         try {
             Father::where('id', (int)$father_id)->update($update);

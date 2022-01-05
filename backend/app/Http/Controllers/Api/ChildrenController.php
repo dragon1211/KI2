@@ -130,6 +130,11 @@ class ChildrenController extends Controller {
             return $this->imagememecannull($value);
         });
 
+        // 規約に同意する
+        Validator::extend('agreed', function ($attribute, $value, $params, $validator) {
+            return $value == 'true';
+        });
+
         $validate = Validator::make($r->all(), [
             'identity' => 'required|max:20|alpha_num',
             'email' => 'required|unique:children|max:255|email',
@@ -138,6 +143,7 @@ class ChildrenController extends Controller {
             'first_name' => 'required|max:100',
             'image' => 'image_size|image_meme',
             'company' => 'max:100',
+            'terms' => 'agreed',
         ]);
 
         if ($validate->fails()) {

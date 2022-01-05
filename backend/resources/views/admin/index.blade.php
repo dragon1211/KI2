@@ -12,6 +12,5 @@
 @endphp
 
 @section('content')
-<div id="admin-app"></div>
-<input type="hidden" id="admin_router" value="{{$router}}" />
+    <input type="hidden" id="admin_router" value="{{$router}}" />
 @endsection

@@ -1,10 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { CircularProgress  } from '@material-ui/core';
@@ -28,26 +25,42 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
   const [loaded2, setLoaded2] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const isMountedRef = useRef(true);
-  
-  useEffect(() => {
-    isMountedRef.current = false;
+  const isMountedRef = useRef(false);
+
+  useEffect( async () => {
+    isMountedRef.current = true;
+    let mounted = true;
+    const source = axios.CancelToken.source()
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     setLoaded1(false);
-    axios.get('/api/fathers/meeting/approvals/listChildrenOfApprovel', {params: { meeting_id: meetingId }})
-    .then((response) => {
-      setLoaded1(true);
-      if(response.data.status_code==200){
-        setApproval(response.data.params);
-      } 
-    });
+    await axios.get('/api/fathers/meeting/approvals/listChildrenOfApprovel', {params: { meeting_id: meetingId }}, {cancelToken: source.token}, { signal: signal })
+      .then((response) => {
+        if(mounted){
+          setLoaded1(true);
+          if(response.data.status_code==200){
+            setApproval(response.data.params);
+          }
+        }
+      });
+
     setLoaded2(false);
-    axios.get('/api/fathers/meeting/approvals/listChildrenOfUnapprovel', {params: { meeting_id: meetingId }})
-    .then((response) => {
-      setLoaded2(true);
-      if(response.data.status_code==200){
-        setUnapproval(response.data.params);
-      }
-    });
+    await axios.get('/api/fathers/meeting/approvals/listChildrenOfUnapprovel', {params: { meeting_id: meetingId }}, {cancelToken: source.token}, { signal: signal })
+      .then((response) => {
+        if(mounted){
+          setLoaded2(true);
+          if(response.data.status_code==200){
+            setUnapproval(response.data.params);
+          }
+        }
+      });
+
+    return () => {
+      mounted = false;
+      source.cancel()
+      controller.abort();
+    }
   }, []);
 
 
@@ -55,20 +68,20 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
     setLoaded(loaded1 && loaded2);
   },[loaded1, loaded2]);
 
-  
-  const settingNotify = (email) => {
+
+  const settingNotify = async (email) => {
     const formdata = new FormData();
     formdata.append('email', JSON.stringify(new Array(email)));
     formdata.append('meeting_id', meetingId);
-    axios.post('/api/fathers/meetingNotification', formdata)
-    .then(response=>{
-      switch(response.data.status_code){
-        case 200: setSuccess('通知に成功しました!'); break;
-        case 400: set400Error('通知に失敗しました。'); break;
-      }
-    })
+    await axios.post('/api/fathers/meetingEditNotification', formdata)
+      .then(response=>{
+        switch(response.data.status_code){
+          case 200: setSuccess('通知に成功しました!'); break;
+          case 400: set400Error('通知に失敗しました。'); break;
+        }
+      })
   }
-  
+
 
 	return (
     <Dialog
@@ -87,10 +100,10 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
         </DialogTitle>
         <DialogContent className="position-relative">
           {
-            !loaded && 
-              <CircularProgress 
+            !loaded &&
+              <CircularProgress
                 className="modal-css-loader"
-                sx={{ 
+                sx={{
                   animationDuration: '600ms',
                 }}
                 thickness={2}
@@ -100,7 +113,7 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
             loaded &&
             <>
               <div className={ `modal-content border-0 ${!isApproval ? "is-active" : ""}` } id="item01">
-                { 
+                {
                   unapproval.length > 0 ?
                   unapproval.map((item, ki) =>
                     <div className="modal-content-item" key={ki}>
@@ -114,18 +127,18 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
                       </div>
                       <div className="p-notification-btn">
                         <a onClick={e => settingNotify(item.child.email)} className="btn-default btn-yellow btn-notification btn-r3 btn-h30 btn-w100p btn-fz14">
-                          <span>通知</span>
+                          <span>再通知</span>
                         </a>
                       </div>
                     </div>
                   )
                   : <p className="text-center py-2 ft-xs-15">データはありません。</p>
                 }
-              </div>    
+              </div>
               <div className={ `modal-content border-0 ${isApproval ? "is-active" : ""}` } id="item02">
-                { 
+                {
                   approval.length > 0 ?
-                  approval?.map((item, kj) => 
+                  approval?.map((item, kj) =>
                     <div className="modal-content-item" key={kj}>
                       <div className="user-wrap">
                         <Link to={`/p-account/child/detail/${item.child.id}`} >

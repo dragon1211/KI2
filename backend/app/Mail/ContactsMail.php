@@ -16,8 +16,8 @@ class ContactsMail extends Mailable {
     }
 
     public function build () {
-        return $this->subject('お問い合わせありがとうございます。')->markdown('emails.contacts', [
-            'message' => $this->message
+        return $this->subject('お問い合わせありがとうございます。')->text('emails.contacts', [
+            'messages' => $this->message
         ]);
     }
 }

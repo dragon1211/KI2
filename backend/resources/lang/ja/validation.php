@@ -17,6 +17,7 @@ return [
     'active_url' => 'The :attribute is not a valid URL.',
     'after' => 'The :attribute must be a date after :date.',
     'after_or_equal' => 'The :attribute must be a date after or equal to :date.',
+    'agreed' => '規約への同意は必須です。',
     'alpha' => ' :attribute は英文字のみです。',
     'alpha_dash' => ' :attribute は半角英数字、ハイフン（-）、又はアンダーバー（_）のみです。',
     'alpha_num' => ' :attribute は半角英数字のみです。',

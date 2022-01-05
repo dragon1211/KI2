@@ -1,5 +1,21 @@
 {
-    "private": true,
+    "name": "KIKI",
+    "author": "Chankan, Technical, Dragon",
+    "licence": "MIT",
+    "version": "1.0.0",
+    "private": false,
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
     "scripts": {
         "dev": "npm run development",
         "development": "mix",
@@ -19,14 +35,13 @@
         "@material-ui/lab": "^5.0.0-alpha.40",
         "@material-ui/styles": "^5.0.0-beta.1",
         "@mui/icons-material": "^5.2.4",
-        "@mui/material": "^5.0.4",
+        "@mui/material": "^5.2.7",
         "@react-pdf-viewer/core": "^3.0.0",
         "@react-pdf-viewer/default-layout": "^3.0.0",
         "clipboard-copy": "^4.0.1",
-        "date-fns": "^2.23.0",
+        "date-fns": "^2.28.0",
         "es7-shim": "^6.0.0",
         "history": "^5.0.0",
-        "lodash": "^4.17.21",
         "moment": "^2.29.1",
         "pdfjs-dist": "^2.11.338",
         "prop-types": "^15.7.2",
@@ -35,16 +50,15 @@
         "react-dom": "^17.0.2",
         "react-infinite-scroll-component": "^6.1.0",
         "react-pdf": "^5.4.0",
-        "react-read-pdf": "^2.0.9",
-        "react-router": "^5.2.1",
-        "react-router-dom": "^5.3.0",
-        "react-toastify": "^8.0.3"
+        "react-router-dom": "^6.2.1",
+        "react-scripts": "^5.0.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.15.5",
+        "@babel/core": "^7.16.7",
         "@babel/eslint-parser": "^7.14.7",
-        "@babel/preset-react": "^7.0.0",
+        "@babel/preset-react": "^7.16.7",
         "axios": "^0.21.4",
+        "babel-loader": "^8.2.3",
         "babel-preset-es2015-loose": "^8.0.0",
         "bootstrap": "^4.0.0",
         "eslint": "^7.31.0",
@@ -52,18 +66,18 @@
         "eslint-config-prettier": "^8.3.0",
         "eslint-config-react-app": "^6.0.0",
         "eslint-plugin-flowtype": "^5.8.1",
-        "eslint-plugin-import": "^2.23.4",
+        "eslint-plugin-import": "^2.25.4",
         "eslint-plugin-jsx-a11y": "^6.4.1",
         "eslint-plugin-prettier": "^3.4.0",
         "eslint-plugin-react": "^7.26.1",
         "eslint-plugin-react-hooks": "^4.2.0",
-        "laravel-mix": "^6.0.31",
+        "laravel-mix": "^6.0.39",
         "lodash": "^4.17.19",
         "popper.js": "^1.12",
         "postcss": "^8.3.9",
         "prettier": "^2.3.1",
         "resolve-url-loader": "^3.1.2",
-        "sass": "^1.42.1",
+        "sass": "^1.45.2",
         "sass-loader": "^8.0.0"
     }
 }

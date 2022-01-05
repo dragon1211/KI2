@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom'
 
-export default function Side() {
+export default function AdminSide() {
     const [selected, setSelected] = useState('');
 
-    const handleLogout = () => {
-        axios.get('/admin/logout')
-        .then(() => location.href = '/admin/login')
+    const handleLogout = async () => {
+        await axios.get('/admin/logout')
+            .then(() => {
+                location.href = '/admin/login';
+            })
     }
 
     return (

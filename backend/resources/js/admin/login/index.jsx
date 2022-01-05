@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
 import { LoadingButton } from '@material-ui/lab';
-import axios from 'axios';
 
 import Alert from '../../component/alert';
 
@@ -21,7 +19,7 @@ const AdminLogin = () => {
     }
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmit(true);                            //show progressbar
         const formdata = new FormData();
@@ -30,22 +28,31 @@ const AdminLogin = () => {
 
         init_error();
 
-        axios.post('/api/admin/login', formdata)
-        .then(response => {
-            if(response.data.status_code == 200){
-                localStorage.setItem("from_login", true);
-                window.location.href = "/admin/meeting";
-            }
-            else if(response.data.status_code == 422){
-                window.scrollTo(0, 0);
-                set422Errors(response.data.error_messages);
-            }
-            else if(response.data.status_code == 400){
-                set400Error(response.data.error_message);
-            }
-            setSubmit(false)
-        })
-        .catch(err=>console.log(err))
+        await axios.post('/api/admin/login', formdata)
+            .then(response => {
+                setSubmit(false)
+                switch(response.data.status_code){
+                    case 200: {
+                        localStorage.setItem('kiki_login_flag', true);
+                        localStorage.setItem('kiki_acc_type', 'admin');
+                        window.location.href = "/admin/meeting";
+                        break;
+                    }
+                    case 422: {
+                        window.scrollTo(0, 0); 
+                        set422Errors(response.data.error_messages); 
+                        break;
+                    }
+                    case 400: {
+                        set400Error(response.data.error_message);
+                        break;
+                    }
+                }
+                if(response.data.status_code != 200){
+                setPassword('');
+                }            
+            })
+            .catch(err=>console.log(err))
     }
 
 
@@ -105,10 +112,4 @@ const AdminLogin = () => {
 }
 
 
-// ----------------------------------------------------------------------
-if(document.getElementById('admin-login')){
-	ReactDOM.render(
-		<AdminLogin />,
-		document.getElementById('admin-login')
-	)
-}
+export default AdminLogin;

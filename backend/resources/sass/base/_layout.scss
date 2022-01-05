@@ -114,6 +114,11 @@ input[type=radio]+.lbl::before {
 	height: 27px;
 }
 
+input[type=checkbox].is-invalid+.lbl::before,
+input[type=radio].is-invalid+.lbl::before{
+	border-color: #ff9999;
+}
+
 input[type=checkbox]:checked+.lbl::before,
 input[type=radio]:checked+.lbl::before {
 		display: inline-block;

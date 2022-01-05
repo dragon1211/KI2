@@ -12,16 +12,19 @@ class DatabaseSeeder extends Seeder {
      */
     public function run () {
         $this->call(AdminsTableSeeder::class);
-        $this->call(FathersTableSeeder::class);
-        $this->call(EmailActivationsTableSeeder::class);
-        $this->call(ChildrenTableSeeder::class);
-        $this->call(TelActivationsTableSeeder::class);
-        $this->call(FatherRelationsTableSeeder::class);
-        $this->call(MeetingsTableSeeder::class);
-        $this->call(MeetingImagesTableSeeder::class);
-        $this->call(MeetingApprovalsSeeder::class);
-        $this->call(LoginLimitsSeeder::class);
-        $this->call(ContactsSeeder::class);
-        $this->call(SmssSeeder::class);
+
+        if (env('APP_DEBUG') == true) {
+            $this->call(FathersTableSeeder::class);
+            $this->call(EmailActivationsTableSeeder::class);
+            $this->call(ChildrenTableSeeder::class);
+            $this->call(TelActivationsTableSeeder::class);
+            $this->call(FatherRelationsTableSeeder::class);
+            $this->call(MeetingsTableSeeder::class);
+            $this->call(MeetingImagesTableSeeder::class);
+            $this->call(MeetingApprovalsSeeder::class);
+            $this->call(LoginLimitsSeeder::class);
+            $this->call(ContactsSeeder::class);
+            $this->call(SmssSeeder::class);
+        }
     }
 }

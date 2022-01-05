@@ -75,7 +75,7 @@ trait AuthenticationTrait {
             $r->session()->put($guard, $login_user_datum);
         }
 
-        return ['status_code' => 200];
+        return ['status_code' => 200, 'params' => ['id' => $login_user_datum['id']]];
     }
 
     public function logout () {

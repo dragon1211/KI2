@@ -1,21 +1,24 @@
 import React, { useRef, useEffect, useState } from 'react';
-import axios from 'axios';
-import { useHistory, Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import moment from 'moment';
-import IconButton from '@mui/material/IconButton';
 
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 import InfiniteScroll from "react-infinite-scroll-component";
-import { isObject } from 'lodash';
+
+
 
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
-const Favorite = (props) => {
+const ParentFavorite = () => {
+
+    const location = useLocation();
 
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const father_id = localStorage.getItem('kiki_acc_id');
+
     const [tab_status, setTabStatus] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [loaded1, setLoaded1] = useState(false);
@@ -24,7 +27,7 @@ const Favorite = (props) => {
     const [meeting_list_favorite, setMeetingListOfFavorite] = useState([]);
     const [fetch_meeting_list_non_favorite, setFetchMeetingListOfNonFavorite] = useState([]);
     const [fetch_meeting_list_favorite, setFetchMeetingListOfFavorite] = useState([]);
-    const [_success, setSuccess] = useState(props.history.location.state);
+    const [_success, setSuccess] = useState(location.state);
     const [_400error, set400Error] = useState('');
 
     const isMountedRef = useRef(true);
@@ -34,11 +37,11 @@ const Favorite = (props) => {
     },[loaded1, loaded2])
     
     
-    useEffect(() => {
+    useEffect(async () => {
         isMountedRef.current = false;
         setLoaded(false);
-        let father_id = document.getElementById('father_id').value;
-        axios.get('/api/fathers/meetings/listOfNonFavoriteOfFather', {params:{father_id: father_id}})
+
+        await axios.get('/api/fathers/meetings/listOfNonFavoriteOfFather', {params:{father_id: father_id}})
         .then(response => {
             setLoaded1(true);
             setNotice(response.data.notice);
@@ -64,7 +67,8 @@ const Favorite = (props) => {
               set400Error("失敗しました。");
             }
         })
-        axios.get('/api/fathers/meetings/listOfFavoriteOfFather', {params:{father_id: father_id}})
+
+        await axios.get('/api/fathers/meetings/listOfFavoriteOfFather', {params:{father_id: father_id}})
         .then(response => {
           setLoaded2(true);
           setNotice(response.data.notice);
@@ -118,8 +122,8 @@ const Favorite = (props) => {
       const formdata = new FormData();
       formdata.append('meeting_id', meetingId);
       formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
-      axios.post('/api/fathers/meetings/registerFavorite', formdata)
-      .then(response=>{setNotice(response.data.notice)})
+      await axios.post('/api/fathers/meetings/registerFavorite', formdata)
+        .then(response=>{setNotice(response.data.notice)})
 
       if(stateName == "nonFavoriteOfFather") {
         const newList = meeting_list_non_favorite.map((item) => {
@@ -329,4 +333,4 @@ const Favorite = (props) => {
 
 
 
-export default Favorite;
+export default ParentFavorite;

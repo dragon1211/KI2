@@ -63,10 +63,12 @@ Route::group(['prefix' => 'p-account'],                 function () {
 });
 
 Route::group(['prefix' => 'contact-us'],                function () {
-    Route::get('/',                                     function () { return view('pages.contact'); });
-    Route::get('/complete',                             function () { return view('pages.contact'); });
+    Route::get('/',                                     function () { return view('pages.index'); });
+    Route::get('/complete',                             function () { return view('pages.index'); });
 });
-Route::get('/unknown-error ',                           function () { return view('pages.contact'); });
+Route::get('/unknown-error ',                           function () { return view('pages.index'); });
+Route::get('/terms',                                    function () { return view('pages.index'); });
+Route::get('/privacy-policy',                           function () { return view('pages.index'); });
 
 // ---------------------------------------- Child Account ------------------------------------------- //
 Route::group(['prefix' => 'c-account'],                 function () {

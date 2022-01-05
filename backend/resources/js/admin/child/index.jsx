@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import axios from 'axios';
-import { useHistory, Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
@@ -11,7 +10,9 @@ import PageLoader from '../../component/page_loader';
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
-const Child = (props) => {
+const AdminChilds = () => {
+
+  const location = useLocation();
 
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
@@ -20,27 +21,28 @@ const Child = (props) => {
 
   const [_422errors, set422errors] = useState({keyword:''});
   const [_400error, set400Error] = useState('');
-  const [_success, setSuccess] = useState(props.history.location.state);
+  const [_success, setSuccess] = useState(location.state);
 
   const isMountedRef = useRef(true);
   
-  useEffect(() => {
+  useEffect( async () => {
     isMountedRef.current = false;
     setLoaded(false);
-    axios.get('/api/admin/children/list')
-    .then((response) => {
-      setLoaded(true);
-      if(response.data.status_code==200){
-        setChildrenList(response.data.params);
-        var len = response.data.params.length;
-        if(len > INFINITE)
-            setFetchChildrenList(response.data.params.slice(0, INFINITE));
-        else setFetchChildrenList(response.data.params.slice(0, len));
-      }
-      else {
-        set400Error("失敗しました。");
-      }
-    });
+
+    await axios.get('/api/admin/children/list')
+      .then((response) => {
+          setLoaded(true);
+          if(response.data.status_code==200){
+              setChildrenList(response.data.params);
+              var len = response.data.params.length;
+              if(len > INFINITE)
+                  setFetchChildrenList(response.data.params.slice(0, INFINITE));
+              else setFetchChildrenList(response.data.params.slice(0, len));
+          }
+          else {
+              set400Error("失敗しました。");
+          }
+      });
   }, []);
 
   const fetchMoreChildrenList = () => {
@@ -154,4 +156,4 @@ const Child = (props) => {
 	)
 }
 
-export default Child;
+export default AdminChilds;

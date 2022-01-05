@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 
-import { SpecialZoomLevel, Viewer, Worker } from '@react-pdf-viewer/core';
+import { SpecialZoomLevel, Viewer, Worker, ProgressBar} from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { ScrollMode } from '@react-pdf-viewer/scroll-mode';
-import { ProgressBar } from '@react-pdf-viewer/core';
+
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+
 
 const PDFViewer = () => {
 
@@ -41,7 +43,7 @@ const PDFViewer = () => {
     }, []);
 
     return (
-        <Worker workerUrl="/js/pdf.worker.js">
+        <Worker workerUrl={pdfjsWorker}>
             <div
                 style={{
                     height: '100vh',
@@ -63,9 +65,9 @@ const PDFViewer = () => {
     );
 }
 
-if(document.getElementById('pdf-preview')){
+if(document.getElementById('pdf')){
 	ReactDOM.render(
 		<PDFViewer />,
-		document.getElementById('pdf-preview')
+		document.getElementById('pdf')
 	)
 }

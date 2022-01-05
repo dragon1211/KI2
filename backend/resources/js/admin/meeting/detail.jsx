@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
 import moment from 'moment';
-import axios from 'axios';
 
 import Alert from '../../component/alert';
 import ModalPdf from '../../component/pdf/modal_pdf';
@@ -10,16 +9,19 @@ import ModalConfirm from '../../component/modal_confirm';
 import Thumbnail from '../../component/thumbnail';
 import PageLoader from '../../component/page_loader';
 
-const MeetingDetail = (props) => {
+const AdminMeetingDetail = () => {
 
-  const history = useHistory();
+  const navigator = useNavigate();
+  const location = useLocation();
+  const params = useParams();
+
   const [loaded, setLoaded] = useState(false);
   const [submit, setSubmit] = useState(false);
   const [meeting, setMeeting] = useState(null);
   const [thumbnail, setThumbnail] = useState('');
   
   const [_400error, set400Error] = useState('');
-  const [_success, setSuccess] = useState(props.history.location.state);
+  const [_success, setSuccess] = useState(location.state);
   
   const [show_confirm_modal, setShowConfirmModal] = useState(false);
   const [show_pdf_modal, setShowPDFModal] = useState(false);
@@ -27,46 +29,46 @@ const MeetingDetail = (props) => {
   
   const isMountedRef = useRef(true);
   
-  useEffect(() => {
+  useEffect( async () => {
     isMountedRef.current = false;
     setLoaded(false);
-    axios.get(`/api/admin/meetings/detail/${props.match.params?.meeting_id}`)
-    .then((response) => {
-      setLoaded(true);
-      if(response.data.status_code==200){
-        var list = response.data.params;
-        var total=0, num=0;
-        if(list.approval){
-          for(var i in list.approval)
-          {
-            if(list.approval[i].approval_at) num ++;
-            total ++;
+    await axios.get(`/api/admin/meetings/detail/${params?.meeting_id}`)
+      .then((response) => {
+          setLoaded(true);
+          if(response.data.status_code==200){
+              var list = response.data.params;
+              var total=0, num=0;
+              if(list.approval){
+                for(var i in list.approval)
+                {
+                  if(list.approval[i].approval_at) num ++;
+                  total ++;
+                }
+              }
+              setMeeting({...list, denominator:total, numerator:num});
+              if(list.meeting_image.length > 0) setThumbnail(list.meeting_image[0].image);
           }
-        }
-        setMeeting({...list, denominator:total, numerator:num});
-        if(list.meeting_image.length > 0) setThumbnail(list.meeting_image[0].image);
-      }
-      else {
-        set400Error("失敗しました。");
-      }
-    });
+          else {
+              set400Error("失敗しました。");
+          }
+      });
   }, []);
 
 
   async function handleAcceptDelete() {
     setSubmit(true);
-    axios.delete(`/api/admin/meetings/delete/${props.match.params?.meeting_id}`)
-    .then(response => {
-      setShowConfirmModal(false);
-      setSubmit(false);
-      switch(response.data.status_code){
-        case 200:{
-          history.push({pathname: '/admin/meeting',  state: '削除に成功しました！'});
-          break;
-        }
-        case 400: set400Error("削除に失敗しました。"); break;
-      } 
-    });
+    await axios.delete(`/api/admin/meetings/delete/${params?.meeting_id}`)
+      .then(response => {
+          setShowConfirmModal(false);
+          setSubmit(false);
+          switch(response.data.status_code){
+            case 200:{
+              navigator('/admin/meeting',  {state: '削除に成功しました！'});
+              break;
+            }
+            case 400: set400Error("削除に失敗しました。"); break;
+          } 
+      });
   };
 
 
@@ -128,7 +130,7 @@ const MeetingDetail = (props) => {
                     </time>
                     <ul className="p-article-btn-list">
                       <li className="p-article__pdf__btn">
-                        <Link to={`/admin/meeting/edit/${props.match.params?.meeting_id}`}
+                        <Link to={`/admin/meeting/edit/${params?.meeting_id}`}
                           className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">
                           編集
                         </Link>
@@ -160,7 +162,10 @@ const MeetingDetail = (props) => {
                           {
                             meeting.pdf ?
                             <a className="btn-default btn-yellow btn-pdf btn-r8 btn-h52" 
-                              onClick={()=>handlePDFOpen(meeting.pdf)}>
+                               href={meeting.pdf}
+                               target='_blank'
+                              // onClick={()=>handlePDFOpen(meeting.pdf)}
+                            >
                               <span>PDFを確認する</span>
                             </a>
                             :
@@ -217,4 +222,4 @@ const MeetingDetail = (props) => {
 	)
 }
 
-export default MeetingDetail;
+export default AdminMeetingDetail;

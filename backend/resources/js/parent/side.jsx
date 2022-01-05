@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom'
 
-export default function Side() {
+export default function ParentSide() {
     const [selected, setSelected] = useState('');
 
     const father_image = document.getElementById('father_image').value;
 
-    const handleLogout = () => {
-        axios.get('/p-account/logout')
-        .then(() => location.href = '/p-account/login')
+    const handleLogout = async () => {
+        await axios.get('/p-account/logout')
+            .then(() => {
+                location.href = '/p-account/login';
+            })
     }
 
     const handleSelected = (id) => {

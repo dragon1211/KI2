@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate, Link, useParams } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
-import axios from 'axios';
 
 import Alert from '../../../component/alert';
 
 
-const ParentSignUp = (props) => {
+const ParentSignUp = () => {
 
-    const history = useHistory();
+    const navigator = useNavigate();
+    const params = useParams();
+
     const [submit, setSubmit] = useState(false);
     const [loaded, setLoaded] = useState(false);
 
@@ -20,6 +21,7 @@ const ParentSignUp = (props) => {
     const [password_confirmation, setPasswordConfirmation] = useState('');
     const [tel, setTel] = useState('');
     const [profile, setProfile] = useState('');
+    const [check_terms, setCheckTerms] = useState(false);
 
     const [_422errors, set422Errors] = useState({
         image:'',
@@ -28,22 +30,23 @@ const ParentSignUp = (props) => {
         password_confirmation: '',
         tel:'',
         profile:'',
+        terms:''
     });
     const [_400error, set400Error] = useState('');
 
 
-    useEffect(()=>{
-        axios.get('/api/fathers/checkRegisterMain', {params:{token: props.match.params.token}})
-        .then(response=>{
-            switch(response.data.status_code){
-                case 200: setLoaded(true); break;
-                case 400: history.push({pathname: '/p-account/login',  state: ''}); break;
-            };
-        })
+    useEffect( async ()=>{
+        await axios.get('/api/fathers/checkRegisterMain', {params:{token: params?.token}})
+            .then(response=>{
+                switch(response.data.status_code){
+                    case 200: setLoaded(true); break;
+                    case 400: navigator('/p-account/login',  { state: '' }); break;
+                };
+            })
     },[])
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         set422Errors({
             image:'',
@@ -52,6 +55,7 @@ const ParentSignUp = (props) => {
             password_confirmation: '',
             tel:'',
             profile:'',
+            terms:''
         });
         setSubmit(true);
         const formdata = new FormData();
@@ -61,17 +65,27 @@ const ParentSignUp = (props) => {
         formdata.append('password_confirmation', password_confirmation);
         formdata.append('tel', tel);
         formdata.append('profile', profile);
-        formdata.append('token', props.match.params.token);
-        axios.post('/api/fathers/registerMain', formdata)
-        .then(response => {
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: history.push({pathname: '/p-account/register/complete/'+props.match.params.token,  state: response.data.success_messages}); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-                case 400: set400Error(response.data.error_messages); break;
-                case 401: history.push({pathname: '/p-account/register/error/'+props.match.params.token,  state: response.data.error_messages}); break;
-            };
-        })
+        formdata.append('terms', check_terms);
+        formdata.append('token', params?.token);
+
+        await axios.post('/api/fathers/registerMain', formdata)
+            .then(response => {
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200: navigator('/p-account/register/complete/'+ params?.token,  {state: response.data.success_messages}); break;
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 401: navigator('/p-account/register/error/'+ params?.token,  {state: response.data.error_messages}); break;
+                    case 422: {
+                        window.scrollTo(0, 0); 
+                        set422Errors(response.data.error_messages); 
+                        break;
+                    }
+                };
+                if(response.data.status_code != 200){
+                    setPassword('');
+                    setPasswordConfirmation('');
+                }
+            })
     }
 
 
@@ -162,6 +176,26 @@ const ParentSignUp = (props) => {
                         _422errors.profile &&
                             <span className="l-alert__text--error ft-16 ft-md-14">
                                 {_422errors.profile}
+                            </span>
+                    }
+                </div>
+
+                <div className="edit-set text-center mt-5">
+                    <label htmlFor="terms">
+                        <input  id="terms"  name="terms"  type="checkbox"  
+                            className={_422errors.terms && 'is-invalid'}
+                            onChange={()=>setCheckTerms(!check_terms)} 
+                            checked={check_terms}
+                        />
+                        <span className='lbl padding-16'>
+                            <Link to="/terms" className='term-link' rel="noopener noreferrer">規約</Link>
+                            に同意する
+                        </span>
+                    </label>
+                    {
+                        _422errors.terms &&
+                            <span className="l-alert__text--error ft-16 ft-md-14">
+                                { _422errors.terms }
                             </span>
                     }
                 </div>

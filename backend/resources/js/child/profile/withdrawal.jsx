@@ -1,30 +1,29 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { LoadingButton } from '@material-ui/lab';
 
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 
-const ProfileWithdrawal = () => {
+const ChildProfileWithdrawal = () => {
 
+    const child_id = localStorage.getItem('kiki_acc_id');
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const [submit, setSubmit] = useState(false);
     const [_400error, set400Error] = useState('');
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmit(true);
-        let child_id = document.getElementById("child_id").value;
-        axios.delete('/api/children/withdrawal', {params:{child_id: child_id}})
-        .then(response => {
-            setSubmit(false);
-            setNotice(response.data.notice);
-            switch(response.data.status_code){
-                case 200: window.location.href = "/c-account/withdrawal/complete"; break;
-                case 400: set400Error("失敗しました。"); break;
-            }
-        })
+        await axios.delete('/api/children/withdrawal', {params:{child_id: child_id}})
+            .then(response => {
+                setSubmit(false);
+                setNotice(response.data.notice);
+                switch(response.data.status_code){
+                    case 200: window.location.href = "/c-account/withdrawal/complete"; break;
+                    case 400: set400Error("失敗しました。"); break;
+                }
+            })
     }
     
 	return (
@@ -66,4 +65,4 @@ const ProfileWithdrawal = () => {
 }
 
 
-export default ProfileWithdrawal;
+export default ChildProfileWithdrawal;

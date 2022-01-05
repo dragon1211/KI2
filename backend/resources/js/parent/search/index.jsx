@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 import InfiniteScroll from "react-infinite-scroll-component";
-import { isObject } from 'lodash';
 
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
-const Search = (props) => {
+const ParentSearch = () => {
 
+    const father_id = localStorage.getItem('kiki_acc_id');
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
+
     const [keyword, setKeyword] = useState('');
     const [tab_status, setTabStatus] = useState(false);
   
@@ -38,7 +38,7 @@ const Search = (props) => {
     },[loaded1, loaded2])
 
 
-    const handleSearch = (e) => {
+    const handleSearch = async (e) => {
       e.preventDefault();
         if(keyword == ''){
             document.getElementById('keyword').focus();
@@ -47,12 +47,34 @@ const Search = (props) => {
         setLoaded1(false);
         setLoaded2(false);
         setInitPage(false);
-
-        let father_id = document.getElementById('father_id').value;
         
-        axios.get('/api/fathers/meetings/searchOfIncompleteOfFather', {params:{father_id: father_id, keyword: keyword,}})
-        .then(response => {
-            setLoaded1(true);
+        await axios.get('/api/fathers/meetings/searchOfIncompleteOfFather', {params:{father_id: father_id, keyword: keyword,}})
+          .then(response => {
+              setLoaded1(true);
+              setNotice(response.data.notice);
+              if(response.data.status_code==200){
+                  var list = response.data.params;
+                  var arr = [];
+                  for(var i in list){
+                      var total=0, num=0;
+                      for(var j in list[i].approvals)
+                      {
+                        if(list[i].approvals[j].approval_at) num ++;
+                        total ++;
+                      }
+                      arr.push({...list[i], denominator:total, numerator:num})
+                  }
+                  setMeetingListOfIncomplete(arr);
+                  var len = arr.length;
+                  if(len > INFINITE)
+                      setFetchMeetingListOfIncomplete(arr.slice(0, INFINITE));
+                  else setFetchMeetingListOfIncomplete(arr.slice(0, len));
+              }
+          })
+          
+        await axios.get('/api/fathers/meetings/searchOfCompleteOfFather', {params:{father_id: father_id, keyword: keyword,}})
+          .then(response => {
+            setLoaded2(true);
             setNotice(response.data.notice);
             if(response.data.status_code==200){
                 var list = response.data.params;
@@ -66,36 +88,13 @@ const Search = (props) => {
                     }
                     arr.push({...list[i], denominator:total, numerator:num})
                 }
-                setMeetingListOfIncomplete(arr);
+                setMeetingListOfComplete(arr);
                 var len = arr.length;
                 if(len > INFINITE)
-                    setFetchMeetingListOfIncomplete(arr.slice(0, INFINITE));
-                else setFetchMeetingListOfIncomplete(arr.slice(0, len));
-            }
-        })
-        axios.get('/api/fathers/meetings/searchOfCompleteOfFather', {params:{father_id: father_id, keyword: keyword,}})
-        .then(response => {
-          setLoaded2(true);
-          setNotice(response.data.notice);
-          if(response.data.status_code==200){
-              var list = response.data.params;
-              var arr = [];
-              for(var i in list){
-                  var total=0, num=0;
-                  for(var j in list[i].approvals)
-                  {
-                    if(list[i].approvals[j].approval_at) num ++;
-                    total ++;
-                  }
-                  arr.push({...list[i], denominator:total, numerator:num})
+                    setFetchMeetingListOfComplete(arr.slice(0, INFINITE));
+                else setFetchMeetingListOfComplete(arr.slice(0, len));
               }
-              setMeetingListOfComplete(arr);
-              var len = arr.length;
-              if(len > INFINITE)
-                  setFetchMeetingListOfComplete(arr.slice(0, INFINITE));
-              else setFetchMeetingListOfComplete(arr.slice(0, len));
-            }
-        })
+          })
     }
 
 
@@ -125,8 +124,9 @@ const Search = (props) => {
       const formdata = new FormData();
       formdata.append('meeting_id', meetingId);
       formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
-      axios.post('/api/fathers/meetings/registerFavorite', formdata)
-      .then(response=>{setNotice(response.data.notice)})
+
+      await axios.post('/api/fathers/meetings/registerFavorite', formdata)
+         .then(response=>{setNotice(response.data.notice)})
 
       if(stateName == "inCompleteOfFather") {
         const newList = meeting_list_incomplete.map((item) => {
@@ -341,4 +341,4 @@ const Search = (props) => {
 
 
 
-export default Search;
+export default ParentSearch;

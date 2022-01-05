@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 
 
-const ProfilePasswordEdit = () => {
-    const history = useHistory();
+const ParentProfilePasswordEdit = () => {
+
+    const navigator = useNavigate();
+
+    const father_id = localStorage.getItem('kiki_acc_id');
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
-    const father_id = document.getElementById('father_id').value;
+    
     const [password, setPassword] = useState('');
     const [password_confirmation, setConfirmPassword] = useState('');
 
@@ -21,7 +24,7 @@ const ProfilePasswordEdit = () => {
     const [submit, setSubmit] = useState(false);
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         set422Errors({
             password:'',
@@ -32,22 +35,19 @@ const ProfilePasswordEdit = () => {
             password: password,
             password_confirmation: password_confirmation
         }
-        axios.put(`/api/fathers/updatePassword/${father_id}`, post)
-        .then(response => {
-            setSubmit(false);
-            setNotice(response.data.notice);
-            switch(response.data.status_code){
-                case 200:{
-                    history.push({
-                        pathname: '/p-account/profile',
-                        state: response.data.success_messages
-                    });
-                    break;
+        await axios.put(`/api/fathers/updatePassword/${father_id}`, post)
+            .then(response => {
+                setSubmit(false);
+                setNotice(response.data.notice);
+                switch(response.data.status_code){
+                    case 200:{
+                        navigator('/p-account/profile',  { state: response.data.success_messages });
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                 }
-                case 400: set400Error(response.data.error_messages); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-            }
-        })
+            })
     }
 
 	return (
@@ -115,4 +115,4 @@ const ProfilePasswordEdit = () => {
 }
 
 
-export default ProfilePasswordEdit;
+export default ParentProfilePasswordEdit;

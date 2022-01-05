@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Notification = ({ notice }) => {
     
-    const history = useHistory();
+    const navigator = useNavigate();
+    const { pathname } = useLocation();
 
     const handleClick = () => {
         var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
         for(let i=0; i<navbar_list.length; i++)
             navbar_list[i].classList.remove('nav-active');
         document.getElementsByClassName("-meeting")[0].classList.add('nav-active');
-        history.push({ pathname: `/p-account/meeting/`,  state: ''});
+        navigator(`/${pathname.split('/')[1]}/meeting`, {state: ''});
     }
 
     useEffect(()=>{

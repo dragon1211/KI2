@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@material-ui/core';
-import { useHistory } from 'react-router';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-const ParentForgotPasswordComplete = () => {
+const PasswordResetComplete = () => {
 
-    const history = useHistory();
+    const navigator = useNavigate();
+    const { pathname } = useLocation();
 
     const gotoLogin = () => {
-        history.push({pathname: '/p-account/login',  state: ''});
+        var url;
+        if(pathname.includes('c-account')) url = '/c-account/login';
+        else if(pathname.includes('p-account')) url = '/p-account/login';
+
+        navigator(url,  { state: '' });
     }
 
 	return (
@@ -32,4 +37,4 @@ const ParentForgotPasswordComplete = () => {
 
 
 
-export default ParentForgotPasswordComplete;
+export default PasswordResetComplete;

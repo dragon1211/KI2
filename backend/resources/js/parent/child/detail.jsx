@@ -1,16 +1,18 @@
 import React, { useRef, useEffect, useState } from 'react';
-import axios from 'axios';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import moment from 'moment';
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import ModalConfirm from '../../component/modal_confirm';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 
-const ChildDetail = (props) => {
+const ParentChildDetail = () => {
 
-    const history = useHistory();
+    const navigator = useNavigate();
+    const location = useLocation();
+    const params = useParams();
+
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const [loaded, setLoaded] = useState(false);
     const [show_delete, setShowDelete] = useState(false);
@@ -18,33 +20,33 @@ const ChildDetail = (props) => {
     const [child, setChild] = useState(null);
     const [_400error, set400Error] = useState('');
     const [_404error, set404Error] = useState('');
-    const [_success, setSuccess] = useState(props.history.location.state);
+    const [_success, setSuccess] = useState(location.state);
     
-    const father_id = document.getElementById('father_id').value;
-    const child_id = props.match.params.child_id;
+    const father_id = localStorage.getItem('kiki_acc_id');
+    const child_id = params?.child_id;
     const isMountedRef = useRef(true);
     
-    useEffect(() => {
+    useEffect( async () => {
       isMountedRef.current = false;
       setLoaded(false);
-      axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
-      .then(response => {
-        setLoaded(true);
-        setNotice(response.data.notice);
-        if(response.data.status_code==200){
-          setChild(response.data.params);
-        }
-        else {
-          set400Error("失敗しました。");
-        }
-      })
-      .catch(err=>{
-        setLoaded(true);
-        setNotice(err.response.data.notice);
-        if(err.response.status==404){
-          set404Error(err.response.data.message);
-        }
-      })
+      await axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
+        .then(response => {
+          setLoaded(true);
+          setNotice(response.data.notice);
+          if(response.data.status_code==200){
+            setChild(response.data.params);
+          }
+          else {
+            set400Error("失敗しました。");
+          }
+        })
+        .catch(err=>{
+          setLoaded(true);
+          setNotice(err.response.data.notice);
+          if(err.response.status==404){
+            set404Error(err.response.data.message);
+          }
+        })
     },[]);
 
   //-------------------------------------------------------------
@@ -56,22 +58,21 @@ const ChildDetail = (props) => {
   },[]);
 
   //---------------------------------------------------------------
-  const handleAcceptDelete = () => {
+  const handleAcceptDelete = async () => {
     setSubmit(true);
-    axios.delete(`/api/fathers/relations/deleteRelationChild/${child_id}`)
-    .then(response => {
-      setSubmit(false);
-      setShowDelete(false);
-      setNotice(response.data.notice);
-      switch(response.data.status_code){
-        case 200: {
-          history.push({ pathname: "/p-account/child",
-            state: "子の削除に成功しました。" });  
-          break;
+    await axios.delete(`/api/fathers/relations/deleteRelationChild/${child_id}`)
+      .then(response => {
+        setSubmit(false);
+        setShowDelete(false);
+        setNotice(response.data.notice);
+        switch(response.data.status_code){
+          case 200: {
+            navigator('/p-account/child', { state: "子の削除に成功しました。" });  
+            break;
+          }
+          case 400: set400Error('子の削除に失敗しました。'); break;
         }
-        case 400: set400Error('子の削除に失敗しました。'); break;
-      }
-    });
+      });
   };
     
 	return (
@@ -98,22 +99,6 @@ const ChildDetail = (props) => {
                       </div>
                       <p className="profile-name ft-xs-16">{`${child.last_name} ${child.first_name}`}</p>
                       <div className="profile-info ft-xs-17">
-                        {/* <div className="profile-info__item">
-                            <a href={`mailto:${child.email}`}>
-                                <p className="profile-info__icon">
-                                    <img src="/assets/img/icon/mail.svg" alt="メール"/>
-                                </p>
-                                <p className="txt">{child.email}</p>
-                            </a>
-                        </div> */}
-                        {/* <div className="profile-info__item">
-                            <a href={`tel:${child.tel}`}>
-                                <p className="profile-info__icon">
-                                    <img src="/assets/img/icon/phone.svg" alt="電話" />
-                                </p>
-                                <p className="txt">{child.tel}</p>
-                            </a>
-                        </div> */}
                         <div className="profile-info__item">
                             <p className="profile-info__icon">
                                 <img src="/assets/img/icon/building.svg" alt="会社名"/>
@@ -157,9 +142,7 @@ const ChildDetail = (props) => {
             { _404error && 
                 <Alert type="fail" hide={()=>{
                     set404Error('');
-                    history.push({
-                        pathname: "/p-account/child"
-                    });
+                    navigator('/p-account/child', {state: ''});
                 }}>
                 {_404error}
                 </Alert>
@@ -171,4 +154,4 @@ const ChildDetail = (props) => {
 
 
 
-export default ChildDetail;
+export default ParentChildDetail;

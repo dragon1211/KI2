@@ -40,6 +40,7 @@
     </head>
 
     <body>
+        <div id="root"></div>
         @yield('content')
     </body>
 
@@ -51,10 +52,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-sham.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script>
-        if (window.Promise === undefined) {
-            document.write('<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/3.2.2/es6-promise.js"></scr'+'ipt>');
-        }
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/3.2.2/es6-promise.js"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+    <!-- V1, 2022/1/4 -->
 </html>

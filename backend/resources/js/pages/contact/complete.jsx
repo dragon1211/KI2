@@ -6,7 +6,7 @@ import copy from 'clipboard-copy';
 
 const ContactComplete = () => {
 
-    const contactEmail = 'sample@gmail.com';
+    const contactEmail = '56@zotman.jp';
     const [_success, setSuccess] = useState('');
 
     const saveStorage = () => {
@@ -15,7 +15,8 @@ const ContactComplete = () => {
     }
 
 	return (
-        <div>
+    <div className="l-single-container">
+        <div className="l-single-inner">
             <p className="text-center font-weight-bold ft-25">お問い合わせ完了</p>
             <span className="mt-80-px ft-16 ft-md-16 l-alert__text--success">
                 お問い合わせが完了しました。<br/>
@@ -41,6 +42,7 @@ const ContactComplete = () => {
             </div>
             {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
         </div>
+    </div>
 	)
 }
 

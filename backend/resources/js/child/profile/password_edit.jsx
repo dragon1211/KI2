@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
-import axios from 'axios';
 
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 
 
-const ProfilePasswordEdit = () => {
+const ChildProfilePasswordEdit = () => {
 
-    const history = useHistory();
+    const navigator = useNavigate();
+
+    const child_id = localStorage.getItem('kiki_acc_id');
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
 
     const [password, setPassword] = useState('');
@@ -24,7 +25,7 @@ const ProfilePasswordEdit = () => {
     const [submit, setSubmit] = useState(false);
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         set422Errors({
             password:'',
@@ -35,21 +36,20 @@ const ProfilePasswordEdit = () => {
             password: password,
             password_confirmation: password_confirmation
         }
-        axios.put(`/api/children/updatePassword/${document.getElementById('child_id').value}`, post)
-        .then(response => {
-            setSubmit(false);
-            setNotice(response.data.notice);
-            switch(response.data.status_code){
-                case 200: {
-                    history.push({
-                    pathname: "/c-account/profile",
-                    state: response.data.success_messages});
-                    break;
+
+        await axios.put(`/api/children/updatePassword/${child_id}`, post)
+            .then(response => {
+                setSubmit(false);
+                setNotice(response.data.notice);
+                switch(response.data.status_code){
+                    case 200: {
+                        navigator('/c-account/profile', { state: response.data.success_messages });
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                 }
-                case 400: set400Error(response.data.error_messages); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-            }
-        })
+            })
     }
 
 
@@ -116,4 +116,4 @@ const ProfilePasswordEdit = () => {
 }
 
 
-export default ProfilePasswordEdit;
+export default ChildProfilePasswordEdit;

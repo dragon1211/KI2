@@ -1,20 +1,21 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Alert from '../../component/alert';
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import PreviewPDF from '../../component/preview_pdf';
 import PageLoader from '../../component/page_loader';
 import UploadingProgress from '../../component/modal_uploading';
 
 
-const MeetingAdd = (props) => {
+const ParentMeetingAdd = () => {
 
-    const history = useHistory();
-    const father_id = document.getElementById('father_id').value;
+    const navigator = useNavigate();
+    const location = useLocation();
+
+    const father_id = localStorage.getItem('kiki_acc_id');
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     
     const [title, setTitle] = useState('');
@@ -33,10 +34,10 @@ const MeetingAdd = (props) => {
     const [submit, setSubmit] = useState(false);
     const [check_radio, setCheckRadio] = useState('');
 
-    const state = props.history.location.state;
+    const state = location.state;
     const isMountedRef = useRef(true);
 
-    useEffect(() => {
+    useEffect( async () => {
         isMountedRef.current = false;
         setLoaded(false);
         if(state){
@@ -64,24 +65,24 @@ const MeetingAdd = (props) => {
             else setCheckRadio('');
         }
         else{
-            axios.get('/api/fathers/children/listOfFather', {params:{father_id: father_id}})
-            .then(response=>{
-                setLoaded(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code == 200){
-                    var list = response.data.params;
-                    var arr = [];
-                    for(var i in list)
-                        arr.push({...list[i], checked: false})
-                    setChildrenList(arr);
-                    if(list.length > 0) 
-                        setCheckRadio("all_send");
-                    else setCheckRadio('');
-                }
-                else {
-                    set400Error("失敗しました。");
-                }
-            })
+            await axios.get('/api/fathers/children/listOfFather', {params:{father_id: father_id}})
+                .then(response=>{
+                    setLoaded(true);
+                    setNotice(response.data.notice);
+                    if(response.data.status_code == 200){
+                        var list = response.data.params;
+                        var arr = [];
+                        for(var i in list)
+                            arr.push({...list[i], checked: false})
+                        setChildrenList(arr);
+                        if(list.length > 0) 
+                            setCheckRadio("all_send");
+                        else setCheckRadio('');
+                    }
+                    else {
+                        set400Error("失敗しました。");
+                    }
+                })
         }
     },[])
 
@@ -112,7 +113,7 @@ const MeetingAdd = (props) => {
     },[check_radio])
 
 //----------------------------------------------------------------------
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         set422Errors({title:'',memo:'',text:'',pdf:'',image:''});
 
@@ -130,22 +131,21 @@ const MeetingAdd = (props) => {
         formdata.append('children', JSON.stringify(c_arr));
 
         setSubmit(true);
-        axios.post('/api/fathers/meetings/register', formdata)
-        .then(response => {
-            setNotice(response.data.notice);
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: {
-                    const meeting_id = response.data.params.meeting_id;
-                    history.push({
-                    pathname: `/p-account/meeting/detail/${meeting_id}`,
-                    state: "登録成功しました"});
-                    break;
+
+        await axios.post('/api/fathers/meetings/register', formdata)
+            .then(response => {
+                setNotice(response.data.notice);
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200: {
+                        const meeting_id = response.data.params.meeting_id;
+                        navigator(`/p-account/meeting/detail/${meeting_id}`,  { state: "登録成功しました" });
+                        break;
+                    }
+                    case 400: set400Error("登録失敗しました。"); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                 }
-                case 400: set400Error("登録失敗しました。"); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-            }
-        });
+            });
     }
 
 
@@ -389,4 +389,4 @@ const MeetingAdd = (props) => {
 	)
 }
 
-export default MeetingAdd;
+export default ParentMeetingAdd;

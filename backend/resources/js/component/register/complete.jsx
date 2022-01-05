@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@material-ui/core';
-import { useHistory } from 'react-router';
+import { useNavigate, useLocation } from 'react-router-dom';
+import Alert from '../alert';
 
-const ParentSignUpComplete = () => {
+const SignUpComplete = () => {
 
-    const history = useHistory();
+    const navigator = useNavigate();
 
+    const { pathname, state } = useLocation();
+    const [_success, setSuccess] = useState(state);
+    
     const gotoLogin = () => {
-        history.push({pathname: '/p-account/login', state:''});
+        var url;
+        if(pathname.includes('c-account')) url = '/c-account/login';
+        else if(pathname.includes('p-account')) url = '/p-account/login';
+
+        navigator(url,  {state: ''});
     }
 
 	return (
@@ -20,16 +28,17 @@ const ParentSignUpComplete = () => {
             </span>
             <div className="mt-5">
                 <Button type="submit" fullWidth 
-                    className="btn-edit btn-default btn-h60 bg-yellow rounded-20 py-5"
+                    className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
                     onClick={gotoLogin}>
                     <span className="ft-16 font-weight-bold text-black">ログイン画面へ</span>
                 </Button>
             </div>
         </div>
+        { _success && <Alert type="success"  hide={()=>setSuccess('')}>{_success}</Alert> }
     </div>
 	)
 }
 
 
 
-export default ParentSignUpComplete;
+export default SignUpComplete;

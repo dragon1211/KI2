@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
-import axios from 'axios';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate, useParams} from 'react-router-dom';
 
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import moment from 'moment';
 import Alert from '../../component/alert';
 import ModalPdf from '../../component/pdf/modal_pdf';
@@ -11,10 +10,14 @@ import ModalConfirm from '../../component/modal_confirm';
 import Thumbnail from '../../component/thumbnail';
 import PageLoader from '../../component/page_loader';
 
-const MeetingDetail = (props) => {
+const ChildMeetingDetail = () => {
 
-    const history = useHistory();
+    const navigator = useNavigate();
+    const params = useParams();         //meeting/detail/:meeting_id
+
+    const child_id = localStorage.getItem('kiki_acc_id');
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    
     const [loaded, setLoaded] = useState(false);
     const [meeting, setMeeting] = useState(null);
     const [thumbnail, setThumbnail] = useState('');
@@ -29,58 +32,59 @@ const MeetingDetail = (props) => {
     const [_success, setSuccess] = useState('');
 
     const isMountedRef = useRef(true);
+
     
-    
-    useEffect(() => {
+    useEffect( async () => {
         isMountedRef.current = false;
         setLoaded(false);
-        let child_id = document.getElementById('child_id').value;
-        axios.get(`/api/children/meetings/detail/${props.match.params?.meeting_id}`, {params:{child_id: child_id}})
-        .then(response => {
-            setLoaded(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code == 200)
-            {
-                var meeting = response.data.params;
-                setMeeting(meeting);
-                if(meeting.meeting_image.length > 0) setThumbnail(meeting.meeting_image[0].image);
-                if(meeting.approval.approval_at != null){
-                    setApprovalRegister(true);
+
+        await axios.get(`/api/children/meetings/detail/${params.meeting_id}`, {params:{child_id: child_id}})
+            .then(response => {
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code == 200)
+                {
+                    var meeting = response.data.params;
+                    setMeeting(meeting);
+                    if(meeting.meeting_image.length > 0) setThumbnail(meeting.meeting_image[0].image);
+                    if(meeting.approval.approval_at != null){
+                        setApprovalRegister(true);
+                    }
                 }
-            }
-            else {
-                set400Error("失敗しました。");
-            }
-        })
-        .catch(err=>{
-            setLoaded(true);
-            setNotice(err.response.data.notice);
-            if(err.response.status==404){
-                set404Error(err.response.data.message);
-            }
-        })
+                else {
+                    set400Error("失敗しました。");
+                }
+            })
+            .catch(err=>{
+                setLoaded(true);
+                setNotice(err.response.data.notice);
+                if(err.response.status==404){
+                    set404Error(err.response.data.message);
+                }
+            })
     },[]);
 
 
-    const handleApprovalRegister = () => {
+    const handleApprovalRegister = async () => {
         setSubmit(true);
         const formdata = new FormData();
-        formdata.append('child_id', document.getElementById('child_id').value);
-        formdata.append('meeting_id', props.match.params.meeting_id);
-        axios.post('/api/children/meeting/approvals/registerApproval', formdata)
-        .then(response => {
-            setSubmit(false);
-            setShowConfirmMoal(false);
-            setNotice(response.data.notice);
-            switch(response.data.status_code){
-                case 200: {
-                    setSuccess(response.data.success_messages);
-                    setApprovalRegister(true);
-                    break;
+        formdata.append('child_id', child_id);
+        formdata.append('meeting_id', params.meeting_id);
+
+        await axios.post('/api/children/meeting/approvals/registerApproval', formdata)
+            .then(response => {
+                setSubmit(false);
+                setShowConfirmMoal(false);
+                setNotice(response.data.notice);
+                switch(response.data.status_code){
+                    case 200: {
+                        setSuccess(response.data.success_messages);
+                        setApprovalRegister(true);
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_messages); break;
                 }
-                case 400: set400Error(response.data.error_messages); break;
-            }
-        })
+            })
     }
 
     const handlePDFOpen = (pdf) => {
@@ -158,8 +162,11 @@ const MeetingDetail = (props) => {
                                             <div className="p-article__pdf__btn mr-3">
                                                 {
                                                     meeting.pdf ?
-                                                    <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52"
-                                                        onClick={()=>handlePDFOpen(meeting.pdf)}>
+                                                    <a className="btn-default btn-yellow btn-pdf btn-r8 btn-h52"
+                                                        href={meeting.pdf}
+                                                        target='_blank'
+                                                        // onClick={()=>handlePDFOpen(meeting.pdf)}
+                                                    >
                                                         <span>PDFを確認する</span>
                                                     </a>
                                                     :<a className="btn-default btn-pdf btn-r8 btn-h50 btn-disabled">
@@ -197,9 +204,7 @@ const MeetingDetail = (props) => {
             {  _404error &&
                 <Alert type="fail" hide={()=>{
                     set404Error('');
-                    history.push({
-                        pathname: "/c-account/meeting"
-                    });
+                    navigator('/c-account/meeting')
                 }}>
                 {_404error}
                 </Alert>
@@ -211,4 +216,4 @@ const MeetingDetail = (props) => {
 
 
 
-export default MeetingDetail;
+export default ChildMeetingDetail;

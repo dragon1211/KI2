@@ -1,13 +1,13 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 
-const ParentEdit = (props) => {
+const AdminParentEdit = () => {
 
-    const history = useHistory();
+    const navigator = useNavigate();
+    const params = useParams();
 
     const [company, setCompany] = useState('');
     const [email, setEmail] = useState('');
@@ -32,31 +32,32 @@ const ParentEdit = (props) => {
 
     const isMountedRef = useRef(true);
     
-    useEffect(() => {
+    useEffect( async () => {
         isMountedRef.current = false;
         setLoaded(false);
-        axios.get(`/api/admin/fathers/detail/${props.match.params?.father_id}`)
-        .then(response => {
-            setLoaded(true);
-            if(response.data.status_code==200){
-                var parent = response.data.params;
-                setParent(parent);
-                if(parent){
-                    setCompany(parent?.company);
-                    setEmail(parent.email);
-                    setTelephone(parent.tel);
-                    setProfile(parent.profile ? parent.profile: '');  
-                    setLimit(parent.limit);
+
+        await axios.get(`/api/admin/fathers/detail/${params?.father_id}`)
+            .then(response => {
+                setLoaded(true);
+                if(response.data.status_code==200){
+                    var parent = response.data.params;
+                    setParent(parent);
+                    if(parent){
+                        setCompany(parent?.company);
+                        setEmail(parent.email);
+                        setTelephone(parent.tel);
+                        setProfile(parent.profile ? parent.profile: '');  
+                        setLimit(parent.limit);
+                    }
                 }
-            }
-            else{
-                set400Error("失敗しました。");
-            }
-        })
+                else{
+                    set400Error("失敗しました。");
+                }
+            })
     },[]);
 
     
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         set401Error('');
         set422Errors({
@@ -74,21 +75,21 @@ const ParentEdit = (props) => {
             tel: tel,
             profile: profile,
         };
-        axios.put(`/api/admin/fathers/updateProfile/${props.match.params?.father_id}`, request)
-        .then(response => {
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: {
-                    history.push({
-                    pathname: `/admin/parent/detail/${props.match.params?.father_id}`,
-                    state: response.data.success_messages});
-                    break;
+
+        await axios.put(`/api/admin/fathers/updateProfile/${params?.father_id}`, request)
+            .then(response => {
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200: {
+                        navigator(`/admin/parent/detail/${params?.father_id}`,
+                        { state: response.data.success_messages });
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 401: set401Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                 }
-                case 400: set400Error(response.data.error_messages); break;
-                case 401: set401Error(response.data.error_messages); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-            }
-        })
+            })
     }
 
 	return (
@@ -186,4 +187,4 @@ const ParentEdit = (props) => {
 }
 
 
-export default ParentEdit;
+export default AdminParentEdit;

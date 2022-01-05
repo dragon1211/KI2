@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import PageLoader from '../../component/page_loader';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
@@ -13,7 +12,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
-const Search = () => {
+const ChildSearch = () => {
     const [keyword, setKeyword] = useState('');
     const [tab_status, setTabStatus] = useState(false);
     const [meeting_list_non_approval, setMettingListNonApproval] = useState([]);
@@ -27,11 +26,11 @@ const Search = () => {
     const [loaded, setLoaded] = useState(true);
     const [initPage, setInitPage] = useState(true);
 
-    const child_id = document.getElementById('child_id').value;
+    const child_id = localStorage.getItem('kiki_acc_id');
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
 
 
-    const handleSearch = (e) => {
+    const handleSearch = async (e) => {
         e.preventDefault();
         if(keyword == ''){
             document.getElementById('keyword').focus();
@@ -41,30 +40,31 @@ const Search = () => {
         setLoaded2(false);
         setInitPage(false);
 
-        axios.get('/api/children/meetings/searchOfNonApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
-        .then(response => {
-            setLoaded1(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                setMettingListNonApproval(response.data.params);
-                var len = response.data.params.length;
-                if(len > INFINITE)
-                    setFetchMettingListNonApproval(response.data.params.slice(0, INFINITE));
-                else setFetchMettingListNonApproval(response.data.params.slice(0, len));
-            } 
-        });
-        axios.get('/api/children/meetings/searchOfApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
-        .then((response) => {
-            setLoaded2(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                setMettingListApproval(response.data.params);
-                var len = response.data.params.length;
-                if(len > INFINITE)
-                    setFetchMettingListApproval(response.data.params.slice(0, INFINITE));
-                else setFetchMettingListApproval(response.data.params.slice(0, len));
-            } 
-        });
+        await axios.get('/api/children/meetings/searchOfNonApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
+            .then(response => {
+                setLoaded1(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    setMettingListNonApproval(response.data.params);
+                    var len = response.data.params.length;
+                    if(len > INFINITE)
+                        setFetchMettingListNonApproval(response.data.params.slice(0, INFINITE));
+                    else setFetchMettingListNonApproval(response.data.params.slice(0, len));
+                } 
+            });
+
+        await axios.get('/api/children/meetings/searchOfApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
+            .then((response) => {
+                setLoaded2(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    setMettingListApproval(response.data.params);
+                    var len = response.data.params.length;
+                    if(len > INFINITE)
+                        setFetchMettingListApproval(response.data.params.slice(0, INFINITE));
+                    else setFetchMettingListApproval(response.data.params.slice(0, len));
+                } 
+            });
     }
 
     useEffect(()=>{
@@ -246,4 +246,4 @@ const Search = () => {
     )
 }
 
-export default Search;
+export default ChildSearch;

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
-import axios from 'axios';
 
 import Alert from '../../component/alert';
 
 
-const ChildPasswordEdit = (props) => {
+const AdminChildPasswordEdit = () => {
 
-    const history = useHistory();
+    const navigator = useNavigate();
+    const params = useParams();
 
     const [password, setPassword] = useState('');
     const [password_confirmation, setConfirmPassword] = useState('');
@@ -24,7 +24,7 @@ const ChildPasswordEdit = (props) => {
     const [submit, setSubmit] = useState(false)
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         set422Errors({
             password:'',
@@ -35,20 +35,20 @@ const ChildPasswordEdit = (props) => {
             password: password,
             password_confirmation: password_confirmation
         }
-        axios.put(`/api/admin/children/updatePassword/${props.match.params?.child_id}`, request)
-        .then(response => {
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: {
-                    history.push({
-                    pathname: `/admin/child/detail/${props.match.params?.child_id}`,
-                    state: response.data.success_messages});
-                    break;
+
+        await axios.put(`/api/admin/children/updatePassword/${params?.child_id}`, request)
+            .then(response => {
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200: {
+                        navigator(`/admin/child/detail/${params?.child_id}`,
+                        {state: response.data.success_messages});
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                 }
-                case 400: set400Error(response.data.error_messages); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-            }
-        })
+            })
     }
 
 
@@ -114,4 +114,4 @@ const ChildPasswordEdit = (props) => {
 }
 
 
-export default ChildPasswordEdit;
+export default AdminChildPasswordEdit;

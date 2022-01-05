@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
-import axios from 'axios';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -10,10 +9,11 @@ import InfiniteScroll from "react-infinite-scroll-component";
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
-const Parent = () => {
+const ChildParents = () => {
     
-    const history = useHistory();
+    const child_id = localStorage.getItem('kiki_acc_id');
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    
     const [parent_list, setParentList] = useState([]);
     const [fetch_parent_list, setFetchParentList] = useState([]);
     const [loaded, setLoaded] = useState(false);
@@ -22,25 +22,25 @@ const Parent = () => {
 
     const isMountedRef = useRef(true);
     
-    useEffect(() => {
+    useEffect( async () => {
         isMountedRef.current = false;
         setLoaded(false);
-        let child_id = document.getElementById('child_id').value;
-        axios.get('/api/children/fathers/listOfChild', {params: {child_id: child_id}})
-        .then(response => {
-            setLoaded(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                setParentList(response.data.params);
-                var len = response.data.params.length;
-                if(len > INFINITE)
-                    setFetchParentList(response.data.params.slice(0, INFINITE));
-                else setFetchParentList(response.data.params.slice(0, len));
-            }
-            else {
-                set400Error("失敗しました。");
-            }
-        })
+
+        await axios.get('/api/children/fathers/listOfChild', {params: {child_id: child_id}})
+            .then(response => {
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    setParentList(response.data.params);
+                    var len = response.data.params.length;
+                    if(len > INFINITE)
+                        setFetchParentList(response.data.params.slice(0, INFINITE));
+                    else setFetchParentList(response.data.params.slice(0, len));
+                }
+                else {
+                    set400Error("失敗しました。");
+                }
+            })
     }, []);
 
 
@@ -121,4 +121,4 @@ const Parent = () => {
 
 
 
-export default Parent;
+export default ChildParents;

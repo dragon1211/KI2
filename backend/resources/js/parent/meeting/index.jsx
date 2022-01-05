@@ -1,9 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
-import axios from 'axios';
-import { useHistory, Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import moment from 'moment';
 
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -12,9 +11,13 @@ import InfiniteScroll from "react-infinite-scroll-component";
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
-const Meeting = (props) => {
+const ParentMeetings = () => {
+
+    const location = useLocation();
 
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const father_id = localStorage.getItem('kiki_acc_id');
+    
     const [tab_status, setTabStatus] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [loaded1, setLoaded1] = useState(false);
@@ -23,16 +26,16 @@ const Meeting = (props) => {
     const [meeting_list_complete, setMeetingListOfComplete] = useState([]);
     const [fetch_meeting_list_incomplete, setFetchMeetingListOfIncomplete] = useState([]);
     const [fetch_meeting_list_complete, setFetchMeetingListOfComplete] = useState([]);
-    const [_success, setSuccess] = useState(props.history.location?.state);
+    const [_success, setSuccess] = useState(location.state);
     const [_400error, set400Error] = useState('');
 
     const isMountedRef = useRef(true);
 
 
     useEffect(()=>{
-      if(localStorage.getItem("from_login")){
+      if(localStorage.getItem('kiki_login_flag')){
         setSuccess("ログインに成功しました!");
-        localStorage.removeItem("from_login");
+        localStorage.removeItem('kiki_login_flag');
       }
       var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
       for(let i=0; i<navbar_list.length; i++)
@@ -45,14 +48,38 @@ const Meeting = (props) => {
     },[loaded1, loaded2])
 
 
-    useEffect(() => {
+    useEffect( async () => {
         isMountedRef.current = false;
         setLoaded(false);
-        let father_id = document.getElementById('father_id').value;
-        if(localStorage.getItem('flag')=="true") return;
-        axios.get('/api/fathers/meetings/listOfIncompleteOfFather', {params:{father_id: father_id}})
-        .then(response => {
-            setLoaded1(true);
+
+        await axios.get('/api/fathers/meetings/listOfIncompleteOfFather', {params:{father_id: father_id}})
+          .then(response => {
+              setLoaded1(true);
+              setNotice(response.data.notice);
+              if(response.data.status_code==200){
+                  var list = response.data.params;
+                  var arr = [];
+                  for(var i in list){
+                      var total=0, num=0;
+                      for(var j in list[i].approvals)
+                      {
+                        if(list[i].approvals[j].approval_at) num ++;
+                        total ++;
+                      }
+                      arr.push({...list[i], denominator:total, numerator:num})
+                  }
+                  setMeetingListOfIncomplete(arr);
+                  var len = arr.length;
+                  if(len > INFINITE)
+                      setFetchMeetingListOfIncomplete(arr.slice(0, INFINITE));
+                  else setFetchMeetingListOfIncomplete(arr.slice(0, len));
+              }
+          })
+          .catch(err=>console.log(err));
+
+        await axios.get('/api/fathers/meetings/listOfCompleteOfFather', {params:{father_id: father_id}})
+          .then(response => {
+            setLoaded2(true);
             setNotice(response.data.notice);
             if(response.data.status_code==200){
                 var list = response.data.params;
@@ -66,36 +93,14 @@ const Meeting = (props) => {
                     }
                     arr.push({...list[i], denominator:total, numerator:num})
                 }
-                setMeetingListOfIncomplete(arr);
+                setMeetingListOfComplete(arr);
                 var len = arr.length;
                 if(len > INFINITE)
-                    setFetchMeetingListOfIncomplete(arr.slice(0, INFINITE));
-                else setFetchMeetingListOfIncomplete(arr.slice(0, len));
-            }
-        })
-        axios.get('/api/fathers/meetings/listOfCompleteOfFather', {params:{father_id: father_id}})
-        .then(response => {
-          setLoaded2(true);
-          setNotice(response.data.notice);
-          if(response.data.status_code==200){
-              var list = response.data.params;
-              var arr = [];
-              for(var i in list){
-                  var total=0, num=0;
-                  for(var j in list[i].approvals)
-                  {
-                    if(list[i].approvals[j].approval_at) num ++;
-                    total ++;
-                  }
-                  arr.push({...list[i], denominator:total, numerator:num})
+                    setFetchMeetingListOfComplete(arr.slice(0, INFINITE));
+                else setFetchMeetingListOfComplete(arr.slice(0, len));
               }
-              setMeetingListOfComplete(arr);
-              var len = arr.length;
-              if(len > INFINITE)
-                  setFetchMeetingListOfComplete(arr.slice(0, INFINITE));
-              else setFetchMeetingListOfComplete(arr.slice(0, len));
-            }
-        })
+          })
+          .catch(err=>console.log(err));
     },[]);
 
     const fetchMoreListNonApproval = () => {
@@ -120,12 +125,12 @@ const Meeting = (props) => {
         }, SCROLL_DELAY_TIME);
     };
 
-    const handleFavorite = (meetingId, currentFavorite, stateName) => {
+    const handleFavorite = async (meetingId, currentFavorite, stateName) => {
       const formdata = new FormData();
       formdata.append('meeting_id', meetingId);
       formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
-      axios.post('/api/fathers/meetings/registerFavorite', formdata)
-      .then(response=>{ setNotice(response.data.notice)});
+      await axios.post('/api/fathers/meetings/registerFavorite', formdata)
+        .then(response=>{ setNotice(response.data.notice)});
       
       if(stateName == "inCompleteOfFather") {
         const newList1 = meeting_list_incomplete.map((item) => {
@@ -335,4 +340,4 @@ const Meeting = (props) => {
 
 
 
-export default Meeting;
+export default ParentMeetings;

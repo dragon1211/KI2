@@ -1,15 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 
 
-const ChildEdit = (props) => {
+const AdminChildEdit = () => {
 
-    const history = useHistory();
+    const navigator = useNavigate();
+    const params = useParams();
 
     const [first_name, setFirstName] = useState('');
     const [last_name, setLastName] = useState('');  
@@ -35,29 +35,30 @@ const ChildEdit = (props) => {
 
     const isMountedRef = useRef(true);
     
-    useEffect(() => {
+    useEffect(async () => {
         isMountedRef.current = false;
         setLoaded(false);
-        axios.get(`/api/admin/children/detail/${props.match.params?.child_id}`)
-        .then(response => {
-            setLoaded(true);
-            if(response.data.status_code==200)
-            {
-                var child = response.data.params;
-                setChild(child);
-                if(child){
-                    setFirstName(child.first_name);
-                    setLastName(child.last_name);
-                    setIdentity(child.identity);
-                    setEmail(child.email);
-                    setTelephone(child.tel);
-                    setCompany(child.company);
+
+        await axios.get(`/api/admin/children/detail/${params?.child_id}`)
+            .then(response => {
+                setLoaded(true);
+                if(response.data.status_code==200)
+                {
+                    var child = response.data.params;
+                    setChild(child);
+                    if(child){
+                        setFirstName(child.first_name);
+                        setLastName(child.last_name);
+                        setIdentity(child.identity);
+                        setEmail(child.email);
+                        setTelephone(child.tel);
+                        setCompany(child.company);
+                    }
                 }
-            }
-            else {
-                set400Error("失敗しました。");
-            }
-        })
+                else {
+                    set400Error("失敗しました。");
+                }
+            })
     },[]);
 
 
@@ -80,14 +81,13 @@ const ChildEdit = (props) => {
             tel: tel,
             company: company
         };
-        axios.put(`/api/admin/children/updateProfile/${props.match.params?.child_id}`, request)
+        axios.put(`/api/admin/children/updateProfile/${params?.child_id}`, request)
         .then(response => {
             setSubmit(false);
             switch(response.data.status_code){
                 case 200: {
-                    history.push({
-                    pathname: `/admin/child/detail/${props.match.params?.child_id}`,
-                    state: response.data.success_messages});
+                    navigator(`/admin/child/detail/${params?.child_id}`,
+                    {state: response.data.success_messages});
                     break;
                 }
                 case 400: set400Error(response.data.error_messages); break;
@@ -203,4 +203,4 @@ const ChildEdit = (props) => {
 }
 
 
-export default ChildEdit;
+export default AdminChildEdit;

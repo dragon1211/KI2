@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import axios from 'axios';
-import { useHistory, Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -11,7 +10,9 @@ const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
 
 
-const Parent = (props) => {
+const AdminParents = () => {
+
+  const location = useLocation();
 
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
@@ -19,27 +20,28 @@ const Parent = (props) => {
   const [fetch_father_list, setFetchFatherList ] = useState([]);
   const [_422errors, set422errors] = useState({keyword:''});
   const [_400error, set400Error] = useState('');
-  const [_success, setSuccess] = useState(props.history.location.state);
+  const [_success, setSuccess] = useState(location.state);
 
   const isMountedRef = useRef(true);
     
-  useEffect(() => {
+  useEffect( async () => {
     isMountedRef.current = false;
     setLoaded(false);
-    axios.get('/api/admin/fathers/list')
-    .then((response) => {
-        setLoaded(true);
-        if(response.data.status_code==200){
-            setFatherList(response.data.params);
-            var len = response.data.params.length;
-            if(len > INFINITE)
-              setFetchFatherList(response.data.params.slice(0, INFINITE));
-            else setFetchFatherList(response.data.params.slice(0, len));
-        } 
-        else {
-          set400Error("失敗しました。");
-        }
-    });
+
+    await axios.get('/api/admin/fathers/list')
+      .then((response) => {
+          setLoaded(true);
+          if(response.data.status_code==200){
+              setFatherList(response.data.params);
+              var len = response.data.params.length;
+              if(len > INFINITE)
+                setFetchFatherList(response.data.params.slice(0, INFINITE));
+              else setFetchFatherList(response.data.params.slice(0, len));
+          } 
+          else {
+            set400Error("失敗しました。");
+          }
+      });
   }, []);
 
   const fetchMoreFatherList = () => {
@@ -54,7 +56,7 @@ const Parent = (props) => {
   };
 
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     if(keyword == '')
     {
@@ -64,17 +66,17 @@ const Parent = (props) => {
     set422errors({keyword:''});
     setLoaded(false);
     setFatherList([]);
-    axios.get('/api/admin/fathers/search',{params: {keyword: keyword}})
-    .then((response) => {
-      setLoaded(true);
-      if(response.data.status_code==200){
-        setFatherList(response.data.params);
-        var len = response.data.params.length;
-        if(len > INFINITE)
-          setFetchFatherList(response.data.params.slice(0, INFINITE));
-        else setFetchFatherList(response.data.params.slice(0, len));
-      } 
-    });
+    await axios.get('/api/admin/fathers/search',{params: {keyword: keyword}})
+      .then((response) => {
+        setLoaded(true);
+        if(response.data.status_code==200){
+          setFatherList(response.data.params);
+          var len = response.data.params.length;
+          if(len > INFINITE)
+            setFetchFatherList(response.data.params.slice(0, INFINITE));
+          else setFetchFatherList(response.data.params.slice(0, len));
+        } 
+      });
   }
 
 	return (
@@ -161,4 +163,4 @@ const Parent = (props) => {
 	)
 }
 
-export default Parent;
+export default AdminParents;

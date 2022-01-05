@@ -1,15 +1,16 @@
 import { useRef, useEffect, useState } from 'react';
 import { LoadingButton } from '@material-ui/lab';
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
-const ProfileEdit = () => {
+const ParentProfileEdit = () => {
 
-  const history = useHistory();
+  const navigator = useNavigate();
+
+  const father_id = localStorage.getItem('kiki_acc_id');
   const [notice, setNotice] = useState(localStorage.getItem('notice'));
-  const father_id = document.getElementById('father_id').value;
 
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
@@ -31,34 +32,34 @@ const ProfileEdit = () => {
 
   const isMountedRef = useRef(true);
 
-  useEffect(() => {
+  useEffect( async () => {
     isMountedRef.current = false;
     setLoaded(false);
-    axios.get(`/api/fathers/detail/${father_id}`)
-    .then(response => {
-      setLoaded(true);
-      setNotice(response.data.notice);
-      if(response.data.status_code==200) {
-        setParams(response.data.params);
-        setCompany(response.data.params?.company);
-        setEmail(response.data.params?.email);
-        setTel(response.data.params?.tel);
-        setProfile(response.data.params.profile ? response.data.params.profile: '');
-      }
-      else {
-        set400Error("失敗しました。");
-      } 
-    })
-    .catch(err=>{
-      setLoaded(true);
-      setNotice(err.response.data.notice);
-      if(err.response.status==404){
-          set404Error(err.response.data.message);
-      }
-    })
+    await axios.get(`/api/fathers/detail/${father_id}`)
+      .then(response => {
+        setLoaded(true);
+        setNotice(response.data.notice);
+        if(response.data.status_code==200) {
+          setParams(response.data.params);
+          setCompany(response.data.params?.company);
+          setEmail(response.data.params?.email);
+          setTel(response.data.params?.tel);
+          setProfile(response.data.params.profile ? response.data.params.profile: '');
+        }
+        else {
+          set400Error("失敗しました。");
+        } 
+      })
+      .catch(err=>{
+        setLoaded(true);
+        setNotice(err.response.data.notice);
+        if(err.response.status==404){
+            set404Error(err.response.data.message);
+        }
+      })
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     set422Errors({ company:'', email: '',  tel: '',  profile:'' });
     const request = {
@@ -68,22 +69,19 @@ const ProfileEdit = () => {
       profile: profile
     }
     setSubmit(true);
-    axios.put(`/api/fathers/updateProfile/${father_id}`, request)
-    .then(response => {
-      setNotice(response.data.notice);
-      setSubmit(false);
-      switch(response.data.status_code){
-        case 200:{
-          history.push({
-              pathname: '/p-account/profile',
-              state: response.data.success_messages
-          });
-          break;
-        } 
-        case 400: set400Error(response.data.error_messages); break;
-        case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-      }
-    });
+    await axios.put(`/api/fathers/updateProfile/${father_id}`, request)
+      .then(response => {
+        setNotice(response.data.notice);
+        setSubmit(false);
+        switch(response.data.status_code){
+          case 200:{
+            navigator('/p-account/profile', { state: response.data.success_messages });
+            break;
+          } 
+          case 400: set400Error(response.data.error_messages); break;
+          case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        }
+      });
   }
 
   
@@ -174,9 +172,7 @@ const ProfileEdit = () => {
           { _404error && 
               <Alert type="fail" hide={()=>{
                   set404Error('');
-                  history.push({
-                      pathname: "/p-account/profile"
-                  });
+                  navigator('/p-account/profile', { state: ''});
               }}>
               {_404error}
               </Alert>
@@ -188,4 +184,4 @@ const ProfileEdit = () => {
 	)
 }
 
-export default ProfileEdit;
+export default ParentProfileEdit;

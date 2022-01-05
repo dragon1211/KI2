@@ -1,16 +1,17 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 
-import Notification from '../notification';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 
 
-const ProfileEdit = () => {
+const ChildProfileEdit = () => {
 
-    const history = useHistory();
+    const navigator = useNavigate();
+
+    const child_id = localStorage.getItem('kiki_acc_id');
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
 
     const [first_name, setFirstName] = useState('');
@@ -38,38 +39,38 @@ const ProfileEdit = () => {
 
     const isMountedRef = useRef(true);
     
-    useEffect(() => {
+    useEffect( async () => {
         isMountedRef.current = false;
         setLoaded(false);
-        let child_id = document.getElementById('child_id').value;
-        axios.get('/api/children/detail/'+child_id)
-        .then(response => {
-            setLoaded(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                let params = response.data.params;
-                setProfile(params);
-                setFirstName(params.first_name);
-                setLastName(params.last_name);
-                setEmail(params.email);
-                setTel(params.tel);
-                setIdentity(params.identity);
-                setCompany(params.company? params.company: '');
-            }else {
-                set400Error("失敗しました。");
-            }
-        })
-        .catch(err=>{
-            setLoaded(true);
-            setNotice(err.response.data.notice);
-            if(err.response.status==404){
-                set404Error(err.response.data.message);
-            }
-        })
+
+        await axios.get('/api/children/detail/'+child_id)
+            .then(response => {
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    let params = response.data.params;
+                    setProfile(params);
+                    setFirstName(params.first_name);
+                    setLastName(params.last_name);
+                    setEmail(params.email);
+                    setTel(params.tel);
+                    setIdentity(params.identity);
+                    setCompany(params.company? params.company: '');
+                }else {
+                    set400Error("失敗しました。");
+                }
+            })
+            .catch(err=>{
+                setLoaded(true);
+                setNotice(err.response.data.notice);
+                if(err.response.status==404){
+                    set404Error(err.response.data.message);
+                }
+            })
     },[]);
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         set422Errors({
             first_name:'',
@@ -97,22 +98,20 @@ const ProfileEdit = () => {
             company: company
         }
         setSubmit(true);
-        let child_id =document.getElementById('child_id').value;
-        axios.put('/api/children/updateProfile/'+child_id, post)
-        .then(response => {
-            setSubmit(false);
-            setNotice(response.data.notice);
-            switch(response.data.status_code){
-                case 200: {
-                    history.push({
-                    pathname: "/c-account/profile",
-                    state: response.data.success_messages});
-                    break;
+
+        await axios.put('/api/children/updateProfile/'+ child_id, post)
+            .then(response => {
+                setSubmit(false);
+                setNotice(response.data.notice);
+                switch(response.data.status_code){
+                    case 200: {
+                        navigator('/c-account/profile', { state: response.data.success_messages});
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                 }
-                case 400: set400Error(response.data.error_messages); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-            }
-        })
+            })
     }
 
 
@@ -220,9 +219,7 @@ const ProfileEdit = () => {
                 {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
                 {  _404error && 
                     <Alert type="fail" hide={()=>{
-                        history.push({
-                            pathname: "/c-account/profile"
-                        });
+                        navigator('/c-account/profile');
                     }}>
                     {_404error}
                     </Alert>
@@ -235,4 +232,4 @@ const ProfileEdit = () => {
 }
 
 
-export default ProfileEdit;
+export default ChildProfileEdit;

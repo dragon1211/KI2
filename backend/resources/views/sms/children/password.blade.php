@@ -4,4 +4,4 @@ KIKIをご利用頂きありがとうございます。
 
 有効期限は8時間以内です。
 
-{{ url('/').'/c-account/forgot-password/reset/'.$token }}
+{{ url('/c-account/forgot-password/reset/'.$token) }}
