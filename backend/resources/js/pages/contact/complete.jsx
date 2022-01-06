@@ -24,8 +24,8 @@ const ContactComplete = () => {
                 万が一届かない場合は、以下のメールアドレスに 直接ご連絡くださいませ。
             </span>
 
-            <div className="p-4 my-5 border text-center font-weight-bold">
-                <p className="m-0 scale-1 pointer ft-xs-18" onClick={saveStorage}>{contactEmail}</p>
+            <div className="clip-copy" onClick={saveStorage}>
+                <a>{contactEmail}</a>
             </div>
 
             <div className="d-flex justify-content-between">

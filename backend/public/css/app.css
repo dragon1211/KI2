@@ -17453,6 +17453,32 @@ a {
   z-index: 100;
 }
 
+.clip-copy {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(36, 77, 138, 0.1);
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+  color: #777777;
+  font-size: 15px;
+  font-weight: bold;
+  background-color: #F5F7F8;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.clip-copy:hover {
+  background-color: #f0ffff;
+}
+.clip-copy img {
+  position: absolute;
+  width: 18px;
+  right: 10px;
+}
+
 @media screen and (min-width: 1068px) {
   .p-meetingAdd-btn {
     width: 200px !important;

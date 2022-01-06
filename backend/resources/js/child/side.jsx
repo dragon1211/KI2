@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 export default function ChildSide() {
     const [selected, setSelected] = useState('');
+    const [cookies, setCookie] = useCookies(['user']);
 
     const child_img = document.getElementById('child_image').value;
 
     const handleLogout = async () => {
         await axios.get('/c-account/logout')
-            .then(() => {
-                location.href = '/c-account/login';
-            })
+        .then(() => {
+            setCookie('logged', null);
+            window.location.href = '/c-account/login';
+        })
     }
 
     const handleSelected = (id) => {

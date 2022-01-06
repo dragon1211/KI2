@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { LoadingButton } from '@material-ui/lab';
+import { useCookies } from 'react-cookie';
 
 import Alert from '../../component/alert';
 
 const AdminLogin = () => {
+
+    const [cookies, setCookie] = useCookies(['user']);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -35,6 +38,7 @@ const AdminLogin = () => {
                     case 200: {
                         localStorage.setItem('kiki_login_flag', true);
                         localStorage.setItem('kiki_acc_type', 'admin');
+                        setCookie('logged', 'success');
                         window.location.href = "/admin/meeting";
                         break;
                     }

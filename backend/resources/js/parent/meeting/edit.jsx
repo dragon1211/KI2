@@ -201,7 +201,10 @@ useEffect(()=>{
 
 
     const handleDeleteImage = async (index, image_id) => {
-
+        let list = [...meeting_image];
+        list.splice(index, 1);
+        setMeetingImages(list);
+        
         await axios.delete(`/api/fathers/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
             .then(response=>{
                 setNotice(response.data.notice);
@@ -209,9 +212,6 @@ useEffect(()=>{
                     case 400: set400Error("画像の削除に失敗しました。");
                 }
             })
-        let list = [...meeting_image];
-        list.splice(index, 1);
-        setMeetingImages(list);
     }
 
     const handlePDFChange = (e) => {

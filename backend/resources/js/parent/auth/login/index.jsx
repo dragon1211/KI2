@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
+import { useCookies } from 'react-cookie';
+
 import Alert from '../../../component/alert';
 
 
 const ParentLogin = () => {
 
+    const [cookies, setCookie] = useCookies(['user']);
     const location = useLocation();
 
     const [submit, setSubmit] = useState(false);
@@ -34,6 +37,7 @@ const ParentLogin = () => {
                         localStorage.setItem('kiki_login_flag', true);
                         localStorage.setItem('kiki_acc_type', 'p-account');
                         localStorage.setItem('kiki_acc_id', response.data.params.id);
+                        setCookie('logged', 'success');
                         window.location.href = '/p-account/meeting';
                         break;
                     }

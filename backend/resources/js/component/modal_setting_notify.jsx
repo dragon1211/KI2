@@ -14,7 +14,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 
-export default function ModalSettingNotify({show, handleClose, meetingId}){
+export default function ModalSettingNotify({show, handleClose, meetingId, handleLoadedChildren}){
 
   const [unapproval, setUnapproval ] = useState([]);
   const [approval, setApproval ] = useState([]);
@@ -66,6 +66,7 @@ export default function ModalSettingNotify({show, handleClose, meetingId}){
 
   useEffect(()=>{
     setLoaded(loaded1 && loaded2);
+    handleLoadedChildren(loaded1 && loaded2);
   },[loaded1, loaded2]);
 
 

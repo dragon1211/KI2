@@ -689,6 +689,7 @@ class MeetingsController extends Controller {
                 $result->father = new \stdClass();
             }
         }
+        else $result->father = Father::select('company')->where('id', (int)$result->father_id)->first();
 
         if (request()->route()->action['as'] != 'mdc') {
             $result->children = [];

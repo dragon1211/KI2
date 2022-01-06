@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import moment from 'moment';
 import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
+import copy from 'clipboard-copy';
 
 import ModalEditMemo from '../../component/modal_edit_memo';
 import ModalConfirm from '../../component/modal_confirm';
@@ -21,6 +22,7 @@ const ParentMeetingDetail = () => {
   const father_id = localStorage.getItem('kiki_acc_id');
   
   const [loaded, setLoaded] = useState(false);
+  const [loaded_children, setLoadedChildren] = useState(false);
   const [submit_delete, setSubmitDelete] = useState(false);
   const [submit_notify, setSubmitNotify] = useState(false);
   const [_success, setSuccess] = useState(location.state);
@@ -166,6 +168,15 @@ const ParentMeetingDetail = () => {
     window.open(`/pdf/${file_name}`, '_blank');
   }
 
+  const handleLoadedChildren = (flag) => {
+    setLoadedChildren(flag);
+  }
+
+  const saveStorage = () => {
+    copy(`${meeting.father.company}さんより　業務連絡のお知らせ\n新規業務連絡のご確認はこちら\n\nhttps://kikikan.xyz/c-account/meeting/detail/${params?.meeting_id}`);
+    setSuccess('コピーしました。');
+}
+
 
   return (
       <div className="l-content">
@@ -177,10 +188,10 @@ const ParentMeetingDetail = () => {
             <Notification notice={notice}/>
           </div>
           {
-            !loaded && <PageLoader />
+            !(loaded && loaded_children) && <PageLoader />
           }
           {
-            loaded && meeting &&
+            (loaded && loaded_children) && meeting &&
             <div className="l-content-wrap">
               <div className="p-article">
                 <div className="p-article-wrap">
@@ -215,6 +226,10 @@ const ParentMeetingDetail = () => {
                       <time dateTime="2021-07-30" className="meeting-time">
                         <span className="meeting-date">{ moment(meeting?.updated_at).format('YYYY/MM/DD') }</span>
                       </time>
+                      <div className="clip-copy" onClick={saveStorage}>
+                          <a>この案件のURLをコピーする</a>
+                          <img src="/assets/img/icon/icon-copy.png" alt="kiki"/>
+                      </div>
                       <ul className="p-article-btn-list">
                         <li className="p-article-btn__item">
                           <Link to={`/p-account/meeting/edit/${params?.meeting_id}`}
@@ -283,11 +298,6 @@ const ParentMeetingDetail = () => {
                   </article>
                 </div>
               </div>
-              <ModalSettingNotify 
-                show={show_notify_all_modal}
-                meetingId={meeting.id}
-                handleClose={()=>setShowNotifyAllModal(false)} 
-              />
               <ModalEditMemo 
                 show={show_memo_modal}
                 title={"メモ"}
@@ -315,6 +325,15 @@ const ParentMeetingDetail = () => {
                 handleClose={()=>setShowPDFModal(false)} 
               />
             </div>
+          }
+          {
+            loaded && meeting &&
+              <ModalSettingNotify 
+                show={show_notify_all_modal}
+                meetingId={meeting.id}
+                handleClose={()=>setShowNotifyAllModal(false)}
+                handleLoadedChildren = {handleLoadedChildren}
+              />
           }
         </div>
         { _400error && <Alert type="fail"  hide={()=>set400Error('')}>{_400error}</Alert> }

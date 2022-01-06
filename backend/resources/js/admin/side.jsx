@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 export default function AdminSide() {
     const [selected, setSelected] = useState('');
+    const [cookies, setCookie] = useCookies(['user']);
 
     const handleLogout = async () => {
         await axios.get('/admin/logout')
-            .then(() => {
-                location.href = '/admin/login';
-            })
+        .then(() => {
+            setCookie('logged', null);
+            window.location.href = '/admin/login';
+        })
     }
 
     return (

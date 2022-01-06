@@ -50,7 +50,7 @@ const ParentChildAdd = () => {
     const siteUrl = document.getElementById('siteurl').value;
     const lineText = `「KIKI」の招待が届いています。%0Aまずは以下より仮登録を行ってください。%0A%0A※スマホ本体を最新の状態にアップデートしてからURLをクリックしてください。%0A%0A${inviteUrl}%0A%0A▼公式サイトはこちら%0A${siteUrl}`;
     setSuccess('招待用URLをLINEで追信しました。');
-    location.href = 'http://line.me/R/msg/text/?'+lineText;
+    window.location.href = 'http://line.me/R/msg/text/?'+lineText;
   }
 
   const contactMailText = 'mailto:56@zotman.jp?subject=KIKIメンバー追加について&body='+

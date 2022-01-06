@@ -54,5 +54,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/3.2.2/es6-promise.js"></script>
     <script src="{{ asset('js/app.js') }}"></script>
-    <!-- V1, 2022/1/4 -->
+    <!-- V1, 2022/1/5 -->
 </html>
