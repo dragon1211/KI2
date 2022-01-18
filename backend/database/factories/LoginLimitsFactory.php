@@ -19,17 +19,9 @@ class LoginLimitsFactory extends Factory
      *
      * @return array
      */
-    public function definition()
-    {
-        $ua = [
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.15.2 Chrome/87.0.4280.144 Safari/537.36', // qutebrowser
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36', // brave
-            'Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0', // firefox
-            'Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Goanna/4.8 Firefox/68.0 PaleMoon/29.4.1' // palemoon
-        ];
-
+    public function definition () {
         return [
-            'user_agent' => $ua[rand(0, 3)],
+            'login_id' => $this->faker->email,
             'fail_number' => rand(0, 10),
             'created_at' => $this->faker->dateTime,
             'updated_at' => $this->faker->dateTime,

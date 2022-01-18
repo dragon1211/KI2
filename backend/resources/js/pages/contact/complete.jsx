@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { Button } from '@material-ui/core';
 import Alert from '../../component/alert';
-import copy from 'clipboard-copy';
+import copy from 'copy-to-clipboard';
 
 
 const ContactComplete = () => {
 
     const contactEmail = '56@zotman.jp';
     const [_success, setSuccess] = useState('');
+    const [_error, setError] = useState('');
 
     const saveStorage = () => {
-        copy(contactEmail);
-        setSuccess('メールアドレスのコビーに成功しました');
+        if(copy(contactEmail)){
+            setSuccess('メールアドレスのコビーに成功しました')
+        } else {
+            setError('コピー失敗しました。')
+        }
     }
 
 	return (
@@ -41,6 +45,7 @@ const ContactComplete = () => {
                 </div>
             </div>
             {  _success &&  <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
+            { _error && <Alert type="fail" hide={()=>setError('')}>{_error}</Alert> }
         </div>
     </div>
 	)

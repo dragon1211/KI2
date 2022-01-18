@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom';
+import AlertStateMessage from '../component/alert_state_msg';
 
 const MainLayout = () => {
 
@@ -6,6 +7,7 @@ const MainLayout = () => {
     <main className="l-single-main">
         <div className="l-centeringbox">
             <div className="l-centeringbox-wrap">
+                <AlertStateMessage/>
                 <Outlet />
             </div>
         </div>

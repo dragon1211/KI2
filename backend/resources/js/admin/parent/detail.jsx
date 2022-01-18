@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, Link, useParams } from 'react-router-dom';
 
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
@@ -18,7 +18,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const AdminParentDetail = () => {
 
     const navigator = useNavigate();
-    const location = useLocation();
     const params = useParams();
 
     const [image, setImage] = useState('');
@@ -29,7 +28,7 @@ const AdminParentDetail = () => {
 
     const [_400error, set400Error] = useState('');
     const [_422errors, set422Errors] = useState({image: ''});
-    const [_success, setSuccess] = useState(location.state);
+    const [_success, setSuccess] = useState('');
     const [show_confirm_modal, setShowConfirmModal] = useState(false);
 
     const isMountedRef = useRef(true);
@@ -37,9 +36,12 @@ const AdminParentDetail = () => {
 
     useEffect(() => {
         isMountedRef.current = false;
+
         setLoaded(false);
         axios.get(`/api/admin/fathers/detail/${params?.father_id}`)
         .then(response => {
+            if(isMountedRef.current) return;
+
             setLoaded(true);
             if(response.data.status_code==200){
                 setParent(response.data.params);
@@ -49,6 +51,9 @@ const AdminParentDetail = () => {
                 set400Error("失敗しました。");
             }
         })
+        return function cleanup() {
+            isMountedRef.current = true;
+        }
     },[]);
 
 
@@ -57,38 +62,42 @@ const AdminParentDetail = () => {
         let reader = new FileReader();
         let _file = e.target.files[0];
         reader.readAsDataURL(_file);
-        reader.onloadend = async () => {
+        reader.onloadend = () => {
             set422Errors({image: ''});
             setSubmitImage(true);
-            await axios.put(`/api/admin/fathers/updateImage/${params?.father_id}`, {image: reader.result})
-                .then(response => {
-                    setSubmitImage(false);
-                    switch(response.data.status_code){
-                        case 200: {
-                            setImage(reader.result);
-                            setSuccess(response.data.success_messages);
-                            break;
-                        }
-                        case 400: set400Error(response.data.error_messages); break;
-                        case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+            axios.put(`/api/admin/fathers/updateImage/${params?.father_id}`, {image: reader.result})
+            .then(response => {
+                if(isMountedRef.current) return;
+
+                setSubmitImage(false);
+                switch(response.data.status_code){
+                    case 200: {
+                        setImage(reader.result);
+                        setSuccess(response.data.success_messages);
+                        break;
                     }
-                });
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                }
+            });
         };
     };
 
 
-    async function handleAcceptDelete() {
+    function handleAcceptDelete() {
         setSubmit(true);
-        await axios.delete(`/api/admin/fathers/delete/${params?.father_id}`)
-            .then(response => {
-                setShowConfirmModal(false);
-                setSubmit(false);
-                if(response.data.status_code == 200){
-                    navigator('/admin/parent', { state: '削除に成功しました！' });
-                } else {
-                    set400Error("削除に失敗しました。");
-                }
-            });
+        axios.delete(`/api/admin/fathers/delete/${params?.father_id}`)
+        .then(response => {
+            if(isMountedRef.current) return;
+            
+            setShowConfirmModal(false);
+            setSubmit(false);
+            if(response.data.status_code == 200){
+                navigator('/admin/parent', { state: '削除に成功しました！' });
+            } else {
+                set400Error("削除に失敗しました。");
+            }
+        });
     };
 
 

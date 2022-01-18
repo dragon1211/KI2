@@ -11,7 +11,7 @@ const Notification = ({ notice }) => {
         for(let i=0; i<navbar_list.length; i++)
             navbar_list[i].classList.remove('nav-active');
         document.getElementsByClassName("-meeting")[0].classList.add('nav-active');
-        navigator(`/${pathname.split('/')[1]}/meeting`, {state: ''});
+        navigator(`/${pathname.split('/')[1]}/meeting`);
     }
 
     useEffect(()=>{

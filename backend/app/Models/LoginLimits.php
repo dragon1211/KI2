@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class LoginLimits extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_agent', 'fail_number'];
+    protected $fillable = ['login_id', 'fail_number'];
 }

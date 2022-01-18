@@ -269,6 +269,33 @@ a{
   }
 }
 
+
+.invite-btn__wrapper{
+  display: flex;
+  justify-content: center;
+  .copy-btn, .line-btn{
+    width: 120px;
+    border: 1px solid #cac4a4;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 35px 0 10px;
+    text-align: center;
+    display: block;
+    cursor: pointer;
+    &:hover{
+      background-color: #F0F0F0;
+    }
+  }
+  .copy-btn{
+    background: url(/assets/img/icon/icon-copy.svg) no-repeat 50% 12px;
+    margin-right: 10px;
+  }
+  .line-btn{
+    background: url(/assets/img/icon/icon-line.svg) no-repeat 50% 12px;
+  }
+}
+
 /////////////////////////////////////////////////////////////////////////
 
 @media screen and (min-width: 1068px){
@@ -365,19 +392,25 @@ a{
 }
 
 
-.react-pdf__Page__svg{
-  svg{
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+.react-pdf{
+  &__Page{
+    &__svg{
+      width: 100% !important;
+      height: 100% !important;
+      margin: auto;
+      svg{
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain;
+      }
+    }
+    &__canvas{
+      width: 100% !important;
+      object-fit: contain;
+      margin: auto;
+    }
   }
 }
-
-.react-pdf__Document{
-  height: 100% !important;
-}
-
-
 
 
 input::placeholder{

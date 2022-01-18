@@ -95,11 +95,11 @@ class MeetingApprovalsController extends Controller {
     }
 
     public function registerApproval (Request $r) {
-        if (!isset($r->meeting_id) || !isset($r->child_id)) {
+        if (!isset($r->meeting_id) || !isset(session()->get('children')['id'])) {
             return ['status_code' => 400, 'error_messages' => ['承認に失敗しました。']];
         }
 
-        if (null === (MeetingApprovals::where('meeting_id', (int)$r->meeting_id)->where('child_id', (int)$r->child_id)->first())) {
+        if (null === (MeetingApprovals::where('meeting_id', (int)$r->meeting_id)->where('child_id', (int)session()->get('children')['id'])->first())) {
             return ['status_code' => 400, 'error_messages' => ['承認に失敗しました。']];
         }
 
@@ -115,7 +115,7 @@ class MeetingApprovalsController extends Controller {
         $update = ['approval_at' => date('Y-m-d H:i:s')];
 
         try {
-            MeetingApprovals::where('meeting_id', (int)$r->meeting_id)->where('child_id', (int)$r->child_id)->update($update);
+            MeetingApprovals::where('meeting_id', (int)$r->meeting_id)->where('child_id', (int)session()->get('children')['id'])->update($update);
             Mail::to($father->email)->send(new MeetingEditAwareness(session()->get('children')['last_name'], session()->get('children')['first_name'], $r->meeting_id));
         } catch (\Throwable $e) {
             // 失敗
@@ -135,7 +135,6 @@ class MeetingApprovalsController extends Controller {
         $update = ['hire_at' => date('Y-m-d H:i:s', strtotime($r->hire_at))];
 
         if (null === ($params = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$r->meeting_id)->where('child_id', (int)$r->child_id)->get())) {
-            
             return ['status_code' => 400, 'error_messages' => ['承認に失敗しました。']];
         }
 

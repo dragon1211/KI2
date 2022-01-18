@@ -15,7 +15,7 @@ class CreateLoginLimitsTable extends Migration
     {
         Schema::create('login_limits', function (Blueprint $table) {
             $table->id();
-            $table->string('user_agent', 300);
+            $table->string('login_id', 255);
             $table->unsignedInteger('fail_number');
             $table->timestamps();
         });

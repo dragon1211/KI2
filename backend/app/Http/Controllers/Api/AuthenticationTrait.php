@@ -6,23 +6,46 @@ use App\Http\Controllers\Controller, Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+use App\Models\LoginLimits;
 
 // use App\Models\LoginLimits;
 
 trait AuthenticationTrait {
-    public function login (Request $r) {
-        // if (null === $r->server('HTTP_USER_AGENT')) {
-        //     return ['status_code' => 400, 'error_message' => ['不正なuser_agent。']];
-        // }
+    private function makeSession ($guard, $db) {
+        if (!session()->has($guard)) {
+            // 認証されたデータのpasswordとremember_token以外を把握する
+            unset($db['password']);
+            unset($db['remember_token']);
+            // セッションに保存する
+            session()->put($guard, $db);
+        }
 
-        // if (null !== ($ll = LoginLimits::where('user_agent', $r->server('HTTP_USER_AGENT'))->first())) {
-        //     if ((time() >= strtotime($ll->updated_at) + 600) === false) {
-        //         LoginLimits::where('user_agent', $r->server('HTTP_USER_AGENT'))->delete();
-        //     }
-        //     if ($ll->fail_number >= 10) {
-        //         return ['status_code' => 400, 'error_message' => ['10回連続で失敗しましたので、10分、ログインロックになりました。']];
-        //     }
-        // }
+        return $db;
+    }
+
+    public function login (Request $r) {
+        $loginid = $this->getGuard() == 'children' ? $r->tel : $r->email;
+
+        if (null !== ($ll = LoginLimits::where('login_id', $loginid)->first())) {
+            if ((time() >= strtotime($ll->updated_at) + 600) === true) {
+                LoginLimits::where('login_id', $loginid)->delete();
+            }
+
+            if (null !== ($ll = LoginLimits::where('login_id', $loginid)->first()) && $ll->fail_number >= 10) {
+                return ['status_code' => 400, 'error_message' => ['10回連続で失敗しましたので、10分、ログインロックになりました。']];
+            }
+        }
+
+        if (isset($_COOKIE['remember_token']) && !is_null($_COOKIE['remember_token'])) { // クッキーがある場合
+            if (null === ($get = $this->getModel()->where('remember_token', $_COOKIE['remember_token'])->first())) { // トークンがある場合
+                // セッションを想像する
+                $login_user_datum = $this->makeSession($this->getGuard(), $get->toArray());
+
+                return ['status_code' => 200, 'params' => ['id' => $login_user_datum['id']]];
+            }
+        }
 
         if ($this->getGuard() == 'children') {
             Validator::extend('tel_size', function ($attribute, $value, $params, $validator) {
@@ -46,17 +69,25 @@ trait AuthenticationTrait {
 
         // 存在しない場合
         if (null === ($get = $this->getModel()->where($chk[0], $chk[1])->first())) {
+            if (null !== ($loglim = LoginLimits::where('login_id', $loginid)->first())) {
+                LoginLimits::where('login_id', $loginid)->increment('fail_number');
+            }
+            else {
+                LoginLimits::create(['login_id' => $loginid, 'fail_number' => 1]);
+            }
+
             return ['status_code' => 400, 'error_message' => ['ログインに失敗しました。10回連続で失敗すると、一定期間ログインできなくなります。']];
         }
 
         // パスワードが異なる場合
         if (!Hash::check($r->password, $get->password)) {
-            // if ($ll = LoginLimits::where('user_agent', $r->server('HTTP_USER_AGENT'))->first()) {
-            //     LoginLimits::where('user_agent', $r->server('HTTP_USER_AGENT'))->update(['fail_number' => $ll->fail_number+1]);
-            // }
-            // else {
-            //     LoginLimits::create(['user_agent' => $r->server('HTTP_USER_AGENT'), 'fail_number' => 1]);
-            // }
+            if (null !== ($loglim = LoginLimits::where('login_id', $loginid)->first())) {
+                LoginLimits::where('login_id', $loginid)->increment('fail_number');
+            }
+            else {
+                LoginLimits::create(['login_id' => $loginid, 'fail_number' => 1]);
+            }
+
             return ['status_code' => 400, 'error_message' => ['ログインに失敗しました。10回連続で失敗すると、一定期間ログインできなくなります。']];
         }
 
@@ -65,22 +96,35 @@ trait AuthenticationTrait {
         if (Session::has('fathers'))  Session::forget('fathers');
         if (Session::has('admins'))   Session::forget('admins');
 
-        // セッションを想像する
-        $guard = $this->getGuard();
-        if (!$r->session()->has($guard)) {
-            // 認証されたデータのpassword以外を把握する
-            $login_user_datum = $get->toArray();
-            unset($login_user_datum['password']);
-            // セッションに保存する
-            $r->session()->put($guard, $login_user_datum);
+        if ($r->remember_token == 'true') {
+            $token = bin2hex(random_bytes(24));
+
+            try {
+                $this->getModel()->where('id', $get->id)->update(['remember_token' => $token]);
+                setcookie('remember_token', $token, time()+157788000, '/', $_SERVER['HTTP_HOST'], 0, 1);
+            }
+            catch (\Throwable $e) {
+                Log::critical($e->getMessage());
+                return ['status_code' => 400, 'error_message' => ['ログインに失敗しました。10回連続で失敗すると、一定期間ログインできなくなります。']];
+            }
         }
+
+        // セッションを想像する
+        $login_user_datum = $this->makeSession($this->getGuard(), $get->toArray());
 
         return ['status_code' => 200, 'params' => ['id' => $login_user_datum['id']]];
     }
 
     public function logout () {
         // セッションを破壊すると、ログイン画面に移転する。
-        Session::forget($this->getGuard());
+        $guard = $this->getGuard();
+        if (null !== $rem = $this->getModel()->select('remember_token')->where('id', session()->get($guard)['id'])->first()) {
+            $this->getModel()->where('id', session()->get($guard)['id'])->update(['remember_token' => null]);
+            unset($_COOKIE['remember_token']);
+            setcookie('remember_token', '', time() - 3600, '/', $_SERVER['HTTP_HOST'], 0, 1);
+        }
+
+        Session::forget($guard);
 
         return redirect(request()->route()->action['prefix'].'/login');
     }

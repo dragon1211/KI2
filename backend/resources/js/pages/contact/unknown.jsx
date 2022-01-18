@@ -15,7 +15,7 @@ const UnknownError = () => {
     const [_400error, set400Error] = useState('');
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         setSubmit(true);                            //show progressbar
         set422Errors({ email:'', message:'' });
@@ -23,16 +23,16 @@ const UnknownError = () => {
         formdata.append('email', email);
         formdata.append('message', message);
 
-        await axios.post('/api/contacts/register/', formdata)
-            .then(response => {
-                setSubmit(false);
-                switch(response.data.status_code){
-                    case 200: navigator('/contact-us/complete',  {state: ''}); break;
-                    case 422: set422Errors(response.data.error_messages); break;
-                    case 400: set400Error(response.data.error_messages); break;
-                };
-            })
-            .catch(err=>console.log(err))
+        axios.post('/api/contacts/register/', formdata)
+        .then(response => {
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: navigator('/contact-us/complete',  {state: ''}); break;
+                case 422: set422Errors(response.data.error_messages); break;
+                case 400: set400Error(response.data.error_messages); break;
+            };
+        })
+        .catch(err=>console.log(err))
     }
 
 

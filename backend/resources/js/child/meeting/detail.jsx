@@ -34,57 +34,66 @@ const ChildMeetingDetail = () => {
     const isMountedRef = useRef(true);
 
     
-    useEffect( async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
 
-        await axios.get(`/api/children/meetings/detail/${params.meeting_id}`, {params:{child_id: child_id}})
-            .then(response => {
-                setLoaded(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code == 200)
-                {
-                    var meeting = response.data.params;
-                    setMeeting(meeting);
-                    if(meeting.meeting_image.length > 0) setThumbnail(meeting.meeting_image[0].image);
-                    if(meeting.approval.approval_at != null){
-                        setApprovalRegister(true);
-                    }
+        axios.get(`/api/children/meetings/detail/${params.meeting_id}`, {params:{child_id: child_id}})
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setLoaded(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code == 200)
+            {
+                var meeting = response.data.params;
+                setMeeting(meeting);
+                if(meeting.meeting_image.length > 0) setThumbnail(meeting.meeting_image[0].image);
+                if(meeting.approval.approval_at != null){
+                    setApprovalRegister(true);
                 }
-                else {
-                    set400Error("失敗しました。");
-                }
-            })
-            .catch(err=>{
-                setLoaded(true);
-                setNotice(err.response.data.notice);
-                if(err.response.status==404){
-                    set404Error(err.response.data.message);
-                }
-            })
+            }
+            else {
+                set400Error("失敗しました。");
+            }
+        })
+        .catch(err=>{
+            if(isMountedRef.current) return;
+            setLoaded(true);
+            setNotice(err.response.data.notice);
+            if(err.response.status==404){
+                set404Error(err.response.data.message);
+            }
+        })
+            
+        return function cleanup() {
+            isMountedRef.current = true
+        }
     },[]);
 
 
-    const handleApprovalRegister = async () => {
+    const handleApprovalRegister = () => {
         setSubmit(true);
         const formdata = new FormData();
         formdata.append('child_id', child_id);
         formdata.append('meeting_id', params.meeting_id);
 
-        await axios.post('/api/children/meeting/approvals/registerApproval', formdata)
-            .then(response => {
-                setSubmit(false);
-                setShowConfirmMoal(false);
-                setNotice(response.data.notice);
-                switch(response.data.status_code){
-                    case 200: {
-                        setSuccess(response.data.success_messages);
-                        setApprovalRegister(true);
-                        break;
-                    }
-                    case 400: set400Error(response.data.error_messages); break;
+        axios.post('/api/children/meeting/approvals/registerApproval', formdata)
+        .then(response => {
+            if(isMountedRef.current) return;
+            
+            setSubmit(false);
+            setShowConfirmMoal(false);
+            setNotice(response.data.notice);
+            switch(response.data.status_code){
+                case 200: {
+                    setSuccess(response.data.success_messages);
+                    setApprovalRegister(true);
+                    break;
                 }
-            })
+                case 400: set400Error(response.data.error_messages); break;
+            }
+        })
     }
 
     const handlePDFOpen = (pdf) => {

@@ -29,11 +29,11 @@ export default function ModalEditMemo({ show, content, handleClose, handleUpdate
             onClose={handleClose}
         >
             <DialogTitle sx={{padding:'20px 10px',textAlign:'center', borderBottom:'1px solid rgb(239 236 236)'}}>
-                <span className="ft-18 text-center font-weight-bold">メモ</span>
+                <span className="ft-16 text-center font-weight-bold">メモ</span>
             </DialogTitle>
-            <Box sx={{ p:'15px', pb:'15px'}}>
+            <Box sx={{ p:'10px', pb:'10px'}}>
                 <Box id="alert-dialog-slide-description">
-                    <textarea value={ memo } onChange={e=>handleChange(e.target.value)} style={{ height: '300px', borderRadius:5, background:'#F0F0F0', padding:'12px' }} />
+                    <textarea value={ memo } onChange={e=>handleChange(e.target.value)} style={{ height: '300px', borderRadius:5, background:'#F0F0F0', padding:'12px', fontSize:'15px' }} />
                 </Box>
             </Box>
         </Dialog>

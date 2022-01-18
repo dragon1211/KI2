@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import IconButton from '@mui/material/IconButton';
@@ -32,13 +32,22 @@ const ParentSearch = () => {
     const [loaded, setLoaded] = useState(true);
     const [initPage, setInitPage] = useState(true);
 
-    
+
+    const isMountedRef = useRef(true);
+    useEffect(() => {
+        isMountedRef.current = false;
+        return () => {
+            isMountedRef.current = true;
+        }
+    }, [])
+
+
     useEffect(()=>{
         setLoaded(loaded1 && loaded2);
     },[loaded1, loaded2])
 
 
-    const handleSearch = async (e) => {
+    const handleSearch = (e) => {
       e.preventDefault();
         if(keyword == ''){
             document.getElementById('keyword').focus();
@@ -48,33 +57,11 @@ const ParentSearch = () => {
         setLoaded2(false);
         setInitPage(false);
         
-        await axios.get('/api/fathers/meetings/searchOfIncompleteOfFather', {params:{father_id: father_id, keyword: keyword,}})
-          .then(response => {
-              setLoaded1(true);
-              setNotice(response.data.notice);
-              if(response.data.status_code==200){
-                  var list = response.data.params;
-                  var arr = [];
-                  for(var i in list){
-                      var total=0, num=0;
-                      for(var j in list[i].approvals)
-                      {
-                        if(list[i].approvals[j].approval_at) num ++;
-                        total ++;
-                      }
-                      arr.push({...list[i], denominator:total, numerator:num})
-                  }
-                  setMeetingListOfIncomplete(arr);
-                  var len = arr.length;
-                  if(len > INFINITE)
-                      setFetchMeetingListOfIncomplete(arr.slice(0, INFINITE));
-                  else setFetchMeetingListOfIncomplete(arr.slice(0, len));
-              }
-          })
-          
-        await axios.get('/api/fathers/meetings/searchOfCompleteOfFather', {params:{father_id: father_id, keyword: keyword,}})
-          .then(response => {
-            setLoaded2(true);
+        axios.get('/api/fathers/meetings/searchOfIncompleteOfFather', {params:{father_id: father_id, keyword: keyword,}})
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setLoaded1(true);
             setNotice(response.data.notice);
             if(response.data.status_code==200){
                 var list = response.data.params;
@@ -88,13 +75,39 @@ const ParentSearch = () => {
                     }
                     arr.push({...list[i], denominator:total, numerator:num})
                 }
-                setMeetingListOfComplete(arr);
+                setMeetingListOfIncomplete(arr);
                 var len = arr.length;
                 if(len > INFINITE)
-                    setFetchMeetingListOfComplete(arr.slice(0, INFINITE));
-                else setFetchMeetingListOfComplete(arr.slice(0, len));
+                    setFetchMeetingListOfIncomplete(arr.slice(0, INFINITE));
+                else setFetchMeetingListOfIncomplete(arr.slice(0, len));
+            }
+        })
+          
+        axios.get('/api/fathers/meetings/searchOfCompleteOfFather', {params:{father_id: father_id, keyword: keyword,}})
+        .then(response => {
+          if(isMountedRef.current) return;
+
+          setLoaded2(true);
+          setNotice(response.data.notice);
+          if(response.data.status_code==200){
+              var list = response.data.params;
+              var arr = [];
+              for(var i in list){
+                  var total=0, num=0;
+                  for(var j in list[i].approvals)
+                  {
+                    if(list[i].approvals[j].approval_at) num ++;
+                    total ++;
+                  }
+                  arr.push({...list[i], denominator:total, numerator:num})
               }
-          })
+              setMeetingListOfComplete(arr);
+              var len = arr.length;
+              if(len > INFINITE)
+                  setFetchMeetingListOfComplete(arr.slice(0, INFINITE));
+              else setFetchMeetingListOfComplete(arr.slice(0, len));
+            }
+        })
     }
 
 
@@ -120,13 +133,11 @@ const ParentSearch = () => {
         }, SCROLL_DELAY_TIME);
     };
 
-    async function handleFavorite(meetingId, currentFavorite, stateName) {
+    function handleFavorite(meetingId, currentFavorite, stateName) {
       const formdata = new FormData();
       formdata.append('meeting_id', meetingId);
       formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
-
-      await axios.post('/api/fathers/meetings/registerFavorite', formdata)
-         .then(response=>{setNotice(response.data.notice)})
+      axios.post('/api/fathers/meetings/registerFavorite', formdata)
 
       if(stateName == "inCompleteOfFather") {
         const newList = meeting_list_incomplete.map((item) => {
@@ -215,7 +226,7 @@ const ParentSearch = () => {
                                 {
                                     fetch_meeting_list_incomplete.length > 0 ?
                                     fetch_meeting_list_incomplete?.map((item, id) => 
-                                      <div className="meeting-item" key={id}>
+                                      <div className="meeting-item parent" key={id}>
                                           <Link to={`/p-account/meeting/detail/${item.id}`}  className="meeting-link">
                                               <h3 className="meeting-ttl">{ item.title }</h3>
                                               <p className="meeting-txt">{ item.text }</p>
@@ -282,7 +293,7 @@ const ParentSearch = () => {
                                 {
                                     fetch_meeting_list_complete.length > 0 ?
                                     fetch_meeting_list_complete?.map((item, id) =>                                          
-                                      <div className="meeting-item" key={id}>
+                                      <div className="meeting-item parent" key={id}>
                                           <Link to={`/p-account/meeting/detail/${item.id}`} className="meeting-link">
                                               <h3 className="meeting-ttl">{ item.title }</h3>
                                               <p className="meeting-txt">{ item.text }</p>

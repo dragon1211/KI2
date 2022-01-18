@@ -29,52 +29,53 @@ const ChildMeetings = () => {
     
     
     useEffect(()=>{
-        if(localStorage.getItem('kiki_login_flag')){
-            setSuccess("ログインに成功しました!");
-            localStorage.removeItem('kiki_login_flag');
-        }
-    },[]);
-    
-    useEffect(()=>{
         setLoaded(loaded1 && loaded2);
     },[loaded1, loaded2])
     
     
-    useEffect( async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
 
-        await axios.get('/api/children/meetings/listOfNonApprovalOfChild', {params:{child_id: child_id}})
-            .then(response => {
-                setLoaded1(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code==200){
-                    setMettingListNonApproval(response.data.params);
-                    var len = response.data.params.length;
-                    if(len > INFINITE)
-                        setFetchMettingListNonApproval(response.data.params.slice(0, INFINITE));
-                    else setFetchMettingListNonApproval(response.data.params.slice(0, len));
-                }
-                else {
-                    set400Error("失敗しました。");
-                }
-            })
+        axios.get('/api/children/meetings/listOfNonApprovalOfChild', {params:{child_id: child_id}})
+        .then(response => {
+            if(isMountedRef.current) return;
+            
+            setLoaded1(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code==200){
+                setMettingListNonApproval(response.data.params);
+                var len = response.data.params.length;
+                if(len > INFINITE)
+                    setFetchMettingListNonApproval(response.data.params.slice(0, INFINITE));
+                else setFetchMettingListNonApproval(response.data.params.slice(0, len));
+            }
+            else {
+                set400Error("失敗しました。");
+            }
+        })
 
-        await axios.get('/api/children/meetings/listOfApprovalOfChild', {params:{child_id: child_id}})
-            .then(response => {
-                setLoaded2(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code==200){
-                    setMettingListApproval(response.data.params);
-                    var len = response.data.params.length;
-                    if(len > INFINITE)
-                        setFetchMettingListApproval(response.data.params.slice(0, INFINITE));
-                    else setFetchMettingListApproval(response.data.params.slice(0, len));
-                }
-                else {
-                    set400Error("失敗しました。");
-                }
-            })
+        axios.get('/api/children/meetings/listOfApprovalOfChild', {params:{child_id: child_id}})
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setLoaded2(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code==200){
+                setMettingListApproval(response.data.params);
+                var len = response.data.params.length;
+                if(len > INFINITE)
+                    setFetchMettingListApproval(response.data.params.slice(0, INFINITE));
+                else setFetchMettingListApproval(response.data.params.slice(0, len));
+            }
+            else {
+                set400Error("失敗しました。");
+            }
+        })
+            
+        return function cleanup() {
+            isMountedRef.current = true;
+        }
     },[]);
 
     const fetchMoreListNonApproval = () => {

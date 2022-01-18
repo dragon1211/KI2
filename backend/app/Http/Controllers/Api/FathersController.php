@@ -556,14 +556,15 @@ class FathersController extends Controller {
     public function withdrawal (Request $r) {
         $images = [];
         $pdfs = [];
+        $father_id = request()->route()->action['as'] == 'pwa' ? (int)$r->father_id : (int)session()->get('fathers')['id'];
 
         try {
             // DBに入ります。
             DB::beginTransaction();
 
-            $father = Father::find((int)$r->father_id);
-            $rel = FatherRelation::where('father_id', (int)$r->father_id);
-            $meet = Meeting::where('father_id', (int)$r->father_id);
+            $father = Father::find($father_id);
+            $rel = FatherRelation::where('father_id', $father_id);
+            $meet = Meeting::where('father_id', $father_id);
 
             if ($meet->count() > 0) {
                 foreach ($meet->get() as $n) {

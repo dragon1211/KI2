@@ -45,49 +45,58 @@ const ParentMeetingEdit = () => {
 
     const isMountedRef = useRef(true);
 
-    useEffect(async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
-        await axios.get(`/api/fathers/meetings/detail/${meeting_id}`, {params: { father_id: father_id}})
-            .then(response => {
-                setLoaded(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code==200){
-                    setMeeting(response.data.params);
-                    setTitle(response.data.params?.title);
-                    setMemo(response.data.params.memo ? response.data.params.memo: '');
-                    setText(response.data.params.text ? response.data.params.text: '');
-                    setMeetingImages(response.data.params?.meeting_image);
-                    setApproval(response.data.params?.approval);
-                    setPdf(response.data.params?.pdf);
-                    setPDFURL(response.data.params?.pdf);
-                    
-                    var list = [...response.data.params?.children];
-                    var approval = [...response.data.params?.approval];
-                    var arr = [];
-                    for(var i in list){
-                        if(approval.findIndex(ele=>ele.child_id == list[i].id) >= 0)
-                            arr.push({...list[i], checked: true});
-                        else arr.push({...list[i], checked: false});
-                    }
-                    setChildrenList(arr);
-                    if((approval.length==list.length) && approval.length > 0)
-                        setCheckRadio('all_send');
-                    else if((approval.length != list.length) && approval.length > 0)
-                        setCheckRadio('pickup_send');
-                    else setCheckRadio('');
+
+        axios.get(`/api/fathers/meetings/detail/${meeting_id}`, {params: { father_id: father_id}})
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setLoaded(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code==200){
+                setMeeting(response.data.params);
+                setTitle(response.data.params?.title);
+                setMemo(response.data.params.memo ? response.data.params.memo: '');
+                setText(response.data.params.text ? response.data.params.text: '');
+                setMeetingImages(response.data.params?.meeting_image);
+                setApproval(response.data.params?.approval);
+                setPdf(response.data.params?.pdf);
+                setPDFURL(response.data.params?.pdf);
+                
+                var list = [...response.data.params?.children];
+                var approval = [...response.data.params?.approval];
+                var arr = [];
+                for(var i in list){
+                    if(approval.findIndex(ele=>ele.child_id == list[i].id) >= 0)
+                        arr.push({...list[i], checked: true});
+                    else arr.push({...list[i], checked: false});
                 }
-                else{
-                    set400Error("失敗しました。");
-                }
-            })
-            .catch(err=>{
-                setLoaded(true);
-                setNotice(err.response.data.notice);
-                if(err.response.status==404){
-                    set404Error(err.response.data.message);
-                }
-            })
+                setChildrenList(arr);
+                if((approval.length==list.length) && approval.length > 0)
+                    setCheckRadio('all_send');
+                else if((approval.length != list.length) && approval.length > 0)
+                    setCheckRadio('pickup_send');
+                else setCheckRadio('');
+            }
+            else{
+                set400Error("失敗しました。");
+            }
+        })
+        .catch(err=>{
+            if(isMountedRef.current) return;
+
+            setLoaded(true);
+            setNotice(err.response.data.notice);
+            if(err.response.status==404){
+                set404Error(err.response.data.message);
+            }
+        })
+
+        return () => {
+            isMountedRef.current = true;
+        }
     }, []);
 
 //-------------------------------------------------------------
@@ -119,7 +128,7 @@ useEffect(()=>{
     },[check_radio])
 
 //----------------------------------------------------------------------
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         set422Errors({title:'',memo:'',text:'',pdf:'',image:''});
 
@@ -139,25 +148,27 @@ useEffect(()=>{
         const formdata = new FormData();
         formdata.append('children', JSON.stringify(approval_registerIndexes));
 
-        await axios.post('/api/fathers/meeting/approvals/register', formdata, {params:{meeting_id: meeting_id}})
-        await axios.delete('/api/fathers/meeting/approvals/delete', {params:{children: approval_deleteIndexes, meeting_id: meeting_id}})
+        axios.post('/api/fathers/meeting/approvals/register', formdata, {params:{meeting_id: meeting_id}})
+        axios.delete('/api/fathers/meeting/approvals/delete', {params:{children: approval_deleteIndexes, meeting_id: meeting_id}})
         
         const request = { title: title, text: text, memo: memo, pdf: pdf };
         setSubmit(true);
 
-        await axios.put(`/api/fathers/meetings/update/${meeting_id}`, request)
-            .then(response => {
-                setNotice(response.data.notice);
-                setSubmit(false);
-                switch(response.data.status_code){
-                    case 200: {
-                        navigator(`/p-account/meeting/detail/${meeting_id}`,  { state: '編集が完了しました!' });
-                        break;
-                    }
-                    case 400: set400Error("編集が失敗しました。"); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        axios.put(`/api/fathers/meetings/update/${meeting_id}`, request)
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setNotice(response.data.notice);
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: {
+                    navigator(`/p-account/meeting/detail/${meeting_id}`,  { state: '編集が完了しました!' });
+                    break;
                 }
-            });
+                case 400: set400Error("編集が失敗しました。"); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+            }
+        });
     }
 
 
@@ -180,38 +191,42 @@ useEffect(()=>{
             }))
         });
 
-        Promise.all(promises).then( async images => {
+        Promise.all(promises).then( images => {
             set422Errors({image:''});
             const formdata = new FormData();
             formdata.append('image', JSON.stringify(images));
             setImageSending(true);
-            await axios.post(`/api/fathers/meeting/images/register`, formdata,  {params:{meeting_id: meeting_id}})
-                .then(response=>{
-                    setImageSending(false);
-                    setNotice(response.data.notice);
-                    switch(response.data.status_code){
-                        case 200: setMeetingImages(response.data.params); break;
-                        case 400: set400Error("画像の登録に失敗しました。"); break;
-                        case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-                    }
-                })
+            axios.post(`/api/fathers/meeting/images/register`, formdata,  {params:{meeting_id: meeting_id}})
+            .then(response=>{
+                if(isMountedRef.current) return;
+
+                setImageSending(false);
+                setNotice(response.data.notice);
+                switch(response.data.status_code){
+                    case 200: setMeetingImages(response.data.params); break;
+                    case 400: set400Error("画像の登録に失敗しました。"); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                }
+            })
         }, 
         error => { console.error(error); });
     };
 
 
-    const handleDeleteImage = async (index, image_id) => {
+    const handleDeleteImage = (index, image_id) => {
         let list = [...meeting_image];
         list.splice(index, 1);
         setMeetingImages(list);
         
-        await axios.delete(`/api/fathers/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
-            .then(response=>{
-                setNotice(response.data.notice);
-                switch(response.data.status_code){
-                    case 400: set400Error("画像の削除に失敗しました。");
-                }
-            })
+        axios.delete(`/api/fathers/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
+        .then(response=>{
+            if(isMountedRef.current) return;
+            
+            setNotice(response.data.notice);
+            switch(response.data.status_code){
+                case 400: set400Error("画像の削除に失敗しました。");
+            }
+        })
     }
 
     const handlePDFChange = (e) => {

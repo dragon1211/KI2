@@ -30,30 +30,39 @@ const ParentChildEdit = () => {
 
   const isMountedRef = useRef(true);
   
-  useEffect( async () => {
+  useEffect(() => {
     isMountedRef.current = false;
     setLoaded(false);
-    await axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
-      .then(response => {
-          setNotice(response.data.notice);
-          setLoaded(true);
-          if(response.data.status_code==200){
-            let hire_at = moment(response.data.params.father_relations?.hire_at).toDate();
-            setHireAt(hire_at);
-          } else {
-            set400Error("失敗しました。");
-          }
-      })
-      .catch(err=>{
+
+    axios.get('/api/fathers/children/detail/' + child_id, {params:{father_id: father_id}})
+    .then(response => {
+      if(isMountedRef.current) return;
+
+        setNotice(response.data.notice);
         setLoaded(true);
-        setNotice(err.response.data.notice);
-        if(err.response.status==404){
-          set404Error(err.response.data.message);
+        if(response.data.status_code==200){
+          let hire_at = moment(response.data.params.father_relations?.hire_at).toDate();
+          setHireAt(hire_at);
+        } else {
+          set400Error("失敗しました。");
         }
-      })
+    })
+    .catch(err=>{
+      if(isMountedRef.current) return;
+
+      setLoaded(true);
+      setNotice(err.response.data.notice);
+      if(err.response.status==404){
+        set404Error(err.response.data.message);
+      }
+    })
+
+    return () => {
+      isMountedRef.current = true
+    }
   },[]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
       e.preventDefault();
       set422Errors({hire_at: ''});
       const request = {
@@ -61,19 +70,21 @@ const ParentChildEdit = () => {
         hire_at: hire_at
       }
       setSubmit(true);
-      await axios.put(`/api/fathers/relations/updateHireDate/${child_id}`, request)
-        .then(response => {
-          setSubmit(false);
-          setNotice(response.data.notice);
-          switch(response.data.status_code){
-            case 200:{
-              navigator('/p-account/child/detail/'+child_id,  { state: response.data.success_messages });
-              break;
-            } 
-            case 400: set400Error(response.data.error_messages); break;
-            case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-          }
-        });
+      axios.put(`/api/fathers/relations/updateHireDate/${child_id}`, request)
+      .then(response => {
+        if(isMountedRef.current) return;
+        
+        setSubmit(false);
+        setNotice(response.data.notice);
+        switch(response.data.status_code){
+          case 200:{
+            navigator('/p-account/child/detail/'+child_id,  { state: response.data.success_messages });
+            break;
+          } 
+          case 400: set400Error(response.data.error_messages); break;
+          case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        }
+      });
   }
   
 	return (

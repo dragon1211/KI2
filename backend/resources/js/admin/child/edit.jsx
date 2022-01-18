@@ -35,30 +35,34 @@ const AdminChildEdit = () => {
 
     const isMountedRef = useRef(true);
     
-    useEffect(async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
-
-        await axios.get(`/api/admin/children/detail/${params?.child_id}`)
-            .then(response => {
-                setLoaded(true);
-                if(response.data.status_code==200)
-                {
-                    var child = response.data.params;
-                    setChild(child);
-                    if(child){
-                        setFirstName(child.first_name);
-                        setLastName(child.last_name);
-                        setIdentity(child.identity);
-                        setEmail(child.email);
-                        setTelephone(child.tel);
-                        setCompany(child.company);
-                    }
+        
+        axios.get(`/api/admin/children/detail/${params?.child_id}`)
+        .then(response => {
+            if(isMountedRef.current) return;
+            setLoaded(true);
+            if(response.data.status_code==200)
+            {
+                var child = response.data.params;
+                setChild(child);
+                if(child){
+                    setFirstName(child.first_name);
+                    setLastName(child.last_name);
+                    setIdentity(child.identity);
+                    setEmail(child.email);
+                    setTelephone(child.tel);
+                    setCompany(child.company);
                 }
-                else {
-                    set400Error("失敗しました。");
-                }
-            })
+            }
+            else {
+                set400Error("失敗しました。");
+            }
+        })
+        return () => {
+            isMountedRef.current = true;
+        }
     },[]);
 
 
@@ -83,6 +87,7 @@ const AdminChildEdit = () => {
         };
         axios.put(`/api/admin/children/updateProfile/${params?.child_id}`, request)
         .then(response => {
+            if(isMountedRef.current) return;
             setSubmit(false);
             switch(response.data.status_code){
                 case 200: {

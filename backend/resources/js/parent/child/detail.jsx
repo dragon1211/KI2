@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import moment from 'moment';
 import Notification from '../../component/notification';
@@ -10,7 +10,6 @@ import PageLoader from '../../component/page_loader';
 const ParentChildDetail = () => {
 
     const navigator = useNavigate();
-    const location = useLocation();
     const params = useParams();
 
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
@@ -20,17 +19,20 @@ const ParentChildDetail = () => {
     const [child, setChild] = useState(null);
     const [_400error, set400Error] = useState('');
     const [_404error, set404Error] = useState('');
-    const [_success, setSuccess] = useState(location.state);
+    const [_success, setSuccess] = useState('');
     
     const father_id = localStorage.getItem('kiki_acc_id');
     const child_id = params?.child_id;
     const isMountedRef = useRef(true);
     
-    useEffect( async () => {
+    useEffect(() => {
       isMountedRef.current = false;
       setLoaded(false);
-      await axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
+
+      axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
         .then(response => {
+          if(isMountedRef.current) return;
+
           setLoaded(true);
           setNotice(response.data.notice);
           if(response.data.status_code==200){
@@ -41,12 +43,18 @@ const ParentChildDetail = () => {
           }
         })
         .catch(err=>{
+          if(isMountedRef.current) return;
+
           setLoaded(true);
           setNotice(err.response.data.notice);
           if(err.response.status==404){
             set404Error(err.response.data.message);
           }
         })
+
+      return () => {
+        isMountedRef.current = true
+      }
     },[]);
 
   //-------------------------------------------------------------
@@ -58,21 +66,23 @@ const ParentChildDetail = () => {
   },[]);
 
   //---------------------------------------------------------------
-  const handleAcceptDelete = async () => {
+  const handleAcceptDelete = () => {
     setSubmit(true);
-    await axios.delete(`/api/fathers/relations/deleteRelationChild/${child_id}`)
-      .then(response => {
-        setSubmit(false);
-        setShowDelete(false);
-        setNotice(response.data.notice);
-        switch(response.data.status_code){
-          case 200: {
-            navigator('/p-account/child', { state: "子の削除に成功しました。" });  
-            break;
-          }
-          case 400: set400Error('子の削除に失敗しました。'); break;
+    axios.delete(`/api/fathers/relations/deleteRelationChild/${child_id}`)
+    .then(response => {
+      if(isMountedRef.current) return;
+      
+      setSubmit(false);
+      setShowDelete(false);
+      setNotice(response.data.notice);
+      switch(response.data.status_code){
+        case 200: {
+          navigator('/p-account/child', { state: "子の削除に成功しました。" });  
+          break;
         }
-      });
+        case 400: set400Error('子の削除に失敗しました。'); break;
+      }
+    });
   };
     
 	return (

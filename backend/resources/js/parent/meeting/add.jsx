@@ -16,6 +16,7 @@ const ParentMeetingAdd = () => {
     const location = useLocation();
 
     const father_id = localStorage.getItem('kiki_acc_id');
+    
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     
     const [title, setTitle] = useState('');
@@ -37,52 +38,63 @@ const ParentMeetingAdd = () => {
     const state = location.state;
     const isMountedRef = useRef(true);
 
-    useEffect( async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
-        if(state){
+        
+        let clone = localStorage.getItem('cloneMeeting');
+        if(clone){
+            clone = JSON.parse(clone);
             setLoaded(true);
-            setTitle(state?.title);
-            setMemo(state.memo ? state.memo: '');
-            setText(state?.text);
-            setPdf(state?.pdf);
-            setPDFURL(state?.pdf);
+            setTitle(clone?.title);
+            setMemo(clone.memo ? clone.memo: '');
+            setText(clone?.text);
+            setPdf(clone?.pdf);
+            setPDFURL(clone?.pdf);
             let images = [];
-            for(let i in state.meeting_image){
-                images.push(state.meeting_image[i].image);
+            for(let i in clone.meeting_image){
+                images.push(clone.meeting_image[i].image);
             }
             setMeetingImages(images);
-            setApprovalList(state.approval);
+            setApprovalList(clone.approval);
             var arr = [];
-            for(let i in state.children){
-                arr.push({...state.children[i], checked: false})
+            for(let i in clone.children){
+                arr.push({...clone.children[i], checked: false})
             }
             setChildrenList(arr);
-            if((state.children.length == state.approval.length) && state.approval.length > 0 )
+            if((clone.children.length == clone.approval.length) && clone.approval.length > 0 )
                 setCheckRadio('all_send');
-            else if((state.children.length != state.approval.length) && state.approval.length > 0)
+            else if((clone.children.length != clone.approval.length) && clone.approval.length > 0)
                 setCheckRadio('pickup_send');
             else setCheckRadio('');
+
+            localStorage.removeItem('cloneMeeting');
         }
         else{
-            await axios.get('/api/fathers/children/listOfFather', {params:{father_id: father_id}})
-                .then(response=>{
-                    setLoaded(true);
-                    setNotice(response.data.notice);
-                    if(response.data.status_code == 200){
-                        var list = response.data.params;
-                        var arr = [];
-                        for(var i in list)
-                            arr.push({...list[i], checked: false})
-                        setChildrenList(arr);
-                        if(list.length > 0) 
-                            setCheckRadio("all_send");
-                        else setCheckRadio('');
-                    }
-                    else {
-                        set400Error("失敗しました。");
-                    }
-                })
+            axios.get('/api/fathers/children/listOfFather', {params:{father_id: father_id}})
+            .then(response=>{
+                if(isMountedRef.current) return;
+
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code == 200){
+                    var list = response.data.params;
+                    var arr = [];
+                    for(var i in list)
+                        arr.push({...list[i], checked: false})
+                    setChildrenList(arr);
+                    if(list.length > 0) 
+                        setCheckRadio("all_send");
+                    else setCheckRadio('');
+                }
+                else {
+                    set400Error("失敗しました。");
+                }
+            })
+        }
+
+        return () => {
+            isMountedRef.current = true;
         }
     },[])
 
@@ -113,7 +125,7 @@ const ParentMeetingAdd = () => {
     },[check_radio])
 
 //----------------------------------------------------------------------
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         set422Errors({title:'',memo:'',text:'',pdf:'',image:''});
 
@@ -132,20 +144,22 @@ const ParentMeetingAdd = () => {
 
         setSubmit(true);
 
-        await axios.post('/api/fathers/meetings/register', formdata)
-            .then(response => {
-                setNotice(response.data.notice);
-                setSubmit(false);
-                switch(response.data.status_code){
-                    case 200: {
-                        const meeting_id = response.data.params.meeting_id;
-                        navigator(`/p-account/meeting/detail/${meeting_id}`,  { state: "登録成功しました" });
-                        break;
-                    }
-                    case 400: set400Error("登録失敗しました。"); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        axios.post('/api/fathers/meetings/register', formdata)
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setNotice(response.data.notice);
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: {
+                    const meeting_id = response.data.params.meeting_id;
+                    navigator(`/p-account/meeting/detail/${meeting_id}`,  { state: "登録成功しました" });
+                    break;
                 }
-            });
+                case 400: set400Error("登録失敗しました。"); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+            }
+        });
     }
 
 

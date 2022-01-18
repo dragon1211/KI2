@@ -36,18 +36,18 @@ const ChildSignUp = () => {
     });
 
 
-    useEffect( async ()=>{
-        await axios.get('/api/children/checkRegisterMain', {params:{token: params?.token}})
-            .then(response=>{
-                switch(response.data.status_code){
-                    case 200: setLoaded(true); setIdentity(response.data.params.tel); break;
-                    case 400: navigator('/c-account/login',  {state: ''}); break;
-                };
-            })
+    useEffect(()=>{
+        axios.get('/api/children/checkRegisterMain', {params:{token: params?.token}})
+        .then(response=>{
+            switch(response.data.status_code){
+                case 200: setLoaded(true); setIdentity(response.data.params.tel); break;
+                case 400: navigator('/c-account/login',  {state: ''}); break;
+            };
+        })
     },[])
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         set422Errors({
             first_name:'',
@@ -74,23 +74,23 @@ const ChildSignUp = () => {
         formdata.append('token', params?.token);
 
 
-        await axios.post('/api/children/registerMain', formdata)
-            .then(response => {
-                setSubmit(false);
-                switch(response.data.status_code){
-                    case 200: navigator('/c-account/register/complete/'+ params?.token,  {state: response.data.success_messages}); break;
-                    case 400: navigator('/c-account/register/error/'   + params?.token,  {state: response.data.error_messages}); break;
-                    case 422: {
-                        window.scrollTo(0, 0);
-                        set422Errors(response.data.error_messages);
-                        break;
-                    }
-                };
-                if(response.data.status_code != 200){
-                    setPassword('');
-                    setPasswordConfirmation('');
+        axios.post('/api/children/registerMain', formdata)
+        .then(response => {
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: navigator('/c-account/register/complete/'+ params?.token,  {state: response.data.success_messages}); break;
+                case 400: navigator('/c-account/register/error/'   + params?.token,  {state: response.data.error_messages}); break;
+                case 422: {
+                    window.scrollTo(0, 0);
+                    set422Errors(response.data.error_messages);
+                    break;
                 }
-            })
+            };
+            if(response.data.status_code != 200){
+                setPassword('');
+                setPasswordConfirmation('');
+            }
+        })
     }
 
 
@@ -215,7 +215,7 @@ const ChildSignUp = () => {
                             checked={check_terms}
                         />
                         <span className='lbl padding-16'>
-                            <Link to="/terms" className='term-link' rel="noopener noreferrer">規約</Link>
+                            <Link to="/terms"  target="_blank" className='term-link' rel="noopener noreferrer">規約</Link>
                             に同意する
                         </span>
                     </label>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
@@ -30,7 +30,16 @@ const ChildSearch = () => {
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
 
 
-    const handleSearch = async (e) => {
+    const isMountedRef = useRef(true);
+    useEffect(() => {
+        isMountedRef.current = false;
+        return () => {
+            isMountedRef.current = true;
+        }
+    }, [])
+
+
+    const handleSearch = (e) => {
         e.preventDefault();
         if(keyword == ''){
             document.getElementById('keyword').focus();
@@ -40,31 +49,35 @@ const ChildSearch = () => {
         setLoaded2(false);
         setInitPage(false);
 
-        await axios.get('/api/children/meetings/searchOfNonApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
-            .then(response => {
-                setLoaded1(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code==200){
-                    setMettingListNonApproval(response.data.params);
-                    var len = response.data.params.length;
-                    if(len > INFINITE)
-                        setFetchMettingListNonApproval(response.data.params.slice(0, INFINITE));
-                    else setFetchMettingListNonApproval(response.data.params.slice(0, len));
-                } 
-            });
+        axios.get('/api/children/meetings/searchOfNonApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
+        .then(response => {
+            if(isMountedRef.current) return;
 
-        await axios.get('/api/children/meetings/searchOfApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
-            .then((response) => {
-                setLoaded2(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code==200){
-                    setMettingListApproval(response.data.params);
-                    var len = response.data.params.length;
-                    if(len > INFINITE)
-                        setFetchMettingListApproval(response.data.params.slice(0, INFINITE));
-                    else setFetchMettingListApproval(response.data.params.slice(0, len));
-                } 
-            });
+            setLoaded1(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code==200){
+                setMettingListNonApproval(response.data.params);
+                var len = response.data.params.length;
+                if(len > INFINITE)
+                    setFetchMettingListNonApproval(response.data.params.slice(0, INFINITE));
+                else setFetchMettingListNonApproval(response.data.params.slice(0, len));
+            } 
+        });
+
+        axios.get('/api/children/meetings/searchOfApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
+        .then((response) => {
+            if(isMountedRef.current) return;
+
+            setLoaded2(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code==200){
+                setMettingListApproval(response.data.params);
+                var len = response.data.params.length;
+                if(len > INFINITE)
+                    setFetchMettingListApproval(response.data.params.slice(0, INFINITE));
+                else setFetchMettingListApproval(response.data.params.slice(0, len));
+            } 
+        });
     }
 
     useEffect(()=>{

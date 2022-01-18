@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Document, Page, pdfjs  } from "react-pdf";
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 import { makeStyles } from '@material-ui/styles';
 
 import Button from '@mui/material/Button';
@@ -57,7 +56,7 @@ export default function ModalPdf({ show, pdfPath, handleClose }){
                             <Document  file={pdfPath} onLoadSuccess={onDocumentLoadSuccess}>
                                 <Page pageNumber={pageNumber} />
                             </Document>
-                            {/* <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.9.359/build/pdf.worker.min.js">
+                            {/* <Worker workerUrl={pdfjsWorker}>
                             <Viewer fileUrl={pdf} />
                             </Worker> */}
                         </Container>

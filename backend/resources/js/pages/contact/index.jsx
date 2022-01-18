@@ -16,14 +16,14 @@ const Contact = () => {
     const [_400error, set400Error] = useState('');
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         setSubmit(true);                            //show progressbar
         set422Errors({ email:'', message:'' });
         const formdata = new FormData();
         formdata.append('email', email);
         formdata.append('message', message);
-        await axios.post('/api/contacts/register', formdata)
+        axios.post('/api/contacts/register', formdata)
         .then(response => {
             setSubmit(false);
             switch(response.data.status_code){

@@ -8,8 +8,8 @@ export default function ChildSide() {
 
     const child_img = document.getElementById('child_image').value;
 
-    const handleLogout = async () => {
-        await axios.get('/c-account/logout')
+    const handleLogout = () => {
+        axios.get('/c-account/logout')
         .then(() => {
             setCookie('logged', null);
             window.location.href = '/c-account/login';

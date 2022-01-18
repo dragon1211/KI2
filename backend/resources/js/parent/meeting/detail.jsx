@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import moment from 'moment';
-import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
-import copy from 'clipboard-copy';
+import { useNavigate, Link, useParams } from 'react-router-dom';
+import copy from 'copy-to-clipboard';
 
 import ModalEditMemo from '../../component/modal_edit_memo';
 import ModalConfirm from '../../component/modal_confirm';
@@ -15,20 +15,19 @@ import PageLoader from '../../component/page_loader';
 const ParentMeetingDetail = () => {
 
   const navigator = useNavigate();
-  const location = useLocation();
   const params = useParams();
 
   const [notice, setNotice] = useState(localStorage.getItem('notice'));
   const father_id = localStorage.getItem('kiki_acc_id');
-  
+
   const [loaded, setLoaded] = useState(false);
   const [loaded_children, setLoadedChildren] = useState(false);
   const [submit_delete, setSubmitDelete] = useState(false);
   const [submit_notify, setSubmitNotify] = useState(false);
-  const [_success, setSuccess] = useState(location.state);
+  const [_success, setSuccess] = useState('');
   const [_400error, set400Error] = useState('');
   const [_404error, set404Error] = useState('');
-  
+
   const [show_delete_modal, setShowDeleteModal] = useState(false);
   const [show_notify_all_modal, setShowNotifyAllModal] = useState(false);
   const [show_memo_modal, setShowMemoModal] = useState(false);
@@ -37,48 +36,45 @@ const ParentMeetingDetail = () => {
 
   const [meeting, setMeeting] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
-  const isMountedRef = useRef(false);
 
-  useEffect( async () => {
-    let mounted  = true;
-    const source = axios.CancelToken.source()
-    isMountedRef.current = true;
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = false;
     setLoaded(false);
 
-    await axios.get(`/api/fathers/meetings/detail/${params?.meeting_id}`, {params: { father_id: father_id}}, {cancelToken: source.token})
+      axios.get(`/api/fathers/meetings/detail/${params?.meeting_id}`, {params: { father_id: father_id}})
       .then((response) => {
-        if(mounted){
-          setLoaded(true);
-          setNotice(response.data.notice);
-          if(response.data.status_code==200){
-            var list = response.data.params;
-            var total=0, num=0;
-            for(var i in list.approval)
-            {
-              if(list.approval[i].approval_at) num ++;   
-              total ++;
-            }
-            setMeeting({...list, denominator:total, numerator:num});
-            setThumbnail(response.data.params.meeting_image[0]?.image);
+        if(isMountedRef.current) return;
+
+        setLoaded(true);
+        setNotice(response.data.notice);
+        if(response.data.status_code==200){
+          var list = response.data.params;
+          var total=0, num=0;
+          for(var i in list.approval)
+          {
+            if(list.approval[i].approval_at) num ++;
+            total ++;
           }
-          else {
-            set400Error("失敗しました。");
-          } 
+          setMeeting({...list, denominator:total, numerator:num});
+          setThumbnail(response.data.params.meeting_image[0]?.image);
+        }
+        else {
+          set400Error("失敗しました。");
         }
       })
       .catch(err=>{
-        if(mounted){
-          setLoaded(true);
-          setNotice(err.response.data.notice);
-          if(err.response.status==404){
-            set404Error(err.response.data.message);
-          }
+        if(isMountedRef.current) return;
+
+        setLoaded(true);
+        setNotice(err.response.data.notice);
+        if(err.response.status==404){
+          set404Error(err.response.data.message);
         }
       })
-    return function cleanup() {
-        mounted = false
-        isMountedRef.current = false;
-        source.cancel()
+    return () => {
+      isMountedRef.current = true;
     }
   }, []);
 
@@ -91,30 +87,32 @@ const ParentMeetingDetail = () => {
   },[]);
 
 
-  const handleAcceptDelete = async () => {
+  const handleAcceptDelete = () => {
     setSubmitDelete(true);
-    await axios.delete(`/api/fathers/meetings/delete/${params?.meeting_id}`)
-      .then(response => {
-        setNotice(response.data.notice);
-        setSubmitDelete(false);
-        setShowDeleteModal(false);
-        switch(response.data.status_code){
-          case 200: {
-            navigator('/p-account/meeting', {state: "ミーティングの削除に成功しました！" });  
-            break;
-          }
-          case 400: set400Error('ミーティングの削除に失敗しました。'); break;
-        }
-      });
-  };
-  
+    axios.delete(`/api/fathers/meetings/delete/${params?.meeting_id}`)
+    .then(response => {
+      if(isMountedRef.current) return;
 
-  async function handleFavorite(meetingId, currentFavorite) {
+      setNotice(response.data.notice);
+      setSubmitDelete(false);
+      setShowDeleteModal(false);
+      switch(response.data.status_code){
+        case 200: {
+          navigator('/p-account/meeting', {state: "ミーティングの削除に成功しました！" });
+          break;
+        }
+        case 400: set400Error('ミーティングの削除に失敗しました。'); break;
+      }
+    });
+  };
+
+
+  function handleFavorite(meetingId, currentFavorite) {
     const formdata = new FormData();
     formdata.append('meeting_id', meetingId);
     formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
-    await axios.post('/api/fathers/meetings/registerFavorite', formdata)
-      .then(response => {setNotice(response.data.notice)})
+    axios.post('/api/fathers/meetings/registerFavorite', formdata)
+
     const updatedItem = {
       ...meeting,
       is_favorite: currentFavorite == 1 ? 0 : 1,
@@ -122,10 +120,12 @@ const ParentMeetingDetail = () => {
     setMeeting(updatedItem);
   };
 
-  const handleNotifyAllChild = async () => {
+  const handleNotifyAllChild = () => {
       setSubmitNotify(true);
-      await axios.get('/api/fathers/meeting/approvals/listChildrenOfUnapprovel', {params:{meeting_id: params?.meeting_id}})
+      axios.get('/api/fathers/meeting/approvals/listChildrenOfUnapprovel', {params:{meeting_id: params?.meeting_id}})
         .then(response => {
+          if(isMountedRef.current) return;
+
           setNotice(response.data.notice);
           if(response.data.status_code == 200){
             var list = response.data.params;
@@ -138,6 +138,8 @@ const ParentMeetingDetail = () => {
             formdata.append('meeting_id', params?.meeting_id);
             axios.post('/api/fathers/meetingEditNotification', formdata)
             .then(response=>{
+              if(isMountedRef.current) return;
+
               setSubmitNotify(false);
               setShowNotifySelectModal(false);
               switch(response.data.status_code){
@@ -149,8 +151,8 @@ const ParentMeetingDetail = () => {
         });
   }
 
-  
-  const handleUpdateMemo = async (modal_memo) => {
+
+  const handleUpdateMemo = (modal_memo) => {
     let _tmp = meeting;
     _tmp.memo = modal_memo;
     setMeeting(_tmp);
@@ -158,7 +160,7 @@ const ParentMeetingDetail = () => {
       meeting_id: meeting.id,
       memo: modal_memo
     }
-    await axios.put('/api/fathers/meetings/updateMemo', post)
+    axios.put('/api/fathers/meetings/updateMemo', post)
   }
 
 
@@ -173,9 +175,18 @@ const ParentMeetingDetail = () => {
   }
 
   const saveStorage = () => {
-    copy(`${meeting.father.company}さんより　業務連絡のお知らせ\n新規業務連絡のご確認はこちら\n\nhttps://kikikan.xyz/c-account/meeting/detail/${params?.meeting_id}`);
-    setSuccess('コピーしました。');
-}
+    let txt = `${meeting.father.company}さんより\n業務連絡のお知らせ\n新規業務連絡のご確認はこちら\n\nhttps://kikikan.xyz/c-account/meeting/detail/${params?.meeting_id}`; 
+    if(copy(txt)){
+      setSuccess('コピーしました。')
+    } else {
+      set400Error('コピー失敗しました。')
+    }
+  }
+
+  const cloneMeeting = (meeting) => {
+    localStorage.setItem('cloneMeeting', JSON.stringify(meeting));
+    navigator('/p-account/meeting/new');
+  }
 
 
   return (
@@ -196,7 +207,7 @@ const ParentMeetingDetail = () => {
               <div className="p-article">
                 <div className="p-article-wrap">
                   <article className="p-article__body">
-                    <div className="p-article__content">       
+                    <div className="p-article__content">
                       <div className="meeting-member">
                         <div className="meeting-member-wrap">
                           <div className="meeting-member-link" onClick={()=>setShowNotifyAllModal(true)} >
@@ -204,9 +215,9 @@ const ParentMeetingDetail = () => {
                               <li className="numerator">{meeting?.numerator}</li>
                               <li className="denominator">{meeting?.denominator}</li>
                             </ul>
-    
+
                             <ul className="meeting-member-list" role="list">
-                              { 
+                              {
                                 meeting.approval?.map((v, inx) =>
                                 {
                                   if(v.approval_at)
@@ -216,7 +227,7 @@ const ParentMeetingDetail = () => {
                                       <img alt="name" className="avatar-img" src={v?.child.image} />
                                     </div>
                                   </li>)
-                                }) 
+                                })
                               }
                             </ul>
                           </div>
@@ -228,7 +239,7 @@ const ParentMeetingDetail = () => {
                       </time>
                       <div className="clip-copy" onClick={saveStorage}>
                           <a>この案件のURLをコピーする</a>
-                          <img src="/assets/img/icon/icon-copy.png" alt="kiki"/>
+                          <img src="/assets/img/icon/icon-copy.svg" alt="kiki"/>
                       </div>
                       <ul className="p-article-btn-list">
                         <li className="p-article-btn__item">
@@ -236,32 +247,30 @@ const ParentMeetingDetail = () => {
                               className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">編集</Link>
                         </li>
                         <li className="p-article-btn__item">
-                          <a onClick={()=>setShowDeleteModal(true)} 
+                          <a onClick={()=>setShowDeleteModal(true)}
                             className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">削除</a>
                         </li>
                         <li className="p-article-btn__item">
-                          <a onClick={()=>{  
-                              navigator('/p-account/meeting/new', {state: meeting})
-                            }}
+                          <a onClick={()=>cloneMeeting(meeting)}
                             className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">複製</a>
                         </li>
                         <li className="p-article-btn__item">
-                          <a onClick={()=>setShowNotifySelectModal(true)} 
+                          <a onClick={()=>setShowNotifySelectModal(true)}
                             className="btn-default btn-yellow btn-pdf btn-r8 btn-h48">再通知</a>
                         </li>
                       </ul>
-                    
+
                       <div className="p-article__context">
-    
+
                         <div className="p-file-list">
                           <Thumbnail image={thumbnail}/>
                           <div className="p-file-nav">
-                          { 
-                            meeting.meeting_image.map((v, inx) => 
+                          {
+                            meeting.meeting_image.map((v, inx) =>
                               <figure onClick={() => setThumbnail(v.image)}  key={inx}>
                                 <img src={v.image} alt="" />
-                              </figure> 
-                            ) 
+                              </figure>
+                            )
                           }
                           </div>
                         </div>
@@ -270,7 +279,7 @@ const ParentMeetingDetail = () => {
                           <div className="p-article__pdf__btn">
                           {
                             meeting.pdf ?
-                            <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52" 
+                            <a data-v-ade1d018="" className="btn-default btn-yellow btn-pdf btn-r8 btn-h52"
                               href={meeting.pdf}
                               target='_blank'
                               // onClick={()=>handlePDFOpen(meeting.pdf)}
@@ -283,13 +292,13 @@ const ParentMeetingDetail = () => {
                             </a>
                           }
                           </div>
-                          <button type="button" 
-                              aria-label="お気に入り" data-tooltip="お気に入り" 
-                              aria-pressed="false" 
+                          <button type="button"
+                              aria-label="お気に入り" data-tooltip="お気に入り"
+                              aria-pressed="false"
                               className="icon a-icon like-icon icon-textFill icon-textFill-wrap a-icon-size_medium"
                               onClick = {()=>setShowMemoModal(true)} />
-                          <button type="button" 
-                            onClick={e => handleFavorite(meeting.id, meeting.is_favorite)} 
+                          <button type="button"
+                            onClick={e => handleFavorite(meeting.id, meeting.is_favorite)}
                             aria-label="お気に入り" data-tooltip="お気に入り" aria-pressed="false" className={`icon a-icon like-icon  ${meeting.is_favorite == 1 ? "icon-starFill icon-starFill-wrap" : "icon-star icon-star-wrap"} a-icon-size_medium`}></button>
                         </div>
                         <p className="p-article__txt">{ meeting.text }</p>
@@ -298,37 +307,37 @@ const ParentMeetingDetail = () => {
                   </article>
                 </div>
               </div>
-              <ModalEditMemo 
+              <ModalEditMemo
                 show={show_memo_modal}
                 title={"メモ"}
                 content={meeting.memo}
-                handleClose={()=>setShowMemoModal(false)} 
+                handleClose={()=>setShowMemoModal(false)}
                 handleUpdateMemo = {handleUpdateMemo}
               />
-              <ModalConfirm 
-                show={show_delete_modal} 
+              <ModalConfirm
+                show={show_delete_modal}
                 message={"本当に削除しても\nよろしいでしょうか？"}
-                handleClose={()=>setShowDeleteModal(false)} 
-                handleAccept={handleAcceptDelete} 
+                handleClose={()=>setShowDeleteModal(false)}
+                handleAccept={handleAcceptDelete}
                 loading={submit_delete}
               />
-              <ModalConfirm 
+              <ModalConfirm
                 show={show_notify_pickup_modal}
                 message={"未承知の方に再通知しますが\nよろしいでしょうか？"}
-                handleClose={()=>setShowNotifySelectModal(false)} 
-                handleAccept={handleNotifyAllChild} 
+                handleClose={()=>setShowNotifySelectModal(false)}
+                handleAccept={handleNotifyAllChild}
                 loading = {submit_notify}
               />
-              <ModalPdf 
+              <ModalPdf
                 show={show_pdf_modal}
                 pdfPath={meeting.pdf}
-                handleClose={()=>setShowPDFModal(false)} 
+                handleClose={()=>setShowPDFModal(false)}
               />
             </div>
           }
           {
             loaded && meeting &&
-              <ModalSettingNotify 
+              <ModalSettingNotify
                 show={show_notify_all_modal}
                 meetingId={meeting.id}
                 handleClose={()=>setShowNotifyAllModal(false)}
@@ -338,7 +347,7 @@ const ParentMeetingDetail = () => {
         </div>
         { _400error && <Alert type="fail"  hide={()=>set400Error('')}>{_400error}</Alert> }
         { _success && <Alert type="success"  hide={()=>setSuccess('')}>{_success}</Alert> }
-        { _404error && 
+        { _404error &&
             <Alert type="fail" hide={()=>{
                 set404Error('');
                 navigator('/p-account/meeting', {state: ''});
@@ -346,7 +355,7 @@ const ParentMeetingDetail = () => {
             {_404error}
             </Alert>
         }
-      </div>  
+      </div>
 	)
 }
 

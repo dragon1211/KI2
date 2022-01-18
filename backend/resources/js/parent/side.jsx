@@ -8,8 +8,8 @@ export default function ParentSide() {
 
     const father_image = document.getElementById('father_image').value;
 
-    const handleLogout = async () => {
-        await axios.get('/p-account/logout')
+    const handleLogout = () => {
+        axios.get('/p-account/logout')
         .then(() => {
             setCookie('logged', null);
             window.location.href = '/p-account/login';

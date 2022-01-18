@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 
 import Notification from '../../component/notification';
@@ -13,8 +13,6 @@ const SCROLL_DELAY_TIME = 1500;
 
 const ParentMeetings = () => {
 
-    const location = useLocation();
-
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const father_id = localStorage.getItem('kiki_acc_id');
     
@@ -26,17 +24,13 @@ const ParentMeetings = () => {
     const [meeting_list_complete, setMeetingListOfComplete] = useState([]);
     const [fetch_meeting_list_incomplete, setFetchMeetingListOfIncomplete] = useState([]);
     const [fetch_meeting_list_complete, setFetchMeetingListOfComplete] = useState([]);
-    const [_success, setSuccess] = useState(location.state);
+    const [_success, setSuccess] = useState('');
     const [_400error, set400Error] = useState('');
 
     const isMountedRef = useRef(true);
 
 
     useEffect(()=>{
-      if(localStorage.getItem('kiki_login_flag')){
-        setSuccess("ログインに成功しました!");
-        localStorage.removeItem('kiki_login_flag');
-      }
       var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
       for(let i=0; i<navbar_list.length; i++)
           navbar_list[i].classList.remove('nav-active');
@@ -48,38 +42,15 @@ const ParentMeetings = () => {
     },[loaded1, loaded2])
 
 
-    useEffect( async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
 
-        await axios.get('/api/fathers/meetings/listOfIncompleteOfFather', {params:{father_id: father_id}})
-          .then(response => {
-              setLoaded1(true);
-              setNotice(response.data.notice);
-              if(response.data.status_code==200){
-                  var list = response.data.params;
-                  var arr = [];
-                  for(var i in list){
-                      var total=0, num=0;
-                      for(var j in list[i].approvals)
-                      {
-                        if(list[i].approvals[j].approval_at) num ++;
-                        total ++;
-                      }
-                      arr.push({...list[i], denominator:total, numerator:num})
-                  }
-                  setMeetingListOfIncomplete(arr);
-                  var len = arr.length;
-                  if(len > INFINITE)
-                      setFetchMeetingListOfIncomplete(arr.slice(0, INFINITE));
-                  else setFetchMeetingListOfIncomplete(arr.slice(0, len));
-              }
-          })
-          .catch(err=>console.log(err));
+        axios.get('/api/fathers/meetings/listOfIncompleteOfFather', {params:{father_id: father_id}})
+        .then(response => {
+          if(isMountedRef.current) return;
 
-        await axios.get('/api/fathers/meetings/listOfCompleteOfFather', {params:{father_id: father_id}})
-          .then(response => {
-            setLoaded2(true);
+            setLoaded1(true);
             setNotice(response.data.notice);
             if(response.data.status_code==200){
                 var list = response.data.params;
@@ -93,14 +64,45 @@ const ParentMeetings = () => {
                     }
                     arr.push({...list[i], denominator:total, numerator:num})
                 }
-                setMeetingListOfComplete(arr);
+                setMeetingListOfIncomplete(arr);
                 var len = arr.length;
                 if(len > INFINITE)
-                    setFetchMeetingListOfComplete(arr.slice(0, INFINITE));
-                else setFetchMeetingListOfComplete(arr.slice(0, len));
+                    setFetchMeetingListOfIncomplete(arr.slice(0, INFINITE));
+                else setFetchMeetingListOfIncomplete(arr.slice(0, len));
+            }
+        })
+        .catch(err=>console.log(err));
+
+        axios.get('/api/fathers/meetings/listOfCompleteOfFather', {params:{father_id: father_id}})
+        .then(response => {
+          if(isMountedRef.current) return;
+
+          setLoaded2(true);
+          setNotice(response.data.notice);
+          if(response.data.status_code==200){
+              var list = response.data.params;
+              var arr = [];
+              for(var i in list){
+                  var total=0, num=0;
+                  for(var j in list[i].approvals)
+                  {
+                    if(list[i].approvals[j].approval_at) num ++;
+                    total ++;
+                  }
+                  arr.push({...list[i], denominator:total, numerator:num})
               }
-          })
-          .catch(err=>console.log(err));
+              setMeetingListOfComplete(arr);
+              var len = arr.length;
+              if(len > INFINITE)
+                  setFetchMeetingListOfComplete(arr.slice(0, INFINITE));
+              else setFetchMeetingListOfComplete(arr.slice(0, len));
+            }
+        })
+        .catch(err=>console.log(err));
+
+        return () => {
+          isMountedRef.current = true;
+        }
     },[]);
 
     const fetchMoreListNonApproval = () => {
@@ -125,12 +127,11 @@ const ParentMeetings = () => {
         }, SCROLL_DELAY_TIME);
     };
 
-    const handleFavorite = async (meetingId, currentFavorite, stateName) => {
+    const handleFavorite = (meetingId, currentFavorite, stateName) => {
       const formdata = new FormData();
       formdata.append('meeting_id', meetingId);
       formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
-      await axios.post('/api/fathers/meetings/registerFavorite', formdata)
-        .then(response=>{ setNotice(response.data.notice)});
+      axios.post('/api/fathers/meetings/registerFavorite', formdata)
       
       if(stateName == "inCompleteOfFather") {
         const newList1 = meeting_list_incomplete.map((item) => {
@@ -220,7 +221,7 @@ const ParentMeetings = () => {
                                 {
                                     fetch_meeting_list_incomplete.length > 0 ?
                                     fetch_meeting_list_incomplete?.map((item, id) => 
-                                      <div className="meeting-item" key={id}>
+                                      <div className="meeting-item parent" key={id}>
                                           <Link to={`/p-account/meeting/detail/${item.id}`}  className="meeting-link">
                                               <h3 className="meeting-ttl">{ item.title }</h3>
                                               <p className="meeting-txt">{ item.text }</p>
@@ -284,7 +285,7 @@ const ParentMeetings = () => {
                                 {
                                     fetch_meeting_list_complete.length > 0 ?
                                     fetch_meeting_list_complete?.map((item, id) =>                                          
-                                      <div className="meeting-item" key={id}>
+                                      <div className="meeting-item parent" key={id}>
                                           <Link to={`/p-account/meeting/detail/${item.id}`} className="meeting-link">
                                               <h3 className="meeting-ttl">{ item.title }</h3>
                                               <p className="meeting-txt">{ item.text }</p>

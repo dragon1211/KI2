@@ -45,14 +45,11 @@
     </body>
 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-sham.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-shim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-sham.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/3.2.2/es6-promise.js"></script>
-    <script src="{{ asset('js/app.js') }}"></script>
-    <!-- V1, 2022/1/5 -->
+    <script src="{{ asset('js/components/json3.min.js') }}"></script>
+    <script src="{{ asset('js/components/html5shiv-printshiv.min.js') }}"></script>
+    <script src="{{ asset('js/components/html5shiv.min.js') }}"></script>
+    <script src="{{ asset('js/components/es6-promise.js') }}"></script>
+    <script src="{{ asset('js/components/pdf-worker.js') }}"></script>    <!-- v2.9.359 -->
+    <script src="{{ asset('js/index.js') }}"></script>
+    <!-- V1, 2022/1/15 -->
 </html>

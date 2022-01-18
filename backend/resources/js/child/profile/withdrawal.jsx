@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { LoadingButton } from '@material-ui/lab';
 
 import Notification from '../../component/notification';
@@ -12,18 +12,29 @@ const ChildProfileWithdrawal = () => {
     const [_400error, set400Error] = useState('');
 
 
-    const handleSubmit = async (e) => {
+    const isMountedRef = useRef(true);
+    useEffect(() => {
+        isMountedRef.current = false;
+        return () => {
+            isMountedRef.current = true;
+        }
+    }, [])
+
+
+    const handleSubmit = (e) => {
         e.preventDefault();
         setSubmit(true);
-        await axios.delete('/api/children/withdrawal', {params:{child_id: child_id}})
-            .then(response => {
-                setSubmit(false);
-                setNotice(response.data.notice);
-                switch(response.data.status_code){
-                    case 200: window.location.href = "/c-account/withdrawal/complete"; break;
-                    case 400: set400Error("失敗しました。"); break;
-                }
-            })
+        axios.delete('/api/children/withdrawal', {params:{child_id: child_id}})
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setSubmit(false);
+            setNotice(response.data.notice);
+            switch(response.data.status_code){
+                case 200: window.location.href = "/c-account/withdrawal/complete"; break;
+                case 400: set400Error("失敗しました。"); break;
+            }
+        })
     }
     
 	return (

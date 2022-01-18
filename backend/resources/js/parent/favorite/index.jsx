@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 
 import Notification from '../../component/notification';
@@ -14,8 +14,6 @@ const SCROLL_DELAY_TIME = 1500;
 
 const ParentFavorite = () => {
 
-    const location = useLocation();
-
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const father_id = localStorage.getItem('kiki_acc_id');
 
@@ -27,7 +25,7 @@ const ParentFavorite = () => {
     const [meeting_list_favorite, setMeetingListOfFavorite] = useState([]);
     const [fetch_meeting_list_non_favorite, setFetchMeetingListOfNonFavorite] = useState([]);
     const [fetch_meeting_list_favorite, setFetchMeetingListOfFavorite] = useState([]);
-    const [_success, setSuccess] = useState(location.state);
+    const [_success, setSuccess] = useState('');
     const [_400error, set400Error] = useState('');
 
     const isMountedRef = useRef(true);
@@ -37,12 +35,14 @@ const ParentFavorite = () => {
     },[loaded1, loaded2])
     
     
-    useEffect(async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
 
-        await axios.get('/api/fathers/meetings/listOfNonFavoriteOfFather', {params:{father_id: father_id}})
+        axios.get('/api/fathers/meetings/listOfNonFavoriteOfFather', {params:{father_id: father_id}})
         .then(response => {
+            if(isMountedRef.current) return;
+          
             setLoaded1(true);
             setNotice(response.data.notice);
             if(response.data.status_code==200){
@@ -68,8 +68,10 @@ const ParentFavorite = () => {
             }
         })
 
-        await axios.get('/api/fathers/meetings/listOfFavoriteOfFather', {params:{father_id: father_id}})
+        axios.get('/api/fathers/meetings/listOfFavoriteOfFather', {params:{father_id: father_id}})
         .then(response => {
+          if(isMountedRef.current) return;
+
           setLoaded2(true);
           setNotice(response.data.notice);
           if(response.data.status_code==200){
@@ -94,6 +96,10 @@ const ParentFavorite = () => {
             set400Error("失敗しました。");
           }
         })
+
+      return () => {
+        isMountedRef.current = true;
+      }
     },[]);
 
     const fetchMoreListOfNonFavorite = () => {
@@ -118,12 +124,11 @@ const ParentFavorite = () => {
         }, SCROLL_DELAY_TIME);
     };
 
-    async function handleFavorite(meetingId, currentFavorite, stateName) {
+    function handleFavorite(meetingId, currentFavorite, stateName) {
       const formdata = new FormData();
       formdata.append('meeting_id', meetingId);
       formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
-      await axios.post('/api/fathers/meetings/registerFavorite', formdata)
-        .then(response=>{setNotice(response.data.notice)})
+      axios.post('/api/fathers/meetings/registerFavorite', formdata)
 
       if(stateName == "nonFavoriteOfFather") {
         const newList = meeting_list_non_favorite.map((item) => {
@@ -213,7 +218,7 @@ const ParentFavorite = () => {
                                 {
                                     fetch_meeting_list_favorite.length > 0 ?
                                     fetch_meeting_list_favorite?.map((item, id) =>                                          
-                                      <div className="meeting-item" key={id}>
+                                      <div className="meeting-item parent" key={id}>
                                           <Link to={`/p-account/meeting/detail/${item.id}`} className="meeting-link">
                                               <h3 className="meeting-ttl">{ item.title }</h3>
                                               <p className="meeting-txt">{ item.text }</p>
@@ -276,7 +281,7 @@ const ParentFavorite = () => {
                                 {
                                     fetch_meeting_list_non_favorite.length > 0 ?
                                     fetch_meeting_list_non_favorite?.map((item, id) => 
-                                      <div className="meeting-item" key={id}>
+                                      <div className="meeting-item parent" key={id}>
                                           <Link to={`/p-account/meeting/detail/${item.id}`}  className="meeting-link">
                                               <h3 className="meeting-ttl">{ item.title }</h3>
                                               <p className="meeting-txt">{ item.text }</p>

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 use App\Models\Child;
+use App\Models\Father;
 use App\Models\FatherRelation;
 use App\Models\MeetingApprovals;
 use App\Models\TelActivation;
@@ -113,6 +114,13 @@ class ChildrenController extends Controller {
         // 有効期限が切れている場合
         if (time() > strtotime($get->ttl)) {
             return ['status_code' => 400, 'error_messages' => ['仮登録の有効期限が切れました。改めて親にお問い合わせいただき、再登録の手続きを行ってください。']];
+        }
+
+        // 親子関係の上限の場合
+        if (!is_null($get->father_id) && null !== ($rel = FatherRelation::where('father_id', $get->father_id)->first())) {
+            if (Father::select('relation_limit')->where('id', $get->father_id)->first()->relation_limit >= FatherRelation::where('father_id', $get->father_id)->count()) {
+                return ['status_code' => 400, 'error_messages' => ['仮登録の有効期限が切れました。改めて親にお問い合わせいただき、再登録の手続きを行ってください。']];
+            }
         }
 
         if (!is_null($r->image) && count(Storage::disk('private')->files('/')) >= 9999) {
@@ -274,7 +282,7 @@ class ChildrenController extends Controller {
             return ['status_code' => 400, 'error_messages' => ['画像の更新に失敗しました。']];
         }
 
-        if (null === ($result = Child::where('first_name', 'LIKE', '%'.$r->keyword.'%')->orWhere('last_name', 'LIKE', '%'.$r->keyword.'%')->orderBy('created_at', 'desc')->get())) {
+        if (null === ($result = Child::where('first_name', 'LIKE', '%'.$r->keyword.'%')->orWhere('last_name', 'LIKE', '%'.$r->keyword.'%')->orderBy('updated_at', 'desc')->get())) {
             // 親一覧の取得に失敗
             return ['status_code' => 400];
         }
@@ -286,7 +294,7 @@ class ChildrenController extends Controller {
     public function list () {
         $child_select = ['id', 'first_name', 'last_name', 'tel', 'image'];
 
-        if (null === ($result = Child::select($child_select)->orderBy('created_at', 'desc')->get())) {
+        if (null === ($result = Child::select($child_select)->orderBy('updated_at', 'desc')->get())) {
             // 親一覧の取得に失敗
             return ['status_code' => 400];
         }
@@ -302,7 +310,7 @@ class ChildrenController extends Controller {
         $result = [];
         $child_select = ['id', 'image', 'first_name', 'last_name', 'company', 'tel', 'email'];
 
-        if (null === ($list = FatherRelation::select('child_id')->where('father_id', (int)$r->father_id)->orderBy('created_at', 'desc')->get())) {
+        if (null === ($list = FatherRelation::select('child_id')->where('father_id', (int)$r->father_id)->orderBy('updated_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -319,7 +327,7 @@ class ChildrenController extends Controller {
         $result = [];
         $child_select = ['id', 'image', 'last_name', 'first_name'];
 
-        if (null === ($list = MeetingApprovals::select('child_id')->where('meeting_id', (int)$r->meeting_id)->orderBy('created_at', 'desc')->get())) {
+        if (null === ($list = MeetingApprovals::select('child_id')->where('meeting_id', (int)$r->meeting_id)->orderBy('updated_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -341,7 +349,7 @@ class ChildrenController extends Controller {
         $child_select = ['id', 'image', 'last_name', 'first_name', 'tel'];
         $meeting_approvals_select = ['approval_at'];
 
-        if (null === ($list = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$r->meeting_id)->whereNull('approval_at')->orderBy('created_at', 'desc')->get())) {
+        if (null === ($list = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', (int)$r->meeting_id)->whereNull('approval_at')->orderBy('updated_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -364,7 +372,7 @@ class ChildrenController extends Controller {
         $child_select = ['id', 'image', 'last_name', 'first_name', 'tel'];
         $meeting_approvals_select = ['approval_at'];
 
-        if (null === ($list = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', $r->meeting_id)->whereNotNull('approval_at')->orderBy('created_at', 'desc')->get())) {
+        if (null === ($list = MeetingApprovals::select($meeting_approvals_select)->where('meeting_id', $r->meeting_id)->whereNotNull('approval_at')->orderBy('updated_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -417,6 +425,7 @@ class ChildrenController extends Controller {
         if (isset($r->child_id)) {
             $child_id = $r->child_id;
         }
+        $child_id = request()->route()->action['as'] == 'cia' ? (int)$child_id : (int)session()->get('children')['id'];
 
         if (!isset($r->image) || !isset($child_id)) {
             return ['status_code' => 400, 'error_messages' => ['画像の更新に失敗しました。']];
@@ -493,6 +502,7 @@ class ChildrenController extends Controller {
         if (isset($r->child_id)) {
             $child_id = $r->child_id;
         }
+        $child_id = request()->route()->action['as'] == 'cua' ? (int)$child_id : (int)session()->get('children')['id'];
 
         if (!isset($child_id)) {
             return ['status_code' => 400, 'error_messages' => ['子の更新に失敗しました。']];
@@ -542,6 +552,7 @@ class ChildrenController extends Controller {
         if (isset($r->child_id)) {
             $child_id = $r->child_id;
         }
+        $child_id = request()->route()->action['as'] == 'cpa' ? (int)$child_id : (int)session()->get('children')['id'];
 
         if (is_null($child_id) && !isset($r->token)) {
             return ['status_code' => 400, 'error_messages' => ['パスワードの更新に失敗しました。']];
@@ -581,12 +592,14 @@ class ChildrenController extends Controller {
     }
 
     public function withdrawal (Request $r) {
+        $child_id = request()->route()->action['as'] == 'cwa' ? (int)$r->child_id : (int)session()->get('children')['id'];
+
         // 削除成功
         try {
             // DBに入ります。
             DB::beginTransaction();
 
-            $child = Child::find((int)$r->child_id);
+            $child = Child::find($child_id);
             $img = $child->image;
             $child->delete();
 

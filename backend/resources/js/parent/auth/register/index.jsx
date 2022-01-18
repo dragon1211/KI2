@@ -35,18 +35,18 @@ const ParentSignUp = () => {
     const [_400error, set400Error] = useState('');
 
 
-    useEffect( async ()=>{
-        await axios.get('/api/fathers/checkRegisterMain', {params:{token: params?.token}})
-            .then(response=>{
-                switch(response.data.status_code){
-                    case 200: setLoaded(true); break;
-                    case 400: navigator('/p-account/login',  { state: '' }); break;
-                };
-            })
+    useEffect(()=>{
+        axios.get('/api/fathers/checkRegisterMain', {params:{token: params?.token}})
+        .then(response=>{
+            switch(response.data.status_code){
+                case 200: setLoaded(true); break;
+                case 400: navigator('/p-account/login',  { state: '' }); break;
+            };
+        })
     },[])
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         set422Errors({
             image:'',
@@ -68,24 +68,24 @@ const ParentSignUp = () => {
         formdata.append('terms', check_terms);
         formdata.append('token', params?.token);
 
-        await axios.post('/api/fathers/registerMain', formdata)
-            .then(response => {
-                setSubmit(false);
-                switch(response.data.status_code){
-                    case 200: navigator('/p-account/register/complete/'+ params?.token,  {state: response.data.success_messages}); break;
-                    case 400: set400Error(response.data.error_messages); break;
-                    case 401: navigator('/p-account/register/error/'+ params?.token,  {state: response.data.error_messages}); break;
-                    case 422: {
-                        window.scrollTo(0, 0); 
-                        set422Errors(response.data.error_messages); 
-                        break;
-                    }
-                };
-                if(response.data.status_code != 200){
-                    setPassword('');
-                    setPasswordConfirmation('');
+        axios.post('/api/fathers/registerMain', formdata)
+        .then(response => {
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: navigator('/p-account/register/complete/'+ params?.token,  {state: response.data.success_messages}); break;
+                case 400: set400Error(response.data.error_messages); break;
+                case 401: navigator('/p-account/register/error/'+ params?.token,  {state: response.data.error_messages}); break;
+                case 422: {
+                    window.scrollTo(0, 0); 
+                    set422Errors(response.data.error_messages); 
+                    break;
                 }
-            })
+            };
+            if(response.data.status_code != 200){
+                setPassword('');
+                setPasswordConfirmation('');
+            }
+        })
     }
 
 
@@ -188,7 +188,7 @@ const ParentSignUp = () => {
                             checked={check_terms}
                         />
                         <span className='lbl padding-16'>
-                            <Link to="/terms" className='term-link' rel="noopener noreferrer">規約</Link>
+                            <Link to="/terms" className='term-link' target="_blank" rel="noopener noreferrer">規約</Link>
                             に同意する
                         </span>
                     </label>

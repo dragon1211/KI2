@@ -30,12 +30,15 @@ const PreviewPDF = ({pdf_url}) => {
     }}>
         {
             pdf_url &&
-            <Document file={pdf_url} loading={<></>}>
+            <Document 
+                file={pdf_url} 
+                loading={<></>}
+            >
                 <Page 
                     pageNumber={1} 
                     loading={<></>}
-                    renderMode='svg'
-                    height={height-3}
+                    renderMode='canvas'
+                    height={height}
                 />
             </Document>
         }

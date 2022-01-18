@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useNavigate, Link, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, Link, useParams } from 'react-router-dom';
 
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
@@ -13,7 +13,6 @@ import ModalConfirm from '../../component/modal_confirm';
 const AdminChildDetail = () => {
 
     const navigator = useNavigate();
-    const location = useLocation();
     const params = useParams();
 
     const [image, setImage] = useState('');
@@ -24,27 +23,32 @@ const AdminChildDetail = () => {
 
     const [_400error, set400Error] = useState('');
     const [_422errors, set422Errors] = useState({ image: '' });
-    const [_success, setSuccess] = useState(location.state);
+    const [_success, setSuccess] = useState();
     const [show_confirm_modal, setShowConfirmModal] = useState(false);
 
     const isMountedRef = useRef(true);
 
-    useEffect(async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
 
-        await axios.get(`/api/admin/children/detail/${params?.child_id}`)
-            .then(response => {
-                setLoaded(true);
-                switch(response.data.status_code){
-                    case 200:{
-                        setChild(response.data.params);
-                        setImage(response.data.params.image);
-                        break;
-                    }
-                    case 400: set400Error('失敗しました。'); break;
+        axios.get(`/api/admin/children/detail/${params?.child_id}`)
+        .then(response => {
+            if(isMountedRef.current) return;
+            setLoaded(true);
+            switch(response.data.status_code){
+                case 200:{
+                    setChild(response.data.params);
+                    setImage(response.data.params.image);
+                    break;
                 }
-            })
+                case 400: set400Error('失敗しました。'); break;
+            }
+        })
+
+        return () => {
+            isMountedRef.current = true;
+        }
     },[]);
 
 
@@ -58,6 +62,7 @@ const AdminChildDetail = () => {
             setSubmitImage(true);
             axios.put(`/api/admin/children/updateImage/${params?.child_id}`, {image: reader.result})
             .then(response => {
+                if(isMountedRef.current) return;
                 setSubmitImage(false);
                 switch(response.data.status_code){
                     case 200: {
@@ -73,10 +78,12 @@ const AdminChildDetail = () => {
     };
 
 
-    async function handleAcceptDelete() {
+    function handleAcceptDelete() {
         setSubmit(true);
         axios.delete(`/api/admin/children/delete/${params?.child_id}`)
         .then(response => {
+            if(isMountedRef.current) return;
+            
             setShowConfirmModal(false);
             setSubmit(false);
             switch(response.data.status_code){

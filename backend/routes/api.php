@@ -39,7 +39,7 @@ Route::group(['prefix' => 'admin'], function () {
             Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile')->name('pua');
             Route::put('/updatePassword/{father_id}', '\App\Http\Controllers\Api\FathersController@updatePassword')->name('ppa');
             Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail')->name('pda');
-            Route::delete('/delete/{father_id}', '\App\Http\Controllers\Api\FathersController@withdrawal');
+            Route::delete('/delete/{father_id}', '\App\Http\Controllers\Api\FathersController@withdrawal')->name('pwa');
             Route::post('/registerTemporary', '\App\Http\Controllers\Api\FathersController@registerTemporary');
         });
 
@@ -51,7 +51,7 @@ Route::group(['prefix' => 'admin'], function () {
             Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage')->name('cia');
             Route::put('/updatePassword/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updatePassword')->name('cpa');
             Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail')->name('cda');
-            Route::delete('/delete/{child_id}', '\App\Http\Controllers\Api\ChildrenController@withdrawal');
+            Route::delete('/delete/{child_id}', '\App\Http\Controllers\Api\ChildrenController@withdrawal')->name('cwa');
         });
 
         // MeetingsController
@@ -59,21 +59,21 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/list', '\App\Http\Controllers\Api\MeetingsController@list');
             Route::get('/search', '\App\Http\Controllers\Api\MeetingsController@search');
             Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail')->name('mda');
-            Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update');
-            Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete');
+            Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update')->name('mua');
+            Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete')->name('mra');
         });
 
         Route::group(['prefix' => 'meeting'], function () {
             // MeetingImagesController
             Route::group(['prefix' => 'images'], function () {
-                Route::post('/register', '\App\Http\Controllers\Api\MeetingImagesController@register');
-                Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingImagesController@delete');
+                Route::post('/register', '\App\Http\Controllers\Api\MeetingImagesController@register')->name('mira');
+                Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingImagesController@delete')->name('mida');
             });
     
             // MeetingApprovalsController
             Route::group(['prefix' => 'approvals'], function () {
-                Route::post('/register', '\App\Http\Controllers\Api\MeetingApprovalsController@register');
-                Route::delete('/delete', '\App\Http\Controllers\Api\MeetingApprovalsController@delete');
+                Route::post('/register', '\App\Http\Controllers\Api\MeetingApprovalsController@register')->name('mara');
+                Route::delete('/delete', '\App\Http\Controllers\Api\MeetingApprovalsController@delete')->name('mada');
             });
         });
     });
@@ -93,7 +93,7 @@ Route::group(['prefix' => 'fathers'], function () {
     Route::group(['middleware' => ['auth:fathers', 'notice.incomplete']], function () {
         Route::put('/updateImage/{father_id}', '\App\Http\Controllers\Api\FathersController@updateImage')->name('pip');
         Route::put('/updateProfile/{father_id}', '\App\Http\Controllers\Api\FathersController@updateProfile')->name('pup');
-        Route::delete('/withdrawal', '\App\Http\Controllers\Api\FathersController@withdrawal');
+        Route::delete('/withdrawal', '\App\Http\Controllers\Api\FathersController@withdrawal')->name('pwp');
         Route::get('/detail/{father_id}', '\App\Http\Controllers\Api\FathersController@detail')->name('pdp');
         Route::post('/meetingNotification', '\App\Http\Controllers\Api\FathersController@approvalNotification')->name('cmnotifynew');
         Route::post('/meetingEditNotification', '\App\Http\Controllers\Api\FathersController@approvalNotification')->name('cmnotifyedit');
@@ -118,22 +118,22 @@ Route::group(['prefix' => 'fathers'], function () {
             Route::get('/searchOfCompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@searchOfCompleteOfFather');
             Route::get('/searchOfIncompleteOfFather', '\App\Http\Controllers\Api\MeetingsController@searchOfIncompleteOfFather');
             Route::get('/detail/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@detail')->name('mdp');
-            Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update');
-            Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete');
+            Route::put('/update/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@update')->name('mup');
+            Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingsController@delete')->name('mrp');
             Route::put('/updateMemo', '\App\Http\Controllers\Api\MeetingsController@updateMemo');
         });
 
         Route::group(['prefix' => 'meeting'], function () {
-            // MeetingImagesController
+            //rMeetingImagesController
             Route::group(['prefix' => 'images'], function () {
-                Route::post('/register', '\App\Http\Controllers\Api\MeetingImagesController@register');
-                Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingImagesController@delete');
+                Route::post('/register', '\App\Http\Controllers\Api\MeetingImagesController@register')->name('mirp');
+                Route::delete('/delete/{meeting_id}', '\App\Http\Controllers\Api\MeetingImagesController@delete')->name('midp');
             });
 
             // MeetingApprovalsController
             Route::group(['prefix' => 'approvals'], function () {
-                Route::post('/register', '\App\Http\Controllers\Api\MeetingApprovalsController@register');
-                Route::delete('/delete', '\App\Http\Controllers\Api\MeetingApprovalsController@delete');
+                Route::post('/register', '\App\Http\Controllers\Api\MeetingApprovalsController@register')->name('marp');
+                Route::delete('/delete', '\App\Http\Controllers\Api\MeetingApprovalsController@delete')->name('madp');
                 Route::post('/listChildrenOfMeeting', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfMeeting');
                 Route::get('/listChildrenOfApprovel', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfApprovel');
                 Route::get('/listChildrenOfUnapprovel', '\App\Http\Controllers\Api\MeetingApprovalsController@listChildrenOfUnapprovel');
@@ -143,7 +143,8 @@ Route::group(['prefix' => 'fathers'], function () {
 
         // FatherRelationsController
         Route::group(['prefix' => 'relations'], function () {
-            Route::get('/check', '\App\Http\Controllers\Api\FatherRelationsController@check');
+            Route::get('/checkNull', '\App\Http\Controllers\Api\FatherRelationsController@checkNull')->name('chknull_parent');
+            Route::get('/check', '\App\Http\Controllers\Api\FatherRelationsController@check')->name('chk_parent');
             Route::post('/register', '\App\Http\Controllers\Api\FatherRelationsController@register');
             Route::put('/updateHireDate/{child_id}', '\App\Http\Controllers\Api\FatherRelationsController@updateHireDate');
             Route::delete('/deleteRelationChild/{child_id}', '\App\Http\Controllers\Api\FatherRelationsController@deleteRelationChild');
@@ -160,11 +161,19 @@ Route::group(['prefix' => 'children'], function () {
     Route::post('/login', '\App\Http\Controllers\Api\ChildrenController@login');
     Route::put('/updatePassword/{child_id?}', '\App\Http\Controllers\Api\ChildrenController@updatePassword')->name('cpc');
 
+    // FatherRelationsController
+    Route::group(['prefix' => 'father'], function () {
+        Route::group(['prefix' => 'relations'], function () {
+            Route::get('/checkNull', '\App\Http\Controllers\Api\FatherRelationsController@checkNull')->name('chknull_child');
+            Route::get('/check', '\App\Http\Controllers\Api\FatherRelationsController@check')->name('chk_child');
+        });
+});
+
     Route::group(['middleware' => ['auth:children', 'notice.nonapproval']], function () {
         Route::get('/detail/{child_id}', '\App\Http\Controllers\Api\ChildrenController@detail')->name('cdc');
         Route::put('/updateImage/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateImage')->name('cic');
         Route::put('/updateProfile/{child_id}', '\App\Http\Controllers\Api\ChildrenController@updateProfile')->name('cuc');
-        Route::delete('/withdrawal', '\App\Http\Controllers\Api\ChildrenController@withdrawal');
+        Route::delete('/withdrawal', '\App\Http\Controllers\Api\ChildrenController@withdrawal')->name('cwc');
 
         // FathersController
         Route::group(['prefix' => 'fathers'], function () {

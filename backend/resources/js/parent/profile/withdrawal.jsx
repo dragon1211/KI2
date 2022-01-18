@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { LoadingButton } from '@material-ui/lab';
 import Notification from '../../component/notification';
 import Alert from '../../component/alert';
@@ -11,12 +11,24 @@ const ParentProfileWithdrawal = () => {
     const [submit, setSubmit] = useState(false);
     const [_400error, set400Error] = useState('');
 
-    const handleSubmit = async (e) => {
+
+    const isMountedRef = useRef(true);
+    useEffect(() => {
+        isMountedRef.current = false;
+        return () => {
+            isMountedRef.current = true;
+        }
+    }, [])
+
+
+    const handleSubmit = (e) => {
         e.preventDefault();
         setSubmit(true);
         
-        await axios.delete('/api/fathers/withdrawal', {params:{father_id: father_id}})
+        axios.delete('/api/fathers/withdrawal', {params:{father_id: father_id}})
         .then(response => {
+            if(isMountedRef.current) return;
+            
             setSubmit(false);
             setNotice(response.data.notice);
             switch(response.data.status_code){

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import { useCookies } from 'react-cookie';
@@ -15,12 +15,22 @@ const ParentLogin = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [remember_token, setRememberToken] = useState(false);
 
     const [_422errors, set422Errors] = useState({email: '', password: ''});
-    const [_400error, set400Error] = useState(location.state);
+    const [_400error, set400Error] = useState('');
 
 
-    const handleSubmit = async (e) => {
+    const isMountedRef = useRef(true);
+    useEffect(() => {
+        isMountedRef.current = false;
+        return () => {
+            isMountedRef.current = true;
+        }
+    }, [])
+
+
+    const handleSubmit = (e) => {
         e.preventDefault();
         setSubmit(true);
         set422Errors({email:'', password:''});
@@ -28,30 +38,36 @@ const ParentLogin = () => {
         const formdata = new FormData();
         formdata.append('email', email);
         formdata.append('password', password);
+        formdata.append('remember_token', remember_token);
 
-        await axios.post('/api/fathers/login/', formdata)
-            .then(response => {
-                setSubmit(false)
-                switch(response.data.status_code){
-                    case 200:{
-                        localStorage.setItem('kiki_login_flag', true);
-                        localStorage.setItem('kiki_acc_type', 'p-account');
-                        localStorage.setItem('kiki_acc_id', response.data.params.id);
-                        setCookie('logged', 'success');
-                        window.location.href = '/p-account/meeting';
-                        break;
-                    }
-                    case 400: set400Error(response.data.error_message); break;
-                    case 422: {
-                        window.scrollTo(0, 0); 
-                        set422Errors(response.data.error_messages);
-                        break;
-                    }
+        axios.post('/api/fathers/login/', formdata)
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setSubmit(false)
+            switch(response.data.status_code){
+                case 200:{
+                    localStorage.setItem('kiki_login_flag', true);
+                    localStorage.setItem('kiki_acc_type', 'p-account');
+                    localStorage.setItem('kiki_acc_id', response.data.params.id);
+                    setCookie('logged', 'success');
+                    if(location.search == '')  
+                        window.location.href = "/p-account/meeting";
+                    else   
+                        window.location.href = location.search.replace('?redirect_to=', '');
+                    break;
                 }
-                if(response.data.status_code != 200){
-                    setPassword('');
+                case 400: set400Error(response.data.error_message); break;
+                case 422: {
+                    window.scrollTo(0, 0); 
+                    set422Errors(response.data.error_messages);
+                    break;
                 }
-            })
+            }
+            if(response.data.status_code != 200){
+                setPassword('');
+            }
+        })
     }
 
 	return (
@@ -85,7 +101,7 @@ const ParentLogin = () => {
 
                 <div className="edit-set text-center mt-5">
                     <label htmlFor="remember_me">
-                        <input  id="remember_me"  name="remember"  type="checkbox"  value="remember"/>
+                        <input  id="remember_me" type="checkbox"  value={remember_token} onChange={()=>setRememberToken(!remember_token)}/>
                         <span className="lbl padding-16">ログイン情報を保持する</span>
                     </label>
                 </div>

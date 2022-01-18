@@ -21,7 +21,7 @@ use App\Mail\FathersApprovalMail;
 
 class MeetingsController extends Controller {
     public function register (Request $r) {
-        if (!isset($r->father_id)) {
+        if (!isset(session()->get('fathers')['id'])) {
             return ['status_code' => 400, 'error_messages' => ['ミーティングの登録に失敗しました。']];
         }
 
@@ -76,7 +76,7 @@ class MeetingsController extends Controller {
         }
 
         $insert = [
-            'father_id' => $r->father_id,
+            'father_id' => (int)session()->get('fathers')['id'],
             'title' => $r->title,
             'text' => $r->text,
             'memo' => $r->memo
@@ -237,7 +237,7 @@ class MeetingsController extends Controller {
     }
 
     public function listOfApprovalOfChild (Request $r) {
-        if (!isset($r->child_id)) {
+        if (!isset(session()->get('children')['id'])) {
             return ['status_code' => 400];
         }
 
@@ -248,14 +248,14 @@ class MeetingsController extends Controller {
         $meeting_approvals_select = ['approval_at'];
 
         // 取得に成功
-        if (null === ($approval = MeetingApprovals::select('meeting_id')->where('child_id', (int)$r->child_id)->whereNotNull('approval_at')->orderBy('updated_at', 'desc')->get())) {
+        if (null === ($approval = MeetingApprovals::select('meeting_id')->where('child_id', (int)session()->get('children')['id'])->whereNotNull('approval_at')->orderBy('updated_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
         foreach ($approval as $a) {
             if (null !== ($list = Meeting::select($meeting_select)->where('id', (int)$a->meeting_id)->get())) {
                 foreach ($list as $i => $l) {
-                    if (null === ($fr = FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)$r->child_id)->first())) {
+                    if (null === ($fr = FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)session()->get('children')['id'])->first())) {
                         continue;
                     }
                     if (null === ($l->father = Father::select($father_select)->where('id', (int)$l->father_id)->first())) {
@@ -276,7 +276,7 @@ class MeetingsController extends Controller {
     }
 
     public function listOfNonApprovalOfChild (Request $r) {
-        if (!isset($r->child_id)) {
+        if (!isset(session()->get('children')['id'])) {
             return ['status_code' => 400];
         }
 
@@ -287,14 +287,14 @@ class MeetingsController extends Controller {
         $meeting_approvals_select = ['approval_at'];
 
         // 取得に成功
-        if (null === ($approval = MeetingApprovals::select('meeting_id')->where('child_id', (int)$r->child_id)->whereNull('approval_at')->orderBy('updated_at', 'asc')->get())) {
+        if (null === ($approval = MeetingApprovals::select('meeting_id')->where('child_id', (int)session()->get('children')['id'])->whereNull('approval_at')->orderBy('updated_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
         foreach ($approval as $a) {
             if (null !== ($list = Meeting::select($meeting_select)->where('id', (int)$a->meeting_id)->get())) {
                 foreach ($list as $i => $l) {
-                    if (null === ($fr = FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)$r->child_id)->first())) {
+                    if (null === ($fr = FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)session()->get('children')['id'])->first())) {
                         continue;
                     }
                     if (null === ($l->father = Father::select($father_select)->where('id', (int)$l->father_id)->first())) {
@@ -315,7 +315,7 @@ class MeetingsController extends Controller {
     }
 
     public function listOfCompleteOfFather (Request $r) {
-        if (!isset($r->father_id)) {
+        if (!isset(session()->get('fathers')['id'])) {
             return ['status_code' => 400];
         }
 
@@ -325,7 +325,7 @@ class MeetingsController extends Controller {
         $child_select = ['image'];
 
         // 取得に成功
-        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->orderBy('updated_at', 'desc')->get())) {
+        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)session()->get('fathers')['id'])->orderBy('updated_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -362,7 +362,7 @@ class MeetingsController extends Controller {
     }
 
     public function listOfIncompleteOfFather (Request $r) {
-        if (!isset($r->father_id)) {
+        if (!isset(session()->get('fathers')['id'])) {
             return ['status_code' => 400];
         }
 
@@ -372,7 +372,7 @@ class MeetingsController extends Controller {
         $child_select = ['image'];
 
         // 取得に成功
-        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->orderBy('updated_at', 'desc')->get())) {
+        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)session()->get('fathers')['id'])->orderBy('updated_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -403,7 +403,7 @@ class MeetingsController extends Controller {
     }
 
     public function listOfFavoriteOfFather (Request $r) {
-        if (!isset($r->father_id)) {
+        if (!isset(session()->get('fathers')['id'])) {
             return ['status_code' => 400];
         }
 
@@ -413,7 +413,7 @@ class MeetingsController extends Controller {
         $child_select = ['image'];
 
         // 取得に成功
-        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('is_favorite', 1)->orderBy('updated_at', 'desc')->get())) {
+        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)session()->get('fathers')['id'])->where('is_favorite', 1)->orderBy('updated_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -437,7 +437,7 @@ class MeetingsController extends Controller {
     }
 
     public function listOfNonFavoriteOfFather (Request $r) {
-        if (!isset($r->father_id)) {
+        if (!isset(session()->get('fathers')['id'])) {
             return ['status_code' => 400];
         }
 
@@ -447,7 +447,7 @@ class MeetingsController extends Controller {
         $child_select = ['image'];
 
         // 取得に成功
-        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)$r->father_id)->where('is_favorite', 0)->orderBy('created_at', 'desc')->get())) {
+        if (null === ($list = Meeting::select($meeting_select)->where('father_id', (int)session()->get('fathers')['id'])->where('is_favorite', 0)->orderBy('updated_at', 'desc')->get())) {
             return ['status_code' => 400];
         }
 
@@ -471,7 +471,7 @@ class MeetingsController extends Controller {
     }
 
     public function searchOfApprovalOfChild (Request $r) {
-        if (!isset($r->child_id) || !isset($r->keyword)) {
+        if (!isset(session()->get('children')['id']) || !isset($r->keyword)) {
             return ['status_code' => 400];
         }
 
@@ -486,19 +486,19 @@ class MeetingsController extends Controller {
         }
 
         foreach ($list as $i => $l) {
-            if (null === ($rel = FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)$r->child_id)->first())) {
+            if (null === ($rel = FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)session()->get('children')['id'])->first())) {
                 continue;
             }
             if ($rel->child_id != (int)$rel->child_id) {
                 continue;
             }
-            if (null === ($ma = MeetingApprovals::select('id')->where('child_id', (int)$r->child_id)->where('meeting_id', (int)$l->id)->whereNotNull('approval_at')->first())) {
+            if (null === ($ma = MeetingApprovals::select('id')->where('child_id', (int)session()->get('children')['id'])->where('meeting_id', (int)$l->id)->whereNotNull('approval_at')->first())) {
                 continue;
             }
             if (null === ($l->father = Father::select($father_select)->where('id', (int)$l->father_id)->first())) {
                 $l->father = new \stdClass();
             }
-            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('child_id', (int)$r->child_id)->whereNotNull('approval_at')->first())) {
+            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('child_id', (int)session()->get('children')['id'])->whereNotNull('approval_at')->first())) {
                 $l->approval = new \stdClass();
             }
             $result[] = $l;
@@ -508,7 +508,7 @@ class MeetingsController extends Controller {
     }
 
     public function searchOfNonApprovalOfChild (Request $r) {
-        if (!isset($r->child_id) || !isset($r->keyword)) {
+        if (!isset(session()->get('children')['id']) || !isset($r->keyword)) {
             return ['status_code' => 400];
         }
 
@@ -523,19 +523,19 @@ class MeetingsController extends Controller {
         }
 
         foreach ($list as $i => $l) {
-            if (null === ($rel = FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)$r->child_id)->first())) {
+            if (null === ($rel = FatherRelation::select('id')->where('father_id', (int)$l->father_id)->where('child_id', (int)session()->get('children')['id'])->first())) {
                 continue;
             }
             if ($rel->child_id != (int)$rel->child_id) {
                 continue;
             }
-            if (null === ($ma = MeetingApprovals::select('id')->where('child_id', (int)$r->child_id)->where('meeting_id', (int)$l->id)->whereNull('approval_at')->first())) {
+            if (null === ($ma = MeetingApprovals::select('id')->where('child_id', (int)session()->get('children')['id'])->where('meeting_id', (int)$l->id)->whereNull('approval_at')->first())) {
                 continue;
             }
             if (null === ($l->father = Father::select($father_select)->where('id', (int)$l->father_id)->first())) {
                 $l->father = new \stdClass();
             }
-            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('child_id', (int)$r->child_id)->whereNull('approval_at')->first())) {
+            if (null === ($l->approval = MeetingApprovals::select($meeting_approvals_select)->where('child_id', (int)session()->get('children')['id'])->whereNull('approval_at')->first())) {
                 $l->approval = new \stdClass();
             }
             $result[] = $l;
@@ -545,7 +545,7 @@ class MeetingsController extends Controller {
     }
 
     public function searchOfCompleteofFather (Request $r) {
-        if (!isset($r->father_id) || !isset($r->keyword)) {
+        if (!isset(session()->get('fathers')['id']) || !isset($r->keyword)) {
             return ['status_code' => 400];
         }
 
@@ -560,7 +560,7 @@ class MeetingsController extends Controller {
         }
 
         foreach ($list as $i => $l) {
-            if ($l->father_id != (int)$r->father_id) {
+            if ($l->father_id != (int)session()->get('fathers')['id']) {
                 continue;
             }
 
@@ -596,7 +596,7 @@ class MeetingsController extends Controller {
     }
 
     public function searchOfIncompleteofFather (Request $r) {
-        if (!isset($r->father_id) || !isset($r->keyword)) {
+        if (!isset(session()->get('fathers')['id']) || !isset($r->keyword)) {
             return ['status_code' => 400];
         }
 
@@ -611,7 +611,7 @@ class MeetingsController extends Controller {
         }
 
         foreach ($list as $i => $l) {
-            if ($l->father_id != (int)$r->father_id) {
+            if ($l->father_id != (int)session()->get('fathers')['id']) {
                 continue;
             }
 

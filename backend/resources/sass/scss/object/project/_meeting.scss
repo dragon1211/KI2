@@ -348,10 +348,14 @@ categories: [project]
   .meeting{
     &-item{
       padding: 17px 0 22px;
-    @include pc{
-      padding: 19px 0 21px;
+      &.parent{
+        padding-right: 45px;
+      }
+      @include pc{
+        padding: 19px 0 21px;
       }
     }
+   
     &-link{
       padding: 9px 0 14px;
     @include pc{

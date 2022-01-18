@@ -1,16 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import Alert from '../../../component/alert';
 
 const ChildSignUpTemporary = () => {
+
+    const navigator = useNavigate();
+
     const [tel, setTel] = useState('');
     const [submit, setSubmit] = useState(false);
+    const [loaded, setLoaded] = useState(false);
 
     const [_400error, set400Error] = useState('');
     const [_422errors, set422Errors] = useState({tel:''});
     const [_success, setSuccess] = useState('');
 
-    const handleSubmit = async (e) => {
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+        isMountedRef.current = false;
+        setLoaded(false);
+
+        if(document.getElementById('father_token')){
+            let father_id = document.getElementById('father_token').value;
+            axios.get('/api/children/father/relations/check', {params:{father_id: father_id}})
+            .then(response=>{
+                if(isMountedRef.current) return;
+
+                if(response.data.status_code == 200){
+                    setLoaded(true);
+                }
+                else{
+                    navigator('/c-account/login');
+                }
+            })
+        }
+        else{
+            setLoaded(true);
+        }
+        return () => {
+            isMountedRef.current = true;
+        }
+    }, [])
+
+    const handleSubmit = (e) => {
 
         e.preventDefault();
         set422Errors({tel:''});
@@ -18,23 +51,27 @@ const ChildSignUpTemporary = () => {
         const formdata = new FormData();
         formdata.append('tel', tel);
         if(document.getElementById('father_token')){
-            formdata.append('father_id', document.getElementById('father_token').value);
+            let father_id = document.getElementById('father_token').value;
+            formdata.append('father_id', father_id);
         }
         setSubmit(true);
 
-        await axios.post('/api/children/registerTemporary', formdata)
-            .then(response => {
-                setSubmit(false);
-                switch(response.data.status_code){
-                    case 200: setSuccess("SMSに本登録案内のメッセージを送信しました。本登録を行ってください。"); break;
-                    case 400: set400Error(response.data.error_messages); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-                };
-            })
+        axios.post('/api/children/registerTemporary', formdata)
+        .then(response => {
+            if(isMountedRef.current) return;
+            
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: setSuccess("SMSに本登録案内のメッセージを送信しました。本登録を行ってください。"); break;
+                case 400: set400Error(response.data.error_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+            };
+        })
     }
 
 
-	return (
+    if(!loaded) return null;
+	else return (
     <div className="l-single-container">
         <div className="l-single-inner">
             <form onSubmit={handleSubmit} className="edit-form">

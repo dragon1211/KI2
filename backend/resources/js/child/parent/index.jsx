@@ -22,25 +22,31 @@ const ChildParents = () => {
 
     const isMountedRef = useRef(true);
     
-    useEffect( async () => {
+    useEffect( () => {
         isMountedRef.current = false;
         setLoaded(false);
 
-        await axios.get('/api/children/fathers/listOfChild', {params: {child_id: child_id}})
-            .then(response => {
-                setLoaded(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code==200){
-                    setParentList(response.data.params);
-                    var len = response.data.params.length;
-                    if(len > INFINITE)
-                        setFetchParentList(response.data.params.slice(0, INFINITE));
-                    else setFetchParentList(response.data.params.slice(0, len));
-                }
-                else {
-                    set400Error("失敗しました。");
-                }
-            })
+        axios.get('/api/children/fathers/listOfChild', {params: {child_id: child_id}})
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setLoaded(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code==200){
+                setParentList(response.data.params);
+                var len = response.data.params.length;
+                if(len > INFINITE)
+                    setFetchParentList(response.data.params.slice(0, INFINITE));
+                else setFetchParentList(response.data.params.slice(0, len));
+            }
+            else {
+                set400Error("失敗しました。");
+            }
+        })
+
+        return () => {
+            isMountedRef.current = true;
+        }
     }, []);
 
 

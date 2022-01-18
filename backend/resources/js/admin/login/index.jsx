@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import { useCookies } from 'react-cookie';
 
@@ -7,6 +8,7 @@ import Alert from '../../component/alert';
 const AdminLogin = () => {
 
     const [cookies, setCookie] = useCookies(['user']);
+    const location = useLocation();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -16,13 +18,22 @@ const AdminLogin = () => {
     const [_400error, set400Error] = useState(null);
     const [_success, setSuccess] = useState(null);
 
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+        isMountedRef.current = false;
+        return () => {
+            isMountedRef.current = true;
+        }
+    }, [])
+
     const init_error = () => {
         set422Errors({ email:null, password:null });
         set400Error(null);
     }
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         setSubmit(true);                            //show progressbar
         const formdata = new FormData();
@@ -31,32 +42,37 @@ const AdminLogin = () => {
 
         init_error();
 
-        await axios.post('/api/admin/login', formdata)
-            .then(response => {
-                setSubmit(false)
-                switch(response.data.status_code){
-                    case 200: {
-                        localStorage.setItem('kiki_login_flag', true);
-                        localStorage.setItem('kiki_acc_type', 'admin');
-                        setCookie('logged', 'success');
+        axios.post('/api/admin/login', formdata)
+        .then(response => {
+            if(isMountedRef.current) return;
+            setSubmit(false)
+            switch(response.data.status_code){
+                case 200: {
+                    localStorage.setItem('kiki_login_flag', true);
+                    localStorage.setItem('kiki_acc_type', 'admin');
+                    setCookie('logged', 'success');
+                    if(location.search == '')  
                         window.location.href = "/admin/meeting";
-                        break;
-                    }
-                    case 422: {
-                        window.scrollTo(0, 0); 
-                        set422Errors(response.data.error_messages); 
-                        break;
-                    }
-                    case 400: {
-                        set400Error(response.data.error_message);
-                        break;
-                    }
+                    else   
+                        window.location.href = location.search.replace('?redirect_to=', '');
+                    
+                    break;
                 }
-                if(response.data.status_code != 200){
-                setPassword('');
-                }            
-            })
-            .catch(err=>console.log(err))
+                case 422: {
+                    window.scrollTo(0, 0); 
+                    set422Errors(response.data.error_messages); 
+                    break;
+                }
+                case 400: {
+                    set400Error(response.data.error_message);
+                    break;
+                }
+            }
+            if(response.data.status_code != 200){
+            setPassword('');
+            }            
+        })
+        .catch(err=>console.log(err))
     }
 
 

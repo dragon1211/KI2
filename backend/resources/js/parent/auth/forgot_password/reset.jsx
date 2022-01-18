@@ -18,7 +18,7 @@ const ParentForgotPasswordReset = () => {
     const [_400error, set400Error] = useState('')
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         set422Errors({password:'', password_confirmation:''});
         setSubmit(true);
@@ -28,18 +28,18 @@ const ParentForgotPasswordReset = () => {
             token: params?.token
         }
 
-        await axios.put('/api/fathers/updatePassword', req)
-            .then(response => {
-                setSubmit(false);
-                switch(response.data.status_code){
-                    case 200: {
-                        navigator('/p-account/forgot-password/complete',  {state: response.data.success_messages});
-                        break;
-                    }
-                    case 400: set400Error(response.data.error_messages); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        axios.put('/api/fathers/updatePassword', req)
+        .then(response => {
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: {
+                    navigator('/p-account/forgot-password/complete',  {state: response.data.success_messages});
+                    break;
                 }
-            })
+                case 400: set400Error(response.data.error_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+            }
+        })
     }
 
 

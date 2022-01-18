@@ -6,8 +6,8 @@ export default function AdminSide() {
     const [selected, setSelected] = useState('');
     const [cookies, setCookie] = useCookies(['user']);
 
-    const handleLogout = async () => {
-        await axios.get('/admin/logout')
+    const handleLogout = () => {
+        axios.get('/admin/logout')
         .then(() => {
             setCookie('logged', null);
             window.location.href = '/admin/login';

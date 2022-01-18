@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import Notification from '../../component/notification';
@@ -24,7 +24,16 @@ const ParentProfilePasswordEdit = () => {
     const [submit, setSubmit] = useState(false);
 
 
-    const handleSubmit = async (e) => {
+    const isMountedRef = useRef(true);
+    useEffect(() => {
+        isMountedRef.current = false;
+        return () => {
+            isMountedRef.current = true;
+        }
+    }, [])
+
+
+    const handleSubmit = (e) => {
         e.preventDefault();
         set422Errors({
             password:'',
@@ -35,19 +44,21 @@ const ParentProfilePasswordEdit = () => {
             password: password,
             password_confirmation: password_confirmation
         }
-        await axios.put(`/api/fathers/updatePassword/${father_id}`, post)
-            .then(response => {
-                setSubmit(false);
-                setNotice(response.data.notice);
-                switch(response.data.status_code){
-                    case 200:{
-                        navigator('/p-account/profile',  { state: response.data.success_messages });
-                        break;
-                    }
-                    case 400: set400Error(response.data.error_messages); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        axios.put(`/api/fathers/updatePassword/${father_id}`, post)
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setSubmit(false);
+            setNotice(response.data.notice);
+            switch(response.data.status_code){
+                case 200:{
+                    navigator('/p-account/profile',  { state: response.data.success_messages });
+                    break;
                 }
-            })
+                case 400: set400Error(response.data.error_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+            }
+        })
     }
 
 	return (

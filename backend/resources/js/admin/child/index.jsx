@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
@@ -12,8 +12,6 @@ const SCROLL_DELAY_TIME = 1500;
 
 const AdminChilds = () => {
 
-  const location = useLocation();
-
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
   const [children_list, setChildrenList ] = useState([]);
@@ -21,28 +19,32 @@ const AdminChilds = () => {
 
   const [_422errors, set422errors] = useState({keyword:''});
   const [_400error, set400Error] = useState('');
-  const [_success, setSuccess] = useState(location.state);
+  const [_success, setSuccess] = useState('');
 
   const isMountedRef = useRef(true);
   
-  useEffect( async () => {
+  useEffect(() => {
     isMountedRef.current = false;
     setLoaded(false);
 
-    await axios.get('/api/admin/children/list')
-      .then((response) => {
-          setLoaded(true);
-          if(response.data.status_code==200){
-              setChildrenList(response.data.params);
-              var len = response.data.params.length;
-              if(len > INFINITE)
-                  setFetchChildrenList(response.data.params.slice(0, INFINITE));
-              else setFetchChildrenList(response.data.params.slice(0, len));
-          }
-          else {
-              set400Error("失敗しました。");
-          }
-      });
+    axios.get('/api/admin/children/list')
+    .then((response) => {
+      if(isMountedRef.current) return;
+      setLoaded(true);
+      if(response.data.status_code==200){
+          setChildrenList(response.data.params);
+          var len = response.data.params.length;
+          if(len > INFINITE)
+              setFetchChildrenList(response.data.params.slice(0, INFINITE));
+          else setFetchChildrenList(response.data.params.slice(0, len));
+      }
+      else {
+          set400Error("失敗しました。");
+      }
+    });
+    return () => {
+      isMountedRef.current = true;
+    }
   }, []);
 
   const fetchMoreChildrenList = () => {
@@ -69,6 +71,7 @@ const AdminChilds = () => {
     setChildrenList([]);
     axios.get('/api/admin/children/search', {params:{keyword: keyword}})
     .then((response) => {
+      if(isMountedRef.current) return;
       setLoaded(true);
       if(response.data.status_code==200){
         setChildrenList(response.data.params);

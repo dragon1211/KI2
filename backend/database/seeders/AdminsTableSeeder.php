@@ -20,7 +20,7 @@ class AdminsTableSeeder extends Seeder
         // );
         \App\Models\Admin::create([
             'email' => '56@zotman.jp',
-            'password' => Hash::make('password')
+            'password' => Hash::make('zotman0550')
         ]);
         \App\Models\Admin::create([
             'email' => 'chankan77@gmail.com',

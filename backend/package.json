@@ -38,12 +38,12 @@
         "@mui/material": "^5.2.7",
         "@react-pdf-viewer/core": "^3.0.0",
         "@react-pdf-viewer/default-layout": "^3.0.0",
-        "clipboard-copy": "^4.0.1",
+        "copy-to-clipboard": "^3.3.1",
         "date-fns": "^2.28.0",
         "es7-shim": "^6.0.0",
         "history": "^5.0.0",
         "moment": "^2.29.1",
-        "pdfjs-dist": "^2.11.338",
+        "pdfjs-dist": "^2.10.377",
         "prop-types": "^15.7.2",
         "react": "^17.0.2",
         "react-cookie": "^4.1.1",
@@ -52,7 +52,8 @@
         "react-infinite-scroll-component": "^6.1.0",
         "react-pdf": "^5.4.0",
         "react-router-dom": "^6.2.1",
-        "react-scripts": "^5.0.0"
+        "react-scripts": "^5.0.0",
+        "save": "^2.4.0"
     },
     "devDependencies": {
         "@babel/core": "^7.16.7",

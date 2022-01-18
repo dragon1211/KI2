@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -12,36 +12,39 @@ const SCROLL_DELAY_TIME = 1500;
 
 const AdminParents = () => {
 
-  const location = useLocation();
-
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
   const [father_list, setFatherList ] = useState([]);
   const [fetch_father_list, setFetchFatherList ] = useState([]);
   const [_422errors, set422errors] = useState({keyword:''});
   const [_400error, set400Error] = useState('');
-  const [_success, setSuccess] = useState(location.state);
+  const [_success, setSuccess] = useState('');
 
   const isMountedRef = useRef(true);
     
-  useEffect( async () => {
+  useEffect(() => {
     isMountedRef.current = false;
     setLoaded(false);
 
-    await axios.get('/api/admin/fathers/list')
-      .then((response) => {
-          setLoaded(true);
-          if(response.data.status_code==200){
-              setFatherList(response.data.params);
-              var len = response.data.params.length;
-              if(len > INFINITE)
-                setFetchFatherList(response.data.params.slice(0, INFINITE));
-              else setFetchFatherList(response.data.params.slice(0, len));
-          } 
-          else {
-            set400Error("失敗しました。");
-          }
-      });
+    axios.get('/api/admin/fathers/list')
+    .then((response) => {
+      if(isMountedRef.current) return;
+      
+      setLoaded(true);
+      if(response.data.status_code==200){
+          setFatherList(response.data.params);
+          var len = response.data.params.length;
+          if(len > INFINITE)
+            setFetchFatherList(response.data.params.slice(0, INFINITE));
+          else setFetchFatherList(response.data.params.slice(0, len));
+      } 
+      else {
+        set400Error("失敗しました。");
+      }
+    });
+    return function cleanup() {
+      isMountedRef.current = true
+    }
   }, []);
 
   const fetchMoreFatherList = () => {
@@ -56,7 +59,7 @@ const AdminParents = () => {
   };
 
 
-  const handleSearch = async (e) => {
+  const handleSearch = (e) => {
     e.preventDefault();
     if(keyword == '')
     {
@@ -66,17 +69,19 @@ const AdminParents = () => {
     set422errors({keyword:''});
     setLoaded(false);
     setFatherList([]);
-    await axios.get('/api/admin/fathers/search',{params: {keyword: keyword}})
-      .then((response) => {
-        setLoaded(true);
-        if(response.data.status_code==200){
-          setFatherList(response.data.params);
-          var len = response.data.params.length;
-          if(len > INFINITE)
-            setFetchFatherList(response.data.params.slice(0, INFINITE));
-          else setFetchFatherList(response.data.params.slice(0, len));
-        } 
-      });
+    axios.get('/api/admin/fathers/search',{params: {keyword: keyword}})
+    .then((response) => {
+      if(isMountedRef.current) return;
+      
+      setLoaded(true);
+      if(response.data.status_code==200){
+        setFatherList(response.data.params);
+        var len = response.data.params.length;
+        if(len > INFINITE)
+          setFetchFatherList(response.data.params.slice(0, INFINITE));
+        else setFetchFatherList(response.data.params.slice(0, len));
+      } 
+    });
   }
 
 	return (

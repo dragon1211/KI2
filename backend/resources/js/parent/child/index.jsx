@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import Notification from '../../component/notification';
 import Alert from '../../component/alert';
@@ -11,25 +11,25 @@ const SCROLL_DELAY_TIME = 1500;
 
 const ParentChilds = () => {
 
-    const location = useLocation();
-
     const [notice, setNotice] = useState(localStorage.getItem('notice'));
     const father_id = localStorage.getItem('kiki_acc_id');
     
     const [children_list, setChildrenList] = useState([]);
     const [fetch_children_list, setFetchChildrenList] = useState([]);
     const [loaded, setLoaded] = useState(false);
-    const [_success, setSuccess] = useState(location.state);
+    const [_success, setSuccess] = useState('');
     const [_400error, set400Error] = useState('');
 
     const isMountedRef = useRef(true);
 
-    useEffect( async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
         
-        await axios.get('/api/fathers/children/listOfFather', {params: {father_id: father_id}})
+        axios.get('/api/fathers/children/listOfFather', {params: {father_id: father_id}})
             .then(response => {
+                if(isMountedRef.current) return;
+
                 setLoaded(true);
                 setNotice(response.data.notice);
                 if(response.data.status_code==200){
@@ -43,6 +43,10 @@ const ParentChilds = () => {
                     set400Error("失敗しました。");
                 }
             })
+        
+        return () => {
+            isMountedRef.current = true;
+        }
     }, []);
 
 

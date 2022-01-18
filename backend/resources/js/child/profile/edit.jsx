@@ -39,38 +39,46 @@ const ChildProfileEdit = () => {
 
     const isMountedRef = useRef(true);
     
-    useEffect( async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
 
-        await axios.get('/api/children/detail/'+child_id)
-            .then(response => {
-                setLoaded(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code==200){
-                    let params = response.data.params;
-                    setProfile(params);
-                    setFirstName(params.first_name);
-                    setLastName(params.last_name);
-                    setEmail(params.email);
-                    setTel(params.tel);
-                    setIdentity(params.identity);
-                    setCompany(params.company? params.company: '');
-                }else {
-                    set400Error("失敗しました。");
-                }
-            })
-            .catch(err=>{
-                setLoaded(true);
-                setNotice(err.response.data.notice);
-                if(err.response.status==404){
-                    set404Error(err.response.data.message);
-                }
-            })
+        axios.get('/api/children/detail/'+child_id)
+        .then(response => {
+            if(isMountedRef.current) return;
+            
+            setLoaded(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code==200){
+                let params = response.data.params;
+                setProfile(params);
+                setFirstName(params.first_name);
+                setLastName(params.last_name);
+                setEmail(params.email);
+                setTel(params.tel);
+                setIdentity(params.identity);
+                setCompany(params.company? params.company: '');
+            }else {
+                set400Error("失敗しました。");
+            }
+        })
+        .catch(err=>{
+            if(isMountedRef.current) return;
+
+            setLoaded(true);
+            setNotice(err.response.data.notice);
+            if(err.response.status==404){
+                set404Error(err.response.data.message);
+            }
+        })
+
+        return () => {
+            isMountedRef.current = true
+        }
     },[]);
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         set422Errors({
             first_name:'',
@@ -99,19 +107,21 @@ const ChildProfileEdit = () => {
         }
         setSubmit(true);
 
-        await axios.put('/api/children/updateProfile/'+ child_id, post)
-            .then(response => {
-                setSubmit(false);
-                setNotice(response.data.notice);
-                switch(response.data.status_code){
-                    case 200: {
-                        navigator('/c-account/profile', { state: response.data.success_messages});
-                        break;
-                    }
-                    case 400: set400Error(response.data.error_messages); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        axios.put('/api/children/updateProfile/'+ child_id, post)
+        .then(response => {
+            if(isMountedRef.current) return;
+            
+            setSubmit(false);
+            setNotice(response.data.notice);
+            switch(response.data.status_code){
+                case 200: {
+                    navigator('/c-account/profile', { state: response.data.success_messages});
+                    break;
                 }
-            })
+                case 400: set400Error(response.data.error_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+            }
+        })
     }
 
 

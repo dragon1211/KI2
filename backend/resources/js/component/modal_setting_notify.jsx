@@ -25,41 +25,35 @@ export default function ModalSettingNotify({show, handleClose, meetingId, handle
   const [loaded2, setLoaded2] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const isMountedRef = useRef(false);
+  const isMountedRef = useRef(true);
 
-  useEffect( async () => {
-    isMountedRef.current = true;
-    let mounted = true;
-    const source = axios.CancelToken.source()
-    const controller = new AbortController();
-    const signal = controller.signal;
+  useEffect(() => {
+    isMountedRef.current = false;
 
     setLoaded1(false);
-    await axios.get('/api/fathers/meeting/approvals/listChildrenOfApprovel', {params: { meeting_id: meetingId }}, {cancelToken: source.token}, { signal: signal })
+    axios.get('/api/fathers/meeting/approvals/listChildrenOfApprovel', {params: { meeting_id: meetingId }})
       .then((response) => {
-        if(mounted){
-          setLoaded1(true);
-          if(response.data.status_code==200){
-            setApproval(response.data.params);
-          }
+        if(isMountedRef.current) return;
+
+        setLoaded1(true);
+        if(response.data.status_code==200){
+          setApproval(response.data.params);
         }
       });
 
     setLoaded2(false);
-    await axios.get('/api/fathers/meeting/approvals/listChildrenOfUnapprovel', {params: { meeting_id: meetingId }}, {cancelToken: source.token}, { signal: signal })
+    axios.get('/api/fathers/meeting/approvals/listChildrenOfUnapprovel', {params: { meeting_id: meetingId }})
       .then((response) => {
-        if(mounted){
-          setLoaded2(true);
-          if(response.data.status_code==200){
-            setUnapproval(response.data.params);
-          }
+        if(isMountedRef.current) return;
+        
+        setLoaded2(true);
+        if(response.data.status_code==200){
+          setUnapproval(response.data.params);
         }
       });
 
     return () => {
-      mounted = false;
-      source.cancel()
-      controller.abort();
+      isMountedRef.current = true;
     }
   }, []);
 
@@ -70,17 +64,19 @@ export default function ModalSettingNotify({show, handleClose, meetingId, handle
   },[loaded1, loaded2]);
 
 
-  const settingNotify = async (email) => {
+  const settingNotify = (email) => {
     const formdata = new FormData();
     formdata.append('email', JSON.stringify(new Array(email)));
     formdata.append('meeting_id', meetingId);
-    await axios.post('/api/fathers/meetingEditNotification', formdata)
-      .then(response=>{
-        switch(response.data.status_code){
-          case 200: setSuccess('通知に成功しました!'); break;
-          case 400: set400Error('通知に失敗しました。'); break;
-        }
-      })
+    axios.post('/api/fathers/meetingEditNotification', formdata)
+    .then(response=>{
+      if(isMountedRef.current) return;
+      
+      switch(response.data.status_code){
+        case 200: setSuccess('通知に成功しました!'); break;
+        case 400: set400Error('通知に失敗しました。'); break;
+      }
+    })
   }
 
 
@@ -90,7 +86,11 @@ export default function ModalSettingNotify({show, handleClose, meetingId, handle
     TransitionComponent={Transition}
     keepMounted
     aria-describedby="alert-dialog-slide-description"
-    onClose={handleClose}
+    onClose={()=>{
+      setSuccess('');
+      set400Error('');
+      handleClose();
+    }}
     id="SettingNotifyModal"
     >
         <DialogTitle className="px-0 pt-3">

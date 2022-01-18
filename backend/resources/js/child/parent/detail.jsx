@@ -20,27 +20,36 @@ const ChildParentDetail = () => {
     
     const isMountedRef = useRef(true);
     
-    useEffect( async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
-        await axios.get('/api/children/fathers/detail/'+ params?.father_id)
-            .then(response => {
-                setLoaded(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code==200){
-                    setParent(response.data.params);
-                }
-                else {
-                    set400Error("失敗しました。");
-                }
-            })
-            .catch(err=>{
-                setLoaded(true);
-                setNotice(err.response.data.notice);
-                if(err.response.status==404){
-                    set404Error(err.response.data.message);
-                }
-            })
+
+        axios.get('/api/children/fathers/detail/'+ params?.father_id)
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setLoaded(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code==200){
+                setParent(response.data.params);
+            }
+            else {
+                set400Error("失敗しました。");
+            }
+        })
+        .catch(err=>{
+            if(isMountedRef.current) return;
+            
+            setLoaded(true);
+            setNotice(err.response.data.notice);
+            if(err.response.status==404){
+                set404Error(err.response.data.message);
+            }
+        })
+            
+        return () => {
+            isMountedRef.current = true;
+        }
     },[]);
 
     useEffect(()=>{

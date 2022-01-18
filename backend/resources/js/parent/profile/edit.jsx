@@ -32,11 +32,14 @@ const ParentProfileEdit = () => {
 
   const isMountedRef = useRef(true);
 
-  useEffect( async () => {
+  useEffect(() => {
     isMountedRef.current = false;
     setLoaded(false);
-    await axios.get(`/api/fathers/detail/${father_id}`)
+
+    axios.get(`/api/fathers/detail/${father_id}`)
       .then(response => {
+        if(isMountedRef.current) return;
+
         setLoaded(true);
         setNotice(response.data.notice);
         if(response.data.status_code==200) {
@@ -51,15 +54,21 @@ const ParentProfileEdit = () => {
         } 
       })
       .catch(err=>{
+        if(isMountedRef.current) return;
+
         setLoaded(true);
         setNotice(err.response.data.notice);
         if(err.response.status==404){
             set404Error(err.response.data.message);
         }
       })
+
+    return () => {
+      isMountedRef.current = true;
+    }
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     set422Errors({ company:'', email: '',  tel: '',  profile:'' });
     const request = {
@@ -69,19 +78,21 @@ const ParentProfileEdit = () => {
       profile: profile
     }
     setSubmit(true);
-    await axios.put(`/api/fathers/updateProfile/${father_id}`, request)
-      .then(response => {
-        setNotice(response.data.notice);
-        setSubmit(false);
-        switch(response.data.status_code){
-          case 200:{
-            navigator('/p-account/profile', { state: response.data.success_messages });
-            break;
-          } 
-          case 400: set400Error(response.data.error_messages); break;
-          case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-        }
-      });
+    axios.put(`/api/fathers/updateProfile/${father_id}`, request)
+    .then(response => {
+      if(isMountedRef.current) return;
+      
+      setNotice(response.data.notice);
+      setSubmit(false);
+      switch(response.data.status_code){
+        case 200:{
+          navigator('/p-account/profile', { state: response.data.success_messages });
+          break;
+        } 
+        case 400: set400Error(response.data.error_messages); break;
+        case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+      }
+    });
   }
 
   

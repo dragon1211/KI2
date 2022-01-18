@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { LoadingButton } from '@material-ui/lab';
 import Alert from '../../../component/alert';
 
@@ -11,24 +11,35 @@ const ChildForgotPassword = () => {
     const [_400error, set400Error] = useState('')
     const [_success, setSuccess] = useState('')
 
-    const handleSubmit = async (e) => {
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+        isMountedRef.current = false;
+        return () => {
+            isMountedRef.current = true;
+        }
+    }, [])
+
+    const handleSubmit = (e) => {
         e.preventDefault();
         set422Errors({tel: ''});
         setSubmit(true);
 
         const formdata = new FormData();
         formdata.append('tel', tel);
-        await axios.post('/api/children/requestPassword', formdata)
-            .then(response => {
-                setSubmit(false)
-                switch(response.data.status_code){
-                    case 200: setSuccess(response.data.success_messages); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-                    case 400: set400Error(response.data.error_messages); break;
-                    case 401: set400Error(response.data.error_messages); break;
-                    case 402: set400Error(response.data.error_messages); break;
-                }
-            })        
+        axios.post('/api/children/requestPassword', formdata)
+        .then(response => {
+            if(isMountedRef.current) return;
+
+            setSubmit(false)
+            switch(response.data.status_code){
+                case 200: setSuccess(response.data.success_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                case 400: set400Error(response.data.error_messages); break;
+                case 401: set400Error(response.data.error_messages); break;
+                case 402: set400Error(response.data.error_messages); break;
+            }
+        })        
     }
 
 

@@ -32,32 +32,37 @@ const AdminParentEdit = () => {
 
     const isMountedRef = useRef(true);
     
-    useEffect( async () => {
+    useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
 
-        await axios.get(`/api/admin/fathers/detail/${params?.father_id}`)
-            .then(response => {
-                setLoaded(true);
-                if(response.data.status_code==200){
-                    var parent = response.data.params;
-                    setParent(parent);
-                    if(parent){
-                        setCompany(parent?.company);
-                        setEmail(parent.email);
-                        setTelephone(parent.tel);
-                        setProfile(parent.profile ? parent.profile: '');  
-                        setLimit(parent.limit);
-                    }
+        axios.get(`/api/admin/fathers/detail/${params?.father_id}`)
+        .then(response => {
+            if(isMountedRef.current) return;
+            
+            setLoaded(true);
+            if(response.data.status_code==200){
+                var parent = response.data.params;
+                setParent(parent);
+                if(parent){
+                    setCompany(parent?.company);
+                    setEmail(parent.email);
+                    setTelephone(parent.tel);
+                    setProfile(parent.profile ? parent.profile: '');  
+                    setLimit(parent.limit);
                 }
-                else{
-                    set400Error("失敗しました。");
-                }
-            })
+            }
+            else{
+                set400Error("失敗しました。");
+            }
+        })
+        return () => {
+            isMountedRef.current = true;
+        }
     },[]);
 
     
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         set401Error('');
         set422Errors({
@@ -76,20 +81,22 @@ const AdminParentEdit = () => {
             profile: profile,
         };
 
-        await axios.put(`/api/admin/fathers/updateProfile/${params?.father_id}`, request)
-            .then(response => {
-                setSubmit(false);
-                switch(response.data.status_code){
-                    case 200: {
-                        navigator(`/admin/parent/detail/${params?.father_id}`,
-                        { state: response.data.success_messages });
-                        break;
-                    }
-                    case 400: set400Error(response.data.error_messages); break;
-                    case 401: set401Error(response.data.error_messages); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        axios.put(`/api/admin/fathers/updateProfile/${params?.father_id}`, request)
+        .then(response => {
+            if(isMountedRef.current) return;
+            
+            setSubmit(false);
+            switch(response.data.status_code){
+                case 200: {
+                    navigator(`/admin/parent/detail/${params?.father_id}`,
+                    { state: response.data.success_messages });
+                    break;
                 }
-            })
+                case 400: set400Error(response.data.error_messages); break;
+                case 401: set401Error(response.data.error_messages); break;
+                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+            }
+        })
     }
 
 	return (
