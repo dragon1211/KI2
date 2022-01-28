@@ -9,8 +9,8 @@ const ParentProfileEdit = () => {
 
   const navigator = useNavigate();
 
-  const father_id = localStorage.getItem('kiki_acc_id');
-  const [notice, setNotice] = useState(localStorage.getItem('notice'));
+  const father_id = localStorage.getItem('father_id');
+  const [notice, setNotice] = useState(-1);
 
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');

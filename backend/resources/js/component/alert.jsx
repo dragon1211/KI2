@@ -7,13 +7,14 @@ const Alert = (props) => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        let timer = setTimeout(()=>{
-            clearTimeout(timer);
-            if(props.hide)  props.hide();
-        }, 5000)
+        const element = `<div class="alert-${props.type} ft-18 ft-xs-16" id="alert-wrapper">`+ 
+                            props.children + 
+                        '</div>';
+        document.getElementById('alert').innerHTML = element;
+        if(props.hide)  props.hide();
     },[]);
 
-	return (
+    return (
         <div className={`alert-${props.type} ft-18 ft-xs-16`}>
             {props.children}
         </div>

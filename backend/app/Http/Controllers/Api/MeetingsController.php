@@ -694,7 +694,7 @@ class MeetingsController extends Controller {
         if (request()->route()->action['as'] != 'mdc') {
             $result->children = [];
             $rec = [];
-    
+
             if (null !== ($rel = FatherRelation::select('child_id')->where('father_id', (int)$result->father_id)->get())) {
                 foreach ($rel as $i => $re) {
                     if (null !== ($rech = Child::select($all_child_select)->where('id', $re->child_id)->first())) {

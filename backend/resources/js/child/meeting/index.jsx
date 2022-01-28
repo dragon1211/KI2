@@ -12,8 +12,8 @@ const SCROLL_DELAY_TIME = 1500;
 
 const ChildMeetings = () => {
 
-    const child_id = localStorage.getItem('kiki_acc_id');
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const child_id = localStorage.getItem('child_id');
+    const [notice, setNotice] = useState(-1);
     const [tab_status, setTabStatus] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [loaded1, setLoaded1] = useState(false);
@@ -73,8 +73,8 @@ const ChildMeetings = () => {
             }
         })
             
-        return function cleanup() {
-            isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = true
         }
     },[]);
 

@@ -10,8 +10,8 @@ const ChildProfilePasswordEdit = () => {
 
     const navigator = useNavigate();
 
-    const child_id = localStorage.getItem('kiki_acc_id');
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const child_id = localStorage.getItem('child_id');
+    const [notice, setNotice] = useState(-1);
 
     const [password, setPassword] = useState('');
     const [password_confirmation, setConfirmPassword] = useState('');

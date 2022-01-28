@@ -18,9 +18,9 @@ const ParentMeetingEdit = () => {
     const navigator = useNavigate();
     const params = useParams();
     
-    const father_id = localStorage.getItem('kiki_acc_id');
+    const father_id = localStorage.getItem('father_id');
     const meeting_id = params?.meeting_id;
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const [notice, setNotice] = useState(-1);
     
     const [title, setTitle] = useState('');
     const [memo, setMemo] = useState('');

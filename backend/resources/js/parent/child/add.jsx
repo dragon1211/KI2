@@ -79,8 +79,8 @@ const LineModal = ({ show, handleClose }) => {
 
 
 const ParentChildAdd = () => {
-  const [notice, setNotice] = useState(localStorage.getItem('notice'));
-  const father_id = localStorage.getItem('kiki_acc_id');
+  const [notice, setNotice] = useState(-1);
+  const father_id = localStorage.getItem('father_id');
 
   const [loaded, setLoaded] = useState(true);
 
@@ -91,10 +91,19 @@ const ParentChildAdd = () => {
   const [_422errors, set422Errors] = useState({identity: ''});
   const [submit, setSubmit] = useState(false);
 
-  const [_copyFlag, setCopyFlag] = useState(false);
-  const [show_lineModal, setShowLineModal] = useState(false);
-
   const isMountedRef = useRef(true);
+
+  const inviteurl =  '「KIKI」の招待が届いています。' + '\n' +
+  'まずは以下より仮登録を行ってください。' + '\n' +
+  '※スマホ本体を最新の状態にアップデートしてからURLをクリックしてください。' + '\n\n' +
+  document.getElementById('inviteurl').value + '\n\n' +
+  '▼公式サイトはこちら' + '\n' +
+  'https://kikikan.jp';
+
+  const lineText =
+      `「KIKI」の招待が届いています。%0Aまずは以下より仮登録を行ってください。
+      %0A%0A※スマホ本体を最新の状態にアップデートしてからURLをクリックしてください。
+      %0A%0A${document.getElementById('inviteurl_html').value}%0A%0A▼公式サイトはこちら%0A${document.getElementById('siteurl').value}`;
 
   useEffect(() => {
     isMountedRef.current = false;
@@ -128,16 +137,26 @@ const ParentChildAdd = () => {
 
 
 
-  const handleCheckRelations = () => {
+  const handleCheckRelations = (type) => {
     set401Error('');
     setLoaded(false);
+
+    if(type == 'invite'){
+      if(!copy(inviteurl, {debug: true})){
+        set400Error('コピー失敗しました。');
+        return;
+      }
+    }
+
     axios.get('/api/fathers/relations/check')
     .then(response=>{
       if(isMountedRef.current) return;
 
       switch(response.data.status_code){
         case 200: {
-          setShowLineModal(true);
+          if(type == 'invite') setSuccess('コピー成功しました。');
+          else if(type == 'line')
+            window.location.href = `http://line.naver.jp/R/msg/text/?${lineText}`;
           break;
         }
         case 400: set400Error(response.data.error_messages); break;
@@ -200,18 +219,14 @@ const ParentChildAdd = () => {
                   </LoadingButton>
                 </form>
                 <div style={{color:"#49A3FC",display:"flex", justifyContent:"center", alignItems:"center", paddingTop:40}} >
-                  <a onClick={()=>handleCheckRelations()}>招待用URLをコピーする</a>
+                  <a onClick={()=>handleCheckRelations('invite')}>招待用URLをコピーする</a>
                 </div>
                 <div style={{color:"#49A3FC",display:"flex", justifyContent:"center", alignItems:"center", paddingTop:20}}>
-                  <a onClick={()=>handleCheckRelations()}>招待用URLをLINEで送信</a>
+                  <a onClick={()=>handleCheckRelations('line')}>招待用URLをLINEで送信</a>
                 </div>
               </div>
             </div>
           </section>
-          <LineModal
-            show={show_lineModal}
-            handleClose={()=>setShowLineModal(false)}
-          />
         </div>
       </div>
       { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }

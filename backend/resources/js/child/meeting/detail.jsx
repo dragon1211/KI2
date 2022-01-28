@@ -15,8 +15,8 @@ const ChildMeetingDetail = () => {
     const navigator = useNavigate();
     const params = useParams();         //meeting/detail/:meeting_id
 
-    const child_id = localStorage.getItem('kiki_acc_id');
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const child_id = localStorage.getItem('child_id');
+    const [notice, setNotice] = useState(-1);
     
     const [loaded, setLoaded] = useState(false);
     const [meeting, setMeeting] = useState(null);
@@ -66,7 +66,7 @@ const ChildMeetingDetail = () => {
             }
         })
             
-        return function cleanup() {
+        return () => {
             isMountedRef.current = true
         }
     },[]);

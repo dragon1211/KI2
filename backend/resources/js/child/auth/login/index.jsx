@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
-import { useCookies } from 'react-cookie';
 import Alert from '../../../component/alert';
 
 
 const ChildLogin = () => {
 
-    const [cookies, setCookie] = useCookies(['user']);
     const location = useLocation();
 
     const [submit, setSubmit] = useState(false);
@@ -22,10 +20,43 @@ const ChildLogin = () => {
     const isMountedRef = useRef(true);
     useEffect(() => {
         isMountedRef.current = false;
+
+        axios.post('/api/children/checkSession').then(response => {
+            if (isMountedRef.current) return;
+
+            switch (response.data.status_code) {
+                case 200: {
+                    if(location.search == '')
+                        window.location.href = "/c-account/meeting";
+                    else
+                        window.location.href = location.search.replace('?redirect_to=', '');
+                    break;
+                }
+                default: break;
+            }
+        });
+
         return () => {
             isMountedRef.current = true;
         }
     }, [])
+
+
+    const loginOK = (id = 0) =>{
+        let token = {
+            type: 'c-account',
+            id: id,
+            notice: 0,
+            from_login: true
+        };
+        localStorage.setItem('c-account_token', JSON.stringify(token));
+        localStorage.setItem('child_id', id);
+
+        if(location.search == '')
+            window.location.href = "/c-account/meeting";
+        else
+            window.location.href = location.search.replace('?redirect_to=', '');
+    }
 
 
     const handleSubmit = (e) => {
@@ -44,14 +75,7 @@ const ChildLogin = () => {
             setSubmit(false)
             switch(response.data.status_code){
                 case 200:{
-                    localStorage.setItem("kiki_login_flag", true);
-                    localStorage.setItem('kiki_acc_type', 'c-account');
-                    localStorage.setItem('kiki_acc_id', response.data.params.id);
-                    setCookie('logged', 'success');
-                    if(location.search == '')  
-                        window.location.href = "/c-account/meeting";
-                    else   
-                        window.location.href = location.search.replace('?redirect_to=', '');
+                    loginOK(response.data.params.id);
                     break;
                 }
                 case 400: set400Error(response.data.error_message); break;

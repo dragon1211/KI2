@@ -17,8 +17,8 @@ const ParentMeetingDetail = () => {
   const navigator = useNavigate();
   const params = useParams();
 
-  const [notice, setNotice] = useState(localStorage.getItem('notice'));
-  const father_id = localStorage.getItem('kiki_acc_id');
+  const [notice, setNotice] = useState(-1);
+  const father_id = localStorage.getItem('father_id');
 
   const [loaded, setLoaded] = useState(false);
   const [loaded_children, setLoadedChildren] = useState(false);

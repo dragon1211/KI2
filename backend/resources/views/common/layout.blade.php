@@ -40,6 +40,7 @@
     </head>
 
     <body>
+        <div id="alert"></div>
         <div id="root"></div>
         @yield('content')
     </body>

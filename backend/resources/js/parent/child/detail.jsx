@@ -12,7 +12,7 @@ const ParentChildDetail = () => {
     const navigator = useNavigate();
     const params = useParams();
 
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const [notice, setNotice] = useState(-1);
     const [loaded, setLoaded] = useState(false);
     const [show_delete, setShowDelete] = useState(false);
     const [submit, setSubmit] = useState(false);
@@ -21,7 +21,7 @@ const ParentChildDetail = () => {
     const [_404error, set404Error] = useState('');
     const [_success, setSuccess] = useState('');
     
-    const father_id = localStorage.getItem('kiki_acc_id');
+    const father_id = localStorage.getItem('father_id');
     const child_id = params?.child_id;
     const isMountedRef = useRef(true);
     

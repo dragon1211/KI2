@@ -42,7 +42,7 @@ const AdminParents = () => {
         set400Error("失敗しました。");
       }
     });
-    return function cleanup() {
+    return () => {
       isMountedRef.current = true
     }
   }, []);

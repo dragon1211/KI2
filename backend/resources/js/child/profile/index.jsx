@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
-import { useCookies } from 'react-cookie';
 
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
@@ -11,10 +10,10 @@ import Notification from '../../component/notification';
 
 const ChildProfileDetail = () => {
 
-    const [cookies, setCookie] = useCookies(['user']);
+    const navigator = useNavigate();
 
-    const child_id = localStorage.getItem('kiki_acc_id');
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const child_id = localStorage.getItem('child_id');
+    const [notice, setNotice] = useState(-1);
 
     const [image, setImage] = useState('');
     const [profile, setProfile] = useState(null)
@@ -69,7 +68,7 @@ const ChildProfileDetail = () => {
     const handleLogout = () => {
         axios.get('/c-account/logout')
         .then(() => {
-            setCookie('logged', null);
+            localStorage.removeItem('c-account_token');
             window.location.href = '/c-account/login';
         })
     }
@@ -147,7 +146,7 @@ const ChildProfileDetail = () => {
                                         </p>
                                         <p className="txt">{profile.identity}</p>
                                         <a target='_blank'
-                                            href={'http://line.me/R/msg/text/?'+
+                                            href={'http://line.naver.jp/R/msg/text/?'+
                                             `${profile.last_name}%20${profile.first_name}さんがIDを共有しました。%0AIDはこちら%0A%0A${profile.identity}%0A%0AIDをコピーしてメンバー追加してください。%0A%0AKIKI運営事務局`}>
                                             IDを教える
                                         </a>

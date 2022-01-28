@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'admin'], function () {
     // AdminController
     Route::post('/login', '\App\Http\Controllers\Api\AdminController@login');
+    Route::post('/checkSession', '\App\Http\Controllers\Api\AdminController@checkSession');
 
     Route::group(['middleware' => 'auth:admins'], function () {
         // AdminController
@@ -88,6 +89,7 @@ Route::group(['prefix' => 'fathers'], function () {
     Route::post('/registerMain', '\App\Http\Controllers\Api\FathersController@registerMain');
     Route::post('/requestPassword', '\App\Http\Controllers\Api\FathersController@requestPassword');
     Route::post('/login', '\App\Http\Controllers\Api\FathersController@login');
+    Route::post('/checkSession', '\App\Http\Controllers\Api\FathersController@checkSession');
     Route::put('/updatePassword/{father_id?}', '\App\Http\Controllers\Api\FathersController@updatePassword')->name('ppp');
 
     Route::group(['middleware' => ['auth:fathers', 'notice.incomplete']], function () {
@@ -159,6 +161,7 @@ Route::group(['prefix' => 'children'], function () {
     Route::post('/registerMain', '\App\Http\Controllers\Api\ChildrenController@registerMain');
     Route::post('/requestPassword', '\App\Http\Controllers\Api\ChildrenController@requestPassword');
     Route::post('/login', '\App\Http\Controllers\Api\ChildrenController@login');
+    Route::post('/checkSession', '\App\Http\Controllers\Api\ChildrenController@checkSession');
     Route::put('/updatePassword/{child_id?}', '\App\Http\Controllers\Api\ChildrenController@updatePassword')->name('cpc');
 
     // FatherRelationsController

@@ -3,6 +3,7 @@ services:
   app:
     build: ./infra/php
     volumes:
+      - ./infra/php/php.ini:/usr/local/etc/php/php.ini
       - ./backend:/work
 
   web:

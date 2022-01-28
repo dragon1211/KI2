@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
 
 export default function AdminSide() {
     const [selected, setSelected] = useState('');
-    const [cookies, setCookie] = useCookies(['user']);
 
     const handleLogout = () => {
         axios.get('/admin/logout')
         .then(() => {
-            setCookie('logged', null);
+            localStorage.removeItem('admin_token');
             window.location.href = '/admin/login';
         })
     }

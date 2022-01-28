@@ -117,14 +117,22 @@ class FathersController extends Controller {
         ];
 
         try {
+            // DBの値の準備。
+            DB::beginTransaction();
+
             // DBに入ります。
-            EmailActivation::create($create);
+            $emac = new EmailActivation;
+            $emac->fill($create);
+            $emac->push();
 
             // メールを送ります。
             Mail::to($r->email)->send(new FathersRegistrationTemporaryMail($token));
+
+            DB::commit();
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
+            DB::rollback();
             return ['status_code' => 400, 'error_messages' => '登録に失敗しました。'];
         }
 

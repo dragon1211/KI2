@@ -15,7 +15,7 @@ const ParentChildEdit = () => {
   const navigator = useNavigate();
   const params = useParams();
 
-  const [notice, setNotice] = useState(localStorage.getItem('notice'));
+  const [notice, setNotice] = useState(-1);
   const [_success, setSuccess] = useState('');
   const [_400error, set400Error] = useState('');
   const [_404error, set404Error] = useState('');
@@ -25,7 +25,7 @@ const ParentChildEdit = () => {
   const [submit, setSubmit] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const father_id = localStorage.getItem('kiki_acc_id');
+  const father_id = localStorage.getItem('father_id');
   const child_id = params?.child_id;
 
   const isMountedRef = useRef(true);

@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Log;
 
 use App\Models\LoginLimits;
 
-// use App\Models\LoginLimits;
-
 trait AuthenticationTrait {
     private function makeSession ($guard, $db) {
+        //session()->regenerate();
+
         if (!session()->has($guard)) {
             // 認証されたデータのpasswordとremember_token以外を把握する
             unset($db['password']);
@@ -25,6 +25,28 @@ trait AuthenticationTrait {
         return $db;
     }
 
+    public function checkSession () {
+        if (isset($_COOKIE['remember_token']) && !is_null($_COOKIE['remember_token'])) { // クッキーがある場合
+            if (null !== ($get = $this->getModel()->where('remember_token', $_COOKIE['remember_token'])->first())) { // トークンがある場合
+                // セッションを想像する
+                $login_user_datum = $this->makeSession($this->getGuard(), $get->toArray());
+
+                return ['status_code' => 200, 'params' => ['id' => $login_user_datum['id']]];
+            }
+        }
+        if (session()->has($this->getGuard())) {
+            if (null !== ($get = $this->getModel()->where('id', session()->get($this->getGuard())['id'])->first())) { // トークンがある場合
+                // セッションを想像する
+                $login_user_datum = $this->makeSession($this->getGuard(), $get->toArray());
+
+                return ['status_code' => 200, 'params' => ['id' => $login_user_datum['id']]];
+            }
+
+        }
+
+        return ['status_code' => 202];
+    }
+
     public function login (Request $r) {
         $loginid = $this->getGuard() == 'children' ? $r->tel : $r->email;
 
@@ -34,16 +56,7 @@ trait AuthenticationTrait {
             }
 
             if (null !== ($ll = LoginLimits::where('login_id', $loginid)->first()) && $ll->fail_number >= 10) {
-                return ['status_code' => 400, 'error_message' => ['10回連続で失敗しましたので、10分、ログインロックになりました。']];
-            }
-        }
-
-        if (isset($_COOKIE['remember_token']) && !is_null($_COOKIE['remember_token'])) { // クッキーがある場合
-            if (null === ($get = $this->getModel()->where('remember_token', $_COOKIE['remember_token'])->first())) { // トークンがある場合
-                // セッションを想像する
-                $login_user_datum = $this->makeSession($this->getGuard(), $get->toArray());
-
-                return ['status_code' => 200, 'params' => ['id' => $login_user_datum['id']]];
+                return ['status_code' => 400, 'error_message' => ['10回連続で失敗したため、10分間はログインができなくなりました。']];
             }
         }
 
@@ -92,16 +105,18 @@ trait AuthenticationTrait {
         }
 
         // 既にセッションがあれば、ログアウトします。
-        if (Session::has('children')) Session::forget('children');
-        if (Session::has('fathers'))  Session::forget('fathers');
-        if (Session::has('admins'))   Session::forget('admins');
+        //if (Session::has('children')) Session::forget('children');
+        //if (Session::has('fathers'))  Session::forget('fathers');
+        //if (Session::has('admins'))   Session::forget('admins');
+        //unset($_COOKIE['remember_token']);
+        //setcookie('remember_token', '', time() - 3600, '/', $_SERVER['HTTP_HOST'], 0, 1);
 
         if ($r->remember_token == 'true') {
             $token = bin2hex(random_bytes(24));
 
             try {
                 $this->getModel()->where('id', $get->id)->update(['remember_token' => $token]);
-                setcookie('remember_token', $token, time()+157788000, '/', $_SERVER['HTTP_HOST'], 0, 1);
+                setcookie('remember_token', $token, time()+157788000, '/', $_SERVER['HTTP_HOST'], false, true);
             }
             catch (\Throwable $e) {
                 Log::critical($e->getMessage());

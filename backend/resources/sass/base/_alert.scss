@@ -12,7 +12,7 @@
     color: #fff;
     font-weight: 700;
     border-radius: 0;
-    z-index: 1000;
+    z-index: 99999;
     // duration | timing-function | delay | iteration-count | direction | fill-mode | play-state | name
     animation: 1s ease-out 4s 1 normal forwards running fadeOut;
     -moz-animation: 1s ease-out 4s 1 normal forwards running fadeOut;

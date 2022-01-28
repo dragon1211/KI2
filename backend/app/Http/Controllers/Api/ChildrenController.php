@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Child;
 use App\Models\Father;
 use App\Models\FatherRelation;
+use App\Models\Meeting;
 use App\Models\MeetingApprovals;
 use App\Models\TelActivation;
 
@@ -196,11 +197,26 @@ class ChildrenController extends Controller {
 
             if (!is_null($telact->father_id)) {
                 $rel = new FatherRelation;
+
                 $add = [
                     'father_id' => $telact->father_id,
                     'child_id' => $child->id,
                     'hire_at' => date('Y-m-d H:i:s', time()),
                 ];
+
+                if (null !== ($meet = Meeting::select('id')->where('father_id', $telact->father_id)->where('is_favorite', true)->get())) {
+                    foreach ($meet as $m) {
+                        $app = new MeetingApprovals;
+
+                        $join = [
+                            'child_id' => $child->id,
+                            'meeting_id' => $m->id,
+                        ];
+
+                        $app->fill($join);
+                        $app->push();
+                    }
+                }
 
                 $rel->fill($add);
                 $rel->push();

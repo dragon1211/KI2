@@ -95,7 +95,7 @@ class FatherRelationsController extends Controller {
             }
             else {
                 DB::rollback();
-                return ['status_code' => 400, 'error_messages' => ['すでに追加されました']];
+                return ['status_code' => 400, 'error_messages' => ['すでに追加済みです。']];
             }
         } catch (\Throwable $e) {
             // 失敗

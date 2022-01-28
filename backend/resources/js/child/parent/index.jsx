@@ -11,8 +11,8 @@ const SCROLL_DELAY_TIME = 1500;
 
 const ChildParents = () => {
     
-    const child_id = localStorage.getItem('kiki_acc_id');
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const child_id = localStorage.getItem('child_id');
+    const [notice, setNotice] = useState(-1);
     
     const [parent_list, setParentList] = useState([]);
     const [fetch_parent_list, setFetchParentList] = useState([]);

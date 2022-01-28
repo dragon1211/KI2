@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
-import { useCookies } from 'react-cookie';
 
 import Alert from '../../component/alert';
 
 const AdminLogin = () => {
 
-    const [cookies, setCookie] = useCookies(['user']);
     const location = useLocation();
+    const navigator = useNavigate();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -22,25 +21,51 @@ const AdminLogin = () => {
 
     useEffect(() => {
         isMountedRef.current = false;
+
+        axios.post('/api/admin/checkSession').then(response => {
+            if (isMountedRef.current) return;
+
+            switch (response.data.status_code) {
+                case 200: {
+                    if(location.search == '')
+                        window.location.href = "/admin/meeting";
+                    else
+                        window.location.href = location.search.replace('?redirect_to=', '');
+                    break;
+                }
+                default: break;
+            }
+        });
+
         return () => {
             isMountedRef.current = true;
         }
     }, [])
 
-    const init_error = () => {
-        set422Errors({ email:null, password:null });
-        set400Error(null);
+
+    const loginOK = (id) => {
+        let token = {
+            type: 'admin',
+            id: id,
+            from_login: true
+        };
+        localStorage.setItem('admin_token', JSON.stringify(token));
+
+        if(location.search == '')
+            window.location.href = "/admin/meeting";
+        else
+            window.location.href = location.search.replace('?redirect_to=', '');
     }
 
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        set422Errors({ email:'', password:'' });
         setSubmit(true);                            //show progressbar
         const formdata = new FormData();
         formdata.append('email', email);
         formdata.append('password', password);
-
-        init_error();
 
         axios.post('/api/admin/login', formdata)
         .then(response => {
@@ -48,14 +73,7 @@ const AdminLogin = () => {
             setSubmit(false)
             switch(response.data.status_code){
                 case 200: {
-                    localStorage.setItem('kiki_login_flag', true);
-                    localStorage.setItem('kiki_acc_type', 'admin');
-                    setCookie('logged', 'success');
-                    if(location.search == '')  
-                        window.location.href = "/admin/meeting";
-                    else   
-                        window.location.href = location.search.replace('?redirect_to=', '');
-                    
+                    loginOK(response.data.params.id);                
                     break;
                 }
                 case 422: {

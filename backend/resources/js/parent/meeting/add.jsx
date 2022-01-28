@@ -15,10 +15,10 @@ const ParentMeetingAdd = () => {
     const navigator = useNavigate();
     const location = useLocation();
 
-    const father_id = localStorage.getItem('kiki_acc_id');
-    
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
-    
+    const father_id = localStorage.getItem('father_id');
+
+    const [notice, setNotice] = useState(-1);
+
     const [title, setTitle] = useState('');
     const [memo, setMemo] = useState('');
     const [text, setText] = useState('');
@@ -27,7 +27,7 @@ const ParentMeetingAdd = () => {
     const [meeting_image, setMeetingImages] = useState([]);
     const [approval_list, setApprovalList] = useState([]);
     const [children_list, setChildrenList] = useState([]);
-    
+
     const [_422errors, set422Errors] = useState({title:'', text:'', memo:'', pdf:'', image:''})
     const [_400error, set400Error] = useState('');
 
@@ -41,7 +41,7 @@ const ParentMeetingAdd = () => {
     useEffect(() => {
         isMountedRef.current = false;
         setLoaded(false);
-        
+
         let clone = localStorage.getItem('cloneMeeting');
         if(clone){
             clone = JSON.parse(clone);
@@ -83,7 +83,7 @@ const ParentMeetingAdd = () => {
                     for(var i in list)
                         arr.push({...list[i], checked: false})
                     setChildrenList(arr);
-                    if(list.length > 0) 
+                    if(list.length > 0)
                         setCheckRadio("all_send");
                     else setCheckRadio('');
                 }
@@ -111,7 +111,7 @@ const ParentMeetingAdd = () => {
         if(!loaded) return;      //if dont load data
         var list = [...children_list];
         if(check_radio=="all_send"){        //send all children
-            for(var i=0; i<list.length; i++) 
+            for(var i=0; i<list.length; i++)
                 list[i].checked = true;
         }
         else if(check_radio=="pickup_send"){                     //send pickup
@@ -131,11 +131,11 @@ const ParentMeetingAdd = () => {
 
         const formdata = new FormData();
         formdata.append('father_id', father_id);
-        formdata.append('title', title);        
-        formdata.append('text', text);        
-        formdata.append('memo', memo);        
+        formdata.append('title', title);
+        formdata.append('text', text);
+        formdata.append('memo', memo);
         formdata.append('pdf', pdf);
-        formdata.append('image', JSON.stringify(meeting_image));        
+        formdata.append('image', JSON.stringify(meeting_image));
         let c_arr = [];
         for(let i in children_list){
             if(children_list[i].checked) c_arr.push(children_list[i].id);
@@ -184,7 +184,7 @@ const ParentMeetingAdd = () => {
 
         Promise.all(promises).then(images => {
             setMeetingImages([...meeting_image, ...images]);
-        }, 
+        },
         error => { console.error(error); });
     };
 
@@ -211,7 +211,7 @@ const ParentMeetingAdd = () => {
         list[index].checked = e.target.checked;
         setChildrenList(list);
     }
-    
+
 
 	return (
     <div className="l-content">
@@ -222,7 +222,7 @@ const ParentMeetingAdd = () => {
                 </div>
                 <Notification notice={notice}/>
             </div>
-    
+
             <div className="l-content-wrap">
                 <div className="p-article">
                     <div className="p-article-wrap position-relative" style={{ minHeight:'500px'}}>
@@ -230,9 +230,9 @@ const ParentMeetingAdd = () => {
                         !loaded && <PageLoader />
                     }
                     {
-                        loaded && 
+                        loaded &&
                         <article className="p-article__body">
-                            <div className="p-article__content">       
+                            <div className="p-article__content">
                                 <div className="p-article__context">
                                     <form className="edit-form" onSubmit={handleSubmit}>
                                         <div className="edit-set">
@@ -242,7 +242,7 @@ const ParentMeetingAdd = () => {
                                                 _422errors.title &&
                                                     <span className="l-alert__text--error ft-16 ft-md-14">
                                                         {_422errors.title}
-                                                    </span> 
+                                                    </span>
                                             }
                                         </div>
                                         <div className="edit-set">
@@ -252,7 +252,7 @@ const ParentMeetingAdd = () => {
                                                 _422errors.text &&
                                                     <span className="l-alert__text--error ft-16 ft-md-14">
                                                         {_422errors.text}
-                                                    </span> 
+                                                    </span>
                                             }
                                         </div>
                                         <div className="edit-set">
@@ -262,22 +262,22 @@ const ParentMeetingAdd = () => {
                                                 _422errors.memo &&
                                                     <span className="l-alert__text--error ft-16 ft-md-14">
                                                         {_422errors.memo}
-                                                    </span> 
+                                                    </span>
                                             }
                                         </div>
                                         <div className="edit-set edit-set-mt15">
                                             <label className="edit-set-file-label" htmlFor="file_pdf">
                                                 PDFアップロード
                                                 <input type="file" name="file_pdf" accept=".pdf" id="file_pdf" onChange={handlePDFChange} />
-                                            </label> 
+                                            </label>
                                             {
-                                                pdf && 
+                                                pdf &&
                                                 <IconButton
                                                     onClick={()=>{setPdf(''); setPDFURL('');}}
                                                     style={{position: 'absolute',
                                                         top: '-6px',
                                                         right: '-6px'}}>
-                                                    <RemoveIcon 
+                                                    <RemoveIcon
                                                         style={{width:'22px', height:'22px',
                                                         color: 'white',
                                                         background: '#dd0000',
@@ -288,23 +288,23 @@ const ParentMeetingAdd = () => {
                                                 _422errors.pdf &&
                                                 <span className="l-alert__text--error ft-16 ft-md-14">
                                                     {_422errors.pdf}
-                                                </span> 
+                                                </span>
                                             }
                                             <PreviewPDF pdf_url={pdf_url}></PreviewPDF>
                                         </div>
                                         <div className="edit-set edit-set-mt15">
                                             <label className="edit-set-file-label" htmlFor={meeting_image.length < 10 ? 'file_image': ''}>
                                                 画像アップロード
-                                                <input type="file"  multiple="multiple" name="file_image[]" accept=".png, .jpg, .jpeg" id="file_image"  onChange={handleImageChange}/> 
+                                                <input type="file"  multiple="multiple" name="file_image[]" accept=".png, .jpg, .jpeg" id="file_image"  onChange={handleImageChange}/>
                                             </label>
                                             {
                                                 _422errors.image &&
                                                 <span className="l-alert__text--error ft-16 ft-md-14">
                                                     {_422errors.image}
-                                                </span> 
+                                                </span>
                                             }
                                         </div>
-                                        
+
                                         <div className="p-file-image justify-content-start">
                                         {
                                             meeting_image?.map((x, k)=>
@@ -315,7 +315,7 @@ const ParentMeetingAdd = () => {
                                                         style={{position: 'absolute',
                                                             bottom: '-6px',
                                                             right: '-6px'}}>
-                                                        <RemoveIcon 
+                                                        <RemoveIcon
                                                             style={{width:'22px', height:'22px',
                                                             color: 'white',
                                                             background: '#dd0000',
@@ -330,13 +330,13 @@ const ParentMeetingAdd = () => {
                                             )
                                         }
                                         </div>
-                
+
                                         <div className="edit-set edit-set-send">
                                             <label htmlFor="all_send">
-                                                <input className="boolean optional" 
+                                                <input className="boolean optional"
                                                     type="radio"
                                                     id="all_send"
-                                                    name="check_radio" 
+                                                    name="check_radio"
                                                     value={false}
                                                     onChange={e=>setCheckRadio(e.target.id)}
                                                     checked = {(check_radio == 'all_send')? true : false}
@@ -345,13 +345,13 @@ const ParentMeetingAdd = () => {
                                                 <span className="lbl padding-16">全員に送信</span>
                                             </label>
                                         </div>
-                
+
                                         <div className="edit-set-mt5 edit-set-send">
                                             <label htmlFor="pickup_send">
-                                                <input className="boolean optional" 
+                                                <input className="boolean optional"
                                                     type="radio"
                                                     id="pickup_send"
-                                                    name="check_radio" 
+                                                    name="check_radio"
                                                     onChange={e=>setCheckRadio(e.target.id)}
                                                     checked = {(check_radio == 'pickup_send') ? true : false}
                                                     disabled = {children_list.length == 0 ? true:false}
@@ -359,15 +359,15 @@ const ParentMeetingAdd = () => {
                                                 <span className="lbl padding-16">選んで送信</span>
                                             </label>
                                         </div>
-                                    
+
                                         <div className={`checkbox-wrap edit-bg d-none ${(check_radio == "pickup_send") && 'd-block'}`}>
                                             {
                                                 children_list.length > 0 ?
                                                 children_list?.map((item, k)=>
                                                         <div className="checkbox" key={k}>
                                                             <label htmlFor={`user_name${k}`}>
-                                                                <input className="boolean optional" 
-                                                                    type="checkbox" 
+                                                                <input className="boolean optional"
+                                                                    type="checkbox"
                                                                     id={`user_name${k}`}
                                                                     checked =  {item.checked}
                                                                     onChange={e=>handleCheck(e, k)}/>
@@ -380,18 +380,20 @@ const ParentMeetingAdd = () => {
                                                 : <p className="text-center">子はありません。</p>
                                             }
                                         </div>
-
+                                        <div className="edit-set edit-set-mt15">
+                                            <p>PDFの容量/画像の容量が大きいと送信までに5分ほどかかる恐れがあります。容量を圧縮してからアップロードをお勧めします。</p>
+                                        </div>
                                         <UploadingProgress show={submit}/>
 
-                                        <LoadingButton 
+                                        <LoadingButton
                                             type="submit" fullWidth
                                             loading={submit}
                                             className="btn-edit btn-default btn-h75 bg-yellow rounded-15">
                                             <span className={`ft-18 ft-xs-16 font-weight-bold ${!submit && 'text-black'}`}>ミーティングを登録</span>
                                         </LoadingButton>
-                                        {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>  } 
+                                        {  _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert>  }
                                     </form>
-                                </div>     
+                                </div>
                             </div>
                         </article>
                     }
@@ -399,7 +401,7 @@ const ParentMeetingAdd = () => {
                 </div>
             </div>
         </div>
-    </div>   
+    </div>
 	)
 }
 

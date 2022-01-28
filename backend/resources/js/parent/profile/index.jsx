@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
-import { useCookies } from 'react-cookie';
 
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
@@ -11,10 +10,9 @@ import Notification from '../../component/notification';
 const ParentProfileDetail = () => {
 
     const navigator = useNavigate();
-    const [cookies, setCookie] = useCookies(['user']);
 
-    const father_id = localStorage.getItem('kiki_acc_id');
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const father_id = localStorage.getItem('father_id');
+    const [notice, setNotice] = useState(-1);
 
     const [image, setImage] = useState('');
     const [profile, setProfile] = useState({company:'', email:'', tel:'', profile:''});
@@ -69,7 +67,7 @@ const ParentProfileDetail = () => {
     const handleLogout = () => {
         axios.get('/p-account/logout')
         .then(() => {
-            setCookie('logged', null);
+            localStorage.removeItem('p-account_token');
             window.location.href = '/p-account/login';
         })
     }

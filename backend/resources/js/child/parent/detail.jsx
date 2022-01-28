@@ -10,7 +10,7 @@ const ChildParentDetail = () => {
     const navigator = useNavigate();
     const params = useParams();
 
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const [notice, setNotice] = useState(-1);
     const [loaded, setLoaded] = useState(false);
     const [parent, setParent] = useState(null);
 

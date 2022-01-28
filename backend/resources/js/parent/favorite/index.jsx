@@ -14,8 +14,8 @@ const SCROLL_DELAY_TIME = 1500;
 
 const ParentFavorite = () => {
 
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
-    const father_id = localStorage.getItem('kiki_acc_id');
+    const [notice, setNotice] = useState(-1);
+    const father_id = localStorage.getItem('father_id');
 
     const [tab_status, setTabStatus] = useState(false);
     const [loaded, setLoaded] = useState(false);

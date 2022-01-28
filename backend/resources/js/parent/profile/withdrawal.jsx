@@ -5,8 +5,8 @@ import Alert from '../../component/alert';
 
 const ParentProfileWithdrawal = () => {
 
-    const father_id = localStorage.getItem('kiki_acc_id');
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const father_id = localStorage.getItem('father_id');
+    const [notice, setNotice] = useState(-1);
     
     const [submit, setSubmit] = useState(false);
     const [_400error, set400Error] = useState('');

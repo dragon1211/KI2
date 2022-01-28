@@ -26,8 +26,8 @@ const ChildSearch = () => {
     const [loaded, setLoaded] = useState(true);
     const [initPage, setInitPage] = useState(true);
 
-    const child_id = localStorage.getItem('kiki_acc_id');
-    const [notice, setNotice] = useState(localStorage.getItem('notice'));
+    const child_id = localStorage.getItem('child_id');
+    const [notice, setNotice] = useState(-1);
 
 
     const isMountedRef = useRef(true);
