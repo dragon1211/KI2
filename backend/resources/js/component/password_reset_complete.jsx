@@ -8,11 +8,7 @@ const PasswordResetComplete = () => {
     const { pathname } = useLocation();
 
     const gotoLogin = () => {
-        var url;
-        if(pathname.includes('c-account')) url = '/c-account/login';
-        else if(pathname.includes('p-account')) url = '/p-account/login';
-
-        navigator(url,  { state: '' });
+        navigator(`/${pathname.split('/')[1]}/login`);
     }
 
 	return (

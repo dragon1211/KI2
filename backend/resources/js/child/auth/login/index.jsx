@@ -1,12 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
+import { useCookies } from 'react-cookie';
+
 import Alert from '../../../component/alert';
 
 
 const ChildLogin = () => {
 
     const location = useLocation();
+    const [cookies, setCookie] = useCookies(['auth']);
 
     const [submit, setSubmit] = useState(false);
 
@@ -42,13 +45,15 @@ const ChildLogin = () => {
     }, [])
 
 
-    const loginOK = (id = 0) =>{
+    const loginOK = (id = 0, expires) =>{
         let token = {
             type: 'c-account',
             id: id,
             notice: 0,
-            from_login: true
+            from_login: true,
+            expires: expires
         };
+        // setCookie('token', token, {expires: new Date(expires).toUTCString(), path: '/c-account'});
         localStorage.setItem('c-account_token', JSON.stringify(token));
         localStorage.setItem('child_id', id);
 
@@ -75,7 +80,7 @@ const ChildLogin = () => {
             setSubmit(false)
             switch(response.data.status_code){
                 case 200:{
-                    loginOK(response.data.params.id);
+                    loginOK(response.data.params.id, response.data.params.expire);
                     break;
                 }
                 case 400: set400Error(response.data.error_message); break;

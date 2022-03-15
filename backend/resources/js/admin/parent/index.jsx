@@ -1,8 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
+
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 
@@ -12,6 +14,8 @@ const SCROLL_DELAY_TIME = 1500;
 
 const AdminParents = () => {
 
+  const { isAuthenticate } = useContext(HeaderContext);
+  
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
   const [father_list, setFatherList ] = useState([]);
@@ -24,24 +28,28 @@ const AdminParents = () => {
     
   useEffect(() => {
     isMountedRef.current = false;
-    setLoaded(false);
 
-    axios.get('/api/admin/fathers/list')
-    .then((response) => {
-      if(isMountedRef.current) return;
-      
-      setLoaded(true);
-      if(response.data.status_code==200){
-          setFatherList(response.data.params);
-          var len = response.data.params.length;
-          if(len > INFINITE)
-            setFetchFatherList(response.data.params.slice(0, INFINITE));
-          else setFetchFatherList(response.data.params.slice(0, len));
-      } 
-      else {
-        set400Error("失敗しました。");
-      }
-    });
+    if(isAuthenticate()){
+      setLoaded(false);
+  
+      axios.get('/api/admin/fathers/list')
+      .then((response) => {
+        if(isMountedRef.current) return;
+        
+        setLoaded(true);
+        if(response.data.status_code==200){
+            setFatherList(response.data.params);
+            var len = response.data.params.length;
+            if(len > INFINITE)
+              setFetchFatherList(response.data.params.slice(0, INFINITE));
+            else setFetchFatherList(response.data.params.slice(0, len));
+        } 
+        else {
+          set400Error("失敗しました。");
+        }
+      });
+    }
+
     return () => {
       isMountedRef.current = true
     }
@@ -61,29 +69,33 @@ const AdminParents = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if(keyword == '')
-    {
-      document.getElementById('keyword').focus();
-      return;
+
+    if(isAuthenticate()){
+      if(keyword == '')
+      {
+        document.getElementById('keyword').focus();
+        return;
+      }
+      set422errors({keyword:''});
+      setLoaded(false);
+      setFatherList([]);
+      axios.get('/api/admin/fathers/search',{params: {keyword: keyword}})
+      .then((response) => {
+        if(isMountedRef.current) return;
+        
+        setLoaded(true);
+        if(response.data.status_code==200){
+          setFatherList(response.data.params);
+          var len = response.data.params.length;
+          if(len > INFINITE)
+            setFetchFatherList(response.data.params.slice(0, INFINITE));
+          else setFetchFatherList(response.data.params.slice(0, len));
+        } 
+      });
     }
-    set422errors({keyword:''});
-    setLoaded(false);
-    setFatherList([]);
-    axios.get('/api/admin/fathers/search',{params: {keyword: keyword}})
-    .then((response) => {
-      if(isMountedRef.current) return;
-      
-      setLoaded(true);
-      if(response.data.status_code==200){
-        setFatherList(response.data.params);
-        var len = response.data.params.length;
-        if(len > INFINITE)
-          setFetchFatherList(response.data.params.slice(0, INFINITE));
-        else setFetchFatherList(response.data.params.slice(0, len));
-      } 
-    });
   }
 
+  
 	return (
     <div className="l-content">
       <div className="l-content__ttl">

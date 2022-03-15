@@ -96,7 +96,13 @@ class ChildrenController extends Controller {
 
     public function checkRegisterMain (Request $r) {
         // トークンの確認
-        if (null === ($get = TelActivation::select('tel')->where('token', $r->token)->first())) {
+        if (null === ($get = TelActivation::select('tel', 'ttl')->where('token', $r->token)->first())) {
+            return ['status_code' => 400, 'error_messages' => ['不正な登録トークン。']];
+        }
+
+        // トークンの有効期限が切れた場合
+        if (time() > strtotime($get->ttl)) {
+            TelActivation::where('token', $r->token)->delete();
             return ['status_code' => 400, 'error_messages' => ['不正な登録トークン。']];
         }
 
@@ -115,13 +121,6 @@ class ChildrenController extends Controller {
         // 有効期限が切れている場合
         if (time() > strtotime($get->ttl)) {
             return ['status_code' => 400, 'error_messages' => ['仮登録の有効期限が切れました。改めて親にお問い合わせいただき、再登録の手続きを行ってください。']];
-        }
-
-        // 親子関係の上限の場合
-        if (!is_null($get->father_id) && null !== ($rel = FatherRelation::where('father_id', $get->father_id)->first())) {
-            if (Father::select('relation_limit')->where('id', $get->father_id)->first()->relation_limit >= FatherRelation::where('father_id', $get->father_id)->count()) {
-                return ['status_code' => 400, 'error_messages' => ['仮登録の有効期限が切れました。改めて親にお問い合わせいただき、再登録の手続きを行ってください。']];
-            }
         }
 
         if (!is_null($r->image) && count(Storage::disk('private')->files('/')) >= 9999) {
@@ -196,30 +195,35 @@ class ChildrenController extends Controller {
             $child->push();
 
             if (!is_null($telact->father_id)) {
-                $rel = new FatherRelation;
+                // 親子関係の上限ではないの場合
+                $fa = Father::select('relation_limit')->where('id', $get->father_id)->first();
+                $fr = FatherRelation::where('father_id', $get->father_id)->count();
+                if ($fr < $fa->relation_limit) {
+                    $rel = new FatherRelation;
 
-                $add = [
-                    'father_id' => $telact->father_id,
-                    'child_id' => $child->id,
-                    'hire_at' => date('Y-m-d H:i:s', time()),
-                ];
+                    $add = [
+                        'father_id' => $telact->father_id,
+                        'child_id' => $child->id,
+                        'hire_at' => date('Y-m-d H:i:s', time()),
+                    ];
 
-                if (null !== ($meet = Meeting::select('id')->where('father_id', $telact->father_id)->where('is_favorite', true)->get())) {
-                    foreach ($meet as $m) {
-                        $app = new MeetingApprovals;
+                    if (null !== ($meet = Meeting::select('id')->where('father_id', $telact->father_id)->where('is_favorite', true)->get())) {
+                        foreach ($meet as $m) {
+                            $app = new MeetingApprovals;
 
-                        $join = [
-                            'child_id' => $child->id,
-                            'meeting_id' => $m->id,
-                        ];
+                            $join = [
+                                'child_id' => $child->id,
+                                'meeting_id' => $m->id,
+                            ];
 
-                        $app->fill($join);
-                        $app->push();
+                            $app->fill($join);
+                            $app->push();
+                        }
                     }
-                }
 
-                $rel->fill($add);
-                $rel->push();
+                    $rel->fill($add);
+                    $rel->push();
+                }
             }
 
             $telact->delete();
@@ -272,15 +276,27 @@ class ChildrenController extends Controller {
 
         try {
             // DBに入る又は変えります。
-            TelActivation::where('child_id', $result->id)->delete();
-            TelActivation::create($create);
+            DB::beginTransaction();
+
+            $telact = TelActivation::where('child_id', $result->id);
+            $telac2 = new TelActivation;
+
+            if (null !== ($telact->first())) {
+                $telact->delete();
+            }
+
+            $telac2->fill($create);
+            $telac2->push();
 
             // SMSを送ります。
             $message = view('sms.children.password', ['token' => $token]);
             \Notification::route('nexmo', '81'.substr($r->tel, 1))->notify(new SmsNotification($message));
+
+            DB::commit();
         } catch (\Throwable $e) {
             // 失敗
             Log::critical($e->getMessage());
+            DB::rollback();
             return ['status_code' => 400, 'error_messages' => '電話番号が未登録です。入力した情報を確認してください。'];
         }
 
@@ -503,6 +519,7 @@ class ChildrenController extends Controller {
             // 失敗
             Log::critical($e->getMessage());
             Storage::disk('private')->delete($filename);
+            DB::rollback();
             return ['status_code' => 400, 'error_messages' => ['画像の更新に失敗しました。']];
         }
 
@@ -568,7 +585,12 @@ class ChildrenController extends Controller {
         if (isset($r->child_id)) {
             $child_id = $r->child_id;
         }
-        $child_id = request()->route()->action['as'] == 'cpa' ? (int)$child_id : (int)session()->get('children')['id'];
+        else if (isset($r->token)) {
+            $child_id = TelActivation::select('id')->where('token', $r->token)->first()->id;
+        }
+        else if (null !== session()->get('children')['id']) {
+            $child_id = (int)session()->get('children')['id'];
+        }
 
         if (is_null($child_id) && !isset($r->token)) {
             return ['status_code' => 400, 'error_messages' => ['パスワードの更新に失敗しました。']];

@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { LoadingButton } from '@material-ui/lab';
 
+import { HeaderContext } from '../../context';
 import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 
@@ -12,6 +13,7 @@ const ChildProfileWithdrawal = () => {
     const [_400error, set400Error] = useState('');
 
 
+    const { isAuthenticate } = useContext(HeaderContext);
     const isMountedRef = useRef(true);
     useEffect(() => {
         isMountedRef.current = false;
@@ -23,18 +25,20 @@ const ChildProfileWithdrawal = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setSubmit(true);
-        axios.delete('/api/children/withdrawal', {params:{child_id: child_id}})
-        .then(response => {
-            if(isMountedRef.current) return;
-
-            setSubmit(false);
-            setNotice(response.data.notice);
-            switch(response.data.status_code){
-                case 200: window.location.href = "/c-account/withdrawal/complete"; break;
-                case 400: set400Error("失敗しました。"); break;
-            }
-        })
+        if(isAuthenticate()){
+            setSubmit(true);
+            axios.delete('/api/children/withdrawal', {params:{child_id: child_id}})
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setSubmit(false);
+                setNotice(response.data.notice);
+                switch(response.data.status_code){
+                    case 200: window.location.href = "/c-account/withdrawal/complete"; break;
+                    case 400: set400Error("失敗しました。"); break;
+                }
+            })
+        }
     }
     
 	return (

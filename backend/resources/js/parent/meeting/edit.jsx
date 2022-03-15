@@ -1,9 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
 
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 import Notification from '../../component/notification';
 import PreviewPDF from '../../component/preview_pdf';
@@ -17,6 +18,7 @@ const ParentMeetingEdit = () => {
 
     const navigator = useNavigate();
     const params = useParams();
+    const { isAuthenticate } = useContext(HeaderContext);
     
     const father_id = localStorage.getItem('father_id');
     const meeting_id = params?.meeting_id;
@@ -47,65 +49,59 @@ const ParentMeetingEdit = () => {
 
     useEffect(() => {
         isMountedRef.current = false;
-        setLoaded(false);
-
-        axios.get(`/api/fathers/meetings/detail/${meeting_id}`, {params: { father_id: father_id}})
-        .then(response => {
-            if(isMountedRef.current) return;
-
-            setLoaded(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                setMeeting(response.data.params);
-                setTitle(response.data.params?.title);
-                setMemo(response.data.params.memo ? response.data.params.memo: '');
-                setText(response.data.params.text ? response.data.params.text: '');
-                setMeetingImages(response.data.params?.meeting_image);
-                setApproval(response.data.params?.approval);
-                setPdf(response.data.params?.pdf);
-                setPDFURL(response.data.params?.pdf);
-                
-                var list = [...response.data.params?.children];
-                var approval = [...response.data.params?.approval];
-                var arr = [];
-                for(var i in list){
-                    if(approval.findIndex(ele=>ele.child_id == list[i].id) >= 0)
-                        arr.push({...list[i], checked: true});
-                    else arr.push({...list[i], checked: false});
+        if(isAuthenticate()){
+            setLoaded(false);
+    
+            axios.get(`/api/fathers/meetings/detail/${meeting_id}`, {params: { father_id: father_id}})
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    setMeeting(response.data.params);
+                    setTitle(response.data.params?.title);
+                    setMemo(response.data.params.memo ? response.data.params.memo: '');
+                    setText(response.data.params.text ? response.data.params.text: '');
+                    setMeetingImages(response.data.params?.meeting_image);
+                    setApproval(response.data.params?.approval);
+                    setPdf(response.data.params?.pdf);
+                    setPDFURL(response.data.params?.pdf);
+                    
+                    var list = [...response.data.params?.children];
+                    var approval = [...response.data.params?.approval];
+                    var arr = [];
+                    for(var i in list){
+                        if(approval.findIndex(ele=>ele.child_id == list[i].id) >= 0)
+                            arr.push({...list[i], checked: true});
+                        else arr.push({...list[i], checked: false});
+                    }
+                    setChildrenList(arr);
+                    if((approval.length==list.length) && approval.length > 0)
+                        setCheckRadio('all_send');
+                    else if((approval.length != list.length) && approval.length > 0)
+                        setCheckRadio('pickup_send');
+                    else setCheckRadio('');
                 }
-                setChildrenList(arr);
-                if((approval.length==list.length) && approval.length > 0)
-                    setCheckRadio('all_send');
-                else if((approval.length != list.length) && approval.length > 0)
-                    setCheckRadio('pickup_send');
-                else setCheckRadio('');
-            }
-            else{
-                set400Error("失敗しました。");
-            }
-        })
-        .catch(err=>{
-            if(isMountedRef.current) return;
-
-            setLoaded(true);
-            setNotice(err.response.data.notice);
-            if(err.response.status==404){
-                set404Error(err.response.data.message);
-            }
-        })
+                else{
+                    set400Error("失敗しました。");
+                }
+            })
+            .catch(err=>{
+                if(isMountedRef.current) return;
+    
+                setLoaded(true);
+                setNotice(err.response.data.notice);
+                if(err.response.status==404){
+                    set404Error(err.response.data.message);
+                }
+            })
+        }
 
         return () => {
             isMountedRef.current = true;
         }
     }, []);
-
-//-------------------------------------------------------------
-useEffect(()=>{
-    var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
-    for(let i=0; i<navbar_list.length; i++)
-        navbar_list[i].classList.remove('nav-active');
-    document.getElementsByClassName("-meeting")[0].classList.add('nav-active');
-},[]);
 
 
 
@@ -130,103 +126,111 @@ useEffect(()=>{
 //----------------------------------------------------------------------
     const handleSubmit = (e) => {
         e.preventDefault();
-        set422Errors({title:'',memo:'',text:'',pdf:'',image:''});
 
-        var approval_registerIndexes = [];
-        var approval_deleteIndexes = [];
-        for(let i in children_list){
-            if(children_list[i].checked){
-                if(approval_list.findIndex(ele=>ele.child_id == children_list[i].id) < 0)
-                    approval_registerIndexes.push(children_list[i].id);
-            }
-        }
-        for(let i in approval_list){
-            if(children_list.findIndex(ele=> ele.checked && ele.id == approval_list[i].child_id) < 0)
-                approval_deleteIndexes.push(approval_list[i].child_id);
-        }
-
-        const formdata = new FormData();
-        formdata.append('children', JSON.stringify(approval_registerIndexes));
-
-        axios.post('/api/fathers/meeting/approvals/register', formdata, {params:{meeting_id: meeting_id}})
-        axios.delete('/api/fathers/meeting/approvals/delete', {params:{children: approval_deleteIndexes, meeting_id: meeting_id}})
-        
-        const request = { title: title, text: text, memo: memo, pdf: pdf };
-        setSubmit(true);
-
-        axios.put(`/api/fathers/meetings/update/${meeting_id}`, request)
-        .then(response => {
-            if(isMountedRef.current) return;
-
-            setNotice(response.data.notice);
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: {
-                    navigator(`/p-account/meeting/detail/${meeting_id}`,  { state: '編集が完了しました!' });
-                    break;
+        if(isAuthenticate()){
+            set422Errors({title:'',memo:'',text:'',pdf:'',image:''});
+    
+            var approval_registerIndexes = [];
+            var approval_deleteIndexes = [];
+            for(let i in children_list){
+                if(children_list[i].checked){
+                    if(approval_list.findIndex(ele=>ele.child_id == children_list[i].id) < 0)
+                        approval_registerIndexes.push(children_list[i].id);
                 }
-                case 400: set400Error("編集が失敗しました。"); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
             }
-        });
+            for(let i in approval_list){
+                if(children_list.findIndex(ele=> ele.checked && ele.id == approval_list[i].child_id) < 0)
+                    approval_deleteIndexes.push(approval_list[i].child_id);
+            }
+    
+            const formdata = new FormData();
+            formdata.append('children', JSON.stringify(approval_registerIndexes));
+    
+            axios.post('/api/fathers/meeting/approvals/register', formdata, {params:{meeting_id: meeting_id}})
+            axios.delete('/api/fathers/meeting/approvals/delete', {params:{children: approval_deleteIndexes, meeting_id: meeting_id}})
+            
+            const request = { title: title, text: text, memo: memo, pdf: pdf };
+            setSubmit(true);
+    
+            axios.put(`/api/fathers/meetings/update/${meeting_id}`, request)
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setNotice(response.data.notice);
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200: {
+                        navigator(`/p-account/meeting/detail/${meeting_id}`,  { state: '編集が完了しました!' });
+                        break;
+                    }
+                    case 400: set400Error("編集が失敗しました。"); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                }
+            });
+        }
     }
 
 
     const handleImageChange = (e) => {
         e.preventDefault();
-        const files = Array.from(e.target.files);
-        if(e.target.files.length + meeting_image.length > 10)
-        {
-            set400Error("画像は最大10個までです。");
-            return;
+
+        if(isAuthenticate()){
+            const files = Array.from(e.target.files);
+            if(e.target.files.length + meeting_image.length > 10)
+            {
+                set400Error("画像は最大10個までです。");
+                return;
+            }
+            const promises = files.map(_file => {
+                return (new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.addEventListener('load', (ev) => {
+                        resolve(ev.target.result);
+                    });
+                    reader.addEventListener('error', reject);
+                    reader.readAsDataURL(_file);
+                }))
+            });
+    
+            Promise.all(promises).then( images => {
+                set422Errors({image:''});
+                const formdata = new FormData();
+                formdata.append('image', JSON.stringify(images));
+                setImageSending(true);
+                axios.post(`/api/fathers/meeting/images/register`, formdata,  {params:{meeting_id: meeting_id}})
+                .then(response=>{
+                    if(isMountedRef.current) return;
+    
+                    setImageSending(false);
+                    setNotice(response.data.notice);
+                    switch(response.data.status_code){
+                        case 200: setMeetingImages(response.data.params); break;
+                        case 400: set400Error("画像の登録に失敗しました。"); break;
+                        case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                    }
+                })
+            }, 
+            error => { console.error(error); });
         }
-        const promises = files.map(_file => {
-            return (new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.addEventListener('load', (ev) => {
-                    resolve(ev.target.result);
-                });
-                reader.addEventListener('error', reject);
-                reader.readAsDataURL(_file);
-            }))
-        });
-
-        Promise.all(promises).then( images => {
-            set422Errors({image:''});
-            const formdata = new FormData();
-            formdata.append('image', JSON.stringify(images));
-            setImageSending(true);
-            axios.post(`/api/fathers/meeting/images/register`, formdata,  {params:{meeting_id: meeting_id}})
-            .then(response=>{
-                if(isMountedRef.current) return;
-
-                setImageSending(false);
-                setNotice(response.data.notice);
-                switch(response.data.status_code){
-                    case 200: setMeetingImages(response.data.params); break;
-                    case 400: set400Error("画像の登録に失敗しました。"); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-                }
-            })
-        }, 
-        error => { console.error(error); });
     };
 
 
     const handleDeleteImage = (index, image_id) => {
-        let list = [...meeting_image];
-        list.splice(index, 1);
-        setMeetingImages(list);
-        
-        axios.delete(`/api/fathers/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
-        .then(response=>{
-            if(isMountedRef.current) return;
+        if(isAuthenticate()){
+            let list = [...meeting_image];
+            list.splice(index, 1);
+            setMeetingImages(list);
             
-            setNotice(response.data.notice);
-            switch(response.data.status_code){
-                case 400: set400Error("画像の削除に失敗しました。");
-            }
-        })
+            axios.delete(`/api/fathers/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
+            .then(response=>{
+                if(isMountedRef.current) return;
+                
+                setNotice(response.data.notice);
+                switch(response.data.status_code){
+                    case 400: set400Error("画像の削除に失敗しました。");
+                }
+            })
+        }
     }
 
     const handlePDFChange = (e) => {

@@ -1,7 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
+import { HeaderContext } from '../../context';
 import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
@@ -13,6 +14,7 @@ const SCROLL_DELAY_TIME = 1500;
 
 const ParentMeetings = () => {
 
+    const { isAuthenticate } = useContext(HeaderContext);
     const [notice, setNotice] = useState(-1);
     const father_id = localStorage.getItem('father_id');
     
@@ -31,26 +33,47 @@ const ParentMeetings = () => {
 
 
     useEffect(()=>{
-      var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
-      for(let i=0; i<navbar_list.length; i++)
-          navbar_list[i].classList.remove('nav-active');
-      document.getElementsByClassName("-meeting")[0].classList.add('nav-active');
-    },[]);
-
-    useEffect(()=>{
         setLoaded(loaded1 && loaded2);
     },[loaded1, loaded2])
 
 
     useEffect(() => {
         isMountedRef.current = false;
-        setLoaded(false);
-
-        axios.get('/api/fathers/meetings/listOfIncompleteOfFather', {params:{father_id: father_id}})
-        .then(response => {
-          if(isMountedRef.current) return;
-
-            setLoaded1(true);
+        if(isAuthenticate()){
+          setLoaded(false);
+  
+          axios.get('/api/fathers/meetings/listOfIncompleteOfFather', {params:{father_id: father_id}})
+          .then(response => {
+            if(isMountedRef.current) return;
+  
+              setLoaded1(true);
+              setNotice(response.data.notice);
+              if(response.data.status_code==200){
+                  var list = response.data.params;
+                  var arr = [];
+                  for(var i in list){
+                      var total=0, num=0;
+                      for(var j in list[i].approvals)
+                      {
+                        if(list[i].approvals[j].approval_at) num ++;
+                        total ++;
+                      }
+                      arr.push({...list[i], denominator:total, numerator:num})
+                  }
+                  setMeetingListOfIncomplete(arr);
+                  var len = arr.length;
+                  if(len > INFINITE)
+                      setFetchMeetingListOfIncomplete(arr.slice(0, INFINITE));
+                  else setFetchMeetingListOfIncomplete(arr.slice(0, len));
+              }
+          })
+          .catch(err=>console.log(err));
+  
+          axios.get('/api/fathers/meetings/listOfCompleteOfFather', {params:{father_id: father_id}})
+          .then(response => {
+            if(isMountedRef.current) return;
+  
+            setLoaded2(true);
             setNotice(response.data.notice);
             if(response.data.status_code==200){
                 var list = response.data.params;
@@ -64,41 +87,15 @@ const ParentMeetings = () => {
                     }
                     arr.push({...list[i], denominator:total, numerator:num})
                 }
-                setMeetingListOfIncomplete(arr);
+                setMeetingListOfComplete(arr);
                 var len = arr.length;
                 if(len > INFINITE)
-                    setFetchMeetingListOfIncomplete(arr.slice(0, INFINITE));
-                else setFetchMeetingListOfIncomplete(arr.slice(0, len));
-            }
-        })
-        .catch(err=>console.log(err));
-
-        axios.get('/api/fathers/meetings/listOfCompleteOfFather', {params:{father_id: father_id}})
-        .then(response => {
-          if(isMountedRef.current) return;
-
-          setLoaded2(true);
-          setNotice(response.data.notice);
-          if(response.data.status_code==200){
-              var list = response.data.params;
-              var arr = [];
-              for(var i in list){
-                  var total=0, num=0;
-                  for(var j in list[i].approvals)
-                  {
-                    if(list[i].approvals[j].approval_at) num ++;
-                    total ++;
-                  }
-                  arr.push({...list[i], denominator:total, numerator:num})
+                    setFetchMeetingListOfComplete(arr.slice(0, INFINITE));
+                else setFetchMeetingListOfComplete(arr.slice(0, len));
               }
-              setMeetingListOfComplete(arr);
-              var len = arr.length;
-              if(len > INFINITE)
-                  setFetchMeetingListOfComplete(arr.slice(0, INFINITE));
-              else setFetchMeetingListOfComplete(arr.slice(0, len));
-            }
-        })
-        .catch(err=>console.log(err));
+          })
+          .catch(err=>console.log(err));
+        }
 
         return () => {
           isMountedRef.current = true;
@@ -106,60 +103,62 @@ const ParentMeetings = () => {
     },[]);
 
     const fetchMoreListNonApproval = () => {
-        setTimeout(() => {
-            var x = fetch_meeting_list_incomplete.length;
-            var y = meeting_list_incomplete.length;
-            var c = 0;
-            if(x+INFINITE < y) c = INFINITE;
-            else c = y - x;
-            setFetchMeetingListOfIncomplete(meeting_list_incomplete.slice(0, x+c));
-        }, SCROLL_DELAY_TIME);
+      setTimeout(() => {
+          var x = fetch_meeting_list_incomplete.length;
+          var y = meeting_list_incomplete.length;
+          var c = 0;
+          if(x+INFINITE < y) c = INFINITE;
+          else c = y - x;
+          setFetchMeetingListOfIncomplete(meeting_list_incomplete.slice(0, x+c));
+      }, SCROLL_DELAY_TIME);
     };
 
     const fetchMoreListApproval = () => {
-        setTimeout(() => {
-            var x = fetch_meeting_list_complete.length;
-            var y = meeting_list_complete.length;
-            var c = 0;
-            if(x+INFINITE < y) c = INFINITE;
-            else c = y - x;
-            setFetchMeetingListOfComplete(meeting_list_complete.slice(0, x+c));
-        }, SCROLL_DELAY_TIME);
+      setTimeout(() => {
+          var x = fetch_meeting_list_complete.length;
+          var y = meeting_list_complete.length;
+          var c = 0;
+          if(x+INFINITE < y) c = INFINITE;
+          else c = y - x;
+          setFetchMeetingListOfComplete(meeting_list_complete.slice(0, x+c));
+      }, SCROLL_DELAY_TIME);
     };
 
     const handleFavorite = (meetingId, currentFavorite, stateName) => {
-      const formdata = new FormData();
-      formdata.append('meeting_id', meetingId);
-      formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
-      axios.post('/api/fathers/meetings/registerFavorite', formdata)
-      
-      if(stateName == "inCompleteOfFather") {
-        const newList1 = meeting_list_incomplete.map((item) => {
-          if (item.id === meetingId) {
-            const updatedItem = {
-              ...item,
-              is_favorite: item.is_favorite == 1 ? 0 : 1,
-            };
-            return updatedItem;
-          }
-          return item;
-        });
-        setMeetingListOfIncomplete(newList1);
-        setFetchMeetingListOfIncomplete(newList1.slice(0, fetch_meeting_list_incomplete.length));
-      } else {
-        const newList2 = meeting_list_complete.map((item) => {
-          if (item.id === meetingId) {
-            const updatedItem = {
-              ...item,
-              is_favorite: item.is_favorite == 1 ? 0 : 1,
-            };
-            return updatedItem;
-          }
-          return item;
-        });
-        setMeetingListOfComplete(newList2);
-        setFetchMeetingListOfComplete(newList2.slice(0, fetch_meeting_list_complete.length));
-      }  
+      if(isAuthenticate()){
+        const formdata = new FormData();
+        formdata.append('meeting_id', meetingId);
+        formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
+        axios.post('/api/fathers/meetings/registerFavorite', formdata)
+        
+        if(stateName == "inCompleteOfFather") {
+          const newList1 = meeting_list_incomplete.map((item) => {
+            if (item.id === meetingId) {
+              const updatedItem = {
+                ...item,
+                is_favorite: item.is_favorite == 1 ? 0 : 1,
+              };
+              return updatedItem;
+            }
+            return item;
+          });
+          setMeetingListOfIncomplete(newList1);
+          setFetchMeetingListOfIncomplete(newList1.slice(0, fetch_meeting_list_incomplete.length));
+        } else {
+          const newList2 = meeting_list_complete.map((item) => {
+            if (item.id === meetingId) {
+              const updatedItem = {
+                ...item,
+                is_favorite: item.is_favorite == 1 ? 0 : 1,
+              };
+              return updatedItem;
+            }
+            return item;
+          });
+          setMeetingListOfComplete(newList2);
+          setFetchMeetingListOfComplete(newList2.slice(0, fetch_meeting_list_complete.length));
+        }  
+      }
     };
   
 

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
+import { useCookies } from 'react-cookie';
 
 import Alert from '../../../component/alert';
 
@@ -8,6 +9,7 @@ import Alert from '../../../component/alert';
 const ParentLogin = () => {
 
     const location = useLocation();
+    const [cookies, setCookie] = useCookies(['auth']);
 
     const [submit, setSubmit] = useState(false);
 
@@ -22,35 +24,22 @@ const ParentLogin = () => {
     const isMountedRef = useRef(true);
     useEffect(() => {
         isMountedRef.current = false;
-
-        axios.post('/api/fathers/checkSession').then(response => {
-            if (isMountedRef.current) return;
-
-            switch (response.data.status_code) {
-                case 200: {
-                    if(location.search == '')
-                        window.location.href = "/p-account/meeting";
-                    else
-                        window.location.href = location.search.replace('?redirect_to=', '');
-                    break;
-                }
-                default: break;
-            }
-        });
-
         return () => {
             isMountedRef.current = true;
         }
     }, []);
 
 
-    const loginOK = (id) =>{
+    const loginOK = (id, expires) =>{
         let token = {
             type: 'p-account',
             id: id,
             notice: 0,
-            from_login: true
+            from_login: true,
+            expires: expires
         };
+        
+        // setCookie('token', token, {expires: new Date(expires).toUTCString(), path: '/p-account'});
         localStorage.setItem('p-account_token', JSON.stringify(token));
         localStorage.setItem('father_id', id);
 
@@ -77,7 +66,7 @@ const ParentLogin = () => {
             setSubmit(false)
             switch(response.data.status_code){
                 case 200:{
-                    loginOK(response.data.params.id);
+                    loginOK(response.data.params.id, response.data.params.expire);
                     break;
                 }
                 case 400: set400Error(response.data.error_message); break;

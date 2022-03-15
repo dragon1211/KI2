@@ -1,8 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
+
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 import Notification from '../../component/notification';
 import PreviewPDF from '../../component/preview_pdf';
@@ -14,6 +16,7 @@ const ParentMeetingAdd = () => {
 
     const navigator = useNavigate();
     const location = useLocation();
+    const { isAuthenticate } = useContext(HeaderContext);
 
     const father_id = localStorage.getItem('father_id');
 
@@ -40,57 +43,59 @@ const ParentMeetingAdd = () => {
 
     useEffect(() => {
         isMountedRef.current = false;
-        setLoaded(false);
-
-        let clone = localStorage.getItem('cloneMeeting');
-        if(clone){
-            clone = JSON.parse(clone);
-            setLoaded(true);
-            setTitle(clone?.title);
-            setMemo(clone.memo ? clone.memo: '');
-            setText(clone?.text);
-            setPdf(clone?.pdf);
-            setPDFURL(clone?.pdf);
-            let images = [];
-            for(let i in clone.meeting_image){
-                images.push(clone.meeting_image[i].image);
-            }
-            setMeetingImages(images);
-            setApprovalList(clone.approval);
-            var arr = [];
-            for(let i in clone.children){
-                arr.push({...clone.children[i], checked: false})
-            }
-            setChildrenList(arr);
-            if((clone.children.length == clone.approval.length) && clone.approval.length > 0 )
-                setCheckRadio('all_send');
-            else if((clone.children.length != clone.approval.length) && clone.approval.length > 0)
-                setCheckRadio('pickup_send');
-            else setCheckRadio('');
-
-            localStorage.removeItem('cloneMeeting');
-        }
-        else{
-            axios.get('/api/fathers/children/listOfFather', {params:{father_id: father_id}})
-            .then(response=>{
-                if(isMountedRef.current) return;
-
+        if(isAuthenticate()){
+            setLoaded(false);
+    
+            let clone = localStorage.getItem('cloneMeeting');
+            if(clone){
+                clone = JSON.parse(clone);
                 setLoaded(true);
-                setNotice(response.data.notice);
-                if(response.data.status_code == 200){
-                    var list = response.data.params;
-                    var arr = [];
-                    for(var i in list)
-                        arr.push({...list[i], checked: false})
-                    setChildrenList(arr);
-                    if(list.length > 0)
-                        setCheckRadio("all_send");
-                    else setCheckRadio('');
+                setTitle(clone?.title);
+                setMemo(clone.memo ? clone.memo: '');
+                setText(clone?.text);
+                setPdf(clone?.pdf);
+                setPDFURL(clone?.pdf);
+                let images = [];
+                for(let i in clone.meeting_image){
+                    images.push(clone.meeting_image[i].image);
                 }
-                else {
-                    set400Error("失敗しました。");
+                setMeetingImages(images);
+                setApprovalList(clone.approval);
+                var arr = [];
+                for(let i in clone.children){
+                    arr.push({...clone.children[i], checked: false})
                 }
-            })
+                setChildrenList(arr);
+                if((clone.children.length == clone.approval.length) && clone.approval.length > 0 )
+                    setCheckRadio('all_send');
+                else if((clone.children.length != clone.approval.length) && clone.approval.length > 0)
+                    setCheckRadio('pickup_send');
+                else setCheckRadio('');
+    
+                localStorage.removeItem('cloneMeeting');
+            }
+            else{
+                axios.get('/api/fathers/children/listOfFather', {params:{father_id: father_id}})
+                .then(response=>{
+                    if(isMountedRef.current) return;
+    
+                    setLoaded(true);
+                    setNotice(response.data.notice);
+                    if(response.data.status_code == 200){
+                        var list = response.data.params;
+                        var arr = [];
+                        for(var i in list)
+                            arr.push({...list[i], checked: false})
+                        setChildrenList(arr);
+                        if(list.length > 0)
+                            setCheckRadio("all_send");
+                        else setCheckRadio('');
+                    }
+                    else {
+                        set400Error("失敗しました。");
+                    }
+                })
+            }
         }
 
         return () => {
@@ -98,13 +103,6 @@ const ParentMeetingAdd = () => {
         }
     },[])
 
-//-------------------------------------------------------------
-    useEffect(()=>{
-        var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
-        for(let i=0; i<navbar_list.length; i++)
-            navbar_list[i].classList.remove('nav-active');
-        document.getElementsByClassName("-meeting")[0].classList.add('nav-active');
-    },[]);
 
 //--------------------------------------------------------
     useEffect(()=>{
@@ -127,65 +125,69 @@ const ParentMeetingAdd = () => {
 //----------------------------------------------------------------------
     const handleSubmit = (e) => {
         e.preventDefault();
-        set422Errors({title:'',memo:'',text:'',pdf:'',image:''});
-
-        const formdata = new FormData();
-        formdata.append('father_id', father_id);
-        formdata.append('title', title);
-        formdata.append('text', text);
-        formdata.append('memo', memo);
-        formdata.append('pdf', pdf);
-        formdata.append('image', JSON.stringify(meeting_image));
-        let c_arr = [];
-        for(let i in children_list){
-            if(children_list[i].checked) c_arr.push(children_list[i].id);
-        }
-        formdata.append('children', JSON.stringify(c_arr));
-
-        setSubmit(true);
-
-        axios.post('/api/fathers/meetings/register', formdata)
-        .then(response => {
-            if(isMountedRef.current) return;
-
-            setNotice(response.data.notice);
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: {
-                    const meeting_id = response.data.params.meeting_id;
-                    navigator(`/p-account/meeting/detail/${meeting_id}`,  { state: "登録成功しました" });
-                    break;
-                }
-                case 400: set400Error("登録失敗しました。"); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        if(isAuthenticate()){
+            set422Errors({title:'',memo:'',text:'',pdf:'',image:''});
+    
+            const formdata = new FormData();
+            formdata.append('father_id', father_id);
+            formdata.append('title', title);
+            formdata.append('text', text);
+            formdata.append('memo', memo);
+            formdata.append('pdf', pdf);
+            formdata.append('image', JSON.stringify(meeting_image));
+            let c_arr = [];
+            for(let i in children_list){
+                if(children_list[i].checked) c_arr.push(children_list[i].id);
             }
-        });
+            formdata.append('children', JSON.stringify(c_arr));
+    
+            setSubmit(true);
+    
+            axios.post('/api/fathers/meetings/register', formdata)
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setNotice(response.data.notice);
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200: {
+                        const meeting_id = response.data.params.meeting_id;
+                        navigator(`/p-account/meeting/detail/${meeting_id}`,  { state: "登録成功しました" });
+                        break;
+                    }
+                    case 400: set400Error("登録失敗しました。"); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                }
+            });
+        }
     }
 
 
     const handleImageChange = (e) => {
         e.preventDefault();
-        const files = Array.from(e.target.files);
-        if(e.target.files.length + meeting_image.length > 10)
-        {
-            set400Error("画像は最大10個までです。");
-            return;
+        if(isAuthenticate()){
+            const files = Array.from(e.target.files);
+            if(e.target.files.length + meeting_image.length > 10)
+            {
+                set400Error("画像は最大10個までです。");
+                return;
+            }
+            const promises = files.map(_file => {
+                return (new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.addEventListener('load', (ev) => {
+                        resolve(ev.target.result);
+                    });
+                    reader.addEventListener('error', reject);
+                    reader.readAsDataURL(_file);
+                }))
+            });
+    
+            Promise.all(promises).then(images => {
+                setMeetingImages([...meeting_image, ...images]);
+            },
+            error => { console.error(error); });
         }
-        const promises = files.map(_file => {
-            return (new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.addEventListener('load', (ev) => {
-                    resolve(ev.target.result);
-                });
-                reader.addEventListener('error', reject);
-                reader.readAsDataURL(_file);
-            }))
-        });
-
-        Promise.all(promises).then(images => {
-            setMeetingImages([...meeting_image, ...images]);
-        },
-        error => { console.error(error); });
     };
 
     const handlePDFChange = (e) => {

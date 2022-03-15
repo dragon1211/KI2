@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { HeaderContext } from '../context';
 
 const Notification = ({ notice }) => {
+
+    const {selected_item_sidebar, SetSelectedItemOfSidebar} = useContext(HeaderContext);
     
     const navigator = useNavigate();
     const { pathname } = useLocation();
     const [number, setNumber] = useState(-1);
 
     const handleClick = () => {
-        var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
-        for(let i=0; i<navbar_list.length; i++)
-            navbar_list[i].classList.remove('nav-active');
-        document.getElementsByClassName("-meeting")[0].classList.add('nav-active');
+        SetSelectedItemOfSidebar('meeting');
         navigator(`/${pathname.split('/')[1]}/meeting`);
     }
 

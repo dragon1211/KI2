@@ -142,7 +142,13 @@ class FathersController extends Controller {
 
     public function checkRegisterMain (Request $r) {
         // トークンの確認
-        if (null === ($get = EmailActivation::where('token', $r->token)->first())) {
+        if (null === ($get = EmailActivation::select('ttl')->where('token', $r->token)->first())) {
+            return ['status_code' => 400, 'error_messages' => ['不正な登録トークン。']];
+        }
+
+        // トークンの有効期限が切れた場合
+        if (time() > strtotime($get->ttl)) {
+            EmailActivation::where('token', $r->token)->delete();
             return ['status_code' => 400, 'error_messages' => ['不正な登録トークン。']];
         }
 
@@ -396,7 +402,7 @@ class FathersController extends Controller {
             if (request()->route()->action['as'] == 'pip') {
                 $login_user_datum = $father->toArray();
                 unset($login_user_datum['password']);
-    
+
                 // セッションに保存する
                 session()->put('fathers', $login_user_datum);
             }

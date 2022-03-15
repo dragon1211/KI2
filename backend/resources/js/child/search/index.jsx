@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
+import { HeaderContext } from '../../context';
 import Notification from '../../component/notification';
 import PageLoader from '../../component/page_loader';
 import IconButton from '@mui/material/IconButton';
@@ -30,6 +31,7 @@ const ChildSearch = () => {
     const [notice, setNotice] = useState(-1);
 
 
+    const { isAuthenticate } = useContext(HeaderContext);
     const isMountedRef = useRef(true);
     useEffect(() => {
         isMountedRef.current = false;
@@ -41,43 +43,46 @@ const ChildSearch = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        if(keyword == ''){
-            document.getElementById('keyword').focus();
-            return;
+
+        if(isAuthenticate()){
+            if(keyword == ''){
+                document.getElementById('keyword').focus();
+                return;
+            }
+            setLoaded1(false);
+            setLoaded2(false);
+            setInitPage(false);
+    
+            axios.get('/api/children/meetings/searchOfNonApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setLoaded1(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    setMettingListNonApproval(response.data.params);
+                    var len = response.data.params.length;
+                    if(len > INFINITE)
+                        setFetchMettingListNonApproval(response.data.params.slice(0, INFINITE));
+                    else setFetchMettingListNonApproval(response.data.params.slice(0, len));
+                } 
+            });
+    
+            axios.get('/api/children/meetings/searchOfApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
+            .then((response) => {
+                if(isMountedRef.current) return;
+    
+                setLoaded2(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    setMettingListApproval(response.data.params);
+                    var len = response.data.params.length;
+                    if(len > INFINITE)
+                        setFetchMettingListApproval(response.data.params.slice(0, INFINITE));
+                    else setFetchMettingListApproval(response.data.params.slice(0, len));
+                } 
+            });
         }
-        setLoaded1(false);
-        setLoaded2(false);
-        setInitPage(false);
-
-        axios.get('/api/children/meetings/searchOfNonApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
-        .then(response => {
-            if(isMountedRef.current) return;
-
-            setLoaded1(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                setMettingListNonApproval(response.data.params);
-                var len = response.data.params.length;
-                if(len > INFINITE)
-                    setFetchMettingListNonApproval(response.data.params.slice(0, INFINITE));
-                else setFetchMettingListNonApproval(response.data.params.slice(0, len));
-            } 
-        });
-
-        axios.get('/api/children/meetings/searchOfApprovalOfChild', {params:{keyword: keyword, child_id: child_id}})
-        .then((response) => {
-            if(isMountedRef.current) return;
-
-            setLoaded2(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                setMettingListApproval(response.data.params);
-                var len = response.data.params.length;
-                if(len > INFINITE)
-                    setFetchMettingListApproval(response.data.params.slice(0, INFINITE));
-                else setFetchMettingListApproval(response.data.params.slice(0, len));
-            } 
-        });
     }
 
     useEffect(()=>{

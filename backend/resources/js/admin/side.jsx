@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { HeaderContext } from '../context';
 
 export default function AdminSide() {
-    const [selected, setSelected] = useState('');
 
-    const handleLogout = () => {
-        axios.get('/admin/logout')
-        .then(() => {
-            localStorage.removeItem('admin_token');
-            window.location.href = '/admin/login';
-        })
-    }
+    const {
+        selected_item_sidebar, 
+        SetSelectedItemOfSidebar, 
+        handleLogout
+    } = useContext(HeaderContext);
+
+    const {pathname} = useLocation();
+    
+    useEffect(()=>{
+        SetSelectedItemOfSidebar(pathname.split('/')[2]);
+    }, []);
 
     return (
         <div className="l-side">
@@ -20,10 +24,9 @@ export default function AdminSide() {
             <nav className="mypage-nav">
                 <ul className="mypage-nav-list">
                     <li
-                        className={`mypage-nav-list__item  ${(selected == 'meeting' || (selected == '' && document.getElementById('admin_router').value == 'meeting')) && "nav-active"}`}
+                        className={`mypage-nav-list__item  ${selected_item_sidebar == 'meeting' && "nav-active"}`}
                         onClick={e => {
-                            e.preventDefault();
-                            setSelected('meeting');
+                            SetSelectedItemOfSidebar('meeting');
                         }}>
                         <Link className='mypage-nav-list__link' to='/admin/meeting'>
                             <i className="icon meeting"></i>
@@ -31,10 +34,9 @@ export default function AdminSide() {
                         </Link>
                     </li>
 
-                    <li className={`mypage-nav-list__item  ${ (selected == 'child' || (selected == '' && document.getElementById('admin_router').value == 'child')) && "nav-active"}`}
+                    <li className={`mypage-nav-list__item  ${ selected_item_sidebar == 'child' && "nav-active"}`}
                         onClick={e => {
-                            e.preventDefault();
-                            setSelected('child');
+                            SetSelectedItemOfSidebar('child');
                         }}>
                         <Link className='mypage-nav-list__link' to='/admin/child'>
                             <i className="icon parents"></i>
@@ -42,10 +44,9 @@ export default function AdminSide() {
                         </Link>
                     </li>
 
-                    <li className={`mypage-nav-list__item  ${ (selected == 'parent' || (selected == '' && document.getElementById('admin_router').value == 'parent')) && "nav-active"}`}
+                    <li className={`mypage-nav-list__item  ${ selected_item_sidebar == 'parent' && "nav-active"}`}
                         onClick={e => {
-                            e.preventDefault();
-                            setSelected('parent');
+                            SetSelectedItemOfSidebar('parent');
                         }}>
                         <Link className='mypage-nav-list__link' to='/admin/parent'>
                             <i className="icon parents"></i>
@@ -53,10 +54,9 @@ export default function AdminSide() {
                         </Link>
                     </li>
 
-                    <li className={`mypage-nav-list__item  ${(selected == 'logout') && "nav-active"}`}
+                    <li className={`mypage-nav-list__item  ${ selected_item_sidebar == 'logout' && "nav-active"}`}
                         onClick={e => {
-                            e.preventDefault();
-                            setSelected('logout');
+                            SetSelectedItemOfSidebar('logout');
                         }}>
 
                         <a className="mypage-nav-list__link" onClick={handleLogout}>

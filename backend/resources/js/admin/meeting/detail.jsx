@@ -1,7 +1,8 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useContext } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import moment from 'moment';
 
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 import ModalPdf from '../../component/pdf/modal_pdf';
 import ModalMemo from '../../component/modal_memo';
@@ -13,6 +14,7 @@ const AdminMeetingDetail = () => {
 
   const navigator = useNavigate();
   const params = useParams();
+  const { isAuthenticate } = useContext(HeaderContext);
 
   const [loaded, setLoaded] = useState(false);
   const [submit, setSubmit] = useState(false);
@@ -30,29 +32,31 @@ const AdminMeetingDetail = () => {
   
   useEffect( () => {
     isMountedRef.current = false;
-    setLoaded(false);
-    axios.get(`/api/admin/meetings/detail/${params?.meeting_id}`)
-    .then((response) => {
-      if(isMountedRef.current) return;
-      setLoaded(true);
-
-      if(response.data.status_code==200){
-          var list = response.data.params;
-          var total=0, num=0;
-          if(list.approval){
-            for(var i in list.approval)
-            {
-              if(list.approval[i].approval_at) num ++;
-              total ++;
+    if(isAuthenticate()){
+      setLoaded(false);
+      axios.get(`/api/admin/meetings/detail/${params?.meeting_id}`)
+      .then((response) => {
+        if(isMountedRef.current) return;
+        setLoaded(true);
+  
+        if(response.data.status_code==200){
+            var list = response.data.params;
+            var total=0, num=0;
+            if(list.approval){
+              for(var i in list.approval)
+              {
+                if(list.approval[i].approval_at) num ++;
+                total ++;
+              }
             }
-          }
-          setMeeting({...list, denominator:total, numerator:num});
-          if(list.meeting_image.length > 0) setThumbnail(list.meeting_image[0].image);
-      }
-      else {
-          set400Error("失敗しました。");
-      }
-    });
+            setMeeting({...list, denominator:total, numerator:num});
+            if(list.meeting_image.length > 0) setThumbnail(list.meeting_image[0].image);
+        }
+        else {
+            set400Error("失敗しました。");
+        }
+      });
+    }
     return () => {
         isMountedRef.current = true;
     }
@@ -60,20 +64,22 @@ const AdminMeetingDetail = () => {
 
 
   function handleAcceptDelete() {
-    setSubmit(true);
-    axios.delete(`/api/admin/meetings/delete/${params?.meeting_id}`)
-    .then(response => {
-      if(isMountedRef.current) return;
-        setShowConfirmModal(false);
-        setSubmit(false);
-        switch(response.data.status_code){
-          case 200:{
-            navigator('/admin/meeting',  {state: '削除に成功しました！'});
-            break;
-          }
-          case 400: set400Error("削除に失敗しました。"); break;
-        } 
-    });
+    if(isAuthenticate()){
+      setSubmit(true);
+      axios.delete(`/api/admin/meetings/delete/${params?.meeting_id}`)
+      .then(response => {
+        if(isMountedRef.current) return;
+          setShowConfirmModal(false);
+          setSubmit(false);
+          switch(response.data.status_code){
+            case 200:{
+              navigator('/admin/meeting',  {state: '削除に成功しました！'});
+              break;
+            }
+            case 400: set400Error("削除に失敗しました。"); break;
+          } 
+      });
+    }
   };
 
 
@@ -82,7 +88,6 @@ const AdminMeetingDetail = () => {
     var file_name = pieces[pieces.length-1];
     window.open(`/pdf/${file_name}`, '_blank');
   }
-
 
 
 	return (

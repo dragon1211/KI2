@@ -111,12 +111,15 @@ trait AuthenticationTrait {
         //unset($_COOKIE['remember_token']);
         //setcookie('remember_token', '', time() - 3600, '/', $_SERVER['HTTP_HOST'], 0, 1);
 
+        $expire = (int)time() + ((int)config('session.lifetime') * 60);
+
         if ($r->remember_token == 'true') {
             $token = bin2hex(random_bytes(24));
 
             try {
                 $this->getModel()->where('id', $get->id)->update(['remember_token' => $token]);
-                setcookie('remember_token', $token, time()+157788000, '/', $_SERVER['HTTP_HOST'], false, true);
+                $expire = (int)time()+157788000;
+                setcookie('remember_token', $token, $expire, '/', $_SERVER['HTTP_HOST'], false, true);
             }
             catch (\Throwable $e) {
                 Log::critical($e->getMessage());
@@ -126,8 +129,14 @@ trait AuthenticationTrait {
 
         // セッションを想像する
         $login_user_datum = $this->makeSession($this->getGuard(), $get->toArray());
+        Log::info([
+            'expire' => $expire,
+            'now' => time(),
+            'env' => env('SESSION_LIFETIME'),
+            'config' => config('session.lifetime')
+        ]);
 
-        return ['status_code' => 200, 'params' => ['id' => $login_user_datum['id']]];
+        return ['status_code' => 200, 'params' => ['id' => $login_user_datum['id'], 'expire' => (int)$expire * 1000]];
     }
 
     public function logout () {

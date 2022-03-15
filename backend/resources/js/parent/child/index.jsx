@@ -1,6 +1,7 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 
+import { HeaderContext } from '../../context';
 import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
@@ -21,12 +22,14 @@ const ParentChilds = () => {
     const [_400error, set400Error] = useState('');
 
     const isMountedRef = useRef(true);
+    const { isAuthenticate } = useContext(HeaderContext);
 
     useEffect(() => {
         isMountedRef.current = false;
-        setLoaded(false);
-        
-        axios.get('/api/fathers/children/listOfFather', {params: {father_id: father_id}})
+        if(isAuthenticate()){
+            setLoaded(false);
+            
+            axios.get('/api/fathers/children/listOfFather', {params: {father_id: father_id}})
             .then(response => {
                 if(isMountedRef.current) return;
 
@@ -43,7 +46,7 @@ const ParentChilds = () => {
                     set400Error("失敗しました。");
                 }
             })
-        
+        }
         return () => {
             isMountedRef.current = true;
         }

@@ -1,9 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 
@@ -12,6 +13,7 @@ const SCROLL_DELAY_TIME = 1500;
 
 const AdminChilds = () => {
 
+  const { isAuthenticate } = useContext(HeaderContext);
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
   const [children_list, setChildrenList ] = useState([]);
@@ -25,23 +27,25 @@ const AdminChilds = () => {
   
   useEffect(() => {
     isMountedRef.current = false;
-    setLoaded(false);
-
-    axios.get('/api/admin/children/list')
-    .then((response) => {
-      if(isMountedRef.current) return;
-      setLoaded(true);
-      if(response.data.status_code==200){
-          setChildrenList(response.data.params);
-          var len = response.data.params.length;
-          if(len > INFINITE)
-              setFetchChildrenList(response.data.params.slice(0, INFINITE));
-          else setFetchChildrenList(response.data.params.slice(0, len));
-      }
-      else {
-          set400Error("失敗しました。");
-      }
-    });
+    if(isAuthenticate()){
+      setLoaded(false);
+  
+      axios.get('/api/admin/children/list')
+      .then((response) => {
+        if(isMountedRef.current) return;
+        setLoaded(true);
+        if(response.data.status_code==200){
+            setChildrenList(response.data.params);
+            var len = response.data.params.length;
+            if(len > INFINITE)
+                setFetchChildrenList(response.data.params.slice(0, INFINITE));
+            else setFetchChildrenList(response.data.params.slice(0, len));
+        }
+        else {
+            set400Error("失敗しました。");
+        }
+      });
+    }
     return () => {
       isMountedRef.current = true;
     }
@@ -61,26 +65,28 @@ const AdminChilds = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if(keyword == '')
-    {
-      document.getElementById('keyword').focus();
-      return;
-    }
-    setLoaded(false);
-    set422errors({keyword:''});
-    setChildrenList([]);
-    axios.get('/api/admin/children/search', {params:{keyword: keyword}})
-    .then((response) => {
-      if(isMountedRef.current) return;
-      setLoaded(true);
-      if(response.data.status_code==200){
-        setChildrenList(response.data.params);
-        var len = response.data.params.length;
-        if(len > INFINITE)
-            setFetchChildrenList(response.data.params.slice(0, INFINITE));
-        else setFetchChildrenList(response.data.params.slice(0, len));
+    if(isAuthenticate()){
+      if(keyword == '')
+      {
+        document.getElementById('keyword').focus();
+        return;
       }
-    });
+      setLoaded(false);
+      set422errors({keyword:''});
+      setChildrenList([]);
+      axios.get('/api/admin/children/search', {params:{keyword: keyword}})
+      .then((response) => {
+        if(isMountedRef.current) return;
+        setLoaded(true);
+        if(response.data.status_code==200){
+          setChildrenList(response.data.params);
+          var len = response.data.params.length;
+          if(len > INFINITE)
+              setFetchChildrenList(response.data.params.slice(0, INFINITE));
+          else setFetchChildrenList(response.data.params.slice(0, len));
+        }
+      });
+    }
   }
 
 

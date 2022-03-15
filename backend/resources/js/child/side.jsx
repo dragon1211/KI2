@@ -1,26 +1,22 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { HeaderContext } from '../context';
+
 
 export default function ChildSide() {
-    const [selected, setSelected] = useState('');
 
-    const child_img = document.getElementById('child_image').value;
+    const {
+        selected_item_sidebar, 
+        SetSelectedItemOfSidebar,
+        handleLogout
+    } = useContext(HeaderContext);
 
-    const handleLogout = () => {
-        axios.get('/c-account/logout')
-        .then(() => {
-            localStorage.removeItem('c-account_token');
-            window.location.href = '/c-account/login';
-        })
-    }
+    const {pathname} = useLocation();
 
-    const handleSelected = (id) => {
-        var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
-        for(let i=0; i<navbar_list.length; i++)
-            navbar_list[i].classList.remove('nav-active');
-        document.getElementsByClassName(id)[0].classList.add('nav-active');
-        setSelected(id);
-    }
+    useEffect(()=>{
+        SetSelectedItemOfSidebar(pathname.split('/')[2]);
+    }, [])
+
 
     return (
         <div className="l-side">
@@ -30,41 +26,41 @@ export default function ChildSide() {
             <nav className="mypage-nav">
                 <ul className="mypage-nav-list">
                     <li 
-                        className={`mypage-nav-list__item -meeting ${(selected == '' && document.getElementById('c_router').value == 'meeting') && "nav-active"}`}
-                        onClick={e => handleSelected("-meeting")}>
+                        className={`mypage-nav-list__item -meeting ${ selected_item_sidebar == 'meeting' && "nav-active"}`}
+                        onClick={e => SetSelectedItemOfSidebar('meeting')}>
                         <Link className='mypage-nav-list__link' to='/c-account/meeting'>
                             <i className="icon meeting"></i>
                             <span>ミーティング</span>
                         </Link>
                     </li>
-                    <li className={`mypage-nav-list__item -search ${ (selected == '' && document.getElementById('c_router').value == 'search') && "nav-active"}`}
-                        onClick={e => handleSelected("-search")}>
+                    <li className={`mypage-nav-list__item -search ${ selected_item_sidebar == 'search' && "nav-active"}`}
+                        onClick={e => SetSelectedItemOfSidebar('search')}>
                         <Link className='mypage-nav-list__link' to='/c-account/search'>
                             <i className="icon search"></i>
                             <span>検索</span>
                         </Link>
                     </li>
-                    <li className={`mypage-nav-list__item -parentinfo ${ (selected == '' && document.getElementById('c_router').value == 'parent') && "nav-active"}`}
-                        onClick={e => handleSelected("-parentinfo")}>
+                    <li className={`mypage-nav-list__item -parentinfo ${ selected_item_sidebar == 'parent' && "nav-active"}`}
+                        onClick={e => SetSelectedItemOfSidebar('parent')}>
                         <Link className='mypage-nav-list__link' to='/c-account/parent'>
                             <i className="icon parents"></i>
                             <span>親情報</span>
                         </Link>
                     </li>
                     
-                    <li className={`mypage-nav-list__item -profile ${ (selected == '' && document.getElementById('c_router').value == 'profile') && "nav-active"}`}
-                        onClick={e => handleSelected("-profile")}>
+                    <li className={`mypage-nav-list__item -profile ${ selected_item_sidebar == 'profile' && "nav-active"}`}
+                        onClick={e => SetSelectedItemOfSidebar('profile')}>
                         <Link className='user-icon mypage-nav-list__link' to='/c-account/profile'>
                             <figure>
                                 <div className="prof-wrap">
-                                    <img src={child_img} alt="avatar"/>
+                                    <img src={document.getElementById('child_image').value} alt="avatar"/>
                                 </div>
                             </figure>
                             <span>プロフィール</span>
                         </Link>
                     </li>
-                    <li className={`mypage-nav-list__item -logout ${(selected == '-logout') && "nav-active"}`}
-                        onClick={e => handleSelected("-logout")}>
+                    <li className={`mypage-nav-list__item -logout ${ selected_item_sidebar == 'logout' && "nav-active"}`}
+                        onClick={e => SetSelectedItemOfSidebar('logout')}>
 
                         <a className="mypage-nav-list__link" onClick={handleLogout}>
                             <i className="icon log-out"></i><span>ログアウト</span>

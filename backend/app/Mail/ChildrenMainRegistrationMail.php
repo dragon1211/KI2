@@ -11,7 +11,7 @@ class ChildrenMainRegistrationMail extends Mailable {
     use Queueable, SerializesModels;
 
     public function build () {
-        return $this->subject('本登録が完了しました。')->text('emails.children.registration.main', [
+        return $this->subject('【KIKI】本登録が完了しました。')->text('emails.children.registration.main', [
             'url' => '/c-account/login',
         ]);
     }

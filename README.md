@@ -37,6 +37,12 @@ php artisan migrate:fresh --seed
 php artisan storage:link
 ```
 
+#### ７．crontab（スケジューラー）
+```
+echo "* * * * * cd /work && /usr/local/bin/php /work/artisan schedule:run >> /dev/null 2>&1" >> /var/spool/cron/crontabs/root
+service cron start
+```
+
 
 
 # 仕様書

@@ -3,11 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const WithdrawalComplete = () => {
     const { pathname } = useLocation();
-    var url;
 
-    if(pathname.includes('c-account')) url = '/c-account/login';
-    else if(pathname.includes('p-account')) url = '/p-account/login';
-    
 	return (
     <div className="l-single-container">
         <div className="l-single-inner">
@@ -17,7 +13,7 @@ const WithdrawalComplete = () => {
                 今後とも、KIKI管理をよろしくお願いいたします。
             </div>
             <div className="text-center">
-                <Link to={url} className="ft-xs-16">トップページへ戻る</Link>
+                <Link to={`/${pathname.split('/')[1]}/login`} className="ft-xs-16">トップページへ戻る</Link>
             </div>
         </div>
     </div>

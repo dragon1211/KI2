@@ -1,11 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { LoadingButton } from '@material-ui/lab';
 
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 
 
 const AdminParentAdd = () => {
 
+    const { isAuthenticate } = useContext(HeaderContext);
     const [email, setEmail] = useState('');
     const [limit, setLimit] = useState('');
     const [_422errors, set422Errors] = useState({ email: '', relation_limit: '' });
@@ -26,23 +28,27 @@ const AdminParentAdd = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        set422Errors({ email: '' })
-        setSubmit(true);
-        const formdata = new FormData();
-        formdata.append('email', email);
-        formdata.append('relation_limit', limit);
-        axios.post('/api/admin/fathers/registerTemporary', formdata)
-        .then(response => {
-            if(isMountedRef.current) return;
+        if(isAuthenticate()){
 
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: setSuccess(response.data.success_messages); break;
-                case 400: set400Error(response.data.error_messages); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-            }
-        })
-        .catch(err=>console.log(err))
+            set422Errors({ email: '' })
+            setSubmit(true);
+            const formdata = new FormData();
+            formdata.append('email', email);
+            formdata.append('relation_limit', limit);
+            axios.post('/api/admin/fathers/registerTemporary', formdata)
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200: setSuccess(response.data.success_messages); break;
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                }
+            })
+            .catch(err=>console.log(err))
+
+        }
     }
 
 

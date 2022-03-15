@@ -1,5 +1,7 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useContext } from 'react';
 import { LoadingButton } from '@material-ui/lab';
+
+import { HeaderContext } from '../../context';
 import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
@@ -8,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 const ParentProfileEdit = () => {
 
   const navigator = useNavigate();
+  const { isAuthenticate } = useContext(HeaderContext);
 
   const father_id = localStorage.getItem('father_id');
   const [notice, setNotice] = useState(-1);
@@ -34,65 +37,68 @@ const ParentProfileEdit = () => {
 
   useEffect(() => {
     isMountedRef.current = false;
-    setLoaded(false);
-
-    axios.get(`/api/fathers/detail/${father_id}`)
-      .then(response => {
-        if(isMountedRef.current) return;
-
-        setLoaded(true);
-        setNotice(response.data.notice);
-        if(response.data.status_code==200) {
-          setParams(response.data.params);
-          setCompany(response.data.params?.company);
-          setEmail(response.data.params?.email);
-          setTel(response.data.params?.tel);
-          setProfile(response.data.params.profile ? response.data.params.profile: '');
-        }
-        else {
-          set400Error("失敗しました。");
-        } 
-      })
-      .catch(err=>{
-        if(isMountedRef.current) return;
-
-        setLoaded(true);
-        setNotice(err.response.data.notice);
-        if(err.response.status==404){
-            set404Error(err.response.data.message);
-        }
-      })
-
+    if(isAuthenticate()){
+      setLoaded(false);
+      axios.get(`/api/fathers/detail/${father_id}`)
+        .then(response => {
+          if(isMountedRef.current) return;
+  
+          setLoaded(true);
+          setNotice(response.data.notice);
+          if(response.data.status_code==200) {
+            setParams(response.data.params);
+            setCompany(response.data.params?.company);
+            setEmail(response.data.params?.email);
+            setTel(response.data.params?.tel);
+            setProfile(response.data.params.profile ? response.data.params.profile: '');
+          }
+          else {
+            set400Error("失敗しました。");
+          } 
+        })
+        .catch(err=>{
+          if(isMountedRef.current) return;
+  
+          setLoaded(true);
+          setNotice(err.response.data.notice);
+          if(err.response.status==404){
+              set404Error(err.response.data.message);
+          }
+        })
+    }
     return () => {
       isMountedRef.current = true;
     }
   }, []);
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    set422Errors({ company:'', email: '',  tel: '',  profile:'' });
-    const request = {
-      company: company,
-      email: email,
-      tel: tel,
-      profile: profile
-    }
-    setSubmit(true);
-    axios.put(`/api/fathers/updateProfile/${father_id}`, request)
-    .then(response => {
-      if(isMountedRef.current) return;
-      
-      setNotice(response.data.notice);
-      setSubmit(false);
-      switch(response.data.status_code){
-        case 200:{
-          navigator('/p-account/profile', { state: response.data.success_messages });
-          break;
-        } 
-        case 400: set400Error(response.data.error_messages); break;
-        case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+    if(isAuthenticate()){
+      set422Errors({ company:'', email: '',  tel: '',  profile:'' });
+      const request = {
+        company: company,
+        email: email,
+        tel: tel,
+        profile: profile
       }
-    });
+      setSubmit(true);
+      axios.put(`/api/fathers/updateProfile/${father_id}`, request)
+      .then(response => {
+        if(isMountedRef.current) return;
+        
+        setNotice(response.data.notice);
+        setSubmit(false);
+        switch(response.data.status_code){
+          case 200:{
+            navigator('/p-account/profile', { state: response.data.success_messages });
+            break;
+          } 
+          case 400: set400Error(response.data.error_messages); break;
+          case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        }
+      });
+    }
   }
 
   

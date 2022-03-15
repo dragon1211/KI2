@@ -18,7 +18,7 @@ class FathersApprovalAgainMail extends Mailable {
     }
 
     public function build () {
-        return $this->subject('KIKI運営事務局からのお知らせ')->text('emails.fathers.approvalagain', [
+        return $this->subject('【KIKI】KIKI運営事務局からのお知らせ')->text('emails.fathers.approvalagain', [
             'father' => $this->father,
             'url' => '/c-account/meeting/detail/'.$this->meeting_id,
         ]);

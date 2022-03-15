@@ -9,7 +9,7 @@ const SignUpComplete = () => {
 
     const { pathname, state } = useLocation();
     const [_success, setSuccess] = useState(state);
-    
+
     const gotoLogin = () => {
         var url;
         if(pathname.includes('c-account')) url = '/c-account/login';
@@ -27,7 +27,7 @@ const SignUpComplete = () => {
                 ログイン画面より、ログインを行ってください。
             </span>
             <div className="mt-5">
-                <Button type="submit" fullWidth 
+                <Button type="submit" fullWidth
                     className="btn-edit btn-default btn-h75 bg-yellow rounded-20"
                     onClick={gotoLogin}>
                     <span className="ft-16 font-weight-bold text-black">ログイン画面へ</span>

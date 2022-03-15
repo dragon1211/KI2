@@ -1,26 +1,24 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { HeaderContext } from '../context';
+
 
 export default function ParentSide() {
-    const [selected, setSelected] = useState('');
 
     const father_image = document.getElementById('father_image').value;
 
-    const handleLogout = () => {
-        axios.get('/p-account/logout')
-        .then(() => {
-            localStorage.removeItem('p-account_token');
-            window.location.href = '/p-account/login';
-        })
-    }
+    const {
+        selected_item_sidebar, 
+        SetSelectedItemOfSidebar, 
+        handleLogout
+    } = useContext(HeaderContext);
+    const {pathname} = useLocation();
 
-    const handleSelected = (id) => {
-        var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
-        for(let i=0; i<navbar_list.length; i++)
-            navbar_list[i].classList.remove('nav-active');
-        document.getElementsByClassName(id)[0].classList.add('nav-active');
-        setSelected(id);
-    }
+
+    useEffect(()=>{
+        SetSelectedItemOfSidebar(pathname.split('/')[2]);
+    }, [])
+
 
     return (
         <div className="l-side">
@@ -29,36 +27,36 @@ export default function ParentSide() {
             </div>
             <nav className="mypage-nav">
                 <ul className="mypage-nav-list">
-                    <li className={`mypage-nav-list__item  -meeting  ${selected == '' && document.getElementById('p_router').value == 'meeting' && 'nav-active'}`}
-                        onClick={e => handleSelected("-meeting")}>
+                    <li className={`mypage-nav-list__item  -meeting  ${ selected_item_sidebar == 'meeting' && 'nav-active'}`}
+                        onClick={e => SetSelectedItemOfSidebar('meeting')}>
                         <Link className='mypage-nav-list__link' to='/p-account/meeting'>
                             <i className="icon meeting"></i>
                             <span>ミーティング</span>
                         </Link>
                     </li>
-                    <li className={`mypage-nav-list__item  -favorite  ${selected == '' && document.getElementById('p_router').value == 'favorite' && 'nav-active'}`}
-                        onClick={e => handleSelected("-favorite")}>
+                    <li className={`mypage-nav-list__item  -favorite  ${ selected_item_sidebar == 'favorite' && 'nav-active'}`}
+                        onClick={e => SetSelectedItemOfSidebar('favorite')}>
                         <Link className='mypage-nav-list__link' to='/p-account/favorite'>
                             <i className="icon star"></i>
                             <span>お気に入り</span>
                         </Link>
                     </li>
-                    <li className={`mypage-nav-list__item  -search  ${selected == '' && document.getElementById('p_router').value == 'search' && 'nav-active'}`}
-                        onClick={e => handleSelected("-search")}>
+                    <li className={`mypage-nav-list__item  -search  ${ selected_item_sidebar == 'search' && 'nav-active'}`}
+                        onClick={e => SetSelectedItemOfSidebar('search')}>
                         <Link className='mypage-nav-list__link' to='/p-account/search'>
                             <i className="icon search"></i>
                             <span>検索</span>
                         </Link>
                     </li>
-                    <li className={`mypage-nav-list__item  -child  ${selected == '' && document.getElementById('p_router').value == 'child' && 'nav-active'}`}
-                        onClick={e => handleSelected("-child")}>
+                    <li className={`mypage-nav-list__item  -child  ${ selected_item_sidebar == 'child' && 'nav-active'}`}
+                        onClick={e => SetSelectedItemOfSidebar('child')}>
                         <Link className='mypage-nav-list__link' to='/p-account/child'>
                             <i className="icon parents"></i>
                             <span>子情報</span>
                         </Link>
                     </li>
-                    <li className={`mypage-nav-list__item  -profile  ${selected == '' && document.getElementById('p_router').value == 'profile' && 'nav-active'}`}
-                        onClick={e => handleSelected("-profile")}>
+                    <li className={`mypage-nav-list__item  -profile  ${ selected_item_sidebar == 'profile' && 'nav-active'}`}
+                        onClick={e => SetSelectedItemOfSidebar('profile')}>
                         <Link className='user-icon mypage-nav-list__link' to='/p-account/profile'>
                             <figure>
                                 <div className="prof-wrap">
@@ -68,8 +66,8 @@ export default function ParentSide() {
                             <span>プロフィール</span>
                         </Link>
                     </li>
-                    <li className={`mypage-nav-list__item -logout ${(selected == '-logout') && "nav-active"}`}
-                        onClick={e => handleSelected("-logout")}>
+                    <li className={`mypage-nav-list__item -logout ${ selected_item_sidebar == 'logout' && "nav-active"}`}
+                        onClick={e => SetSelectedItemOfSidebar('logout')}>
                         <a className="mypage-nav-list__link" onClick={handleLogout}>
                             <i className="icon log-out"></i><span>ログアウト</span>
                         </a>

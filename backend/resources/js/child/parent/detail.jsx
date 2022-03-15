@@ -1,12 +1,14 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { HeaderContext } from '../../context';
 import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 
 const ChildParentDetail = () => {
 
+    const { isAuthenticate } = useContext(HeaderContext);
     const navigator = useNavigate();
     const params = useParams();
 
@@ -22,42 +24,39 @@ const ChildParentDetail = () => {
     
     useEffect(() => {
         isMountedRef.current = false;
-        setLoaded(false);
 
-        axios.get('/api/children/fathers/detail/'+ params?.father_id)
-        .then(response => {
-            if(isMountedRef.current) return;
-
-            setLoaded(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                setParent(response.data.params);
-            }
-            else {
-                set400Error("失敗しました。");
-            }
-        })
-        .catch(err=>{
-            if(isMountedRef.current) return;
-            
-            setLoaded(true);
-            setNotice(err.response.data.notice);
-            if(err.response.status==404){
-                set404Error(err.response.data.message);
-            }
-        })
+        if(isAuthenticate){
+            setLoaded(false);
+    
+            axios.get('/api/children/fathers/detail/'+ params?.father_id)
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    setParent(response.data.params);
+                }
+                else {
+                    set400Error("失敗しました。");
+                }
+            })
+            .catch(err=>{
+                if(isMountedRef.current) return;
+                
+                setLoaded(true);
+                setNotice(err.response.data.notice);
+                if(err.response.status==404){
+                    set404Error(err.response.data.message);
+                }
+            })
+        }
             
         return () => {
             isMountedRef.current = true;
         }
     },[]);
 
-    useEffect(()=>{
-        var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
-        for(let i=0; i<navbar_list.length; i++)
-            navbar_list[i].classList.remove('nav-active');
-        document.getElementsByClassName("-parentinfo")[0].classList.add('nav-active');
-    },[]);
     
 	return (
     <div className="l-content">      

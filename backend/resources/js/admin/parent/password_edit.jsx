@@ -1,12 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 
 
 const AdminParentPasswordEdit = () => {
 
+    const { isAuthenticate } = useContext(HeaderContext);
     const navigator = useNavigate();
     const params = useParams();
 
@@ -32,33 +34,37 @@ const AdminParentPasswordEdit = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        set422Errors({
-            password:'',
-            password_confirmation:''
-        });
-        setSubmit(true);
-        const request = {
-            password: password,
-            password_confirmation: password_confirmation
-        }
-
-        axios.put(`/api/admin/fathers/updatePassword/${params?.father_id}`, request)
-        .then(response => {
-            if(isMountedRef.current) return;
-
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: {
-                    navigator(`/admin/parent/detail/${params?.father_id}`,
-                    {state: response.data.success_messages});
-                    break;
-                }
-                case 400: set400Error(response.data.error_messages); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        
+        if(isAuthenticate()){
+            set422Errors({
+                password:'',
+                password_confirmation:''
+            });
+            setSubmit(true);
+            const request = {
+                password: password,
+                password_confirmation: password_confirmation
             }
-        })
+    
+            axios.put(`/api/admin/fathers/updatePassword/${params?.father_id}`, request)
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200: {
+                        navigator(`/admin/parent/detail/${params?.father_id}`,
+                        {state: response.data.success_messages});
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                }
+            })
+        }
     }
 
+    
 	return (
         <div className="l-content">
             <div className="l-content-w560">

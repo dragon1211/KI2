@@ -70,7 +70,7 @@ const ChildForgotPassword = () => {
                 </LoadingButton>
 
                 { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> } 
-                { _success && <Alert type="success" hide={()=>setSucess('')}> {_success}</Alert> }
+                { _success && <Alert type="success" hide={()=>setSuccess('')}> {_success}</Alert> }
             </form>
         </div>
     </div>

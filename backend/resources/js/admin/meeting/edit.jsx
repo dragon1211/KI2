@@ -1,8 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
+
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 import PreviewPDF from '../../component/preview_pdf';
 import PageLoader from '../../component/page_loader';
@@ -13,6 +15,7 @@ const AdminMeetingEdit = () => {
     
     const navigator = useNavigate();
     const params = useParams();
+    const { isAuthenticate } = useContext(HeaderContext);
 
     const meeting_id = params?.meeting_id;
 
@@ -59,41 +62,44 @@ const AdminMeetingEdit = () => {
     
     useEffect(() => {
         isMountedRef.current = false;
-        setLoaded(false);
+        if(isAuthenticate()){
 
-        axios.get(`/api/admin/meetings/detail/${meeting_id}`)
-        .then(response => {
-            if(isMountedRef.current) return;
-            setLoaded(true);
-            if(response.data.status_code==200){
-                setMeeting(response.data.params);         //Success
-                setTitle(response.data.params?.title);
-                setMemo(response.data.params.memo ? response.data.params.memo: '');
-                setText(response.data.params.text ? response.data.params.text: '');
-                setMeetingImages(response.data.params?.meeting_image);
-                setApproval(response.data.params?.approval);
-                setPdf(response.data.params?.pdf);
-                setPDFURL(response.data.params?.pdf);
-                
-                var list = [...response.data.params?.children];
-                var approval = [...response.data.params?.approval];
-                var arr = [];
-                for(var i in list){
-                    if(approval.findIndex(ele=>ele.child_id == list[i].id) >= 0)
-                        arr.push({...list[i], checked: true});
-                    else arr.push({...list[i], checked: false});
+            setLoaded(false);
+    
+            axios.get(`/api/admin/meetings/detail/${meeting_id}`)
+            .then(response => {
+                if(isMountedRef.current) return;
+                setLoaded(true);
+                if(response.data.status_code==200){
+                    setMeeting(response.data.params);         //Success
+                    setTitle(response.data.params?.title);
+                    setMemo(response.data.params.memo ? response.data.params.memo: '');
+                    setText(response.data.params.text ? response.data.params.text: '');
+                    setMeetingImages(response.data.params?.meeting_image);
+                    setApproval(response.data.params?.approval);
+                    setPdf(response.data.params?.pdf);
+                    setPDFURL(response.data.params?.pdf);
+                    
+                    var list = [...response.data.params?.children];
+                    var approval = [...response.data.params?.approval];
+                    var arr = [];
+                    for(var i in list){
+                        if(approval.findIndex(ele=>ele.child_id == list[i].id) >= 0)
+                            arr.push({...list[i], checked: true});
+                        else arr.push({...list[i], checked: false});
+                    }
+                    setChildrenList(arr);
+                    if((approval.length == list.length) && (approval.length > 0))
+                        setCheckRadio('all_send');
+                    else if((approval.length != list.length) && (approval.length > 0))
+                        setCheckRadio('pickup_send');
+                    else setCheckRadio('');
+                } 
+                else {
+                    set400Error("失敗しました。");
                 }
-                setChildrenList(arr);
-                if((approval.length == list.length) && (approval.length > 0))
-                    setCheckRadio('all_send');
-                else if((approval.length != list.length) && (approval.length > 0))
-                    setCheckRadio('pickup_send');
-                else setCheckRadio('');
-            } 
-            else {
-                set400Error("失敗しました。");
-            }
-        });
+            });
+        }
 
         return () => {
             isMountedRef.current = true;
@@ -102,102 +108,113 @@ const AdminMeetingEdit = () => {
 
 
     const handleSubmit = (e) => {
-         e.preventDefault();
-        set422Errors({title:'',memo:'',text:'',pdf:'',image:''});
+        e.preventDefault();
 
-        var approval_registerIndexes = [];
-        var approval_deleteIndexes = [];
-        for(let i=0; i<children_list.length; i++){
-            if(children_list[i].checked){
-                if(approval_list.findIndex(ele=>ele.child_id == children_list[i].id) < 0)
-                    approval_registerIndexes.push(children_list[i].id);
-            }
-        }
-        for(let i=0; i<approval_list.length; i++){
-            if(children_list.findIndex(ele=> ele.checked && ele.id == approval_list[i].child_id) < 0)
-                approval_deleteIndexes.push(approval_list[i].child_id);
-        }
+        if(isAuthenticate()){
 
-        const formdata = new FormData();
-        formdata.append('children', JSON.stringify(approval_registerIndexes));
-        axios.post('/api/admin/meeting/approvals/register',formdata, {params:{meeting_id: meeting_id}})
-        axios.delete('/api/admin/meeting/approvals/delete',{params:{children: approval_deleteIndexes, meeting_id: meeting_id}})
-        
-        const request = { title: title, text: text, memo: memo, pdf: pdf };
-        setSubmit(true);
-
-        axios.put(`/api/admin/meetings/update/${meeting_id}`, request)
-        .then(response => {
-            if(isMountedRef.current) return;
-            
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: {
-                    navigator(`/admin/meeting/detail/${meeting_id}`,
-                    {state: "更新成功しました!"});
-                    break;
+            set422Errors({title:'',memo:'',text:'',pdf:'',image:''});
+    
+            var approval_registerIndexes = [];
+            var approval_deleteIndexes = [];
+            for(let i=0; i<children_list.length; i++){
+                if(children_list[i].checked){
+                    if(approval_list.findIndex(ele=>ele.child_id == children_list[i].id) < 0)
+                        approval_registerIndexes.push(children_list[i].id);
                 }
-                case 400: set400Error("更新失敗しました。"); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
             }
-        });
+            for(let i=0; i<approval_list.length; i++){
+                if(children_list.findIndex(ele=> ele.checked && ele.id == approval_list[i].child_id) < 0)
+                    approval_deleteIndexes.push(approval_list[i].child_id);
+            }
+    
+            const formdata = new FormData();
+            formdata.append('children', JSON.stringify(approval_registerIndexes));
+            axios.post('/api/admin/meeting/approvals/register',formdata, {params:{meeting_id: meeting_id}})
+            axios.delete('/api/admin/meeting/approvals/delete',{params:{children: approval_deleteIndexes, meeting_id: meeting_id}})
+            
+            const request = { title: title, text: text, memo: memo, pdf: pdf };
+            setSubmit(true);
+    
+            axios.put(`/api/admin/meetings/update/${meeting_id}`, request)
+            .then(response => {
+                if(isMountedRef.current) return;
+                
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200: {
+                        navigator(`/admin/meeting/detail/${meeting_id}`,
+                        {state: "更新成功しました!"});
+                        break;
+                    }
+                    case 400: set400Error("更新失敗しました。"); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                }
+            });
+        }
     }
 
 
     const handleImageChange = (e) => {
         e.preventDefault();
-        const files = Array.from(e.target.files);
-        if(e.target.files.length + meeting_image.length > 10)
-        {
-            set400Error("画像は最大10個までです。");
-            return;
-        }
-        const promises = files.map(_file => {
-            return (new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.addEventListener('load', (ev) => {
-                    resolve(ev.target.result);
-                });
-                reader.addEventListener('error', reject);
-                reader.readAsDataURL(_file);
-            }))
-        });
+        if(isAuthenticate()){
 
-        Promise.all(promises).then((images) => {
-            set422Errors({image:''});
-            const formdata = new FormData();
-            formdata.append('image', JSON.stringify(images));
-            setImageSending(true);
-
-            axios.post(`/api/admin/meeting/images/register`, formdata,  {params:{meeting_id: meeting_id}})
-            .then(response => {
-                if(isMountedRef.current) return;
-
-                setImageSending(false);
-                switch(response.data.status_code){
-                    case 200: setMeetingImages(response.data.params); break;
-                    case 400: set400Error("画像の登録に失敗しました。"); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-                } 
+            const files = Array.from(e.target.files);
+            if(e.target.files.length + meeting_image.length > 10)
+            {
+                set400Error("画像は最大10個までです。");
+                return;
+            }
+            const promises = files.map(_file => {
+                return (new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.addEventListener('load', (ev) => {
+                        resolve(ev.target.result);
+                    });
+                    reader.addEventListener('error', reject);
+                    reader.readAsDataURL(_file);
+                }))
             });
-        }, 
-        error => { console.error(error); });
+    
+            Promise.all(promises).then((images) => {
+                set422Errors({image:''});
+                const formdata = new FormData();
+                formdata.append('image', JSON.stringify(images));
+                setImageSending(true);
+    
+                axios.post(`/api/admin/meeting/images/register`, formdata,  {params:{meeting_id: meeting_id}})
+                .then(response => {
+                    if(isMountedRef.current) return;
+    
+                    setImageSending(false);
+                    switch(response.data.status_code){
+                        case 200: setMeetingImages(response.data.params); break;
+                        case 400: set400Error("画像の登録に失敗しました。"); break;
+                        case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                    } 
+                });
+            }, 
+            error => { console.error(error); });
+        }
     };
 
 
 
     const handleDeleteImage = (index, image_id) => {
-        let list = [...meeting_image];
-        list.splice(index, 1);
-        setMeetingImages(list);
+        if(isAuthenticate()){
+            
+            let list = [...meeting_image];
+            list.splice(index, 1);
+            setMeetingImages(list);
+    
+            axios.delete(`/api/admin/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
+            .then(response=>{
+                if(isMountedRef.current) return;
+                switch(response.data.status_code){
+                    case 400: set400Error("画像の削除に失敗しました。");
+                }
+            })
 
-        axios.delete(`/api/admin/meeting/images/delete/${meeting_id}`, {params:{image_id: image_id}})
-        .then(response=>{
-            if(isMountedRef.current) return;
-            switch(response.data.status_code){
-                case 400: set400Error("画像の削除に失敗しました。");
-            }
-        })
+        }
     }
 
 
@@ -218,6 +235,7 @@ const AdminMeetingEdit = () => {
             setPdf(reader.result);
         }
     }
+
 
 	return (
         <div className="l-content">

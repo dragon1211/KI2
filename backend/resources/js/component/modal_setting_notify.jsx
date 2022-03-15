@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -6,6 +6,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { CircularProgress  } from '@material-ui/core';
 
+import { HeaderContext } from '../context';
 import Alert from '../component/alert';
 
 
@@ -26,31 +27,33 @@ export default function ModalSettingNotify({show, handleClose, meetingId, handle
   const [loaded, setLoaded] = useState(false);
 
   const isMountedRef = useRef(true);
+  const { isAuthenticate } = useContext(HeaderContext);
 
   useEffect(() => {
     isMountedRef.current = false;
-
-    setLoaded1(false);
-    axios.get('/api/fathers/meeting/approvals/listChildrenOfApprovel', {params: { meeting_id: meetingId }})
-      .then((response) => {
-        if(isMountedRef.current) return;
-
-        setLoaded1(true);
-        if(response.data.status_code==200){
-          setApproval(response.data.params);
-        }
-      });
-
-    setLoaded2(false);
-    axios.get('/api/fathers/meeting/approvals/listChildrenOfUnapprovel', {params: { meeting_id: meetingId }})
-      .then((response) => {
-        if(isMountedRef.current) return;
-        
-        setLoaded2(true);
-        if(response.data.status_code==200){
-          setUnapproval(response.data.params);
-        }
-      });
+    if(isAuthenticate()){
+      setLoaded1(false);
+      axios.get('/api/fathers/meeting/approvals/listChildrenOfApprovel', {params: { meeting_id: meetingId }})
+        .then((response) => {
+          if(isMountedRef.current) return;
+  
+          setLoaded1(true);
+          if(response.data.status_code==200){
+            setApproval(response.data.params);
+          }
+        });
+  
+      setLoaded2(false);
+      axios.get('/api/fathers/meeting/approvals/listChildrenOfUnapprovel', {params: { meeting_id: meetingId }})
+        .then((response) => {
+          if(isMountedRef.current) return;
+          
+          setLoaded2(true);
+          if(response.data.status_code==200){
+            setUnapproval(response.data.params);
+          }
+        });
+    }
 
     return () => {
       isMountedRef.current = true;
@@ -65,18 +68,20 @@ export default function ModalSettingNotify({show, handleClose, meetingId, handle
 
 
   const settingNotify = (email) => {
-    const formdata = new FormData();
-    formdata.append('email', JSON.stringify(new Array(email)));
-    formdata.append('meeting_id', meetingId);
-    axios.post('/api/fathers/meetingEditNotification', formdata)
-    .then(response=>{
-      if(isMountedRef.current) return;
-      
-      switch(response.data.status_code){
-        case 200: setSuccess('通知に成功しました!'); break;
-        case 400: set400Error('通知に失敗しました。'); break;
-      }
-    })
+    if(isAuthenticate){
+      const formdata = new FormData();
+      formdata.append('email', JSON.stringify(new Array(email)));
+      formdata.append('meeting_id', meetingId);
+      axios.post('/api/fathers/meetingEditNotification', formdata)
+      .then(response=>{
+        if(isMountedRef.current) return;
+        
+        switch(response.data.status_code){
+          case 200: setSuccess('通知に成功しました!'); break;
+          case 400: set400Error('通知に失敗しました。'); break;
+        }
+      })
+    }
   }
 
 
@@ -146,7 +151,7 @@ export default function ModalSettingNotify({show, handleClose, meetingId, handle
                           <div className="user-avatar">
                             <img alt="name" className="avatar-img" src={item.child.image} />
                           </div>
-                          <p className="user-name">{item.child.first_name}　{item.child.last_name}</p>
+                          <p className="user-name">{item.child.last_name}　{item.child.first_name}</p>
                         </Link>
                       </div>
                     </div>

@@ -168,7 +168,6 @@ Route::group(['prefix' => 'children'], function () {
     Route::group(['prefix' => 'father'], function () {
         Route::group(['prefix' => 'relations'], function () {
             Route::get('/checkNull', '\App\Http\Controllers\Api\FatherRelationsController@checkNull')->name('chknull_child');
-            Route::get('/check', '\App\Http\Controllers\Api\FatherRelationsController@check')->name('chk_child');
         });
 });
 

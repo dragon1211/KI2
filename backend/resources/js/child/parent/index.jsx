@@ -1,6 +1,7 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 
+import { HeaderContext } from '../../context';
 import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
@@ -21,28 +22,31 @@ const ChildParents = () => {
     const [_success, setSuccess] = useState('');
 
     const isMountedRef = useRef(true);
+    const { isAuthenticate } = useContext(HeaderContext);
     
     useEffect( () => {
         isMountedRef.current = false;
-        setLoaded(false);
-
-        axios.get('/api/children/fathers/listOfChild', {params: {child_id: child_id}})
-        .then(response => {
-            if(isMountedRef.current) return;
-
-            setLoaded(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                setParentList(response.data.params);
-                var len = response.data.params.length;
-                if(len > INFINITE)
-                    setFetchParentList(response.data.params.slice(0, INFINITE));
-                else setFetchParentList(response.data.params.slice(0, len));
-            }
-            else {
-                set400Error("失敗しました。");
-            }
-        })
+        if(isAuthenticate()){
+            setLoaded(false);
+    
+            axios.get('/api/children/fathers/listOfChild', {params: {child_id: child_id}})
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    setParentList(response.data.params);
+                    var len = response.data.params.length;
+                    if(len > INFINITE)
+                        setFetchParentList(response.data.params.slice(0, INFINITE));
+                    else setFetchParentList(response.data.params.slice(0, len));
+                }
+                else {
+                    set400Error("失敗しました。");
+                }
+            })
+        }
 
         return () => {
             isMountedRef.current = true;

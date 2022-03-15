@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 
+import { HeaderContext } from '../../context';
 import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 
@@ -9,6 +10,7 @@ import Alert from '../../component/alert';
 const ChildProfilePasswordEdit = () => {
 
     const navigator = useNavigate();
+    const { isAuthenticate } = useContext(HeaderContext);
 
     const child_id = localStorage.getItem('child_id');
     const [notice, setNotice] = useState(-1);
@@ -36,31 +38,33 @@ const ChildProfilePasswordEdit = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        set422Errors({
-            password:'',
-            password_confirmation:''
-        });
-        setSubmit(true);
-        const post = {
-            password: password,
-            password_confirmation: password_confirmation
-        }
-
-        axios.put(`/api/children/updatePassword/${child_id}`, post)
-        .then(response => {
-            if(isMountedRef.current) return;
-
-            setSubmit(false);
-            setNotice(response.data.notice);
-            switch(response.data.status_code){
-                case 200: {
-                    navigator('/c-account/profile', { state: response.data.success_messages });
-                    break;
-                }
-                case 400: set400Error(response.data.error_messages); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+        if(isAuthenticate()){
+            set422Errors({
+                password:'',
+                password_confirmation:''
+            });
+            setSubmit(true);
+            const post = {
+                password: password,
+                password_confirmation: password_confirmation
             }
-        })
+    
+            axios.put(`/api/children/updatePassword/${child_id}`, post)
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setSubmit(false);
+                setNotice(response.data.notice);
+                switch(response.data.status_code){
+                    case 200: {
+                        navigator('/c-account/profile', { state: response.data.success_messages });
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+                }
+            })
+        }
     }
 
 

@@ -1,8 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 import Notification from '../../component/notification';
@@ -10,6 +11,7 @@ import Notification from '../../component/notification';
 
 const ChildProfileDetail = () => {
 
+    const { isAuthenticate, handleLogout } = useContext(HeaderContext);
     const navigator = useNavigate();
 
     const child_id = localStorage.getItem('child_id');
@@ -28,35 +30,36 @@ const ChildProfileDetail = () => {
 
     useEffect(() => {
         isMountedRef.current = false;
-        setLoaded(false);
-
-        axios.get('/api/children/detail/'+ child_id)
-        .then(response => {
-            if(isMountedRef.current) return;
-
-            setLoaded(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code==200){
-                setProfile(response.data.params);
-                setImage(response.data.params.image);
-            } else {
-                set400Error("失敗しました。");
-            }
-        })
-        .catch(err=>{
-            if(isMountedRef.current) return;
-
-            setLoaded(true);
-            setNotice(err.response.data.notice);
-            if(err.response.status==404){
-                set404Error(err.response.data.message);
-            }
-        })
-            
+        if(isAuthenticate()){
+            setLoaded(false);
+            axios.get('/api/children/detail/'+ child_id)
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code==200){
+                    setProfile(response.data.params);
+                    setImage(response.data.params.image);
+                } else {
+                    set400Error("失敗しました。");
+                }
+            })
+            .catch(err=>{
+                if(isMountedRef.current) return;
+    
+                setLoaded(true);
+                setNotice(err.response.data.notice);
+                if(err.response.status==404){
+                    set404Error(err.response.data.message);
+                }
+            })
+        }
         return () => {
             isMountedRef.current = true;
         }
     },[]);
+
 
     useEffect(() => {
         if(localStorage.getItem('image_upload_success')){
@@ -65,40 +68,36 @@ const ChildProfileDetail = () => {
         }
     })
 
-    const handleLogout = () => {
-        axios.get('/c-account/logout')
-        .then(() => {
-            localStorage.removeItem('c-account_token');
-            window.location.href = '/c-account/login';
-        })
-    }
 
     const handleImageChange = (e) => {
         e.preventDefault();
-        set422Errors({image: ''});
-        let reader = new FileReader();
-        let _file = e.target.files[0];
-        reader.readAsDataURL(_file);
-        reader.onloadend = () => {
-            set422Errors({image: ''});
-            setSubmitImage(true);
-            axios.put(`/api/children/updateImage/${child_id}`, {image: reader.result})
-            .then(response => {
-                if(isMountedRef.current) return;
 
-                setNotice(response.data.notice);
-                setSubmitImage(false);
-                switch(response.data.status_code){
-                    case 200: {
-                        localStorage.setItem('image_upload_success', response.data.success_messages);
-                        window.location.reload(true);
-                        break;
+        if(isAuthenticate()){
+            set422Errors({image: ''});
+            let reader = new FileReader();
+            let _file = e.target.files[0];
+            reader.readAsDataURL(_file);
+            reader.onloadend = () => {
+                set422Errors({image: ''});
+                setSubmitImage(true);
+                axios.put(`/api/children/updateImage/${child_id}`, {image: reader.result})
+                .then(response => {
+                    if(isMountedRef.current) return;
+    
+                    setNotice(response.data.notice);
+                    setSubmitImage(false);
+                    switch(response.data.status_code){
+                        case 200: {
+                            localStorage.setItem('image_upload_success', response.data.success_messages);
+                            window.location.reload(true);
+                            break;
+                        }
+                        case 400: set400Error(response.data.error_messages); break;
+                        case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                     }
-                    case 400: set400Error(response.data.error_messages); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-                }
-            });
-        };
+                });
+            };
+        }
     };
 
 

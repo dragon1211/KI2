@@ -1,8 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { Link, useNavigate, useParams} from 'react-router-dom';
-
-import Notification from '../../component/notification';
 import moment from 'moment';
+
+import { HeaderContext } from '../../context';
+import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import ModalPdf from '../../component/pdf/modal_pdf';
 import ModalMemo from '../../component/modal_memo';
@@ -12,6 +13,7 @@ import PageLoader from '../../component/page_loader';
 
 const ChildMeetingDetail = () => {
 
+    const { isAuthenticate } = useContext(HeaderContext);
     const navigator = useNavigate();
     const params = useParams();         //meeting/detail/:meeting_id
 
@@ -36,35 +38,38 @@ const ChildMeetingDetail = () => {
     
     useEffect(() => {
         isMountedRef.current = false;
-        setLoaded(false);
-
-        axios.get(`/api/children/meetings/detail/${params.meeting_id}`, {params:{child_id: child_id}})
-        .then(response => {
-            if(isMountedRef.current) return;
-
-            setLoaded(true);
-            setNotice(response.data.notice);
-            if(response.data.status_code == 200)
-            {
-                var meeting = response.data.params;
-                setMeeting(meeting);
-                if(meeting.meeting_image.length > 0) setThumbnail(meeting.meeting_image[0].image);
-                if(meeting.approval.approval_at != null){
-                    setApprovalRegister(true);
+        
+        if(isAuthenticate()){
+            setLoaded(false);
+    
+            axios.get(`/api/children/meetings/detail/${params.meeting_id}`, {params:{child_id: child_id}})
+            .then(response => {
+                if(isMountedRef.current) return;
+    
+                setLoaded(true);
+                setNotice(response.data.notice);
+                if(response.data.status_code == 200)
+                {
+                    var meeting = response.data.params;
+                    setMeeting(meeting);
+                    if(meeting.meeting_image.length > 0) setThumbnail(meeting.meeting_image[0].image);
+                    if(meeting.approval.approval_at != null){
+                        setApprovalRegister(true);
+                    }
                 }
-            }
-            else {
-                set400Error("失敗しました。");
-            }
-        })
-        .catch(err=>{
-            if(isMountedRef.current) return;
-            setLoaded(true);
-            setNotice(err.response.data.notice);
-            if(err.response.status==404){
-                set404Error(err.response.data.message);
-            }
-        })
+                else {
+                    set400Error("失敗しました。");
+                }
+            })
+            .catch(err=>{
+                if(isMountedRef.current) return;
+                setLoaded(true);
+                setNotice(err.response.data.notice);
+                if(err.response.status==404){
+                    set404Error(err.response.data.message);
+                }
+            })
+        }
             
         return () => {
             isMountedRef.current = true
@@ -73,27 +78,29 @@ const ChildMeetingDetail = () => {
 
 
     const handleApprovalRegister = () => {
-        setSubmit(true);
-        const formdata = new FormData();
-        formdata.append('child_id', child_id);
-        formdata.append('meeting_id', params.meeting_id);
-
-        axios.post('/api/children/meeting/approvals/registerApproval', formdata)
-        .then(response => {
-            if(isMountedRef.current) return;
-            
-            setSubmit(false);
-            setShowConfirmMoal(false);
-            setNotice(response.data.notice);
-            switch(response.data.status_code){
-                case 200: {
-                    setSuccess(response.data.success_messages);
-                    setApprovalRegister(true);
-                    break;
+        if(isAuthenticate()){
+            setSubmit(true);
+            const formdata = new FormData();
+            formdata.append('child_id', child_id);
+            formdata.append('meeting_id', params.meeting_id);
+    
+            axios.post('/api/children/meeting/approvals/registerApproval', formdata)
+            .then(response => {
+                if(isMountedRef.current) return;
+                
+                setSubmit(false);
+                setShowConfirmMoal(false);
+                setNotice(response.data.notice);
+                switch(response.data.status_code){
+                    case 200: {
+                        setSuccess(response.data.success_messages);
+                        setApprovalRegister(true);
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_messages); break;
                 }
-                case 400: set400Error(response.data.error_messages); break;
-            }
-        })
+            })
+        }
     }
 
     const handlePDFOpen = (pdf) => {

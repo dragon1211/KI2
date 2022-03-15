@@ -1,7 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-
 import moment from 'moment';
+
+import { HeaderContext } from '../../context';
 import Notification from '../../component/notification';
 import ModalConfirm from '../../component/modal_confirm';
 import Alert from '../../component/alert';
@@ -11,6 +12,8 @@ const ParentChildDetail = () => {
 
     const navigator = useNavigate();
     const params = useParams();
+    const { isAuthenticate } = useContext(HeaderContext);
+    
 
     const [notice, setNotice] = useState(-1);
     const [loaded, setLoaded] = useState(false);
@@ -27,30 +30,33 @@ const ParentChildDetail = () => {
     
     useEffect(() => {
       isMountedRef.current = false;
-      setLoaded(false);
 
-      axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
-        .then(response => {
-          if(isMountedRef.current) return;
-
-          setLoaded(true);
-          setNotice(response.data.notice);
-          if(response.data.status_code==200){
-            setChild(response.data.params);
-          }
-          else {
-            set400Error("失敗しました。");
-          }
-        })
-        .catch(err=>{
-          if(isMountedRef.current) return;
-
-          setLoaded(true);
-          setNotice(err.response.data.notice);
-          if(err.response.status==404){
-            set404Error(err.response.data.message);
-          }
-        })
+      if(isAuthenticate()){
+        setLoaded(false);
+  
+        axios.get('/api/fathers/children/detail/'+child_id, {params:{father_id: father_id}})
+          .then(response => {
+            if(isMountedRef.current) return;
+  
+            setLoaded(true);
+            setNotice(response.data.notice);
+            if(response.data.status_code==200){
+              setChild(response.data.params);
+            }
+            else {
+              set400Error("失敗しました。");
+            }
+          })
+          .catch(err=>{
+            if(isMountedRef.current) return;
+  
+            setLoaded(true);
+            setNotice(err.response.data.notice);
+            if(err.response.status==404){
+              set404Error(err.response.data.message);
+            }
+          })
+      }
 
       return () => {
         isMountedRef.current = true
@@ -58,31 +64,27 @@ const ParentChildDetail = () => {
     },[]);
 
   //-------------------------------------------------------------
-  useEffect(()=>{
-      var navbar_list = document.getElementsByClassName("mypage-nav-list__item");
-      for(let i=0; i<navbar_list.length; i++)
-          navbar_list[i].classList.remove('nav-active');
-      document.getElementsByClassName("-child")[0].classList.add('nav-active');
-  },[]);
 
-  //---------------------------------------------------------------
   const handleAcceptDelete = () => {
-    setSubmit(true);
-    axios.delete(`/api/fathers/relations/deleteRelationChild/${child_id}`)
-    .then(response => {
-      if(isMountedRef.current) return;
-      
-      setSubmit(false);
-      setShowDelete(false);
-      setNotice(response.data.notice);
-      switch(response.data.status_code){
-        case 200: {
-          navigator('/p-account/child', { state: "子の削除に成功しました。" });  
-          break;
+    
+    if(isAuthenticate()){
+      setSubmit(true);
+      axios.delete(`/api/fathers/relations/deleteRelationChild/${child_id}`)
+      .then(response => {
+        if(isMountedRef.current) return;
+        
+        setSubmit(false);
+        setShowDelete(false);
+        setNotice(response.data.notice);
+        switch(response.data.status_code){
+          case 200: {
+            navigator('/p-account/child', { state: "子の削除に成功しました。" });  
+            break;
+          }
+          case 400: set400Error('子の削除に失敗しました。'); break;
         }
-        case 400: set400Error('子の削除に失敗しました。'); break;
-      }
-    });
+      });
+    }
   };
     
 	return (

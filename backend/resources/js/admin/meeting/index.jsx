@@ -1,9 +1,11 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import InfiniteScroll from "react-infinite-scroll-component";
+
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 
@@ -12,7 +14,7 @@ const SCROLL_DELAY_TIME = 1500;
 
 const AdminMeetings = () => {
 
-  
+  const { isAuthenticate } = useContext(HeaderContext);
   const [keyword, setKeyword] = useState('')
   const [loaded, setLoaded] = useState(false);
   const [meeting_list, setMeetingList ] = useState([]);
@@ -27,36 +29,40 @@ const AdminMeetings = () => {
   
   useEffect(() => {
     isMountedRef.current = false;
+    
+    if(isAuthenticate()){
 
-    setLoaded(false);
-    axios.get('/api/admin/meetings/list')
-    .then(response => {
-      if(isMountedRef.current) return;
+      setLoaded(false);
+      axios.get('/api/admin/meetings/list')
+      .then(response => {
+        if(isMountedRef.current) return;
+  
+        setLoaded(true);
+        if(response.data.status_code==200){
+          //------------Calculate Numerator & Denominator--------------
+            var list = response.data.params;
+            var arr = [];
+            for(var i in list){
+                var total=0, num=0;
+                for(var j in list[i].approval)
+                {
+                  if(list[i].approval[j].approval_at) num ++;
+                  total ++;
+                }
+                arr.push({...list[i], denominator:total, numerator:num})
+            }
+            setMeetingList(arr);
+            var len = arr.length;
+            if(len > INFINITE)
+                setFetchMeetingList(arr.slice(0, INFINITE));
+            else setFetchMeetingList(arr.slice(0, len));
+        } 
+        else {
+          set400Error("失敗しました。");
+        }
+      });
 
-      setLoaded(true);
-      if(response.data.status_code==200){
-        //------------Calculate Numerator & Denominator--------------
-          var list = response.data.params;
-          var arr = [];
-          for(var i in list){
-              var total=0, num=0;
-              for(var j in list[i].approval)
-              {
-                if(list[i].approval[j].approval_at) num ++;
-                total ++;
-              }
-              arr.push({...list[i], denominator:total, numerator:num})
-          }
-          setMeetingList(arr);
-          var len = arr.length;
-          if(len > INFINITE)
-              setFetchMeetingList(arr.slice(0, INFINITE));
-          else setFetchMeetingList(arr.slice(0, len));
-      } 
-      else {
-        set400Error("失敗しました。");
-      }
-    });
+    }
 
     return () => {
         isMountedRef.current = true;
@@ -79,39 +85,44 @@ const AdminMeetings = () => {
   
   const handleSearch = (e) => {
     e.preventDefault();
-    if(keyword == '')
-    {
-      document.getElementById('keyword').focus();
-      return;
-    }
-    set422errors({keyword:''});
-    setLoaded(false);
-    setMeetingList([]);
-    axios.get('/api/admin/meetings/search',{params:{keyword: keyword}})
-    .then((response) => {
-      if(isMountedRef.current) return;
 
-      setLoaded(true);
-      if(response.data.status_code==200){
-        //------------Calculate Numerator & Denominator--------------
-          var list = response.data.params;
-          var arr = [];
-          for(var i in list){
-              var total=0, num=0;
-              for(var j in list[i].approval)
-              {
-                if(list[i].approval[j].approval_at) num ++;
-                total ++;
-              }
-              arr.push({...list[i], denominator:total, numerator:num})
-          }
-          setMeetingList(arr);
-          var len = arr.length;
-          if(len > INFINITE)
-              setFetchMeetingList(arr.slice(0, INFINITE));
-          else setFetchMeetingList(arr.slice(0, len));
+    if(isAuthenticate()){
+
+      if(keyword == '')
+      {
+        document.getElementById('keyword').focus();
+        return;
       }
-    });
+      set422errors({keyword:''});
+      setLoaded(false);
+      setMeetingList([]);
+      axios.get('/api/admin/meetings/search',{params:{keyword: keyword}})
+      .then((response) => {
+        if(isMountedRef.current) return;
+  
+        setLoaded(true);
+        if(response.data.status_code==200){
+          //------------Calculate Numerator & Denominator--------------
+            var list = response.data.params;
+            var arr = [];
+            for(var i in list){
+                var total=0, num=0;
+                for(var j in list[i].approval)
+                {
+                  if(list[i].approval[j].approval_at) num ++;
+                  total ++;
+                }
+                arr.push({...list[i], denominator:total, numerator:num})
+            }
+            setMeetingList(arr);
+            var len = arr.length;
+            if(len > INFINITE)
+                setFetchMeetingList(arr.slice(0, INFINITE));
+            else setFetchMeetingList(arr.slice(0, len));
+        }
+      });
+
+    }
   }
 
 

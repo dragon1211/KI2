@@ -1,81 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useContext } from 'react';
 import { LoadingButton } from '@material-ui/lab';
+
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 import Notification from '../../component/notification';
 import PageLoader from '../../component/page_loader';
 import copy from 'copy-to-clipboard';
-import {
-  Box,
-  Dialog,
-  DialogTitle,
-  Slide,
-  Typography
-} from '@mui/material';
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-
-const LineModal = ({ show, handleClose }) => {
-
-  const inviteurl =  '「KIKI」の招待が届いています。' + '\n' +
-  'まずは以下より仮登録を行ってください。' + '\n' +
-  '※スマホ本体を最新の状態にアップデートしてからURLをクリックしてください。' + '\n\n' +
-  document.getElementById('inviteurl').value + '\n\n' +
-  '▼公式サイトはこちら' + '\n' +
-  'https://kikikan.jp';
-
-  const inviteUrl = document.getElementById('inviteurl_html').value;
-  const siteUrl = document.getElementById('siteurl').value;
-  const lineText =
-      `「KIKI」の招待が届いています。%0Aまずは以下より仮登録を行ってください。
-      %0A%0A※スマホ本体を最新の状態にアップデートしてからURLをクリックしてください。
-      %0A%0A${inviteUrl}%0A%0A▼公式サイトはこちら%0A${siteUrl}`;
-
-  const [_success, setSuccess] = useState('');
-  const [_400error, set400Error] = useState('');
-
-  const copyInviteURL = () => {
-    if(copy(inviteurl, {debug: true}))
-    {
-      setSuccess('招待用URLをコピーしました。');
-    } else {
-      set400Error('コピー失敗しました。');
-    }
-  }
-
-	return (
-    <Dialog
-      open={show}
-      TransitionComponent={Transition}
-      keepMounted
-      aria-describedby="alert-dialog-slide-description"
-      onClose={()=>{
-        setSuccess('');
-        set400Error('');
-        handleClose();
-      }}
-    >
-      <DialogTitle sx={{padding:'20px 10px',textAlign:'center', borderBottom:'1px solid rgb(239 236 236)'}}>
-          <span className="ft-16 text-center font-weight-bold">招待用URL</span>
-      </DialogTitle>
-      <Box sx={{ p:'10px', pb:'10px'}}>
-          <Typography component='p' sx={{ minHeight:'175px', whiteSpace:'pre-wrap', bgcolor:'#F0F0F0', p:'10px' }} className="ft-14 text-black">
-              {inviteurl}
-          </Typography>
-      </Box>
-      <Box sx={{ p:'10px', pt:'0px' }}>
-        <ul className="invite-btn__wrapper">
-          <li><a className="copy-btn" onClick={copyInviteURL}>コピー</a></li>
-          <li><a className="line-btn" href={`http://line.naver.jp/R/msg/text/?${lineText}`}>送信</a></li>
-        </ul>
-      </Box>
-      { _success && <Alert type="success" hide={()=>setSuccess('')}>{_success}</Alert> }
-      { _400error && <Alert type="fail" hide={()=>set400Error('')}>{_400error}</Alert> }
-    </Dialog>
-	)
-}
 
 
 const ParentChildAdd = () => {
@@ -92,6 +22,7 @@ const ParentChildAdd = () => {
   const [submit, setSubmit] = useState(false);
 
   const isMountedRef = useRef(true);
+  const { isAuthenticate } = useContext(HeaderContext);
 
   const inviteurl =  '「KIKI」の招待が届いています。' + '\n' +
   'まずは以下より仮登録を行ってください。' + '\n' +
@@ -114,64 +45,71 @@ const ParentChildAdd = () => {
 
   const handleSubmit = (e) => {
       e.preventDefault();
-      set422Errors({identity: ''});
-      set401Error('');
-      const formdata = new FormData();
-      formdata.append('identity', identity);
-      formdata.append('father_id', father_id);
-      setSubmit(true);
 
-      axios.post('/api/fathers/relations/register', formdata)
-      .then(response => {
-        if(isMountedRef.current) return;
-        setSubmit(false);
-        setNotice(response.data.notice);
-        switch(response.data.status_code){
-          case 200: setSuccess(response.data.success_messages); break;
-          case 400: set400Error(response.data.error_messages);  break;
-          case 401: set401Error(response.data.error_messages); set400Error(response.data.error_messages);  break;
-          case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages);  break;
-        }
-      });
+      if(isAuthenticate()){
+        set422Errors({identity: ''});
+        set401Error('');
+        const formdata = new FormData();
+        formdata.append('identity', identity);
+        formdata.append('father_id', father_id);
+        setSubmit(true);
+  
+        axios.post('/api/fathers/relations/register', formdata)
+        .then(response => {
+          if(isMountedRef.current) return;
+          setSubmit(false);
+          setNotice(response.data.notice);
+          switch(response.data.status_code){
+            case 200: setSuccess(response.data.success_messages); break;
+            case 400: set400Error(response.data.error_messages);  break;
+            case 401: set401Error(response.data.error_messages); set400Error(response.data.error_messages);  break;
+            case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages);  break;
+          }
+        });
+      }
   }
 
 
 
   const handleCheckRelations = (type) => {
-    set401Error('');
-    setLoaded(false);
 
-    if(type == 'invite'){
-      if(!copy(inviteurl, {debug: true})){
-        set400Error('コピー失敗しました。');
-        return;
-      }
-    }
-
-    axios.get('/api/fathers/relations/check')
-    .then(response=>{
-      if(isMountedRef.current) return;
-
-      switch(response.data.status_code){
-        case 200: {
-          if(type == 'invite') setSuccess('コピー成功しました。');
-          else if(type == 'line')
-            window.location.href = `http://line.naver.jp/R/msg/text/?${lineText}`;
-          break;
+    if(isAuthenticate()){
+      set401Error('');
+      setLoaded(false);
+  
+      if(type == 'invite'){
+        if(!copy(inviteurl, {debug: true})){
+          set400Error('コピー失敗しました。');
+          return;
         }
-        case 400: set400Error(response.data.error_messages); break;
-        case 401: set401Error(response.data.error_messages); set400Error(response.data.error_messages); break;
       }
-      setNotice(response.data.notice);
-      setLoaded(true);
-    })
-    .catch(err=>console.log(err));
+  
+      axios.get('/api/fathers/relations/check', {params:{father_id: father_id}})
+      .then(response=>{
+        if(isMountedRef.current) return;
+  
+        switch(response.data.status_code){
+          case 200: {
+            if(type == 'invite') setSuccess('コピー成功しました。');
+            else if(type == 'line')
+              window.location.href = `http://line.naver.jp/R/msg/text/?${lineText}`;
+            break;
+          }
+          case 400: set400Error(response.data.error_messages); break;
+          case 401: set401Error(response.data.error_messages); set400Error(response.data.error_messages); break;
+        }
+        setNotice(response.data.notice);
+        setLoaded(true);
+      })
+      .catch(err=>console.log(err));
+    }
   }
 
 
   const contactMailText = 'mailto:56@zotman.jp?subject=KIKIメンバー追加について&body='+
                           '名前%3A%0A電話番号%3A%0AログインID%3A%0Aログインパスワード%3A%0A追加したいメンバー数%3A%0A「その他お問合せ内容」'
 
+  
 	return (
     <div className="l-content">
       <div className="l-content-w560">

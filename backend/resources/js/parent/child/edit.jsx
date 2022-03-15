@@ -1,10 +1,12 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import ja from "date-fns/locale/ja";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 registerLocale("ja", ja);
 import moment from 'moment';
 import { LoadingButton } from '@material-ui/lab';
+
+import { HeaderContext } from '../../context';
 import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
@@ -14,6 +16,7 @@ const ParentChildEdit = () => {
 
   const navigator = useNavigate();
   const params = useParams();
+  const { isAuthenticate } = useContext(HeaderContext);
 
   const [notice, setNotice] = useState(-1);
   const [_success, setSuccess] = useState('');
@@ -32,59 +35,67 @@ const ParentChildEdit = () => {
   
   useEffect(() => {
     isMountedRef.current = false;
-    setLoaded(false);
 
-    axios.get('/api/fathers/children/detail/' + child_id, {params:{father_id: father_id}})
-    .then(response => {
-      if(isMountedRef.current) return;
-
-        setNotice(response.data.notice);
+    if(isAuthenticate()){
+      setLoaded(false);
+  
+      axios.get('/api/fathers/children/detail/' + child_id, {params:{father_id: father_id}})
+      .then(response => {
+        if(isMountedRef.current) return;
+  
+          setNotice(response.data.notice);
+          setLoaded(true);
+          if(response.data.status_code==200){
+            let hire_at = moment(response.data.params.father_relations?.hire_at).toDate();
+            setHireAt(hire_at);
+          } else {
+            set400Error("失敗しました。");
+          }
+      })
+      .catch(err=>{
+        if(isMountedRef.current) return;
+  
         setLoaded(true);
-        if(response.data.status_code==200){
-          let hire_at = moment(response.data.params.father_relations?.hire_at).toDate();
-          setHireAt(hire_at);
-        } else {
-          set400Error("失敗しました。");
+        setNotice(err.response.data.notice);
+        if(err.response.status==404){
+          set404Error(err.response.data.message);
         }
-    })
-    .catch(err=>{
-      if(isMountedRef.current) return;
+      })
 
-      setLoaded(true);
-      setNotice(err.response.data.notice);
-      if(err.response.status==404){
-        set404Error(err.response.data.message);
-      }
-    })
+    }
 
     return () => {
       isMountedRef.current = true
     }
   },[]);
+  
 
   const handleSubmit = (e) => {
       e.preventDefault();
-      set422Errors({hire_at: ''});
-      const request = {
-        father_id: father_id,
-        hire_at: hire_at
-      }
-      setSubmit(true);
-      axios.put(`/api/fathers/relations/updateHireDate/${child_id}`, request)
-      .then(response => {
-        if(isMountedRef.current) return;
-        
-        setSubmit(false);
-        setNotice(response.data.notice);
-        switch(response.data.status_code){
-          case 200:{
-            navigator('/p-account/child/detail/'+child_id,  { state: response.data.success_messages });
-            break;
-          } 
-          case 400: set400Error(response.data.error_messages); break;
-          case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+      
+      if(isAuthenticate()){
+        set422Errors({hire_at: ''});
+        const request = {
+          father_id: father_id,
+          hire_at: hire_at
         }
-      });
+        setSubmit(true);
+        axios.put(`/api/fathers/relations/updateHireDate/${child_id}`, request)
+        .then(response => {
+          if(isMountedRef.current) return;
+          
+          setSubmit(false);
+          setNotice(response.data.notice);
+          switch(response.data.status_code){
+            case 200:{
+              navigator('/p-account/child/detail/'+child_id,  { state: response.data.success_messages });
+              break;
+            } 
+            case 400: set400Error(response.data.error_messages); break;
+            case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
+          }
+        });
+      }
   }
   
 	return (

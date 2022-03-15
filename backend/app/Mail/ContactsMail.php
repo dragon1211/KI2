@@ -16,7 +16,7 @@ class ContactsMail extends Mailable {
     }
 
     public function build () {
-        return $this->subject('お問い合わせありがとうございます。')->text('emails.contacts', [
+        return $this->subject('【KIKI】お問い合わせありがとうございます。')->text('emails.contacts', [
             'messages' => $this->message
         ]);
     }

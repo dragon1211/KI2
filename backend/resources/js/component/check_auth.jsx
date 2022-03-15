@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Alert from './alert';
 
-export default function CheckLoginStatus() {
+export default function CheckAuthenticate() {
   const { pathname } = useLocation();
   const [_success, setSuccess] = useState('');
   const navigator = useNavigate();

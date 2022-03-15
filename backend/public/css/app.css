@@ -1,17 +1,4 @@
-@charset "UTF-8";
-/* border color */
-/* input color */
-.bg-color-1 {
-  background-color: #F5F7F8 !important;
-}
-
-.bg-yellow {
-  background-color: #F0DE00 !important;
-}
-
-body {
-  padding: 0 !important;
-}
+@charset "UTF-8";.bg-color-1{background-color:#f5f7f8!important}.bg-yellow{background-color:#f0de00!important}body{padding:0!important}
 
 /*!
  * Bootstrap v4.6.1 (https://getbootstrap.com/)
@@ -12897,7 +12884,7 @@ categories: [project]
 @font-face {
   font-family: "iconfont";
   src: url(/fonts/iconfont.eot?9bd2f8e21fb68f3cb69f306c7a5a07d2);
-  src: url(/fonts/iconfont.eot?9bd2f8e21fb68f3cb69f306c7a5a07d2) format("eot"), url(/fonts/iconfont.woff?72290a51f520574be856b3621acc29a1) format("woff"), url(/fonts/iconfont.ttf?e240ce427caf7549e576c77b39a1d3f1) format("truetype"), url(/fonts/iconfont.svg?9e48c54f8bbb472c1c286234fdd6636f) format("svg");
+  src: url(/fonts/iconfont.eot?9bd2f8e21fb68f3cb69f306c7a5a07d2) format("eot"), url(/fonts/iconfont.woff?72290a51f520574be856b3621acc29a1) format("woff"), url(/fonts/iconfont.ttf?e240ce427caf7549e576c77b39a1d3f1) format("truetype"), url(/fonts/iconfont.svg?d812f238f7ec32f5cb5ebd322f320a02) format("svg");
   font-weight: normal;
   font-style: normal;
 }

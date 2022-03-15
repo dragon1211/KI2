@@ -1,16 +1,16 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
+import { HeaderContext } from '../../context';
 import Notification from '../../component/notification';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 import InfiniteScroll from "react-infinite-scroll-component";
 
-
-
 const INFINITE = 10;
 const SCROLL_DELAY_TIME = 1500;
+
 
 const ParentFavorite = () => {
 
@@ -29,6 +29,8 @@ const ParentFavorite = () => {
     const [_400error, set400Error] = useState('');
 
     const isMountedRef = useRef(true);
+    const { isAuthenticate } = useContext(HeaderContext);
+
     
     useEffect(()=>{
       setLoaded(loaded1 && loaded2);
@@ -36,7 +38,8 @@ const ParentFavorite = () => {
     
     
     useEffect(() => {
-        isMountedRef.current = false;
+      isMountedRef.current = false;
+      if(isAuthenticate()){
         setLoaded(false);
 
         axios.get('/api/fathers/meetings/listOfNonFavoriteOfFather', {params:{father_id: father_id}})
@@ -96,6 +99,7 @@ const ParentFavorite = () => {
             set400Error("失敗しました。");
           }
         })
+      }
 
       return () => {
         isMountedRef.current = true;
@@ -103,60 +107,62 @@ const ParentFavorite = () => {
     },[]);
 
     const fetchMoreListOfNonFavorite = () => {
-        setTimeout(() => {
-            var x = fetch_meeting_list_non_favorite.length;
-            var y = meeting_list_non_favorite.length;
-            var c = 0;
-            if(x+INFINITE < y) c = INFINITE;
-            else c = y - x;
-            setFetchMeetingListOfNonFavorite(meeting_list_non_favorite.slice(0, x+c));
-        }, SCROLL_DELAY_TIME);
+      setTimeout(() => {
+          var x = fetch_meeting_list_non_favorite.length;
+          var y = meeting_list_non_favorite.length;
+          var c = 0;
+          if(x+INFINITE < y) c = INFINITE;
+          else c = y - x;
+          setFetchMeetingListOfNonFavorite(meeting_list_non_favorite.slice(0, x+c));
+      }, SCROLL_DELAY_TIME);
     };
 
     const fetchMoreListOfFavorite = () => {
-        setTimeout(() => {
-            var x = fetch_meeting_list_favorite.length;
-            var y = meeting_list_favorite.length;
-            var c = 0;
-            if(x+INFINITE < y) c = INFINITE;
-            else c = y - x;
-            setFetchMeetingListOfFavorite(meeting_list_favorite.slice(0, x+c));
-        }, SCROLL_DELAY_TIME);
+      setTimeout(() => {
+          var x = fetch_meeting_list_favorite.length;
+          var y = meeting_list_favorite.length;
+          var c = 0;
+          if(x+INFINITE < y) c = INFINITE;
+          else c = y - x;
+          setFetchMeetingListOfFavorite(meeting_list_favorite.slice(0, x+c));
+      }, SCROLL_DELAY_TIME);
     };
 
     function handleFavorite(meetingId, currentFavorite, stateName) {
-      const formdata = new FormData();
-      formdata.append('meeting_id', meetingId);
-      formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
-      axios.post('/api/fathers/meetings/registerFavorite', formdata)
-
-      if(stateName == "nonFavoriteOfFather") {
-        const newList = meeting_list_non_favorite.map((item) => {
-          if (item.id === meetingId) {
-            const updatedItem = {
-              ...item,
-              is_favorite: item.is_favorite == 1 ? 0 : 1,
-            };
-            return updatedItem;
-          }
-          return item;
-        });
-        setMeetingListOfNonFavorite(newList);
-        setFetchMeetingListOfNonFavorite(newList.slice(0, fetch_meeting_list_non_favorite.length));
-      } else {
-        const newList = meeting_list_favorite.map((item) => {
-          if (item.id === meetingId) {
-            const updatedItem = {
-              ...item,
-              is_favorite: item.is_favorite == 1 ? 0 : 1,
-            };
-            return updatedItem;
-          }
-          return item;
-        });
-        setMeetingListOfFavorite(newList);
-        setFetchMeetingListOfFavorite(newList.slice(0, fetch_meeting_list_favorite.length));
-      }  
+      if(isAuthenticate()){
+        const formdata = new FormData();
+        formdata.append('meeting_id', meetingId);
+        formdata.append('is_favorite', currentFavorite == 1 ? 0 : 1);
+        axios.post('/api/fathers/meetings/registerFavorite', formdata)
+  
+        if(stateName == "nonFavoriteOfFather") {
+          const newList = meeting_list_non_favorite.map((item) => {
+            if (item.id === meetingId) {
+              const updatedItem = {
+                ...item,
+                is_favorite: item.is_favorite == 1 ? 0 : 1,
+              };
+              return updatedItem;
+            }
+            return item;
+          });
+          setMeetingListOfNonFavorite(newList);
+          setFetchMeetingListOfNonFavorite(newList.slice(0, fetch_meeting_list_non_favorite.length));
+        } else {
+          const newList = meeting_list_favorite.map((item) => {
+            if (item.id === meetingId) {
+              const updatedItem = {
+                ...item,
+                is_favorite: item.is_favorite == 1 ? 0 : 1,
+              };
+              return updatedItem;
+            }
+            return item;
+          });
+          setMeetingListOfFavorite(newList);
+          setFetchMeetingListOfFavorite(newList.slice(0, fetch_meeting_list_favorite.length));
+        }  
+      }
     };
   
 

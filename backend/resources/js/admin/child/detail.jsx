@@ -1,9 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 
 import IconButton from "@material-ui/core/IconButton";
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 import ModalConfirm from '../../component/modal_confirm';
@@ -12,8 +13,11 @@ import ModalConfirm from '../../component/modal_confirm';
 
 const AdminChildDetail = () => {
 
+
     const navigator = useNavigate();
     const params = useParams();
+
+    const { isAuthenticate } = useContext(HeaderContext);
 
     const [image, setImage] = useState('');
     const [loaded, setLoaded] = useState(false);
@@ -30,22 +34,23 @@ const AdminChildDetail = () => {
 
     useEffect(() => {
         isMountedRef.current = false;
-        setLoaded(false);
-
-        axios.get(`/api/admin/children/detail/${params?.child_id}`)
-        .then(response => {
-            if(isMountedRef.current) return;
-            setLoaded(true);
-            switch(response.data.status_code){
-                case 200:{
-                    setChild(response.data.params);
-                    setImage(response.data.params.image);
-                    break;
+        if(isAuthenticate()){
+            setLoaded(false);
+    
+            axios.get(`/api/admin/children/detail/${params?.child_id}`)
+            .then(response => {
+                if(isMountedRef.current) return;
+                setLoaded(true);
+                switch(response.data.status_code){
+                    case 200:{
+                        setChild(response.data.params);
+                        setImage(response.data.params.image);
+                        break;
+                    }
+                    case 400: set400Error('失敗しました。'); break;
                 }
-                case 400: set400Error('失敗しました。'); break;
-            }
-        })
-
+            })
+        }
         return () => {
             isMountedRef.current = true;
         }
@@ -54,46 +59,50 @@ const AdminChildDetail = () => {
 
     const handleImageChange = (e) => {
         e.preventDefault();
-        let reader = new FileReader();
-        let _file = e.target.files[0];
-        reader.readAsDataURL(_file);
-        reader.onloadend = () => {
-            set422Errors({image: ''});
-            setSubmitImage(true);
-            axios.put(`/api/admin/children/updateImage/${params?.child_id}`, {image: reader.result})
-            .then(response => {
-                if(isMountedRef.current) return;
-                setSubmitImage(false);
-                switch(response.data.status_code){
-                    case 200: {
-                        setImage(reader.result);
-                        setSuccess(response.data.success_messages);
-                        break;
+        if(isAuthenticate()){
+            let reader = new FileReader();
+            let _file = e.target.files[0];
+            reader.readAsDataURL(_file);
+            reader.onloadend = () => {
+                set422Errors({image: ''});
+                setSubmitImage(true);
+                axios.put(`/api/admin/children/updateImage/${params?.child_id}`, {image: reader.result})
+                .then(response => {
+                    if(isMountedRef.current) return;
+                    setSubmitImage(false);
+                    switch(response.data.status_code){
+                        case 200: {
+                            setImage(reader.result);
+                            setSuccess(response.data.success_messages);
+                            break;
+                        }
+                        case 400: set400Error(response.data.error_messages); break;
+                        case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                     }
-                    case 400: set400Error(response.data.error_messages); break;
-                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-                }
-            });
-        };
+                });
+            };
+        }
     };
 
 
     function handleAcceptDelete() {
-        setSubmit(true);
-        axios.delete(`/api/admin/children/delete/${params?.child_id}`)
-        .then(response => {
-            if(isMountedRef.current) return;
-            
-            setShowConfirmModal(false);
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200:{
-                    navigator("/admin/child", {state: "削除に成功しました！"});
-                    break;
+        if(isAuthenticate()){
+            setSubmit(true);
+            axios.delete(`/api/admin/children/delete/${params?.child_id}`)
+            .then(response => {
+                if(isMountedRef.current) return;
+                
+                setShowConfirmModal(false);
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200:{
+                        navigator("/admin/child", {state: "削除に成功しました！"});
+                        break;
+                    }
+                    case 400:  set400Error("削除に失敗しました。"); break;
                 }
-                case 400:  set400Error("削除に失敗しました。"); break;
-            }
-        });
+            });
+        }
     };
 
 

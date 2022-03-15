@@ -18,7 +18,7 @@ class MeetingEditAwareness extends Mailable {
     }
 
     public function build () {
-        return $this->subject('KIKI運営事務局からのお知らせ')->text('emails.fathers.meetingawareness', [
+        return $this->subject('【KIKI】KIKI運営事務局からのお知らせ')->text('emails.fathers.meetingawareness', [
             'child' => $this->child,
             'url' => '/p-account/meeting/detail/'.$this->meeting_id,
         ]);

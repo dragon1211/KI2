@@ -13,6 +13,7 @@ use App\Models\Father;
 use App\Models\FatherRelation;
 use App\Models\Meeting;
 use App\Models\MeetingApprovals;
+use App\Models\TelActivation;
 
 class FatherRelationsController extends Controller {
     public function checkNull (Request $r) {
@@ -30,7 +31,7 @@ class FatherRelationsController extends Controller {
 
         $father = Father::select('relation_limit')->where('id', $father_id)->first();
 
-        if ($father->relation_limit <= FatherRelation::select('id')->where('father_id', $father_id)->count()) {
+        if ($father->relation_limit <= FatherRelation::select('id')->where('father_id', $father_id)->count() + TelActivation::select('id')->where('father_id', $father_id)->count()) {
             return ['status_code' => 401, 'error_messages' => ['契約上限数に達した為、メンバー追加できません。']];
         }
 

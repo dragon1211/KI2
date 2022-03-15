@@ -93,11 +93,11 @@ class MeetingsController extends Controller {
 
                 if (substr($r->pdf, -4) != '.pdf') {
                     $pdf = base64_decode(substr($r->pdf, strpos($r->pdf, ',') + 1));
-
                     Storage::disk('private')->put($filename, $pdf);
                 }
                 else {
-                    $insert['pdf'] = $r->pdf;
+                    $pdf = Storage::disk('private')->get(substr($r->pdf, 7));
+                    Storage::disk('private')->put($filename, $pdf);
                 }
             }
 
@@ -106,22 +106,22 @@ class MeetingsController extends Controller {
 
             if (isset($r->image)) {
                 foreach ($r->image as $img) {
-                    if (substr($img, -5) != '.jpeg' && substr($img, -4) != '.jpg' && substr($img, -4) != '.png' && substr($img, -4) != '.gif') {
-                        $fname = $this->uuidv4() . '.jpg';
-                        $fnames[] = $fname;
-                        $image = base64_decode(substr($img, strpos($img, ',') + 1));
-                        Storage::disk('private')->put($fname, $image);
-                        $this->fiximg($fname);
+                    $fname = $this->uuidv4() . '.jpg';
+                    $fnames[] = $fname;
 
-                        $imgname = '/files/'.$fname;
+                    if (substr($img, -5) != '.jpeg' && substr($img, -4) != '.jpg' && substr($img, -4) != '.png' && substr($img, -4) != '.gif') {
+                        $image = base64_decode(substr($img, strpos($img, ',') + 1));
                     }
                     else {
-                        $imgname = $img;
+                        $image = Storage::disk('private')->get(substr($img, 7));
                     }
+
+                    Storage::disk('private')->put($fname, $image);
+                    $this->fiximg($fname);
 
                     $insert_image = [
                         'meeting_id' => (int)$meeting,
-                        'image' => $imgname,
+                        'image' => '/files/'.$fname,
                     ];
 
                     MeetingImage::create($insert_image);

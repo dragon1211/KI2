@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 import { LoadingButton } from '@material-ui/lab';
 
 import Alert from '../../component/alert';
@@ -8,6 +9,7 @@ const AdminLogin = () => {
 
     const location = useLocation();
     const navigator = useNavigate();
+    const [cookies, setCookie] = useCookies(['auth']);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -43,12 +45,14 @@ const AdminLogin = () => {
     }, [])
 
 
-    const loginOK = (id) => {
+    const loginOK = (id, expires) => {
         let token = {
             type: 'admin',
             id: id,
-            from_login: true
+            from_login: true,
+            expires: expires
         };
+        
         localStorage.setItem('admin_token', JSON.stringify(token));
 
         if(location.search == '')
@@ -73,7 +77,7 @@ const AdminLogin = () => {
             setSubmit(false)
             switch(response.data.status_code){
                 case 200: {
-                    loginOK(response.data.params.id);                
+                    loginOK(response.data.params.id, response.data.params.expire);                
                     break;
                 }
                 case 422: {

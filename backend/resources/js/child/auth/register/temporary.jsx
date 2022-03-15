@@ -19,25 +19,8 @@ const ChildSignUpTemporary = () => {
 
     useEffect(() => {
         isMountedRef.current = false;
-        setLoaded(false);
+        setLoaded(true);
 
-        if(document.getElementById('father_token')){
-            let father_id = document.getElementById('father_token').value;
-            axios.get('/api/children/father/relations/check', {params:{father_id: father_id}})
-            .then(response=>{
-                if(isMountedRef.current) return;
-
-                if(response.data.status_code == 200){
-                    setLoaded(true);
-                }
-                else{
-                    navigator('/c-account/login');
-                }
-            })
-        }
-        else{
-            setLoaded(true);
-        }
         return () => {
             isMountedRef.current = true;
         }

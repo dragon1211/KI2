@@ -1,13 +1,15 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
 
+import { HeaderContext } from '../../context';
 import Alert from '../../component/alert';
 import PageLoader from '../../component/page_loader';
 
 
 const AdminChildEdit = () => {
 
+    const { isAuthenticate } = useContext(HeaderContext);
     const navigator = useNavigate();
     const params = useParams();
 
@@ -37,29 +39,31 @@ const AdminChildEdit = () => {
     
     useEffect(() => {
         isMountedRef.current = false;
-        setLoaded(false);
-        
-        axios.get(`/api/admin/children/detail/${params?.child_id}`)
-        .then(response => {
-            if(isMountedRef.current) return;
-            setLoaded(true);
-            if(response.data.status_code==200)
-            {
-                var child = response.data.params;
-                setChild(child);
-                if(child){
-                    setFirstName(child.first_name);
-                    setLastName(child.last_name);
-                    setIdentity(child.identity);
-                    setEmail(child.email);
-                    setTelephone(child.tel);
-                    setCompany(child.company);
+        if(isAuthenticate()){
+            setLoaded(false);
+            
+            axios.get(`/api/admin/children/detail/${params?.child_id}`)
+            .then(response => {
+                if(isMountedRef.current) return;
+                setLoaded(true);
+                if(response.data.status_code==200)
+                {
+                    var child = response.data.params;
+                    setChild(child);
+                    if(child){
+                        setFirstName(child.first_name);
+                        setLastName(child.last_name);
+                        setIdentity(child.identity);
+                        setEmail(child.email);
+                        setTelephone(child.tel);
+                        setCompany(child.company);
+                    }
                 }
-            }
-            else {
-                set400Error("失敗しました。");
-            }
-        })
+                else {
+                    set400Error("失敗しました。");
+                }
+            })
+        }
         return () => {
             isMountedRef.current = true;
         }
@@ -68,41 +72,42 @@ const AdminChildEdit = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        set422Errors({
-            first_name:'',
-            last_name:'',
-            identity:'',
-            email:'',
-            tel:'',
-            company:''
-        });
-        setSubmit(true);
-        var request = {
-            first_name: first_name,
-            last_name: last_name,
-            identity: identity,
-            email: email,
-            tel: tel,
-            company: company
-        };
-        axios.put(`/api/admin/children/updateProfile/${params?.child_id}`, request)
-        .then(response => {
-            if(isMountedRef.current) return;
-            setSubmit(false);
-            switch(response.data.status_code){
-                case 200: {
-                    navigator(`/admin/child/detail/${params?.child_id}`,
-                    {state: response.data.success_messages});
-                    break;
+        if(isAuthenticate()){
+            set422Errors({
+                first_name:'',
+                last_name:'',
+                identity:'',
+                email:'',
+                tel:'',
+                company:''
+            });
+            setSubmit(true);
+            var request = {
+                first_name: first_name,
+                last_name: last_name,
+                identity: identity,
+                email: email,
+                tel: tel,
+                company: company
+            };
+            axios.put(`/api/admin/children/updateProfile/${params?.child_id}`, request)
+            .then(response => {
+                if(isMountedRef.current) return;
+                setSubmit(false);
+                switch(response.data.status_code){
+                    case 200: {
+                        navigator(`/admin/child/detail/${params?.child_id}`,
+                        {state: response.data.success_messages});
+                        break;
+                    }
+                    case 400: set400Error(response.data.error_messages); break;
+                    case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
                 }
-                case 400: set400Error(response.data.error_messages); break;
-                case 422: window.scrollTo(0, 0); set422Errors(response.data.error_messages); break;
-            }
-        })
+            })
+        }
     }
 
 
-    
 	return (
     <div className="l-content">
         <div className="l-content-w560">
